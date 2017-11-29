@@ -1,0 +1,2375 @@
+2017-11-29 14:40:48 [scrapy.utils.log] INFO: Scrapy 1.4.0 started (bot: maxlead_scrapy)
+2017-11-29 14:40:48 [scrapy.utils.log] INFO: Overridden settings: {'BOT_NAME': 'maxlead_scrapy', 'NEWSPIDER_MODULE': 'maxlead_scrapy.spiders', 'DOWNLOAD_DELAY': 0.5, 'CONCURRENT_REQUESTS_PER_IP': 1, 'LOG_FILE': 'logs\\maxlead_scrapy\\review_spider\\3a839fd2d4d011e7b40ef67195108f19.log', 'SPIDER_MODULES': ['maxlead_scrapy.spiders'], 'ROBOTSTXT_OBEY': True, 'DOWNLOAD_TIMEOUT': 100}
+2017-11-29 14:40:48 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.logstats.LogStats']
+2017-11-29 14:40:48 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware',
+ 'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2017-11-29 14:40:48 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2017-11-29 14:40:48 [scrapy.middleware] INFO: Enabled item pipelines:
+['maxlead_scrapy.pipelines.MaxleadScrapyPipeline']
+2017-11-29 14:40:48 [scrapy.core.engine] INFO: Spider opened
+2017-11-29 14:40:48 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2017-11-29 14:40:48 [scrapy.extensions.telnet] DEBUG: Telnet console listening on 127.0.0.1:6023
+2017-11-29 14:40:49 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/robots.txt> (referer: None)
+2017-11-29 14:40:50 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews> (referer: None)
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'aid': 'B01LZ6F4HN', 'avg_score': '3.2', 'total_review': '57'}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Thought this was going to be a good shower head because it has '
+            'better pressure, but it also uses up the hot water too fast, '
+            'which is why I put my old one back on and quit using this one. I '
+            "couldn't even make it through a normal shower without running out "
+            'of hot water and got tired of hurrying to beat the cold. If you '
+            'have unlimited hot water you will love this shower head, but if '
+            "you have a normal sized hot water tank then you'll find yourself "
+            'taking shorter showers. Wish I knew in advance of ordering, so '
+            'maybe this review will save someone else the grief.',
+ 'is_vp': 1,
+ 'name': 'Kathy K.',
+ 'review_date': '2017-06-21',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1D4TJGWVTYKA1?ASIN=B01LZ6F4HN',
+ 'score': '2',
+ 'title': 'Uses water too fast',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'If you like/need a very weak, extremely gentle water flow, then '
+            'this will work for you just fine.',
+ 'is_vp': 1,
+ 'name': 'Mariela Socolovsky',
+ 'review_date': '2016-11-27',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1H5DVNRHP64CM?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'then this will work for you just fine. My water stream is just '
+          'working fine',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Shower head great but handle or any other part fits in the cradle '
+            'to hold shower head. WTH. All you can do is use it by hand and '
+            'let it hang in tub. Will never purchase anything from the maker '
+            'of this product. Will buy from seller. Got product quickly and '
+            'package was in good shape.',
+ 'is_vp': 1,
+ 'name': 'Derek L.',
+ 'review_date': '2017-01-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R8LFL4A7EQ1OW?ASIN=B01LZ6F4HN',
+ 'score': '3',
+ 'title': 'Shower head great but handle or any other part fits in the ...',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Most people selling this only sell the shower head. I picked this '
+            'one because it came with the hose and mounting hardware. This '
+            'way, I made sure it all worked. The spray from the shower head is '
+            'very vigorous. Actually too vigorous. It hurts. That may be '
+            'because we have very high water pressure. If you have low water '
+            'pressure, this would be great. But with high water pressure, it '
+            'feels like a pressure washer. I was turning the water way down so '
+            'I could bear it, but then I used the filter that came with it (it '
+            'has the orange beads inside it) to replace the orange beads. I '
+            "also took the other beads out. Now it's perfect.",
+ 'is_vp': 1,
+ 'name': 'Sarah Stephens',
+ 'review_date': '2016-12-25',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3J4PMZ5299OYL?ASIN=B01LZ6F4HN',
+ 'score': '3',
+ 'title': 'Good while it lasted',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': "I just installed this.  That's pretty easy, but it leaks a few "
+            'drops - even with the teflon tape and getting as tight as I can.  '
+            "I'll try this for a few days to see if it's worth keeping.  I "
+            "hate to return something I've obviously used, but I hate wasting "
+            "money more.  So if I don't like this, back it goes.",
+ 'is_vp': 1,
+ 'name': 'teresa groves',
+ 'review_date': '2017-08-16',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1LB5FIKNLXH8F?ASIN=B01LZ6F4HN',
+ 'score': '3',
+ 'title': 'Worth keeping?  Not sure.',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': "Nice nice! Feel like I'm rinsing off lots better! Seems like lots "
+            'and lots of water. And the bleachy smell is gone',
+ 'is_vp': 1,
+ 'name': 'William Bell',
+ 'review_date': '2016-10-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3T5UFUHTGYZZH?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Really works',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Love the settings but dislike the shower head holder. The shower '
+            'head and the shower head holder do not fit together easily -- in '
+            'fact its almost a deal breaker. It was easy enough to install, '
+            'filters well, sprays well but messing with the shower head and '
+            'holder, frustrating.',
+ 'is_vp': 1,
+ 'name': 'Piper',
+ 'review_date': '2017-11-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RG5EPZTCRKVUK?ASIN=B01LZ6F4HN',
+ 'score': '3',
+ 'title': 'Could have been great.',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'As much as this product starts out great...my second one of these '
+            'have failed again. We thought we finally got a good one. After a '
+            'few times of use it is starting again to feel like razorblades '
+            'are shooting at our skin. We have children and it hurts them to '
+            'the point of crying. Kind of sucks because it starts out working '
+            'wonderful! We loved it when it was within the 8 times we were '
+            'able to use it with no problem.',
+ 'is_vp': 1,
+ 'name': 'Laine Savoie',
+ 'review_date': '2017-01-21',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3TOTX3TZH1ART?ASIN=B01LZ6F4HN',
+ 'score': '2',
+ 'title': 'Not sure',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'The 3-setting function working as advertised.  Personally I think '
+            'the spraying holes are too fine, so with the high pressure, it '
+            'does hurt you skin a little. To change the setting is little '
+            'cumbersome, I often need to use both hands to change the '
+            'setting.  Overall, an ok product for what you are paying for.',
+ 'is_vp': 1,
+ 'name': 'Secret8sianMan',
+ 'review_date': '2017-03-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2YLP93HVC0NQ1?ASIN=B01LZ6F4HN',
+ 'score': '3',
+ 'title': 'Personally I think the spraying holes are too fine, so with the '
+          'high pressure',
+ 'variation': None}
+2017-11-29 14:40:50 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Great product but both clamps had cracks, maybe its a design '
+            'flaw.  They were very quick to replace the 1st one but after that '
+            'I resigned to deal with it.',
+ 'is_vp': 1,
+ 'name': 'Teth Amon',
+ 'review_date': '2016-12-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RYD7K9UFA0911?ASIN=B01LZ6F4HN',
+ 'score': '4',
+ 'title': 'Great product but both clamps had cracks',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews> (referer: None)
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'aid': 'B00UA3MJL0', 'avg_score': '4.7', 'total_review': '108'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Awesome trampoline, lots of fun!  We have 5 kids ranging in age '
+            "from 11 to 2 and they all love the trampoline.  We've had it for "
+            "about a month now.  It's very sturdy, and gives plenty of "
+            'bounce.  The kids all bounce at once or go out there one at a '
+            "time.  We've even had some adults get out there and bounce too.",
+ 'is_vp': 1,
+ 'name': 'rasvitt',
+ 'review_date': '2016-10-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3GBLVEM3PPNK5?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'Awesome trampoline, lots of fun',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Very sturdy, came with everything and clear instructions.  My '
+            'kids love it and adults can definitely jump with them too.  '
+            'Plenty of room on this.  We even had some small hail and 60+mph '
+            'winds and no damage to it at all.  We did make our own large '
+            'ground stakes to pound into the bottom of the legs to keep it '
+            'from blowing away as we live in a state that has a lot of wind '
+            'and storms that often have strong winds and microbursts.  Will be '
+            'taking down for winter, but the set up was not hard at all so not '
+            'an issue.',
+ 'is_vp': 1,
+ 'name': 'jajajelly',
+ 'review_date': '2016-06-27',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1KJFPPGT4XN6W?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Sturdy and fun!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': "I accidentally ordered the 14' instead of the 15.  Not their "
+            'fault.  Having said that I really like the trampoline.  I think '
+            'the complaints about the netting are way over blown.  It takes a '
+            'while to get it on, but not difficult. I assembled this myself;  '
+            'I just needed my son to hold up a few pieces of the frame while I '
+            "connected them.  It's really a very nice sturdy trampoline and I "
+            'like the higher weight rating so I can go out there with my son.I '
+            "think it's going to last a long time. It comes with everything  "
+            'you need to assemble, including the hook thing for the springs.  '
+            'Even a pair of gloves!.  It also comes with a cover which is '
+            'great.  Now I just need to find a compatible basketball hoop!',
+ 'is_vp': 1,
+ 'name': 'flyboy',
+ 'review_date': '2016-08-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1E9URF1RB4CRO?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Pretty Nice!',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': 'We are very happy with our 12 ft zupapa trampoline. Assembly took '
+            'a couple of hours with 3 people. The trampoline bounces great and '
+            'seems sturdy. Brandline provided excellent customer service when '
+            'I had a small issue a few months after purchase. I highly '
+            'recommend purchasing through them as they are very friendly and '
+            'easy to work with.',
+ 'is_vp': 1,
+ 'name': 'B. Dawson',
+ 'review_date': '2016-04-12',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2CFTXJIPW53H0?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great trampoline and seller',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Trampoline arrived in three boxes. Hubby put it together mostly '
+            'by himself so it took a little bit longer than had he had someone '
+            "helping.  It's a little time-consuming because you are supposed "
+            'to weave the string for the net over each individual spring. But '
+            'the netting does come on the inside of the springs to prevent '
+            'injury. Also, there is a zipper for the net and a clip at the '
+            'bottom and top of the zipper to help secure it and keep people '
+            'from bouncing out of it if they were to hit at the entrance.  A '
+            'couple things I really love about the bounce area itself is that '
+            "it's more of a netting versus a piece of rubber. That means two "
+            'things right off the bat. First, the sun can shine through it a '
+            "little bit so the grass doesn't turn brown as quickly. Of course "
+            "in Texas, that just means it'll be the only green patch by the "
+            'time summer is over! Also, air flows through it more easily so '
+            "it's not hot when you're bouncing on it in the sun.  We take the "
+            'netting down if a storm or high wind is predicted, just in case. '
+            "We don't want the net to become ripped. You just unclip the "
+            'straps from the top of the support poles. The blue padding that '
+            "goes over the springs tends to be flapping in the wind, but we've "
+            'seen that to be true across every review for other trampolines '
+            "that we've seen and people we've talked to who have trampolines. "
+            'It does come with a little ladder that you secure under the '
+            "padding. We just take it down when it's not being used.  As far "
+            "as securing it when it's windy to prevent it from going "
+            'airborne,  we use straps and cinder blocks and just put the '
+            "cinder blocks on the base of the trampoline.  We've had a couple "
+            "of  pretty significant thunderstorms lately and we've not had a "
+            "problem with it moving.  But if you're worried, you can always "
+            'buy the corkscrew  spikes that go into the ground and secure it.  '
+            'We just like being able to pick it up and move it to keep the '
+            "grass healthy.  You can't do that easily with the spikes. The "
+            "jumping area is really bouncy, especially toward the center. It's "
+            'firmer back toward the springs, of course. Overall, we absolutely '
+            'love this trampoline!  Oh, and one side note. When we were '
+            'putting it together one piece was manufactured incorrectly. We '
+            'notified the seller and they immediately sent a replacement piece '
+            'by overnight mail. Very impressed with a customer service!',
+ 'is_vp': 1,
+ 'name': 'kelw',
+ 'review_date': '2017-06-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2BZ6QPVO24CR3?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'We LOVE It!',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': "This is our first trampoline so I don't have anything to compare "
+            'to. It took a long time to thread the net, but not sure if there '
+            'is another way? It seems to be holding up well, with kids 10-14 '
+            'jumping on it. The pads on the poles are cheap styrofoam, which '
+            'are falling apart. The net was torn in two places, but the '
+            'company quickly sent me a replacement for free. The poles do lean '
+            "in a bit, so I can understand people's concern about kids heads "
+            'banging into them. I give it a 4, simply because my kids are '
+            'rough on it and it is still holding up fairly well.',
+ 'is_vp': 1,
+ 'name': 'Andrea Scola',
+ 'review_date': '2017-01-04',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R19VXJ593GFQ7W?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': "This is our first trampoline so I don't have anything ...",
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': 'This arrived as estimated and put together easy in about 45 '
+            'minutes (with 2 people). We love that we can jump on it with our '
+            '5 year old son as it holds more weight than most other ones we '
+            "looked at. It's a lot of fun and great exercise. This is a great "
+            'price and worth every penny! So glad I decided to go with this '
+            'one!!',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2016-06-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3A0A9UM45JVKX?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'This arrived as estimated and put together easy in about 45 minutes '
+          '(with 2 people)',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Sturdy trampoline with great bounce.  We have had the boxbrand '
+            'tramps in the past and this one definitely can support a greater '
+            'weight than those as it has more springs and tension.  It went '
+            'together nicely, yes, as other reviewers mentioned it took a '
+            'little time to weave the net onto the frame, but it gives a '
+            'pretty windproof result when done.  It has been really fun for '
+            'our family.',
+ 'is_vp': 1,
+ 'name': 'c.j.',
+ 'review_date': '2015-04-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R5GCRVH2W2BJ7?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Sturdy trampoline with great bounce.  Nicely made.',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': 'so far so good.  3 months of use by 3 kids and holding up well.',
+ 'is_vp': 1,
+ 'name': 'Lisard',
+ 'review_date': '2016-08-27',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RGRVCNW9B1D5E?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'bounce grande',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B00UA3MJL0',
+ 'content': "I can't say enough great things about the trampoline and the "
+            'company who made it, Zupapa.  The trampoline is perfect for our '
+            'four children and their friends. It held up amazingly well until '
+            'a huge tree limb fell on part of the trampoline. However, I '
+            'contacted Zupapa through their email address and was able to get '
+            'all the replacement parts free of charge. Plus, all their '
+            'responses and assistance were prompt. Their customer service was '
+            'spot on and an example other companies should emulate!',
+ 'is_vp': 1,
+ 'name': 'J',
+ 'review_date': '2017-09-24',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3V8QBQVJ4CBIJ?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': "I can't say enough great things about the trampoline and the "
+          'company who made ...',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/product-reviews/B01LZ6F4HN/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews)
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'worked good for a week cheaply made switch stopped working also '
+            'the shower head shoots in all directions',
+ 'is_vp': 1,
+ 'name': 'Ibrahim Salamey',
+ 'review_date': '2017-01-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R27MW2BIRI7Z4L?ASIN=B01LZ6F4HN',
+ 'score': '2',
+ 'title': 'replaced after 2 weeks',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "First the universal hose that came with it didn't fit the shower "
+            'head. Okay I used the one I have. That fit. Then after 10 '
+            'showers, the switch stopped working. Okay still usable. After 6 '
+            'months, not even showering every day, the thing completely '
+            "breaks. Don't waste your money.",
+ 'is_vp': 1,
+ 'name': 'Nicholas &amp; Veronica Burbridge',
+ 'review_date': '2017-06-19',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3RIB15V8A76DS?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'Dont waste your money',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "What a piece of crap.  It's got great pressure, that cannot be "
+            'denied.  I installed it November and it was broken by February.',
+ 'is_vp': 1,
+ 'name': 'Sameer Mohan',
+ 'review_date': '2017-03-18',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RCV3BD6X0RVK3?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': "What a piece of crap. It's got great pressure",
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'First few days, loved it, in less then a week, took it out and '
+            'put it back in the box! Sprays in every direction, stings like '
+            'needles,  even with the filter. Not worth it',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-01-16',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R125PFHX3V9T5O?ASIN=B01LZ6F4HN',
+ 'score': '2',
+ 'title': 'loved it, in less then a week',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Came timely and as expected',
+ 'is_vp': 1,
+ 'name': 'Becky',
+ 'review_date': '2017-01-02',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2F25FKDNUEIVZ?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'The water streams after just a couple weeks goes crazy, all over '
+            "the place! Also I can't seem to find the 3rd position for "
+            'massaging. I get the full and the strong center but nothing else.',
+ 'is_vp': 1,
+ 'name': 'Nick Huffman',
+ 'review_date': '2017-07-31',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2UXM3DFZZKCMV?ASIN=B01LZ6F4HN',
+ 'score': '3',
+ 'title': 'Pressure is great but takes work.',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'I am a plumber I have not seen any thing like this in any supply '
+            'house or home goods. I have bought 3 0f them for my customers and '
+            'they love this item.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2016-11-30',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R5GK3PBE05PQ8?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': '... am a plumber I have not seen any thing like this in any supply '
+          'house or home goods',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "This is a very cheap product made of flimsy plastic.  I'm not "
+            'happy that I cannot return this product.',
+ 'is_vp': 1,
+ 'name': 'Hmb',
+ 'review_date': '2016-12-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2IHHHZQTDKUZV?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': "I'm not happy that I cannot return this product",
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "It's very cheap made out of plastic, where hose connects to the "
+            'shower pipe comming out of the wall.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2016-12-18',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R101RKOBXHO94V?ASIN=B01LZ6F4HN',
+ 'score': '3',
+ 'title': 'Three Stars',
+ 'variation': None}
+2017-11-29 14:40:51 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Love this shower head, the water pressure is just as advertised '
+            'and I noticed it saves on hot water, shower time is so  much more '
+            'refreshing',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-08-18',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RELWO7TECBTLW?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Best Shower Ever',
+ 'variation': None}
+2017-11-29 14:40:52 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/product-reviews/B00UA3MJL0/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews)
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Very solid trampoline. Putting it together took approximately 2 '
+            'hours with 2 adults and two kids. The net is what takes the '
+            "longest but that's to be expected when putting together any "
+            'trampoline. Net and zipper are sturdy. We have been using since '
+            'June with no problems. The cover that was given with it does not '
+            'fit with the net on, this would be an improvement for them to '
+            'consider. Make the cover fit within the net. It would be nice to '
+            'keep bird droppings and sap off of it when not in use. Nice and '
+            'big, and just as bouncy as our last trampoline.',
+ 'is_vp': 1,
+ 'name': 'Joan Jett',
+ 'review_date': '2016-08-10',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1TGP3O9IT6DN6?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Net and zipper and sturdy. We have been using since June with no '
+          '...',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': "Excellent quality trampoline and excellent customer service. I'm "
+            'very glad that I purchased this but wish it had came with stakes. '
+            'It does come with a cover. The one sold at a mass store comes '
+            "with stakes but they aren't sold separately. We have a lot of "
+            'wind so I bought 3 boxes on Amazon.',
+ 'is_vp': 1,
+ 'name': 'ConReviews',
+ 'review_date': '2017-04-30',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RSS75ZARZ9FTJ?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Excellent purchase',
+ 'variation': None}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Kids love this!! I was a bit worried about putting it together '
+            "but followed the instructions carefully and it wasn't bad at all. "
+            'Took 2 people a couple of hours. We are having so much fun and '
+            'what great exercise too!',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2016-05-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R16SZHE1ZM9S0B?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Kids love this!',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Great fun for my family!! Also the customer service was amazing. '
+            'A huge wind storm flipped the trampoline and a few of the bars '
+            'were damaged, but I called about replacement parts and had no '
+            'issues.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2016-04-27',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R10AGQ43HK0B7A?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great fun for my family',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Took a while to get the netting secured, but has been amazing '
+            'since then. Highly recommend for the internal net and strength of '
+            'product.',
+ 'is_vp': 1,
+ 'name': 'madgamer',
+ 'review_date': '2016-09-30',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R33P49V2F4CG79?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Very sturdy and worth it',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'expensive that got my kids out from being in front of a screen '
+            'all day. Pay attention to the weight limit loads many are only '
+            '200 lb.  This one was 300 I believe.  I will update for longevity '
+            'later.',
+ 'is_vp': 1,
+ 'name': 'LifeDontWasteIt',
+ 'review_date': '2017-10-09',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R24TNBRWZT6B5K?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'Somewhat expensive but was great for us.',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'We bought this for our 12 year old daughter - she absolutely '
+            'loves it!  So far we have only had it a few weeks, but she uses '
+            'it all the time and it seems very sturdy and well made.  Good for '
+            'the price.',
+ 'is_vp': 1,
+ 'name': 'LDC',
+ 'review_date': '2017-08-22',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R26C24F59NOUSO?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Well worth it',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Bought this for my daughters 7 yo and 10 yo.  They love it.They '
+            'go in it all of the time with their firends.  My wife has been in '
+            'it with the girls and it held up fine.  I managed to put it '
+            'together in a few hours with out any problems and with the girls '
+            'helping.',
+ 'is_vp': 1,
+ 'name': 'Sic_Rob',
+ 'review_date': '2014-07-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1PR0C1511NRH2?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': "couldn't be happier",
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Enjoyed the trampoline all summer (2016). Took the trampoline '
+            'down over the winter leaving the frame outside. When setting up '
+            'in the spring of 2017, noticed that two poles had bent slightly '
+            'from last summer. Contacted Max Lead for service, and they '
+            'responded immediately, sent new parts out under the warranty, and '
+            'followed up to make sure the parts were correct and were '
+            'installed. Excellent customer service.',
+ 'is_vp': 1,
+ 'name': 'liz',
+ 'review_date': '2017-04-25',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3AMUK5Z2MHDP4?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Happy with Trampoline and Follow-on Service',
+ 'variation': None}
+2017-11-29 14:40:52 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'So far, so good.  This trampoline appears to be very sturdy which '
+            'is why I chose to spend a little more for this brand.  The legs '
+            'are reinforced and the net is more than functional.  My daughter '
+            'loves it.  My only regret is getting a 12ft instead of the 15ft '
+            'model.',
+ 'is_vp': 1,
+ 'name': 'K. Simmons',
+ 'review_date': '2017-06-14',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1VZ9OROCGY7QX?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Sturdy',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=2&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Do not buy this shower head! As soon as I installed this in my '
+            'shower and went to use it the shower head exploded apart.',
+ 'is_vp': 1,
+ 'name': 'Edward Jackson',
+ 'review_date': '2017-11-02',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R12MV2LROU18QA?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'Do not buy',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'I REALLY wanted to like this. I read the reviews and hoped it '
+            'would help with the water here. After a few days my skin was '
+            'SUPER dry and itchy. I figured, I can tolerate anything for a few '
+            'weeks. I mean, heck, I stayed with the same guy and his horrible '
+            "family for 18 years so this couldn't be THAT bad. Well, it's "
+            'going back. No 18 years for this one. I have the same issue that '
+            'others have, the water is not very warm by the time it gets to '
+            'the waist. I live in the south and our water temp goes from warm '
+            "to melting point so, while I don't mind a cold shower now and "
+            'again, I prefer to choose when I take it. The shower stream '
+            'pretty much points to the back of my average size shower, which '
+            "is about 5'. I find this mildly annoying.  The buttons can be "
+            'somewhat difficult to switch at times and the amount of air that '
+            'comes out is incredible. I constantly am fighting my shower '
+            'curtain liner, which has weights on the bottom. Definitely not '
+            'the type of workout I would like to have in the shower. Returning '
+            'it and going back to searching for the perfect shower filter.',
+ 'is_vp': 1,
+ 'name': 'Holly Blake',
+ 'review_date': '2016-11-02',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RG53XXS4R2TZA?ASIN=B01LZ6F4HN',
+ 'score': '2',
+ 'title': 'Not a lot of love for this item.',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'It shoots twice as far as my old head but the streams are so thin '
+            "that it's too soft on the skin. I wanted something that would hit "
+            'my skin hard.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-01-05',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R20V4WY6KN5CUH?ASIN=B01LZ6F4HN',
+ 'score': '3',
+ 'title': 'Too soft',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'The 3 different spray functions do not work !! When you click the '
+            "button it doesn't change.. very cheap.",
+ 'is_vp': 1,
+ 'name': 'jamie',
+ 'review_date': '2017-10-21',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2P7CDKV7P1H4C?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'Cheap',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'The water feels so soft on our skin its awesome',
+ 'is_vp': 1,
+ 'name': 'Brian V.',
+ 'review_date': '2017-05-17',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R9LT45MYCBJB1?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Want more pressure . It works play. Hair seems softer',
+ 'is_vp': 1,
+ 'name': 'Olivia Camron',
+ 'review_date': '2017-11-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1VT7BGI2FGFT4?ASIN=B01LZ6F4HN',
+ 'score': '4',
+ 'title': 'Working fine',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "the first one i received wouldn't change spray modes.  i wrote "
+            'the company and after trying a few things they told to, it still '
+            "didn't work.  the company sent me a replacement immediately and "
+            'it works perfectly.  the shower head is great in that it softens '
+            'the water in my shower (we have hard water) and it feels good on '
+            'my skin.  I think the product along with the amazing customer '
+            'service, earns five stars.',
+ 'is_vp': 1,
+ 'name': 'jimmy pal.',
+ 'review_date': '2017-08-17',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1T1NK6FR7ZKE1?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'great customer service.  would recommend',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'This is one of the best shower heads I have ever had and I have '
+            'had several in the of my old life. I have lowwater pressure and '
+            'this does feel like several times stronger then the one I had.  '
+            '(the one I had I paid well over $40 for)',
+ 'is_vp': 1,
+ 'name': 'Dave Hartigan',
+ 'review_date': '2017-03-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R20J387H9GYWND?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Great shower head',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'I had originally given this 5 stars because of the pressure of '
+            'the shower head, but within a short period the head blew off. It '
+            'literally struck me when I was getting in to the shower. I tried '
+            'to reattach it myself but after a week of failing I just '
+            'contacted the seller to request help. It has been a while now and '
+            'still no word from them. If you are interested, get one from a '
+            'different seller and use an epoxy to ensure that the same never '
+            'happens to you. Just give the very end of the shower head a '
+            'quarter turn then apply a small layer of the glue.',
+ 'is_vp': 1,
+ 'name': 'Kenneth Behl III',
+ 'review_date': '2017-09-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2ITR8DV29L8GG?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'Absolute disappointment',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'In two weeks of normal use, the holes clogged from the hard water '
+            "we bought this to soften and can't be cleaned easily at all "
+            '(turning water jets into tiny needles that actually hurt, and '
+            'jets spray off to all sides, including in your eyes with NO '
+            'BUILT-IN SHUTOFF SWITCH), the center spray setting option can no '
+            "longer be selected, and it won't fit in shower spray holder "
+            'without an additional piece being bought.',
+ 'is_vp': 1,
+ 'name': 'RB',
+ 'review_date': '2017-06-05',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2D4B1DOC9XBC9?ASIN=B01LZ6F4HN',
+ 'score': '2',
+ 'title': 'Verified purchase, by a family member',
+ 'variation': None}
+2017-11-29 14:40:53 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=2&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'We have been pleased with the trampoline we bought last '
+            'Christmas.  It is substantially constructed and the kids have had '
+            'many hours of enjoyment on it. In addition to the trampoline '
+            'quality, the customer support has been responsive and attentive '
+            'to our messages. We recently received damage due to a fallen tree '
+            'and they helped us through the process of obtaining replacement '
+            'parts so our kids can get back to enjoying again.',
+ 'is_vp': 1,
+ 'name': 'Bueller',
+ 'review_date': '2017-02-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R23MU0NE5PZA4E?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Happy with Product and Service',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'This comes in three numbered boxes that are very easy to move to '
+            'your build site.  Every thing was in the boxes and no external '
+            'tools needed.  My two grandkids and I put it together in about 2 '
+            '1/2 hours.  It was a good time and grandpa had a ball.  Very well '
+            'made but you do have to think a little in reading the '
+            'directions.  They appear to be translated into English from '
+            'Chinese and could use a little work.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-01-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1R5Y30H4M8TMW?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'A grandpa experiance',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Very easy to put together!  Loved that.',
+ 'is_vp': 1,
+ 'name': 'erin',
+ 'review_date': '2016-05-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3BNND8LBRU6L9?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Excellent; was able to put it together by myself in about two '
+            'hours. Nice and sturdy.',
+ 'is_vp': 1,
+ 'name': 'jgb',
+ 'review_date': '2017-03-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RAFXOUHKP575F?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Easy to put together, directions were clear.  Kids love it and '
+            'say they like it better than their older rectangular trampoline.  '
+            'Just as bouncy as trampolines that cost 2-3x as much.  The mat '
+            'had a small hole in it upon arrival (the hole was the size of a '
+            "pencil eraser), but so far I haven't seen the hole widen.  I've "
+            'owned the trampoline since October 2016, it has been moved '
+            'several times due to lawn mowing with no problems/concerns.',
+ 'is_vp': 1,
+ 'name': 'B. Brewer',
+ 'review_date': '2016-12-05',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R4KCU8WZNGD51?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'Better than others',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': '1 year of service with usage from 2 kids nearly every week.  '
+            'Still going strong.  Construction is better than average found in '
+            'brick and mortar stores.  Net is tedious to lace together but it '
+            'is worth it for a 4 year old and a two year old that go crazy and '
+            'slam into the borders.',
+ 'is_vp': 1,
+ 'name': 'GhostVader',
+ 'review_date': '2017-10-16',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R32X4UEHISN5DK?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'Construction is better than average found in brick and mortar '
+          'stores',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Bought this a Santa gift for kids for Christmas. It has worked '
+            'well, sturdy & kids love it.',
+ 'is_vp': 1,
+ 'name': 'Tiffany Warriner',
+ 'review_date': '2017-09-25',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R38LX1XX5S0EB4?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great trampoline',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'So far, so good (one month after purchase)! The kids love it!',
+ 'is_vp': 1,
+ 'name': 'K. Hawk',
+ 'review_date': '2017-10-22',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R11QSC809Z6S2N?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Kids wil love it!',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Excellent purchase, took some time to put together but so far no '
+            'problems, love that it is rated for more weight, the grand kids '
+            'love it when an adult joins them',
+ 'is_vp': 1,
+ 'name': 'RW',
+ 'review_date': '2016-03-01',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1EAU8D57CX2M2?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Happy with this purchase',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Is being over a year and its held up really good.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-05-21',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1NSU87GT13DGC?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': '... being over a year and its held up really good.',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:54 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=3&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'When I first bought this product everything came together in a '
+            'nice package. There was plenty of plumbers tape to prevent leaks '
+            'and it was easy to install. For a few weeks it worked almost '
+            'flawlessly. However, I noticed that the pressure started to '
+            'increase to the point where it hurt being under the sprayer head. '
+            'What was happening was it was getting clogged, which the '
+            'instructions said to rub your fingers across the openings to '
+            'loosen any debris that may come through. Where I stay at there is '
+            'little if not no hard water. What was clogged in it was the brown '
+            'filter tablets in the handle. Now that I can see these little red '
+            'dots inside of it I took off the sprayer head, clean out the '
+            'debris, and now not only does the sprayer head leak, is spraying '
+            "erratically. If you're going to buy this product, by at least two "
+            'just in case the first one breaks, or should I say when it '
+            'breaks.',
+ 'is_vp': 1,
+ 'name': 'johnathan',
+ 'review_date': '2017-11-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RG9CXI86EEF93?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': '... first bought this product everything came together in a nice '
+          'package. There was plenty of plumbers tape to ...',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'The piece holding the shower head would not allow us to point the '
+            'head downward enough to stay out of the water to lather up so you '
+            'had to point of off to the side. The shower head hit both my wife '
+            'and I in the face. Also the holes continuously plugged up. The '
+            'instructions said you have to rub your finger of the shower head '
+            'to unclog the holes but this happened all the time which caused '
+            'the water to spray literally everywhere. The water also came out '
+            'at such a fine mist by the time it hit your body it was not hot '
+            'but if you adjusted the water temp then when you put your head or '
+            'face in the water it was way too hot. Very poor product as far as '
+            "I'm concerned. Unfortunately it is now too late to return it for "
+            'a refund. Save your money folks.',
+ 'is_vp': 1,
+ 'name': 'Mitch H.',
+ 'review_date': '2017-03-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RH1HS9539F92Z?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'Poor product',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Before I posted this, I had received an email from the seller '
+            'asking me to contact them with any concerns. I emailed them these '
+            'concerns on 1/22, but did not receive any response. We ordered '
+            'the complete set - head + hose.',
+ 'is_vp': 1,
+ 'name': 'S. Sigman',
+ 'review_date': '2017-02-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3FM36YZ7NQ3Q8?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'not worth the frustration',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Read the reviews but I seen many of them people received the item '
+            'at greatly reduced price in trade for their review. It was great '
+            'at first but after 3 weeks started spraying in all sorts of '
+            'directions. Very cheaply made, the switch to change the spray '
+            "doesn't even work now.",
+ 'is_vp': 1,
+ 'name': 'Aaron',
+ 'review_date': '2016-12-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R12VLM91DN88LN?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'Do not waste your time or money $$$',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Just as described. Really good pressure with close to half the '
+            'water. Filters chlorine and the spray is softer than standard '
+            'shower heads.',
+ 'is_vp': 1,
+ 'name': 'Michael B',
+ 'review_date': '2017-08-10',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R35NGFGLIFX7BH?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Worth it',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Everything came great and in prefect working condition. Install '
+            'was very easy and it feels amazing.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-08-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2EOYR805KB100?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'love this shower head. the only problem is that the brown balls '
+            'break apart and clog the shower head. so I removed them to fix it',
+ 'is_vp': 1,
+ 'name': 'griffith671',
+ 'review_date': '2017-09-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R200ZGBSR3VNY5?ASIN=B01LZ6F4HN',
+ 'score': '4',
+ 'title': 'love this shower head',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'When I first installed the product it was great!  It was working '
+            'just as it was supposed to and the water made my skin and hair '
+            'feel like silk.  That said, the things are supposed to last a '
+            'year before needing replaced.  It has been only 3 weeks and '
+            'already some of them are breaking apart, clogging the head, and '
+            'even the holes in the head are rusting.  We do have very hard '
+            'water here in Phoenix, but we also have a water softener.  '
+            'Because of the clogging and rusting just turning on the shower '
+            'was spraying over the curtain and soaking the walls and floor of '
+            'the bathroom!  I came home to find my roommate purchased a '
+            'different shower head and threw away the Hestia.  It was a wise '
+            'decision. :/',
+ 'is_vp': 1,
+ 'name': 'Justin',
+ 'review_date': '2017-02-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3CJBV4B6J8JOO?ASIN=B01LZ6F4HN',
+ 'score': '2',
+ 'title': 'When I first installed the product it was great! It was working '
+          'just as it was supposed ...',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Bought this shower head for added pressure also to use less water '
+            'and filter the water. Installed fairly easy at first I thought it '
+            "didn't fit on the hanger thing it came with but I had the hose "
+            'backwards once corrected it worked fine. It does leak a tad but I '
+            "think that's more my fault. I'm getting a second for the guest "
+            'bathroom.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-09-05',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R38GSTNBAUT3F9?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Awesome shower head',
+ 'variation': None}
+2017-11-29 14:40:54 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Love love love this shower head. I bought another for another '
+            'bathroom.',
+ 'is_vp': 1,
+ 'name': 'djchesapeake',
+ 'review_date': '2017-09-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1X6UJQA6ZA5LT?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Best showerhead',
+ 'variation': None}
+2017-11-29 14:40:55 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=3&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Built very well!!!!! Thanks',
+ 'is_vp': 1,
+ 'name': 'Chazman Charlie',
+ 'review_date': '2016-05-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1HHWYW44ED58F?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Jump Jump Jump',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'My kids (ages 4-12) have been enjoying this trampoline for over a '
+            'year now.  It is very sturdy and is holding up great!  Our kids '
+            'and their friends use this every single day when the weather '
+            'permits.  We have had a few issues with the net but customer '
+            'service has been helpful and responsive in resolving our '
+            'concerns.',
+ 'is_vp': 1,
+ 'name': 'Melissa',
+ 'review_date': '2017-04-13',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1KUK7OZQTIF0I?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'It is very sturdy and is holding up great',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Excellent product. Easy to assemble. Holds 3-4 "tween" jumpers '
+            'with no problem. Very sturdy! We had a wind storm which caught '
+            'the net and bent a pole badly. I contacted Brandline customer '
+            'service and they immediately sent me replacement parts. Super '
+            'quick, very nice people! Highly recommend.',
+ 'is_vp': 1,
+ 'name': 'Aimee E. G. Rodgers',
+ 'review_date': '2017-03-21',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2J3KN1Z0GGYHO?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Highly recommend!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Definitely recommend buying from Brandline!  Superb customer '
+            'service and my son and his friends LOVE the trampoline.  You can '
+            "tell it's built well!!  Shipping was speedy as well!",
+ 'is_vp': 1,
+ 'name': 'reynollo',
+ 'review_date': '2017-04-19',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RXKTI61QGVI4W?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Highly recommend!!!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': '15ft tramp was packaged well. Came in 3 boxes. Was missing 1 '
+            'part. They remedied the situation within 24 hours and shipped the '
+            'part out very quickly. Very nice trampoline, kids loved it from '
+            '1-14. Good bounce. Easy to assemble, took my husband and myself a '
+            'few hours. We will see how it holds up to Florida weather.',
+ 'is_vp': 1,
+ 'name': 'Heather H.',
+ 'review_date': '2016-12-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2JKYYLTUNWR3W?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Kids love it!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Was delivered quickly.  One of the boxes was damaged but all of '
+            'the parts remained inside (thank goodness).  My husband and I put '
+            'this together in about an hour (except for the safety net which '
+            'took a little longer).  VERY easy assembly.  Kids loved it!',
+ 'is_vp': 1,
+ 'name': 'M. Gros',
+ 'review_date': '2015-12-27',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R35QA6VIQYDBWQ?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great purchase',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'This is great.  Only problem is the net keeps snapping off if you '
+            'put any pressure on it.',
+ 'is_vp': 1,
+ 'name': 'oliver',
+ 'review_date': '2016-02-22',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3E0YUYN57KJ2J?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'This is great. Only problem is the net keeps snapping off ...',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Bought for my granddaughter Easy to assemble Very well made, '
+            'excellent customer service',
+ 'is_vp': 1,
+ 'name': 'Rich-1',
+ 'review_date': '2016-03-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R35WNA6HTUXYBD?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great Choice',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'The net attachment to the jumping mat could be engineered better '
+            'to make it easier to connect the two. Cut the cord that you need '
+            'to stitch the net to the jumping mat at least in half to make the '
+            'process easier. Overall, quality seems ok, but we have only had '
+            'the trampoline for a little over a month.',
+ 'is_vp': 1,
+ 'name': 'RBC',
+ 'review_date': '2016-09-25',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1LTIGCJCNIZKQ?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'We are having fun jumping.',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': "We bought the 15' trampoline for Christmas and shortly thereafter "
+            'some very strong winds bent a few of the poles. We contacted the '
+            "seller and they offered to replace them immediately. Can't wait "
+            "to get them because the kids are missing their trampoline! It's a "
+            'great product!',
+ 'is_vp': 1,
+ 'name': 'Kym in Colorado!',
+ 'review_date': '2017-02-06',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R105NVDA5AEZXI?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': "It's a great product!",
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:56 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=4&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "I've bought 4 already. One was to travel on the road for business "
+            'trips and two were placed in our bathrooms. I loved it so much I '
+            'gift one to my brother.',
+ 'is_vp': 1,
+ 'name': 'kim',
+ 'review_date': '2017-01-18',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1NBFNEWS1J33I?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'I loved it so much I gift one to my brother',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'It has the powerful stream that they mention. The price is right. '
+            'Let see with the time if the virtues are real.',
+ 'is_vp': 1,
+ 'name': 'oscar hdz',
+ 'review_date': '2017-05-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R14BKYBF2RM4W6?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'I like it.',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Best shower head I have used. has increased the shower pressure '
+            'dramatically. will purchase another for downstairs',
+ 'is_vp': 1,
+ 'name': 'JB',
+ 'review_date': '2017-05-09',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R19AW7UCGZPVS3?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Very Good',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "I LOVE THIS shower filter. Couldn't believe of the affordable "
+            'cost for a great filtered hand-held shower head. My housemates '
+            'loved it too. My hair is softer using it. Thank you!',
+ 'is_vp': 1,
+ 'name': 'Raven C. Sequoia',
+ 'review_date': '2017-01-11',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1C7A5MSKN0KS1?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'WORTH IT!',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'This is wonderful shower head.I am giving them for christmas '
+            'presents to family',
+ 'is_vp': 1,
+ 'name': 'stan',
+ 'review_date': '2016-12-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3LKSUII1RZPGR?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'GREAT BUY!!!',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Great shower head! Bought 4 more to give as gifts. Everyone I '
+            'have it to LOVES it! The only thing it needs is a shut-off valve '
+            'which you can purchase on Amazon for $8.',
+ 'is_vp': 1,
+ 'name': 'Hope E. Lockhart',
+ 'review_date': '2016-12-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R14OTF7GLSJSYB?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'GREAT BUY',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'My girlfriend got me this as a Christmas gift because I hated my '
+            'old shower head. The settings of this broke within the first two '
+            'or three weeks, which made the stream very painful to be under. '
+            'Instead of getting a new shower head then, I just decided to suck '
+            'it up and hoped that it would go back to a gentle for. Anyways, '
+            'today while I was in the shower, it broke at the seams and I can '
+            "not fix it. This thing is trash. Don't waste your money.",
+ 'is_vp': 1,
+ 'name': 'stinky_toes',
+ 'review_date': '2017-01-25',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3DGT2B5B7MBX4?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': '... got me this as a Christmas gift because I hated my old shower '
+          'head',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Good products for the price. Delivered as mentionet. Happy whit '
+            'all',
+ 'is_vp': 1,
+ 'name': 'martin',
+ 'review_date': '2017-08-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RD0GA7DIPW21S?ASIN=B01LZ6F4HN',
+ 'score': '4',
+ 'title': 'Four Stars',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Works well, just cheaply made and leaks a little.',
+ 'is_vp': 1,
+ 'name': 'Rick',
+ 'review_date': '2017-09-10',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RS0D43KML7JW6?ASIN=B01LZ6F4HN',
+ 'score': '4',
+ 'title': 'Four Stars',
+ 'variation': None}
+2017-11-29 14:40:56 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'It was great for a month.  Then in the midst of a shower the '
+            'plastic split causing water to show from everywhere.',
+ 'is_vp': 1,
+ 'name': 'teresa howard',
+ 'review_date': '2017-03-14',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2O2YK9TH56CUE?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'Breaks in 6 weeks of use',
+ 'variation': None}
+2017-11-29 14:40:57 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=4&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'This is a great trampoline, but I was disappointed in the safety '
+            'net. The very long cord has to be woven through small holes '
+            'around the entire net and the cord is secured by a hand tied '
+            'knot.  I was disappointed that there was no hardware holding the '
+            'cord in place, just a tied knot.  My net tore almost '
+            'immediately.  Brandline, however, provided excellent customer '
+            'service.  They responded immediately to my concerns, the issues '
+            'with the net were addressed and I was quickly sent a new safety '
+            'net.  I could not have been happier with the response I received '
+            'from Brandline.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-01-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RDDO79G8Q04YT?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'Great trampoline, difficult safety net',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Ordered in 2016 and lost 2 parts while moving in 2017, customer '
+            'service was awesome! They shipped the replacement parts free of '
+            'charge in a matter of days! Trampoline is very durable and easy '
+            'to assemble and disassemble. My children LOVE IT!',
+ 'is_vp': 1,
+ 'name': 'Liz Keller',
+ 'review_date': '2017-10-04',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RZ10BMBPREEJD?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Wonderful customer service',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': "Trampoline is a bunch of fun.  Making great memories and it's "
+            'great exercise.  Not hard to put together at all. Just need to '
+            'follow the instructions closely.  I did receive a damaged mat and '
+            'Zupapa responsded promptly and replaced the mat no questions '
+            'asked.  Definitely satisfied.',
+ 'is_vp': 1,
+ 'name': 'busymom',
+ 'review_date': '2016-08-25',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RDSYWFY0YFFIR?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great item',
+ 'variation': None}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'We love our 15 ft Zupapa trampoline.  It arrived quickly and was '
+            'packaged well. It went up in a couple of hours and the kids, 6 & '
+            '9, love it!!!  We had a small problem with one piece, but the '
+            'folks at Brandline were extremely helpful!  W. Shane',
+ 'is_vp': 1,
+ 'name': 'Wendi Shane',
+ 'review_date': '2016-12-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2B26MUYNYFOY3?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great trampoline, great service!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Bought this trampoline last summer for my children. Assembly '
+            'instructions were easy to understand and two adults were able to '
+            'assemble in a few hours.  Very sturdy and my kids have enjoyed '
+            'many hours jumping!',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-03-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RQDJ4D7A4KNO9?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Assembly instructions were easy to understand and two adults were '
+          'able to assemble ...',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Well constructed and fun for the whole family.  Took a few hours '
+            'to build, make sure the spot you build it is fairly flat.',
+ 'is_vp': 1,
+ 'name': 'KW',
+ 'review_date': '2017-04-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2OYG1773VDEGB?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Kids love it!',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'My kids have been enjoying this trampoline for almost a year now. '
+            'Still works and looks great! Customer service has been helpful '
+            'and responsive resolving a couple minor concerns along the way. '
+            'Would definitely recommend.',
+ 'is_vp': 1,
+ 'name': 'Tom Simons',
+ 'review_date': '2017-04-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R141AQH423IR14?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great product. Great seller.',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Kids like it.  Improperly installed netting first time through '
+            'and had to raise the net support poles to improve tension.  Not '
+            "sure if it's operator error or poorly written instructions.",
+ 'is_vp': 1,
+ 'name': 'Molly Unterseher',
+ 'review_date': '2016-01-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R14EH54ZKHV7V4?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'Great product',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': "Fantastic product and outstanding service.  I can't say enough "
+            'good things about the entire experience.  Eda, thank you, thank '
+            'you, thank you.  You are a fantastic representative of your '
+            'company.',
+ 'is_vp': 1,
+ 'name': 'allen363',
+ 'review_date': '2017-04-28',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2B15THRC770SO?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'BEST PRODUCT & BEST SERVICE!!!',
+ 'variation': None}
+2017-11-29 14:40:57 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B01LZ6F4HN',
+ 'content': 'Package came quickly.  Everything felt high quality.  Nice that '
+            "you don't have to have tools although a rubber mallet helped.  "
+            'Easy and quick to put together.  Loved that it came with a '
+            'ladder.',
+ 'is_vp': 1,
+ 'name': 'Emily Smith',
+ 'review_date': '2017-05-11',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2J24MBKAYQJHT?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': "Nice that you don't have to have tools although a ...",
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=6&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=5&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Very easy to set up and works well beyond expectation...we have a '
+            'water pressure problem and with this shower head problem '
+            'solved...love it....will but another for second bath',
+ 'is_vp': 1,
+ 'name': 'Cindy Struble',
+ 'review_date': '2017-09-04',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3UFO8WC2L4TR0?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Well worth it',
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'I love that you can add the filter to change the amount of '
+            'pressure. What a difference from our old shower head. I would '
+            'highly recommend this product. Love that it came with all of the '
+            'pieces and parts to quickly assemble and install at a great '
+            'price.',
+ 'is_vp': 1,
+ 'name': 'Leslie S.',
+ 'review_date': '2017-09-13',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R6H3J6J2PFEK5?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Great versatile shower head with great pressure.',
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Was easy to install and works great!!!',
+ 'is_vp': 1,
+ 'name': 'Duane Guisti',
+ 'review_date': '2017-11-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2THFM43Y8US6G?ASIN=B01LZ6F4HN',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Did not increase water pressure and broke at point where it '
+            'attaches to mount within weeks.',
+ 'is_vp': 1,
+ 'name': 'Deborah E.',
+ 'review_date': '2017-10-27',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1ICS7QO67OZ9A?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'One Star',
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'We got two of them.  Both have come apart with shower running '
+            'multiple times.  Once the cap and plate hit me in the forehead '
+            'hard enough to hurt.  I reassembled them after finding all the '
+            'little parts on the adjustable spray models and on one of them '
+            'the plastic ring holding the whole assembly to the stem has '
+            'actually ripped open from the water pressure. These are cheap '
+            "unreliable and you'll spend more time fixing than using. DO NOT "
+            'BUY',
+ 'is_vp': 1,
+ 'name': 'David Ross II',
+ 'review_date': '2017-08-16',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RKLK9H4WKI6MJ?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'We got two of them. Both have come apart ...',
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Box smashed, look like they drop kicked it across the warehouse '
+            'before sending it with my other 2 items which were perfect.  Also '
+            'very cheaply made, even the plumbers tape was junk.',
+ 'is_vp': 1,
+ 'name': 'rono gontero',
+ 'review_date': '2017-08-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R14CLN4ME9OTQ?ASIN=B01LZ6F4HN',
+ 'score': '1',
+ 'title': 'Cheap product, damaged packaging',
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Hestia-3-Setting-Pressure-Shower-Filter/product-reviews/B01LZ6F4HN?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Can only hold in hand, unless you want a fine mist to hit you if '
+            'you stand at the very back of shower.',
+ 'is_vp': 1,
+ 'name': 'Jennifer S.',
+ 'review_date': '2017-09-02',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R17CAMG1XTNWP3?ASIN=B01LZ6F4HN',
+ 'score': '2',
+ 'title': 'unless you want a fine mist to hit you if you stand at the ...',
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=5&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'My daughter and granddaughter enjoy this trampoline on a daily '
+            'basis. Made it through 1 winter in Virginia so far',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-04-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R36C69TKLVQRF6?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'My daughter and granddaughter enjoy this trampoline on a daily '
+          'basis',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'The purchase experience was amazing.  The product came to my '
+            'house quickly and this trampoline is a high quality product.  I '
+            'highly suggest purchasing this trampoline.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-04-30',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3AUXMUG4RQ2FK?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Wonderful Customer Experience!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Arrived faster than expected and assembled with ease in less than '
+            '2 hours by me and my husband. Very pleased with the Zupapa '
+            'trampoline.',
+ 'is_vp': 1,
+ 'name': 'Shelby L. Slawson',
+ 'review_date': '2017-05-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1H9PJ08SGXOO4?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Very pleased with the Zupapa trampoline',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "Great product! We've had it for about a month now. The kids love "
+            "it and I'm glad that it feels solid and functions as promised. "
+            'And the customer service has been personal and terrific!',
+ 'is_vp': 1,
+ 'name': 'Sam',
+ 'review_date': '2016-09-28',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1RXJHNQWFZ6BH?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': "Great product! We've had it for about a month ...",
+ 'variation': None}
+2017-11-29 14:40:58 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Fairly easy to set up and the amount of spring is perfect for '
+            'kids and adults.',
+ 'is_vp': 1,
+ 'name': 'Timothy A. Mosenthal',
+ 'review_date': '2016-06-04',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R30MDM0SIKMX3X?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'This has been awesome! No problems setting up!',
+ 'is_vp': 1,
+ 'name': 'Andrea Ellis',
+ 'review_date': '2017-04-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R19P0ZCYN71OD3?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Love it!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "We love our new trampoline! We bought the 12' model. Just under 2 "
+            'hours to set up.',
+ 'is_vp': 1,
+ 'name': 'G-HAK',
+ 'review_date': '2016-02-25',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RFLQEQSPX0EA0?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Came before Christmas. All the pieces were there. Only downfall '
+            'in order to use the cover you have to take the safety net off.',
+ 'is_vp': 1,
+ 'name': 'Scott Sherman',
+ 'review_date': '2017-01-16',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R18VE9UZ1HV3Q2?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Came before Christmas. All the pieces were there. ...',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Awesome! Worth every penny. Very safe and sturdy. My 6 and 4 year '
+            'old boys play in it every day! Our whole family loves it.',
+ 'is_vp': 1,
+ 'name': 'TD',
+ 'review_date': '2017-02-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1QR02NMSIWD5G?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Awesome! Worth every penny',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Four year old granddaughter loves it. Very easy to put assemble , '
+            'with hardest thing being the springs. Quality looks good.',
+ 'is_vp': 1,
+ 'name': 'royce w shafer',
+ 'review_date': '2016-12-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3BCUXCHS22Y4M?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Very easy to put assemble',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:59 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=6&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Great Customer Service!  We love our trampoline:)',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2016-02-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RB2EDQKSYNJRN?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Went together easily and is of great quality!  We are very '
+            'pleased',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-05-18',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2O8U04OL6G1RN?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'I like the quality look of this item.  So far it has been great!!',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-08-17',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3DJD2BDX6VJOH?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': '😁',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'The trampoline itself is great.  We looked for a sturdier one '
+            'that could carry more weight at one time because we have older '
+            'kids.  This one fits that bill nicely.  However, the safety net '
+            'has torn in 3 places in just 3 months--all at the top where the '
+            'buckles attach the net to the poles.  One of the selling points '
+            'of this trampoline was that the safety net attaches at the bottom '
+            "on the inside of the springs.  It does that nicely, but that's "
+            'not much help if the net tears at the top.  Inadequately sewn '
+            'buckles and the lack of a top seam are the culprits.  It needs a '
+            'much sturdier net.',
+ 'is_vp': 1,
+ 'name': 'Heather Gast',
+ 'review_date': '2016-09-12',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R19BYDRTYT25SL?ASIN=B00UA3MJL0',
+ 'score': '2',
+ 'title': 'The trampoline itself is great. We looked for a sturdier one that '
+          'could ...',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Great trampoline, sturdy and kids love it!',
+ 'is_vp': 1,
+ 'name': 'alisha woolery',
+ 'review_date': '2017-02-18',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2PC7JUR9PSYOS?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Substantial trampoline',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'My 10 year old son loves this trampoline. Well built and a nice '
+            'size.',
+ 'is_vp': 1,
+ 'name': 'Rhonda M. Geduldig',
+ 'review_date': '2015-04-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RCN7XHQQYJ2H6?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Well built and a nice size.',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Great quality we really love it !!!!',
+ 'is_vp': 1,
+ 'name': 'Davy M.',
+ 'review_date': '2016-08-27',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R5988ITH0R3RR?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'GOOD PRODUCT BUILT WELL COMPARED TO OTHERS.',
+ 'is_vp': 1,
+ 'name': 'DIANE',
+ 'review_date': '2016-07-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2YE08S7LUYS94?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'zupapa',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'The kids are having a great time. It was all that we hoped it '
+            'would be. Easily assembled. Hope it will last for years!',
+ 'is_vp': 1,
+ 'name': 'rbj',
+ 'review_date': '2015-06-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RSRCCVWB2LK9K?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'The kids are having a great time. It was all that we hoped it ...',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:40:59 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'My kidz love it',
+ 'is_vp': 1,
+ 'name': 'Tommie Johnson',
+ 'review_date': '2016-08-30',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R169S68T0ZKH7?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': '😘',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:00 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=7&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Excellent!!!',
+ 'is_vp': 1,
+ 'name': 'K.M.',
+ 'review_date': '2016-09-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2IXQJ28O10S4X?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Received on time and was easy to put together.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2015-12-04',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RCYPQ8GA1NWQ2?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Easy set up. Net broke second day😩',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2016-06-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3K8LRCBAKNDBL?ASIN=B00UA3MJL0',
+ 'score': '3',
+ 'title': 'Three Stars',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "I bought the 14' trampoline, which doesn't appear to be for sale "
+            "at the moment, hence why I'm not showing as a verified purchase. "
+            "Overall, it's a decent trampoline with good components (I've "
+            'owned a few over the years), but I have to knock off two stars '
+            'for the following reasons.',
+ 'is_vp': 1,
+ 'name': 'Landon',
+ 'review_date': '2016-06-06',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RJ33CYLT1SL1V?ASIN=B00UA3MJL0',
+ 'score': '3',
+ 'title': "Good quality components, but I probably wouldn't buy it again",
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'We bought our 15ft in time for Christmas 2016.  We put it '
+            'together in one night using mostly 1 person but had to have 2 for '
+            'certain steps in the directions.  It was really easy to put '
+            "together and we didn't have any issues.  The tool provided to "
+            'install the springs is awesome but it does take some strength to '
+            'put all 108 springs into place.  Our kids love it and the 15 ft '
+            'provides plenty of space for jumping.  We contacted customer '
+            'service for a minor issue and they were very quick to respond and '
+            'to offer great solutions.  We love this trampoline.',
+ 'is_vp': 1,
+ 'name': 'Dana',
+ 'review_date': '2017-03-30',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2SY7I1C5DMNE1?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': '15 Ft - Excellent buy',
+ 'variation': None}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "We have been happy with this purchase. It's been a huge hit with "
+            'our three kids (ages 8-11). It comes with protective netting, '
+            'which is a MUST for safety. We even had our 73-year-old aunt '
+            'jumping on it!',
+ 'is_vp': 1,
+ 'name': 'Mom of 3',
+ 'review_date': '2017-04-06',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2X9XXHUVQUOJD?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Fun for the whole family',
+ 'variation': None}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Our daughter wanted this as a present and we thought all of our '
+            'kids could use it.  We were a little skeptical as we were afraid '
+            'of injury or other problems.  So far everything has been good and '
+            'the kids are having a great time with it.  Small problem that we '
+            'have had is that after only a couple of weeks the zipper on the '
+            'safety screen broke.',
+ 'is_vp': 1,
+ 'name': 'Brian',
+ 'review_date': '2013-06-05',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1MKYGTSMGCR1M?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': "Lot's of Fun",
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'We absolutely LOVE our Zupapa Trampoline!!!!  It was purchased '
+            'for my 20 year old special needs son. I did a lot of research and '
+            'I found that  the Zupapa Trampoline was the best quality '
+            'Trampoline.  I love that it has a weight capacity of 375 pounds '
+            'so we can be on it together and I can join him in his world. I '
+            'also love the fact that everything is included. The entire '
+            'purchasing  process was amazing and the people at Zupapa '
+            'genuinely care about their customers I would defiantly recommend '
+            'this Trampoline to a friend. A very satisfied customer!!!',
+ 'is_vp': 1,
+ 'name': 'linda',
+ 'review_date': '2015-07-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2YOPJXO9ANRW2?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'We absolutely LOVE our Zupapa Trampoline',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Brilliant, good size, great fun.',
+ 'is_vp': 1,
+ 'name': 'anon',
+ 'review_date': '2015-12-12',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2WN0SQQJ8W04I?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:00 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Good quality.',
+ 'is_vp': 1,
+ 'name': 'Janice Carter',
+ 'review_date': '2016-11-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R19H9T6GR12W75?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:01 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=8&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:41:01 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'We just received our Zupapa. It took me about 2 hours to get it '
+            'all set up. I will say that the initial quality of the materials '
+            'is high, the packaging was very good and no parts were missing. '
+            'The unit also arrived on time. So far the kids are VERY happy. So '
+            'why the 3 star rating? Well two reasons.. First of all I suspect '
+            'that the netting and the spring cover and the plastic caps on the '
+            'poles are not going to last in the strong California sun. I have '
+            'had many kids toys (parachutes, plastic furniture, cars, '
+            'kitchens, etc.) made of similar material and the material has '
+            'disintegrated within 12 months sitting in our sunny back yard. I '
+            'will see how it goes and update my rating after 12 months. I said '
+            'two things... The other is that I tried to go to the [...] '
+            'website as well as the [...] website and sadly both sites were '
+            'down. I will of course keep trying. But to not have a website is '
+            'pretty disturbing. This trampoline is made in China and judging '
+            'by the grammar used in the instructions (which are very good '
+            'quality English instructions overall) I can definitely tell this '
+            'is not a European company. It may be TUV approved, but it is not '
+            'a European company. In fact the instructions, the marketing '
+            'materials, everything that comes with the unit, do not include '
+            'any info on the actual legal entity that makes this thing or '
+            'their address, telephone number, etc. There is no Warranty slip '
+            'included. So I am currently wondering who to call for support, '
+            'etc.',
+ 'is_vp': 1,
+ 'name': 'Palo Altan',
+ 'review_date': '2016-08-21',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3GEO0L0VMT4G9?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': 'the packaging was very good and no parts were missing',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:41:01 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Super fun, really sturdy & springy- I am a full-grown adult & can '
+            'jump with my 2 kids without feeling like doom is impending. '
+            'Pretty easy to put together.',
+ 'is_vp': 1,
+ 'name': 'amanda',
+ 'review_date': '2015-08-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2NBBM71DHYHFM?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Super fun, really sturdy & springy- I am a ...',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:41:01 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'I purchased the Zupapa Trampoline over the Skywalker Trampoline '
+            'because of the extra springs and how heavy duty the safety net '
+            'set up is. My neighbor purchased and set up the Skywalker two '
+            'weeks prior to me setting up the Zupapa. The difference in '
+            'quality between the Zupapa and the Skywalker is worth the extra '
+            'expense. I set up the trampoline by myself in less than two '
+            'hours, my neighbor and his wife took almost 4 hours to set up the '
+            'Skywalker. The Skywalker trampoline squeaks when jumped on, the '
+            'Zupapa is quiet. My only complaint with the trampoline is how '
+            'rope is used to tie the bottom of the safety net to the spring '
+            'loops to secure the net to the trampoline. I got rid of the rope '
+            'and used plastic zip ties which secured the net much better and '
+            'was less time consuming.',
+ 'is_vp': 1,
+ 'name': 'anicosia',
+ 'review_date': '2017-05-04',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3469PIEFNG3L2?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Zupapa over Skywalker',
+ 'variation': None}
+2017-11-29 14:41:01 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Great trampoline, easy setup, amazing company and customer '
+            'service!  I ordered this for Christmas for my kiddos....we were '
+            'able to get this setup in about 2 hours with two people, super '
+            'easy and no tools needed.  It is a solid trampoline.  '
+            'Unfortunately I was not smart enough to purchase any anchors and '
+            'Christmas day we had a huge wind storm which blew the trampoline '
+            'over my fence into my neighbors yard upside down.  All the upper '
+            'net poles were destroyed.  I contacted the company and they '
+            'promptly gave me a parts list to replace the bent pieces and even '
+            "replaced them for free.  I'm super impressed with the company and "
+            'the trampoline.  Do purchase anchors and do install them.  I live '
+            "just outside of Denver and we don't see a lot of wind storms so I "
+            "didn't even think to anchor it down.  We had it set up for less "
+            'than 24 hours before it took off like a sail.  :(',
+ 'is_vp': 1,
+ 'name': 'trimommy2009',
+ 'review_date': '2017-01-31',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1EFQV46JVNIWD?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Sturdy trampoline, amazing company',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:01 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': '**ONE YEAR EDIT**',
+ 'is_vp': 1,
+ 'name': 'countrymom',
+ 'review_date': '2016-10-10',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R39YYQPVW3K4G6?ASIN=B00UA3MJL0',
+ 'score': '2',
+ 'title': 'Very safe and the kids love it, just a few minor flaws.',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:01 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'This is a great trampoline!  We got this for our 2 boys(ages 7 '
+            'and 9) and they love it.  We could tell when assembling it, that '
+            'it was very well made and they did not skimp on safety '
+            'features(even down to plastic covers for bolts). We got this '
+            'particular one because it is one of the very few out there that '
+            'has a much bigger weight capacity.  We chose it so my husband  '
+            'could jump with them with out breaking it.  Due to its extra '
+            'springs it makes for a much more comfortable jump experience. I '
+            'jumped on it and found that it was not as abrupt as other basic '
+            'trampolines can be... meaning there is a more smooth give as you '
+            'jump, so it is gentler on your knees. The easy release of the '
+            'safety net at the top of the poles is very nice when you want to '
+            "drop it on an extremely windy day and don't want your trampoline "
+            'to  blow away. I think for the little extra money you are '
+            'spending on the Zupapa, it is WELL worth the money for the '
+            'quality of it. It is a much better trampoline than compared to '
+            "other cheaper brands I've seen out there. We've only had it since "
+            "the first part of January so I don't know how it will do over "
+            'time and under all day sun. I will try and leave a review later '
+            'on to let you know how it is holding up.',
+ 'is_vp': 1,
+ 'name': 'Tonda E.',
+ 'review_date': '2017-02-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1NXJ3WGR9CGKY?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Great Quality Trampoline!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:01 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "This trampoline is everything we hoped it would be!  It's great "
+            'looking, super sturdy and so much fun!!  I was also looking at '
+            'the Skywalker trampoline, but this is worth the extra money....we '
+            "know someone who has the Skywalker and the two don't even "
+            'compare!  There are more springs, a much higher weight limit and '
+            'the product comes with the ladder.',
+ 'is_vp': 1,
+ 'name': 'Nicole Lark',
+ 'review_date': '2016-07-11',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RMHEBN9O2SRJ6?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Definitely worth the extra money compared to the other brands!!!!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:02 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Bought this for my grandkids for Christmas (15 ft) paid the extra '
+            'money b/c I thought I was buying a quality European product. We '
+            "put it up this weekend only to discover it's made it China, the "
+            'zipper broke first try and no one can seem to answer the question '
+            'of how to install the cover. No contact information is given, '
+            'when you go through Amazon they redact the email address. '
+            'Trampoline is not as sturdy as the $200 they had before. '
+            'Extremely disappointed in quality especially for the price. Would '
+            "love to know why this isn't showing up as a verified purchase?",
+ 'is_vp': 1,
+ 'name': 'T. Henry',
+ 'review_date': '2017-01-16',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R89FIAAPYYO5S?ASIN=B00UA3MJL0',
+ 'score': '1',
+ 'title': "Made in China/don't waste your money",
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:02 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "The kids loved it immediately. There's enough room to do all "
+            'sorts of crazy acrobatics.',
+ 'is_vp': 1,
+ 'name': 'Lorax of Liberty',
+ 'review_date': '2016-07-16',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3V6DJJN7NTQ2E?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Kids loved it immediately',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:02 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'EDIT (moved from 5 to 3 stars): I hate the net enclosure, but '
+            'love the trampoline and customer service. This net enclosure has '
+            'been a thorn in my side. I have had 2 nets so far due to the '
+            'straps ripping off the net when kids run into it (either from '
+            'jumping/falling/or messing around). The first one I kept zip '
+            "tying because it's such a pain to replace the net. I finally "
+            'replaced it after it had ripped many times. The new one was up '
+            'for 1 week and has now torn from one of the straps that connect '
+            "it to the pole when a kid fall into it. I'll be zip tying it "
+            "again, but it's very frustrating.",
+ 'is_vp': 1,
+ 'name': 'jcallaway0316',
+ 'review_date': '2016-08-10',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R85MU97QP66DG?ASIN=B00UA3MJL0',
+ 'score': '3',
+ 'title': 'Great trampoline, but be aware there are 2 configurations of the '
+          'upper net',
+ 'variation': None}
+2017-11-29 14:41:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=9&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'We purchased this for our 11 year old son and he loves it! It '
+            "holds enough weight so he won't outgrow it quickly.  It took 2 "
+            'adults about 3 hours to assemble.',
+ 'is_vp': 1,
+ 'name': "Jacob's mom",
+ 'review_date': '2015-03-24',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3AZ7JUYRRPTUM?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'BOING! BOING! BOING!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "We've had this trampoline for over a month and are enjoying it so "
+            'much. The frame is sturdy and stable. The net being on the inside '
+            "makes it so much safer because feet won't get caught in the "
+            'springs!',
+ 'is_vp': 1,
+ 'name': 'Tanya',
+ 'review_date': '2017-09-11',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1QT7VD0EXIH49?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Jump! For your love.',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Very, very disappointed. Major cons: the frame feels and looks '
+            'like it is not very solid. The protective netting has to be '
+            'threaded through the trampoline hooks. The pad that covers the '
+            'springs is very cheap and provides very little protection. When '
+            'you jump it looks like a little foot could easily slip in between '
+            'the springs because the pad is poorly designed and of inferior '
+            'quality. The poles that hold the netting look like they will cave '
+            'in -- they are only attached by two clamp-like devices. The poles '
+            'lean in with every bounce. Also the netting is not as high as on '
+            'other trampolines and the poles are straight as opposed to curved '
+            'which makes it easier for someone to hit them. Also the plastic '
+            'caps on top of the poles will soon fall off and take the netting '
+            'with them. I am so disappointed that I fell for the positive '
+            'reviews -- they are obviously bogus. Also it is NOT German, it is '
+            'made in China. I sincerely doubt the TUV certification is true. I '
+            'wish I could get my money back! Absolutely feel like I have been '
+            'had and I am a pretty astute buyer, most of the time.',
+ 'is_vp': 1,
+ 'name': 'Kathleen H',
+ 'review_date': '2016-08-25',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R22PQKFWNLD46S?ASIN=B00UA3MJL0',
+ 'score': '1',
+ 'title': 'Read before buying please!',
+ 'variation': None}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'Love it. My kids are outside all the time and they enjoy jumping '
+            'on the trampoline with all their friends. Shipping was very fast, '
+            'and when there was a problem with the net that we were '
+            'disappointed with, the company took care of it with no hassle. '
+            'Installation of the trampoline was easy but the net was a royal '
+            'pain to set up. Regardless, this is a great product and the kids '
+            'are LOVING it. Great company with excellent customer service.',
+ 'is_vp': 1,
+ 'name': 'SproutMom',
+ 'review_date': '2015-06-01',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3Q04HIMKHBZ6X?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': "The kids don't want to come inside anymore!",
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'WHAT YOU NEED TO KNOW:',
+ 'is_vp': 1,
+ 'name': 'Misiu',
+ 'review_date': '2017-09-12',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3KOVX96XXDYEA?ASIN=B00UA3MJL0',
+ 'score': '3',
+ 'title': 'Worth the extra $$$??',
+ 'variation': None}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "Best buy I've made for my family! We got the 15' size and love "
+            'it! It is very sturdy and safe. Well worth the money. It has '
+            'exceptional bounce, much better than other brands of trampolines. '
+            'I would definitely buy it again. We had a storm soon after buying '
+            'it and it was damaged, but the company was really wonderful to '
+            'work with and went above and beyond to replace parts. Great '
+            'service and product!',
+ 'is_vp': 1,
+ 'name': 'Lisa',
+ 'review_date': '2016-08-01',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R8ZH0RDU643KQ?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Highly recommend!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'We purchased this trampoline after doing a ton of research.  I '
+            'have been trying for the longest time to contact someone from the '
+            'company that can help us replace the netting around the '
+            'trampoline which ripped off the poles and the safety blue mat '
+            'around the coils because it has weathered away.  I have received '
+            'no response.  Our trampoline was purchased not too long ago and i '
+            'am surprised at the issues we are having with it so soon.  If '
+            'anyone can refer me to a contact person for the company i would '
+            'very much appreciate that.  Thank you very much.',
+ 'is_vp': 1,
+ 'name': 'Michelle',
+ 'review_date': '2016-11-18',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R11CPUL3I50L6O?ASIN=B00UA3MJL0',
+ 'score': '3',
+ 'title': 'We purchased this trampoline after doing a ton of research ...',
+ 'variation': None}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'I purchased this for my son for his birthday and he absolutely '
+            'loves it. I love the 375 weight capacity as it is difficult in '
+            'finding a trampoline at a affordable price that can hold over 200 '
+            'pounds. I love that the zupapa trampoline included the '
+            'enclosure,  ladder and spring pad. As far as assembly goes I did '
+            'have to hire someone to assemble.  It came in 4 boxes and '
+            'appeared to be a intensive assembly so it was money well spent. '
+            'It is daily entertainment for my entire family and we have truly '
+            'enjoyed it!',
+ 'is_vp': 1,
+ 'name': 'Adrian',
+ 'review_date': '2014-05-22',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1HOH99CVXJY3H?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'My kids love this trampoline!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'I rarely write reviews, but after researching FOREVER for a '
+            'trampoline and reading pros and cons, I thought I would offer my '
+            'thoughts on previous reviews and this product.  First of all, we '
+            'love this trampoline and the higher weight capacity.  The 14 ft '
+            'size was perfect for our yard, and is plenty big for our 2 kids '
+            'and myself to jump at the same time.',
+ 'is_vp': 1,
+ 'name': 'Farleyville',
+ 'review_date': '2016-08-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R19FI7XU23E3RL?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Easy Assembly',
+ 'variation': 'Size: 14FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "EXCELLENT PRODUCT!!! EXCELLENT CUSTOMER SERVICE!!!  The 12' "
+            'Zupapa Trampoline is very well constructed. It carries a TUV '
+            'safety rating and has a weight rating of 330#. Most others are '
+            'rated at 200# or less. If parents want to get on it with their '
+            'children they can. Easy assembly with well made parts that fit '
+            'together without problems. I purchased this item in April for my '
+            'granddaughter and she loves it. Unfortunately in July a freak '
+            'storm dropped a tree on the tramp damaging the net, the frame, '
+            'and several poles. After contacting the company to order '
+            'replacement parts, their customer service office provided the '
+            'replacements at NO CHARGE. It is rare to find great service like '
+            'this in this day and age. Many THANKS to Direct Power and MaxLead '
+            'USA for such a GREAT PRODUCT and EXCELLENT SERVICE.',
+ 'is_vp': 1,
+ 'name': 'David A. Krack',
+ 'review_date': '2016-08-11',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2KJT5T7O3QY8M?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'GREAT TRAMPOLINE',
+ 'variation': None}
+2017-11-29 14:41:03 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=10&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'This is a super bouncy trampoline! Our previous trampoline was '
+            'cheap and had no bounce. Zupapa is making a great trampoline, I '
+            'love that it comes with a ladder- my younger kids can get on and '
+            'off without help. Their customer service is also amazing! After '
+            'using it for 5 months they are replacing the net and mat that got '
+            'ripped in a freak wind storm! They are also replacing several '
+            "poles that got bent, all for free! I thought we'd at least have "
+            'to pay for the shipping, but they are totally hooking us up! '
+            'Their warranty on all the parts in case of malfunctioning parts '
+            'is also fabulous! This trampoline is worth every penny',
+ 'is_vp': 1,
+ 'name': 'Sewing Mommy',
+ 'review_date': '2016-07-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RINVZNSSMGFGK?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Super bouncy/great customer service!',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'My kids love this trampoline!  We bought it for them last '
+            'Christmas.  Once set up (which my husband was easily able to do '
+            'himself), the kids have spent more time outside on the trampoline '
+            'and less time inside watching tv and on video games.  Mission '
+            'accomplished!',
+ 'is_vp': 1,
+ 'name': 'Colleen',
+ 'review_date': '2016-11-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R38P19XG1NIO8P?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'My kids love it!',
+ 'variation': None}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'My 11 and 10 year old set it up all on there own.  If you are '
+            'wondering about the bounce my son can land a double front, so it '
+            'is bouncy but I do not think triple front is do able unless you '
+            'have a double bouncer',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-05-14',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R10W5GSZ6G512P?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'My 11 and 10 year old set it up all ...',
+ 'variation': None}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'This is a great trampoline!  And they provide great customer '
+            'service!',
+ 'is_vp': 1,
+ 'name': 'lexi shoe',
+ 'review_date': '2016-09-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1J7ETGDDJYF20?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'This is a great trampoline! And they provide great customer service',
+ 'variation': None}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'VERY NICE!! I am glad I spent a little more than a cheap '
+            "trampoline at a big box store. I am almost 300lbs and 6'1 this "
+            'trampoline has plenty of room for flips and tricks. Super well '
+            'made. I put it to the test and performed like a $1200 trampoline.',
+ 'is_vp': 1,
+ 'name': 'Jacob Lafferty',
+ 'review_date': '2015-08-10',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2MYNG4CY0OW9Z?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'BEST DEAL ON A GREAT QUALITY TRAMPOLINE',
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': "I purchased this trampoline but can't get the ladder to go on.  "
+            "Several of us have done followed the instructions but can't get "
+            'to stay on.  Does anyone know how to make it work?',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-01-01',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3D019V70GYK5C?ASIN=B00UA3MJL0',
+ 'score': '4',
+ 'title': "I purchased this trampoline but can't get the ladder to ...",
+ 'variation': 'Size: 15FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'great customer service, quality made',
+ 'is_vp': 1,
+ 'name': 'Aaron',
+ 'review_date': '2016-03-01',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R39G8KNRPGW3WD?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:41:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Approved-Zupapa-Trampoline-Enclosure-accessories/product-reviews/B00UA3MJL0?pageNumber=11&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B00UA3MJL0',
+ 'content': 'My grandchildren are loving this trampoline!',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-05-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1KO8YB12JHN7A?ASIN=B00UA3MJL0',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': 'Size: 12FT'}
+2017-11-29 14:41:03 [scrapy.core.engine] INFO: Closing spider (finished)
+2017-11-29 14:41:03 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+{'downloader/request_bytes': 8190,
+ 'downloader/request_count': 18,
+ 'downloader/request_method_count/GET': 18,
+ 'downloader/response_bytes': 1127998,
+ 'downloader/response_count': 18,
+ 'downloader/response_status_count/200': 18,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2017, 11, 29, 6, 41, 3, 930264),
+ 'item_scraped_count': 167,
+ 'log_count/DEBUG': 186,
+ 'log_count/INFO': 7,
+ 'request_depth_max': 10,
+ 'response_received_count': 18,
+ 'scheduler/dequeued': 17,
+ 'scheduler/dequeued/memory': 17,
+ 'scheduler/enqueued': 17,
+ 'scheduler/enqueued/memory': 17,
+ 'start_time': datetime.datetime(2017, 11, 29, 6, 40, 48, 699998)}
+2017-11-29 14:41:03 [scrapy.core.engine] INFO: Spider closed (finished)

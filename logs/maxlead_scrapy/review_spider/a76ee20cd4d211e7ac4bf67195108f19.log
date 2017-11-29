@@ -1,0 +1,901 @@
+2017-11-29 14:58:09 [scrapy.utils.log] INFO: Scrapy 1.4.0 started (bot: maxlead_scrapy)
+2017-11-29 14:58:09 [scrapy.utils.log] INFO: Overridden settings: {'LOG_FILE': 'logs\\maxlead_scrapy\\review_spider\\a76ee20cd4d211e7ac4bf67195108f19.log', 'CONCURRENT_REQUESTS_PER_IP': 1, 'BOT_NAME': 'maxlead_scrapy', 'SPIDER_MODULES': ['maxlead_scrapy.spiders'], 'ROBOTSTXT_OBEY': True, 'DOWNLOAD_DELAY': 0.5, 'NEWSPIDER_MODULE': 'maxlead_scrapy.spiders', 'DOWNLOAD_TIMEOUT': 100}
+2017-11-29 14:58:09 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.logstats.LogStats']
+2017-11-29 14:58:09 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware',
+ 'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2017-11-29 14:58:09 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2017-11-29 14:58:09 [scrapy.middleware] INFO: Enabled item pipelines:
+['maxlead_scrapy.pipelines.MaxleadScrapyPipeline']
+2017-11-29 14:58:09 [scrapy.core.engine] INFO: Spider opened
+2017-11-29 14:58:09 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2017-11-29 14:58:09 [scrapy.extensions.telnet] DEBUG: Telnet console listening on 127.0.0.1:6023
+2017-11-29 14:58:10 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/robots.txt> (referer: None)
+2017-11-29 14:58:12 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews> (referer: None)
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'aid': 'B071VHBYX8', 'avg_score': '4.6', 'total_review': '59'}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'The Evenflo Folio travel system is a great stroller and car seat '
+            'for practical every day use.',
+ 'is_vp': 1,
+ 'name': 'Lewis A Edge Jr',
+ 'review_date': '2017-08-01',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1DBDQ6ILBRW6M?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Useful Baby Transportation System',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'The Evenflo Pivot Modular Travel system is goes above and beyond '
+            'when it comes to safety.  I researched a lot of brands and the '
+            'testing Evenflo does is above standard for sure.  I love how easy '
+            'it is to fold it up and go... and how light the infant car seat '
+            "is.  It's truly awesome.  Wheels are so easy to maneuver and the "
+            'adjustable handle is great too.  The color is awesome.  Very '
+            'gender neutral.  I highly highly recommend this stroller for '
+            'every reason from safety, to light weight to easy to fold up... '
+            'it hits all the important features a busy and active mom needs!',
+ 'is_vp': 1,
+ 'name': 'T fisherwomen',
+ 'review_date': '2017-07-17',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R343YOA1G66NJV?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'it hits all the important features a busy and active mom needs!  '
+          'Highly recommend.',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'This stroller has been a dream. It is by far the easiest assembly '
+            "I've ever had for a stroller (it took just minutes to set up, and "
+            "everything was extremely intuitive). It collapses down so it's "
+            'easy to store in a closet or fit in a relatively small trunk. And '
+            "the storage space! It's huge! I can fit a jumbo diaper bag, and "
+            'my purse, and a snack bag, and shopping bags, and... I could go '
+            'on. I do wish it allowed for larger kids since my 1 1/2-year-old '
+            'will likely outgrow this in a year, but obviously, this is meant '
+            "to start with infants. Still, I'm enjoying this stroller so much "
+            'that I might just buy the next size up when the time comes.',
+ 'is_vp': 1,
+ 'name': 'AJ',
+ 'review_date': '2017-07-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2IBADPTJI4R0M?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Dream stroller',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'Absolutely love this combo system. Very light weight compared to '
+            'the last stroller/car seat combo I had to use (which was 15 yrs '
+            'ago!) I remember them being so big & bulky...as well as heavy. '
+            'This product is NOT that. Very sleek & stylish and the light grey '
+            'is a beautiful neutral color. Very pleased with the ease of this '
+            'stroller/car seat!',
+ 'is_vp': 1,
+ 'name': 'amanda gonzalez',
+ 'review_date': '2017-09-10',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2HFY101S4LJX4?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Absolutely love this combo system',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'Omg I can not describe how happy i am with this purchase! I '
+            'absolutely love it, veru simple, very easy to install, very '
+            'lightweight, gorgeous color for a boy or a girl! Super easy '
+            'manuals and arrived so fast and awesomely packaged! I dont have '
+            'my baby yet, we have 5 more months to go but I can not wait for '
+            'my baby to try this gorgeous stroller out!',
+ 'is_vp': 1,
+ 'name': 'Inobat Tuhtamisheva',
+ 'review_date': '2017-11-28',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2L4CJ71AOAFSW?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'I would buy it again ❤️',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'Aside from being a beautiful carseat, it feels safe and strudy '
+            'and the over all appearance if the stroller looks like it is '
+            'worth far more than it is.',
+ 'is_vp': 1,
+ 'name': 'briana',
+ 'review_date': '2017-11-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3IEGOKJN93X1N?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Aside from being a beautiful carseat, it feels safe and strudy and '
+          'the ...',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'Just loved the stroller, easy to assemble and to open and fold, '
+            'spins really well, the car seat fabric is super soft. really '
+            'liked the color. I totally  recommend it. The best price for a '
+            'travel system and it is a great quality.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-10-30',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2RLTSACFK8WOP?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Great Travel System',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'When I got the stroller and I saw it in person was even better '
+            'very please with the model my baby girl is going to be really '
+            'comfortable in this stroller and the car seat was perfect also I '
+            'love everything about the product',
+ 'is_vp': 1,
+ 'name': 'Jesus Sanchez',
+ 'review_date': '2017-11-09',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3UDS1MCEIK1UG?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': '... stroller and I saw it in person was even better very please '
+          'with the model my baby girl is ...',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'Sent as a gift, arrived as expected',
+ 'is_vp': 1,
+ 'name': 'sonshine104',
+ 'review_date': '2017-11-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R20VQPM2U7T9H8?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Four Stars',
+ 'variation': None}
+2017-11-29 14:58:12 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews>
+{'asin': 'B071VHBYX8',
+ 'content': 'In love with this travel system. Super easy to set up. My '
+            'favorite is how smooth the stroller is. The car seat is nice and '
+            'snugly for my newborn who was born 6lbs 4oz. I definitely '
+            'recommend this travel system.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-11-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2O6CQYA95OAI?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Super smooth',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/product-reviews/B071VHBYX8/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews)
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Bought as a gift, wonderful.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-11-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R153XEA43AF2G8?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'wonderful.',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': "I haven't use it yet but it is as expected",
+ 'is_vp': 1,
+ 'name': 'pburneo',
+ 'review_date': '2017-11-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R26NRR2U2DHC1Z?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Very easy to assemble and easy to put baby in and out of stroller',
+ 'is_vp': 1,
+ 'name': 'crystal pina',
+ 'review_date': '2017-11-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1Z5OHTY1UXGJ7?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Nice good quality for a fraction of the pricentury! !!',
+ 'is_vp': 1,
+ 'name': 'Lamiysah',
+ 'review_date': '2017-11-21',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2704VPBGQXJ47?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'I love my stroller and the baby does too',
+ 'is_vp': 1,
+ 'name': 'rachel',
+ 'review_date': '2017-11-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R6U4HLBVEGREU?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Love it nothing bad to say about it',
+ 'is_vp': 1,
+ 'name': 'Latonya',
+ 'review_date': '2017-11-04',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R34FT8RPN7FXXG?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Great Buy!',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Expected',
+ 'is_vp': 1,
+ 'name': 'Esmeralda Martinez',
+ 'review_date': '2017-11-04',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3FYX8SR7IU1G5?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Four Stars',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Love it',
+ 'is_vp': 1,
+ 'name': 'Estefiny',
+ 'review_date': '2017-11-05',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3SRTT7JNJ2EKF?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Great',
+ 'is_vp': 1,
+ 'name': 'Kyisha',
+ 'review_date': '2017-10-31',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R10G2MCE3VWMKA?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:58:14 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'I just received my Evenflo Pivot and I must say I love ! The '
+            'color is so gender neutral, stylish, and sheek ! I am currently '
+            '38 weeks and I purchased this AFFORDABLE stroller/infant car seat '
+            'for my baby girl. The delivery did take a while as I requested 2 '
+            'day shipping on a Tuesday and was supposed to get it by Thursday '
+            'but due to weather I received Saturday morning. Aside from that '
+            'the assembly is super straight forward and easy I did it all '
+            'myself in 30 mins. Of course I was playing around with it also to '
+            'perfect every angle you can use this stroller ! I must say I am '
+            'super excited and am now ready for my girl to arrive. The car '
+            'seat and stroller are super light weight and easy to handle as a '
+            'prego. The seating also has padding so it looks comfy for baby '
+            'however I may purchase an additional soft head rest for the car '
+            'seat. Otherwise my review is getting 4 stars for the ease, style, '
+            'and comfort. Hopefully the wheels and ride are smooth which is '
+            "why I haven't given 5 stars until that is tested out, VERY HAPPY "
+            'WITH MY PURCHASE & would definitely recommend.',
+ 'is_vp': 1,
+ 'name': 'stephanie',
+ 'review_date': '2017-09-30',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RNHZAYJI9JP90?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Excited',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=2&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'I ABSOLUTELY LOVE IT! I normally use Graco, but i decided it was '
+            'time for a change. Evenflo Pivot Modular Travel System is  a '
+            "great car seat / stroller combo from Evenflo. Somehow they've "
+            'managed to upgrade your typical car seat.  For me this was one of '
+            'the best changes, adding a second caring bar.  The addition of '
+            "the second bar didn't really make a difference until my daughter "
+            'started to get bigger and we had to carry her in places where a '
+            "stroller just wouldn't be practical. The weight restriction on "
+            'the car seat and stroller are pretty common 35lbs for the car '
+            'seat and 50 for the stroller.',
+ 'is_vp': 0,
+ 'name': 'Desiree',
+ 'review_date': '2017-08-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1HC8WX5ZFB6O6?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Amazing Travel System!',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'This is literally everything a parent of an infant could ask for, '
+            'although the stroller is a bit big so takes up precious cargo '
+            "space (if you're like me and have six kids and are fostering two "
+            'infants cargo space is indeed precious).',
+ 'is_vp': 0,
+ 'name': 'Jamie',
+ 'review_date': '2017-07-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3LICRZDGMMVDZ?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Everything a Parent Could Want',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': "I've researched a million strollers (it seems) and this one not "
+            'only has the sleek look, good price point, and safety features, '
+            'but also great little perks like good capony coverage, nice sized '
+            'storage basket, and pretty good maneuverability! I love that the '
+            'careat matches completely and clicks easily to the car seat base. '
+            'I had a stroller that had interchangeable parts like a bassinet '
+            "and a stroller seat but this one you don't have to remove "
+            'anything, you can quickly convert the bassinet into the stroller '
+            "style. If you're interested in more products that are thoroughly "
+            'researched for your little one, visit the website, '
+            "AllMomsArePerfect.com. It's written by a researcher mom who loves "
+            'to try a variety of products before selecting the best for her '
+            "family. There's also lots of great articles about how to sleep "
+            'train, the best stroller or crib to get, and the best products '
+            'for babies 3months and beyond.',
+ 'is_vp': 0,
+ 'name': 'PuddlethePoodle',
+ 'review_date': '2017-11-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R16FFZ72BQAQ6S?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Fantastic flexibility in using the many features of the stroller.',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'This EvenFlo Pivot is a great value for a mid-range stroller + '
+            "car seat. It's pretty lightweight and easy to use. You'd have to "
+            'pay 2x more for something significantly better.',
+ 'is_vp': 0,
+ 'name': 'Ehmdeigh',
+ 'review_date': '2017-08-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RG16G5IT3ZIYH?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Great mid-range stroller',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Pros:',
+ 'is_vp': 0,
+ 'name': 'chelsey',
+ 'review_date': '2017-10-14',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3HWXDH0083970?ASIN=B071VHBYX8',
+ 'score': '2',
+ 'title': 'Nice looking but hard to push!',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'WOW! This set is the best!! It was so easy to put together and I '
+            'love that the car seat can go right in the stroller easy peasy!',
+ 'is_vp': 0,
+ 'name': 'Dawn Armstrong',
+ 'review_date': '2017-08-01',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1TFA12CHT9MOT?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'LOVE!!!',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'A duo transport for an infant.  Our test expert is two months.  '
+            'She reports a comfortable experience.',
+ 'is_vp': 0,
+ 'name': 'Case Quarter',
+ 'review_date': '2017-07-28',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R4N3IE30ZBET?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Baby on board',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'I love this travel system!  It is so simple to put together which '
+            'was very helpful for me.  Very easy to attach the wheels and '
+            'base.',
+ 'is_vp': 0,
+ 'name': 'Loribee',
+ 'review_date': '2017-08-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3I0ZYFENUE13C?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'I Love This "Travel System"!!!',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'The Evenflo Pivot Modular Travel system Stroller is for the city '
+            'mom on the go! The combination car seat/stroller is so easy to '
+            'set up right out the box. I find the wheels to be very sturdy for '
+            'city sidewalks. The neutral color is perfect for boy or girl. I '
+            'find this stroller system to be the easiest to set up. It folds '
+            'easily for cab/subway rides. I also find that I dont need a ton '
+            'of pockets and sections on this stroller as I am commuting and I '
+            'have everything in my backapck. On weekends when using my car, '
+            'this stroller folds up well and it really keeps us on the go for '
+            'city travel, weekend travel and more. We are traveling by air in '
+            'a month and I cant wait to see how well this stroller/car seat '
+            'does on our trip. If you need practical, on the go travel system, '
+            'this is it.',
+ 'is_vp': 0,
+ 'name': 'Denise Bolds',
+ 'review_date': '2017-08-21',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1N2M25AR23P7L?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Perfect For On The Go In The City!',
+ 'variation': None}
+2017-11-29 14:58:15 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'If you just want to make one purchase to fit all of your stroller '
+            'needs, this is a great, budget-friendly option. That seems '
+            "obvious enough, but I've never purchased a travel system that "
+            'actually had everything in it - either you needed to buy the '
+            "bassinet, or it didn't come with the car seat, or it needed "
+            'accessories. This is an AMAZING value for under $300.',
+ 'is_vp': 0,
+ 'name': 'KWJ',
+ 'review_date': '2017-10-11',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2OWCE5C4JSJI6?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'A travel system that is actually everything you need - looks much '
+          'more expensive, too!',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=3&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:58:16 [scrapy.core.scraper] ERROR: Error processing {'asin': 'B071VHBYX8',
+ 'content': None,
+ 'is_vp': 1,
+ 'name': 'Claudia cano',
+ 'review_date': '2017-10-05',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R38RGUAXQRDX7B?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+Traceback (most recent call last):
+  File "d:\applist\python35\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+psycopg2.IntegrityError: 错误:  在字段 "content" 中空值违反了非空约束
+DETAIL:  失败, 行包含(5527, Claudia cano, B071VHBYX8, Five Stars, null, null, https://www.amazon.com/gp/customer-reviews/R38RGUAXQRDX7B?ASIN=B..., 5, 1, 2017-10-05, 2017-11-29).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "d:\applist\python35\lib\site-packages\twisted\internet\defer.py", line 653, in _runCallbacks
+    current.result = callback(current.result, *args, **kw)
+  File "c:\users\asus\appdata\local\temp\maxlead_scrapy-1511938678-st0xjveu.egg\maxlead_scrapy\pipelines.py", line 11, in process_item
+  File "d:\applist\python35\lib\site-packages\scrapy_djangoitem\__init__.py", line 35, in save
+    self.instance.save()
+  File "d:\applist\python35\lib\site-packages\django\db\models\base.py", line 808, in save
+    force_update=force_update, update_fields=update_fields)
+  File "d:\applist\python35\lib\site-packages\django\db\models\base.py", line 838, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "d:\applist\python35\lib\site-packages\django\db\models\base.py", line 924, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "d:\applist\python35\lib\site-packages\django\db\models\base.py", line 963, in _do_insert
+    using=using, raw=raw)
+  File "d:\applist\python35\lib\site-packages\django\db\models\manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "d:\applist\python35\lib\site-packages\django\db\models\query.py", line 1076, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "d:\applist\python35\lib\site-packages\django\db\models\sql\compiler.py", line 1107, in execute_sql
+    cursor.execute(sql, params)
+  File "d:\applist\python35\lib\site-packages\django\db\backends\utils.py", line 80, in execute
+    return super(CursorDebugWrapper, self).execute(sql, params)
+  File "d:\applist\python35\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+  File "d:\applist\python35\lib\site-packages\django\db\utils.py", line 94, in __exit__
+    six.reraise(dj_exc_type, dj_exc_value, traceback)
+  File "d:\applist\python35\lib\site-packages\django\utils\six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "d:\applist\python35\lib\site-packages\django\db\backends\utils.py", line 65, in execute
+    return self.cursor.execute(sql, params)
+django.db.utils.IntegrityError: 错误:  在字段 "content" 中空值违反了非空约束
+DETAIL:  失败, 行包含(5527, Claudia cano, B071VHBYX8, Five Stars, null, null, https://www.amazon.com/gp/customer-reviews/R38RGUAXQRDX7B?ASIN=B..., 5, 1, 2017-10-05, 2017-11-29).
+
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'So excited to use this stroller! It assembled very easily and the '
+            'car seat and bassinet/child seat interchange very easily. I also '
+            'love the cover that is added for bassinet part. The only '
+            'downsides I can forsee is: 1. The size, it’s actially a pretty '
+            'wide and large stroller, especially in carriage mode. 2. The '
+            'color amazon offers is defiantly not the most desirable but it’s '
+            'also not terrible. ( tan with a tiny of gray). 3. I hate the fact '
+            'that the bassinet cannnot Be used outside of the stroller. If '
+            'placed on ground it collapses. Other than those three things I '
+            'love it and that’s why I rate it five stars',
+ 'is_vp': 1,
+ 'name': 'Victoria p',
+ 'review_date': '2017-11-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3JCDZDW1HUI0N?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Great stroller! Great buy especially for the price point !',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': "The color is darker then on the picture which is a plus, I didn't "
+            'want it to bee too light but since it was cheaper to get this '
+            'color I got it. It said that it was an open box item, but it '
+            "didn't even look like it it was all in the original packaging "
+            '(all the foam was there and the plastics were sealed). The '
+            "stroller and car seat  themselves are pretty nice. It's lighter "
+            'than the chicco which we used with older kiddos, and the fabric '
+            'feels nicer. The stroller folds pretty compact so we will be able '
+            'to take it in the car anywhere. And I like that the seat of the '
+            'stroller converts to a bassinet for a newborn child or if the '
+            'child falls asleep while in the stroller.',
+ 'is_vp': 1,
+ 'name': 'Yelena S',
+ 'review_date': '2017-11-07',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3JX1B99CH2WC2?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Convenient and comfortable.',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'This stroller/car seat combo is very well made. It is very easy '
+            'to put together and everything easily snaps into place. The '
+            'wheels roll very smoothly, giving baby a smooth ride and making '
+            'much easier to maneuver. The car seat is of excellent quality and '
+            'it tested very well in crash tests. I have other Evenflo baby '
+            "strollers and I've been very happy with each of them.",
+ 'is_vp': 1,
+ 'name': 'Shana',
+ 'review_date': '2017-07-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R31EAZGSF1JM19?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'It is very easy to put together and everything easily snaps into '
+          'place',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'This stroller is so cute. It is extremely helpful to be able to '
+            'change the position of the seat so easily. It is worth the money '
+            'with a huge storage basket, sleek cupholder that holds a trenta '
+            'cup, beautiful carseat, light frame, removable bassinet, and easy '
+            'folding process. I love the fact that I can face my daughter '
+            'towards me and see her face. I love the foot cover because it '
+            'keeps a blanket on and contains warmth. This stroller is warm and '
+            'dry through rain. It is cozy and sleek. Only negatives are that '
+            'the wheels are a bit wide and it is a little heavy to lift into '
+            'the car. The evenflo carseat base is also a little longer than a '
+            'grace base so its bulkier in the car.',
+ 'is_vp': 1,
+ 'name': 'Isabela',
+ 'review_date': '2017-10-02',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3RY1THG0MMK01?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'It is extremely helpful to be able to change the position of the '
+          'seat so easily. It is worth the money with a huge ...',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': "4/5 as my initial posting without child yet. I'll update in "
+            'April/May 2018 with use.',
+ 'is_vp': 1,
+ 'name': 'Lauren Lindstrom',
+ 'review_date': '2017-10-20',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2BYHTCUS0334I?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Great stroller combo',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Love love love my stroller easy to manuvere. Was kinda difficult '
+            'to figure out car seat attachment with basinnet. Once figured out '
+            'super easy. Will update review once my daughter makes her '
+            'arrival.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-09-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1IXAH7TA7WMKF?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Reasonable price high end style',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'This review is for the Evenflo Pivot Modular Travel System, '
+            'Sandstone.  We are very happy with it.  Was lightweight and easy '
+            'to assemble.  The storage area near the bottom is great and roomy '
+            'enough for us. Rolls easily.  Includes a stay in car base to make '
+            'transitions easier.  Price appears reasonable (currently $224).  '
+            'Easy for us to store when not needed.  Only real problem we face '
+            'is that our great-grandson will outgrow it.',
+ 'is_vp': 1,
+ 'name': 'D. Houston',
+ 'review_date': '2017-07-28',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2QMBZZU0FN51H?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'We like it',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'I have two jogging strollers that I adore (Bob and Schwinn) and '
+            "really thought I didn't need anything other than a small umbrella "
+            "stroller for the car. Until I remembered, infants can't roll in "
+            'the joggers until roughly 4-6 months, and I needed an infant '
+            'carrier anyway.',
+ 'is_vp': 1,
+ 'name': 'Melaina Lara',
+ 'review_date': '2017-07-28',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R39NCZ173EI56K?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Pivot Modular - all good things!',
+ 'variation': None}
+2017-11-29 14:58:16 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'love love love this stroller! I have an expensive stroller but it '
+            'was way too heavy to get in and out of the car daily, so I like '
+            'that this one is lightweight, has a big storage basket and looks '
+            'chic - similar style to the uppababy vista and less than half the '
+            'price. Just FYI I got this on amazon last week for $189 so not '
+            'sure why the price went up ...',
+ 'is_vp': 1,
+ 'name': 'BV',
+ 'review_date': '2017-10-19',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R31GKBBR3UK14R?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Great stroller!',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=4&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': "It's not luxury or great quality. However, it's a nice-looking "
+            'stroller for the price. The car seat is nice. The stroller seat '
+            'has a short seat back. Wheels on this stroller seem to have an '
+            'issue of getting stuck.',
+ 'is_vp': 1,
+ 'name': 'Jessica',
+ 'review_date': '2017-10-09',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3AOFBB38Z0ZPJ?ASIN=B071VHBYX8',
+ 'score': '3',
+ 'title': "It's okay.",
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Very easy to set up. This set comes the stroller, car seat and '
+            'base. The stroller takes up a bit of space when closed but not a '
+            'huge deal. A breeze to manuever and the different options for '
+            'seat position is what really interested me, very comfortable for '
+            'baby from birth and up. The storage underneath is adequate and I '
+            'like the neutral color so this could be used for either gender.  '
+            'I am very happy with the set up and ease of use and I think this '
+            'would be a perfect set for a new parent.',
+ 'is_vp': 1,
+ 'name': 'Mrs. ChaCha',
+ 'review_date': '2017-09-08',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2KVQ9KECK1N9C?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Easy to use, comfortable, easy set-up.',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Below are the technical details for the Evenflo Pivot Modular '
+            'Travel System.  I did not feel the need of writing them in my own '
+            'words.',
+ 'is_vp': 1,
+ 'name': 'Natalie S',
+ 'review_date': '2017-08-09',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2JP009F8AJSV2?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Watch your child ride safely',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'The quality of the materials is good, the car seat is excellent, '
+            'but the stroller has a huge flaw:',
+ 'is_vp': 1,
+ 'name': 'Gonzalo',
+ 'review_date': '2017-11-03',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3FHI9Z6ZDRKRG?ASIN=B071VHBYX8',
+ 'score': '2',
+ 'title': 'PLEASE READ',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'I am in love with this system! Finally enough storage space to '
+            'hold my purse, a diaper bag, plus still have some room for a bag '
+            "or two! It's super easy to get baby buckled in, the wheels roll "
+            'nicely and it seems very smooth. It was simple to put together. '
+            'Easy to fold up for traveling and lightweight. The car seat is '
+            "lighter than the other that I own. Overall I'm very happy to have "
+            "found this set. I really don't want baby to outgrow it!!",
+ 'is_vp': 1,
+ 'name': 'Jessica Elliott',
+ 'review_date': '2017-07-29',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3LH79BY7TLX7O?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Keeps baby safe & asleep!',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'First things to say about the Evenflo Pivot Modular Travel System '
+            'combo stroller/car seat is that it is very study and easy to '
+            'assemble. And the easy to assemble part is very important to '
+            'someone who cannot understand schematic drawings and has to study '
+            'tools before using them. And although the stroller is sturdy it '
+            'is also very light with a total weight of only 44.4 pounds.',
+ 'is_vp': 1,
+ 'name': 'Emory Daniels',
+ 'review_date': '2017-08-11',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R3N73T1P3FT2I2?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Wonderful Car Seat and Stroller Combo',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'This was a gift. I have been told it is excellent. It does not '
+            'have pneumatic wheels, so it is meant for malls more than long '
+            'walks. They said that the car seat base was simple to install and '
+            'cinch down. It appears to have been a good purchase.',
+ 'is_vp': 1,
+ 'name': 'T. Daniels',
+ 'review_date': '2017-11-14',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1B1PQRJPQD84W?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'The folks we gave it to said it is a very good system.',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'I Love this product! with my daughter, we used the Britax travel '
+            'system and hated it.. we are now expecting baby #2 and decided to '
+            'give this a try. The price was so right and i am very impressed '
+            'with the car seat and the stroller! It was very easy to put '
+            'together and it grows with your baby from car seat to bassinet to '
+            'toddler mode! I definitely recommend this product!',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-09-06',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RE1S9SFAEJ618?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'I Love this product',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Love it',
+ 'is_vp': 1,
+ 'name': 'Brandi Gonzalez ',
+ 'review_date': '2017-08-15',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1Z0O5GVN5XX2Y?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:58:17 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'It is very practical and great to me it has come broken',
+ 'is_vp': 1,
+ 'name': 'génesis sanchez',
+ 'review_date': '2017-09-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R9VF2CGLVZ6U?ASIN=B071VHBYX8',
+ 'score': '3',
+ 'title': 'Three Stars',
+ 'variation': None}
+2017-11-29 14:58:18 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead> (referer: https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=5&reviewerType=all_reviews&mytype=maxlead)
+2017-11-29 14:58:18 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': "I gave 4 stars instead of 5 because it doesn't close very well if "
+            'the bassinet is facing you, and  you need both hands to attach '
+            'the bassinet or the car seat onto the stroller. I still love it, '
+            'and my baby loves it too, great quality and the issues are minor.',
+ 'is_vp': 1,
+ 'name': 'Mariana Richards',
+ 'review_date': '2017-10-09',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RJXCLW73A9WLP?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Would buy it again, but...',
+ 'variation': None}
+2017-11-29 14:58:18 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'This stroller has been everything I wanted and more. The only '
+            'thing I would change would make the cup holder stay more secure '
+            'on the side. It has come off a few times when I break it down and '
+            'have almost lost it.',
+ 'is_vp': 1,
+ 'name': 'Josh Maxwell',
+ 'review_date': '2017-10-17',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/ROESC7UR0S0P?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'This stroller has been everything I wanted and more. ...',
+ 'variation': None}
+2017-11-29 14:58:18 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': "Would be perfect if it wasn't so wife with the wheels.",
+ 'is_vp': 1,
+ 'name': 'Gustavo Costa',
+ 'review_date': '2017-09-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R1JD2XPUXFWJ4Q?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Good but too wide',
+ 'variation': None}
+2017-11-29 14:58:18 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'This travel system is everything I could want and more! I am able '
+            'to use it for my newborn baby and my 2 year old daughter too. The '
+            'different features are easy to change in and out and the car seat '
+            "is nice and lightweight. Which is so important, because you'll be "
+            'carrying the seat around a lot!',
+ 'is_vp': 1,
+ 'name': 'Courtney Spena',
+ 'review_date': '2017-11-14',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2GC112OWQOBJJ?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Everything you could want in a travel system and more!',
+ 'variation': None}
+2017-11-29 14:58:18 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Absolutely worth every penny! I wish if it has cupholder or a '
+            'place for parents staff',
+ 'is_vp': 1,
+ 'name': 'YOUSEF ALSHEHRE',
+ 'review_date': '2017-10-28',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RLQ5NW9LQJUQ2?ASIN=B071VHBYX8',
+ 'score': '4',
+ 'title': 'Four Stars',
+ 'variation': None}
+2017-11-29 14:58:18 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'First time mom and I can definitely say it’s so user friendly '
+            'with so many different features for all occasions! Perfect!',
+ 'is_vp': 1,
+ 'name': 'Tessa',
+ 'review_date': '2017-11-11',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R9XQMJV64K7AX?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Perfect!',
+ 'variation': None}
+2017-11-29 14:58:18 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Top stroller, complete, easy to deal it!',
+ 'is_vp': 1,
+ 'name': 'Rafael Tonello Rizzardo',
+ 'review_date': '2017-10-23',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/RMSR512EU6DE8?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'easy to deal it',
+ 'variation': None}
+2017-11-29 14:58:18 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'Great travel system and super easy to assemble.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-09-16',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2T81XQEY074YU?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'Five Stars',
+ 'variation': None}
+2017-11-29 14:58:19 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.amazon.com/Evenflo-Modular-Travel-System-Sandstone/product-reviews/B071VHBYX8?pageNumber=6&reviewerType=all_reviews&mytype=maxlead>
+{'asin': 'B071VHBYX8',
+ 'content': 'We purchased this as a shower gift, and they loved it.  We have '
+            'not seen it in use yet, but they expect the baby in about a '
+            'month.  This was the perfect gift for them.',
+ 'is_vp': 1,
+ 'name': 'Amazon Customer',
+ 'review_date': '2017-07-26',
+ 'review_link': 'https://www.amazon.com/gp/customer-reviews/R2MDVL3ZT7LOWE?ASIN=B071VHBYX8',
+ 'score': '5',
+ 'title': 'A great baby shower gift...',
+ 'variation': None}
+2017-11-29 14:58:19 [scrapy.core.engine] INFO: Closing spider (finished)
+2017-11-29 14:58:19 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+{'downloader/request_bytes': 2909,
+ 'downloader/request_count': 7,
+ 'downloader/request_method_count/GET': 7,
+ 'downloader/response_bytes': 408704,
+ 'downloader/response_count': 7,
+ 'downloader/response_status_count/200': 7,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2017, 11, 29, 6, 58, 19, 9140),
+ 'item_scraped_count': 59,
+ 'log_count/DEBUG': 67,
+ 'log_count/ERROR': 1,
+ 'log_count/INFO': 7,
+ 'request_depth_max': 5,
+ 'response_received_count': 7,
+ 'scheduler/dequeued': 6,
+ 'scheduler/dequeued/memory': 6,
+ 'scheduler/enqueued': 6,
+ 'scheduler/enqueued/memory': 6,
+ 'start_time': datetime.datetime(2017, 11, 29, 6, 58, 9, 725482)}
+2017-11-29 14:58:19 [scrapy.core.engine] INFO: Spider closed (finished)
