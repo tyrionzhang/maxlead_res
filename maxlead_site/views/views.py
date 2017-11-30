@@ -27,8 +27,8 @@ def RunReview(request):
     #                 diff = d.compare(content_line, con_line)
     #                 print(list(diff))
     #     pass
-
-    t = Timer(settings.REVIEW_TIME, RunReview(request))
+    review_time = settings.REVIEW_TIME
+    t = Timer(review_time, RunReview(request))
     t.start()
 
     return render(request, 'spider/home.html')
