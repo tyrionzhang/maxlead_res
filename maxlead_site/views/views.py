@@ -13,33 +13,6 @@ from maxlead import settings
 # 第二个参数以某种人为的方式衡量时间
 schedule = sched.scheduler(time.time, time.sleep)
 
-# def RunReview(request):
-    # work_path = settings.SPIDER_URL
-    # os.chdir(work_path)  # 修改当前工作目录
-    # os.system('scrapyd-deploy')
-    # os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
-
-    # aid_list = UserAsins.objects.filter(is_use=True).values('aid')
-    # for aid in list(aid_list):
-    #     review_contents = Reviews.objects.filter(asin=aid['aid']).filter(created=date.today()).values('content')
-    #     asin_reviews = AsinReviews.objects.filter(aid=aid['aid']).filter(created=date.today()).all()
-    #     if review_contents:
-    #         review_contents = list(review_contents)
-    #     for i, content in enumerate(review_contents,0):
-    #         for k, con in enumerate(review_contents,0):
-    #             if not i == k:
-    #                 content_line = content['content'].splitlines()
-    #                 con_line = con['content'].splitlines()
-    #                 d = difflib.Differ()
-    #                 diff = d.compare(content_line, con_line)
-    #                 print(list(diff))
-    #     pass
-    # review_time = settings.REVIEW_TIME
-    # run()
-    # global t
-    # t = Timer(300.0, RunReview(request))
-    # t.start()
-
 def update_kewords():
     aid_list = UserAsins.objects.filter(is_use=True).values('aid')
     positive_keywords = ''
