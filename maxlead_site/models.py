@@ -16,8 +16,8 @@ class UserAsins(models.Model):
 
 class AsinReviews(models.Model):
     aid = models.CharField('AsinId',max_length=50)
-    positive_keywords = models.CharField('Positive Keywords', max_length=255,null=True)
-    negative_keywords = models.CharField('Negative Keywords', max_length=255,null=True)
+    positive_keywords = models.TextField('Positive Keywords',null=True)
+    negative_keywords = models.TextField('Negative Keywords',null=True)
     avg_score = models.DecimalField('Avg Score', max_digits=2, decimal_places=1)
     total_review = models.IntegerField('Total Reviews', default=0)
     created = models.DateField('Create Date',auto_now_add=True)
