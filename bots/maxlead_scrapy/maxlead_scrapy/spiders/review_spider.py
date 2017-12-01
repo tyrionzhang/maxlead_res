@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import scrapy,time
-from maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
+from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
 from maxlead_site.models import UserAsins
 from scrapy import log
 

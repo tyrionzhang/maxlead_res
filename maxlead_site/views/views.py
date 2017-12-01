@@ -48,7 +48,6 @@ def perform_command():
     os.popen('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
 
 
-
 def RunReview(request):
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
