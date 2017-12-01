@@ -35,7 +35,7 @@ def update_kewords():
             if nega_line_list:
                 for nega in set(nega_line_list):
                     if nega_line_list.count(nega) >= 2:
-                        negative_keywords += nega
+                        negative_keywords += nega + '||'
             if positive_keywords:
                 asin_reviews.update(positive_keywords=positive_keywords)
             if negative_keywords:
