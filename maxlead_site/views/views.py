@@ -1,7 +1,6 @@
-import os,sched,difflib
+import os,sched
 from datetime import *
 import time
-import json
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from maxlead_site.models import UserAsins,AsinReviews,Reviews

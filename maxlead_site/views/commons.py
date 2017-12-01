@@ -1,5 +1,4 @@
 import difflib
-import re
 
 def get_diff_str(content_list):
     line_list = []
