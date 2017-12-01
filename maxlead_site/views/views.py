@@ -1,7 +1,6 @@
 import os,sched,difflib
 from datetime import *
 import time
-import threading
 import json
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
@@ -21,37 +20,33 @@ def update_kewords():
         review_contents = Reviews.objects.filter(asin=aid['aid']).filter(created=date.today()).filter(
             score__gte=3).values('content')
         nega_review_contents = Reviews.objects.filter(asin=aid['aid']).filter(created=date.today()).exclude(
-            score__gte=2).values('content')
+            score__gte=3).values('content')
         asin_reviews = AsinReviews.objects.filter(aid=aid['aid']).filter(created=date.today()).all()
-        if review_contents:
-            review_contents = list(review_contents)
-        posi_line_list = commons.get_diff_str(review_contents)
-        nega_line_list = commons.get_diff_str(nega_review_contents)
+        if asin_reviews:
+            if review_contents:
+                review_contents = list(review_contents)
+            posi_line_list = commons.get_diff_str(review_contents)
+            nega_line_list = commons.get_diff_str(nega_review_contents)
 
-        if posi_line_list:
-            for posi in set(posi_line_list):
-                if posi_line_list.count(posi) >= 2:
-                    positive_keywords += posi + '||'
-        if nega_line_list:
-            for nega in set(nega_line_list):
-                if nega_line_list.count(nega) >= 2:
-                    negative_keywords += nega
-        if positive_keywords:
-            asin_reviews.update(positive_keywords=positive_keywords)
-        if negative_keywords:
-            asin_reviews.update(negative_keywords=negative_keywords)
+            if posi_line_list:
+                for posi in set(posi_line_list):
+                    if posi_line_list.count(posi) >= 2:
+                        positive_keywords += posi + '||'
+            if nega_line_list:
+                for nega in set(nega_line_list):
+                    if nega_line_list.count(nega) >= 2:
+                        negative_keywords += nega
+            if positive_keywords:
+                asin_reviews.update(positive_keywords=positive_keywords)
+            if negative_keywords:
+                asin_reviews.update(negative_keywords=negative_keywords)
 
 def perform_command():
     # 安排inc秒后再次运行自己，即周期运行
     review_time = settings.REVIEW_TIME
     schedule.enter(review_time, 0, perform_command)
-    output = os.popen('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
-    res = list(output)
-    if res and json.loads(res[0])['status'] == 'ok':
-        # t = threading.Timer(5, update_kewords)
-        # t.start()
-        # update_kewords()
-        return True
+    os.popen('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
+
 
 
 def RunReview(request):
