@@ -13,6 +13,9 @@ from maxlead import settings
 schedule = sched.scheduler(time.time, time.sleep)
 
 def update_kewords():
+    review_time = settings.REVIEW_TIME+300
+    schedule.enter(review_time, 0, update_kewords)
+
     aid_list = UserAsins.objects.filter(is_use=True).values('aid')
     positive_keywords = ''
     negative_keywords = ''
@@ -57,7 +60,7 @@ def RunReview(request):
     os.system('scrapyd-deploy')
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动
     review_time = settings.REVIEW_TIME
-    review_key = review_time+120
+    review_key = review_time+300
     schedule.enter(review_time, 0, perform_command)
     schedule.enter(review_key, 0, update_kewords)
     # 持续运行，直到计划时间队列变成空为止
