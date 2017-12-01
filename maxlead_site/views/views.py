@@ -45,6 +45,9 @@ def perform_command():
     # 安排inc秒后再次运行自己，即周期运行
     review_time = settings.REVIEW_TIME
     schedule.enter(review_time, 0, perform_command)
+
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
 
 

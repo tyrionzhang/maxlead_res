@@ -137,7 +137,7 @@ SPIDER_URL = 'D:/maxlead/bots/maxlead_scrapy'
 
 DOWNLOAD_URL = 'D:/maxlead/download'
 
-REVIEW_TIME = 604800
+REVIEW_TIME = 300
 
 # django-suit config
 SUIT_CONFIG = {
