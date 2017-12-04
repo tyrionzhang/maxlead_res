@@ -4,6 +4,7 @@ import scrapy,time
 from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
 from maxlead_site.models import UserAsins
 from scrapy import log
+from django.db.models import Count
 
 
 class ReviewSpider(scrapy.Spider):
@@ -12,7 +13,7 @@ class ReviewSpider(scrapy.Spider):
     start_urls = []
     asin_id = ''
     urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews"
-    res = UserAsins.objects.filter(is_use=True).values('aid')
+    res = UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid'))
     if res:
         for re in list(res):
             asin = urls % re['aid']
