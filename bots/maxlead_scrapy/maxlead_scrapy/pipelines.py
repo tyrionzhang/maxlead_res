@@ -38,10 +38,16 @@ class MaxleadScrapyPipeline(object):
 
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
+            images_str = ''
             for image_url in item['image_urls']:
+                # img_name_re = os.path.basename(image_url).split('_SY88.')
+                # if len(img_name_re) == 2:
+                #     img_names = img_name_re[0]+img_name_re[1]
+                #     item['image_urls'].append(os.path.split(image_url)[0] + '/' + img_names)
                 us = image_url.split('/')[3:]
                 image_file_name = '_'.join(us)
                 file_path = '%s/%s' % (dir_path, image_file_name)
+                images_str += file_path+'||'
                 images.append(file_path)
                 if os.path.exists(file_path):
                     continue
@@ -54,7 +60,7 @@ class MaxleadScrapyPipeline(object):
 
                         handle.write(block)
 
-            item['image_names'] = images
+            item['image_names'] = images_str
         item.save()
         return item
 

@@ -45,10 +45,7 @@ class ReviewSpider(scrapy.Spider):
             item['variation'] = review.css('div.review-format-strip a.a-color-secondary::text').extract_first()
             item['image_urls'] = []
             for img_re in review.css('div.review-image-container img.review-image-tile::attr("data-src")').extract():
-                img_name_re = os.path.basename(img_re).split('_SY88.')
-                if len(img_name_re) == 2:
-                    img_names = img_name_re[0]+img_name_re[1]
-                    item['image_urls'].append(os.path.split(img_re)[0]+'/'+img_names)
+                item['image_urls'].append(img_re)
 
             vp = review.xpath('//span[contains(@data-hook, "avp-badge")]/text()').extract_first()
             if vp is not None and vp == 'Verified Purchase':

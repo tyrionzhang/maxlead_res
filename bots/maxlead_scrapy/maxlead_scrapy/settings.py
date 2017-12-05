@@ -31,7 +31,7 @@ ITEM_PIPELINES = {
     # 'maxlead_scrapy.pipelines.MyImagesPipeline': 1,
 }
 
-IMAGES_STORE = 'D:\\maxlead\\download\\images'
+IMAGES_STORE = 'D:\maxlead\download\images'
 
 IMAGES_EXPIRES = 90
 

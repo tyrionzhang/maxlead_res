@@ -35,9 +35,9 @@ class Reviews(models.Model):
     score = models.IntegerField('Score',default=0)
     is_vp = models.IntegerField('VP',default=0,null=True)
     review_date = models.DateField('Date')
+    created = models.DateField('Create Date',auto_now_add=True)
     image_names = models.TextField('Images', null=True)
     image_urls = models.TextField('Image Urls', null=True)
-    created = models.DateField('Create Date',auto_now_add=True)
 
     class Meta:
         db_table = 'reviews'

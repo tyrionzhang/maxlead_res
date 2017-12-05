@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from django.http import HttpResponse
 import xlsxwriter as xlsw
 from io import *
-import os,time
+import json,time
 from django.contrib import admin
 from maxlead_site.models import UserAsins,AsinReviews,Reviews
 
@@ -38,10 +39,11 @@ def get_excel_file(self, request, queryset):
         output = BytesIO()
         workbook = xlsw.Workbook(output, {'in_memory': True})
         worksheet1 = workbook.add_worksheet(u"Review-Datas")
-        bold = workbook.add_format({'bold': 1})
+        bold = workbook.add_format({'bold': 1,'align':'center'})
+        align = workbook.add_format({'align':'center'})
         for i, val in enumerate(obj_items[0],0):
-            headings.append(val)
-        headings.append('Image')
+            if not val == 'Image Urls':
+                headings.append(val)
         worksheet1.write_row('A1', headings, bold)
 
         for c, obj in enumerate(res,2):
@@ -52,8 +54,17 @@ def get_excel_file(self, request, queryset):
                 else:
                     field = obj[field]
                 data.append(field)
-            worksheet1.write_row('A%s' % str(c), data)
-            # if obj['name'] == 'Emory Daniels':
+            worksheet1.write_row('A%s' % str(c), data, align)
+            if obj['image_names']:
+                imgs = obj['image_names'].split('||')
+                col_name = ord('L')
+                for img in imgs:
+                    if img:
+                        worksheet1.insert_image('%s%s' % (chr(col_name),str(c)), img)
+                        worksheet1.set_row(c-1,70)
+                        worksheet1.set_column('%s:%s' % (chr(col_name),chr(col_name+1)), 20)
+                    col_name += 1
+                        # if obj['name'] == 'Emory Daniels':
             #     worksheet1.insert_image('L%s' % str(c), 'C:\\Users\\asus\\Pictures\\Camera Roll\\timg1.jpg')
 
         workbook.close()
