@@ -81,7 +81,7 @@ get_excel_file.short_description = "下载数据表"
 
 @admin.register(UserAsins)
 class UserAsinsAdmin(admin.ModelAdmin):
-    list_display=('id', 'user', 'aid', 'name')
+    list_display=('id', 'user', 'aid', 'review_watcher', 'listing_watcher', 'is_use')
 
     list_per_page = 15
 

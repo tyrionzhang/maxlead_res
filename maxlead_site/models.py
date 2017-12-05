@@ -6,10 +6,12 @@ from django.contrib.auth.models import User
 class UserAsins(models.Model):
     user = models.ForeignKey(User)
     aid = models.CharField('AsinId',max_length=50)
-    name = models.CharField('Field',max_length=255,default='')
-    alias = models.CharField('Alias',max_length=255,default='')
+    sku = models.CharField('SKU',max_length=50,default='')
+    review_watcher = models.BooleanField('Review Watcher', default=True)
+    listing_watcher = models.BooleanField('Listing Watcher', default=True)
     is_email = models.BooleanField(u'是否邮件通知',default=1)
-    is_use = models.BooleanField(default=1)
+    is_use = models.BooleanField('Status', default=True)
+    last_check = models.DateTimeField('Last Check', null=True)
 
     class Meta:
         db_table = 'user_asins'
@@ -41,3 +43,20 @@ class Reviews(models.Model):
 
     class Meta:
         db_table = 'reviews'
+
+class listings(models.Model):
+    title = models.CharField('Title', max_length=255)
+    asin = models.CharField('AsinId', max_length=50)
+    sku = models.CharField('SKU', max_length=50)
+    brand = models.CharField('Brand', max_length=50)
+    buy_box = models.CharField('Buy Box', max_length=50)
+    price = models.DecimalField('Price', max_digits=2, decimal_places=1)
+    total_review = models.IntegerField('RVW QTY', default=0)
+    rvw_score = models.IntegerField('RVW Score', default=0)
+    category_rank = models.CharField('Category Rank', max_length=50)
+    inventory = models.IntegerField('Inventory', default=0)
+    created = models.DateTimeField('Create Date', default=0)
+    image_names = models.TextField('Images', null=True)
+
+    class Meta:
+        db_table = 'product_list'
