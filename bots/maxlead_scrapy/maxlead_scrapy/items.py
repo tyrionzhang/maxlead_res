@@ -16,4 +16,7 @@ class AsinReviewsItem(DjangoItem):
 
 class ReviewsItem(DjangoItem):
     # define the fields for your item here like:
+
+    image_urls = scrapy.Field()
+    images = scrapy.Field()
     django_model = Reviews

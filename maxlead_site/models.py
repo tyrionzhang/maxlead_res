@@ -30,11 +30,13 @@ class Reviews(models.Model):
     asin = models.CharField('AsinId',max_length=50)
     title = models.CharField('Title',max_length=255)
     variation = models.CharField('Variation',max_length=255,null=True)
-    content = models.TextField('Content', default='')
+    content = models.TextField('Content', default='',null=True)
     review_link = models.CharField('Review Link',max_length=500,null=True)
     score = models.IntegerField('Score',default=0)
     is_vp = models.IntegerField('VP',default=0,null=True)
     review_date = models.DateField('Date')
+    image_names = models.TextField('Images', null=True)
+    image_urls = models.TextField('Image Urls', null=True)
     created = models.DateField('Create Date',auto_now_add=True)
 
     class Meta:

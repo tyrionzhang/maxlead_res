@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import scrapy,time
+import scrapy,time,os
 from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
 from maxlead_site.models import UserAsins
 from scrapy import log
@@ -43,6 +43,13 @@ class ReviewSpider(scrapy.Spider):
             item['review_link'] = "https://www.amazon.com" + review.css('a.review-title::attr("href")').extract_first()
             item['score'] = review.css('i.review-rating span::text').extract_first()[0:1]
             item['variation'] = review.css('div.review-format-strip a.a-color-secondary::text').extract_first()
+            item['image_urls'] = []
+            for img_re in review.css('div.review-image-container img.review-image-tile::attr("data-src")').extract():
+                img_name_re = os.path.basename(img_re).split('_SY88.')
+                if len(img_name_re) == 2:
+                    img_names = img_name_re[0]+img_name_re[1]
+                    item['image_urls'].append(os.path.split(img_re)[0]+'/'+img_names)
+
             vp = review.xpath('//span[contains(@data-hook, "avp-badge")]/text()').extract_first()
             if vp is not None and vp == 'Verified Purchase':
                 item['is_vp'] = 1
