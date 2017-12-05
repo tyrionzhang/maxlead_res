@@ -58,7 +58,8 @@ def RunReview(request):
     os.chdir(work_path)
     os.system('scrapyd-deploy')
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动
-    perform_command()
+    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
+
     review_time = settings.REVIEW_TIME
     review_key = review_time+300
     schedule.enter(review_time, 0, perform_command)
