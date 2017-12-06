@@ -44,18 +44,20 @@ class Reviews(models.Model):
     class Meta:
         db_table = 'reviews'
 
-class listings(models.Model):
+class Listings(models.Model):
     title = models.CharField('Title', max_length=255)
     asin = models.CharField('AsinId', max_length=50)
     sku = models.CharField('SKU', max_length=50)
     brand = models.CharField('Brand', max_length=50)
     buy_box = models.CharField('Buy Box', max_length=50)
-    price = models.DecimalField('Price', max_digits=2, decimal_places=1)
+    price = models.CharField('Price', max_length=10)
     total_review = models.IntegerField('RVW QTY', default=0)
-    rvw_score = models.IntegerField('RVW Score', default=0)
+    rvw_score = models.DateTimeField('RVW Score', default=0)
     category_rank = models.CharField('Category Rank', max_length=50)
     inventory = models.IntegerField('Inventory', default=0)
-    created = models.DateTimeField('Create Date', default=0)
+    is_review_watcher = models.BooleanField('Is Review Watcher', default=True)
+    is_listing_watcher = models.BooleanField('Is Listing Watcher', default=True)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
     image_names = models.TextField('Images', null=True)
 
     class Meta:

@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from scrapy.contrib.pipeline.images import ImagesPipeline
-from scrapy.exceptions import DropItem
-from scrapy.http import Request
 import os,json,requests
 from bots.maxlead_scrapy.maxlead_scrapy import settings
 

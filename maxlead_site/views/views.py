@@ -11,9 +11,10 @@ from maxlead import settings
 # 第二个参数以某种人为的方式衡量时间
 schedule = sched.scheduler(time.time, time.sleep)
 
-def update_kewords():
-    review_time = settings.REVIEW_TIME+300
-    schedule.enter(review_time, 0, update_kewords)
+def update_kewords(first=False):
+    if not first:
+        review_time = settings.REVIEW_TIME+300
+        schedule.enter(review_time, 0, update_kewords)
 
     aid_list = UserAsins.objects.filter(is_use=True).values('aid')
     positive_keywords = ''
@@ -59,12 +60,13 @@ def RunReview(request):
     os.system('scrapyd-deploy')
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
+    schedule.enter(300, 0, update_kewords(first=True))
 
     review_time = settings.REVIEW_TIME
     review_key = review_time+300
     schedule.enter(review_time, 0, perform_command)
     schedule.enter(review_key, 0, update_kewords)
-    # 持续运行，直到计划时间队列变成空为止
+    # # 持续运行，直到计划时间队列变成空为止
     schedule.run()
 
     return render(request, 'spider/home.html')
