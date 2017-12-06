@@ -52,13 +52,14 @@ class Listings(models.Model):
     buy_box = models.CharField('Buy Box', max_length=50)
     price = models.CharField('Price', max_length=10)
     total_review = models.IntegerField('RVW QTY', default=0)
-    rvw_score = models.DateTimeField('RVW Score', default=0)
-    category_rank = models.CharField('Category Rank', max_length=50)
+    rvw_score = models.DecimalField('RVW Score', max_digits=2, decimal_places=1,null=True)
+    category_rank = models.CharField('Category Rank', max_length=50,null=True)
     inventory = models.IntegerField('Inventory', default=0)
     is_review_watcher = models.BooleanField('Is Review Watcher', default=True)
     is_listing_watcher = models.BooleanField('Is Listing Watcher', default=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
     image_names = models.TextField('Images', null=True)
+    image_urls = models.TextField('Image Urls', null=True)
 
     class Meta:
         db_table = 'product_list'
