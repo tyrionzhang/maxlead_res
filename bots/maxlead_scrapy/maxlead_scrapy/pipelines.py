@@ -2,6 +2,7 @@
 
 import os,json,requests
 from bots.maxlead_scrapy.maxlead_scrapy import settings
+from bots.maxlead_scrapy.maxlead_scrapy import common
 
 # Define your item pipelines here
 #
@@ -58,6 +59,10 @@ class MaxleadScrapyPipeline(object):
                         handle.write(block)
 
             item['image_names'] = images_str
+            item['image_thumbs'] = ''
+            for img_file in images:
+                thunb_file = common.make_thumb(img_file,dir_path,40)
+                item['image_thumbs'] += thunb_file+'||'
         item.save()
         return item
 
