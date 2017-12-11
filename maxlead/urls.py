@@ -16,10 +16,12 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from maxlead_site.views import views as max_views
+from maxlead_site.views.views import test as test_views
 
 urlpatterns = [
     # url(r'^admin/warehouse/spiders/', warehouse_views.home),
     url(r'^admin/maxlead_site/spiders/', max_views.RunReview),
+    url(r'^admin/maxlead_site/user_info/', test_views.user_info),
     url(r'^admin/', admin.site.urls),
 
 ]

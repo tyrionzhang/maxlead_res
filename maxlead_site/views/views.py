@@ -1,11 +1,13 @@
 import os,sched
 from datetime import *
-import time
+import time,re
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from maxlead_site.models import UserAsins,AsinReviews,Reviews
 from maxlead_site.views import commons
 from maxlead import settings
+from maxlead_site.common.user_secuirty import UserSecuirty
+from django.http import HttpResponseRedirect
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
@@ -99,3 +101,19 @@ def RunReview(request):
     return render(request, 'spider/home.html')
 
 RunReview = staff_member_required(RunReview)
+
+class test(UserSecuirty):
+
+    def __init__(self):
+        UserSecuirty.user_secuity(self)
+
+
+    def user_info(self):
+        UserSecuirty.user_secuity(self)
+        if self.user_info:
+            url = '/admin/login/?next=/%s' % re.sub(r'https?://[^/]+?/','',self.get_raw_uri())
+            return HttpResponseRedirect(url)
+
+        return render(self, 'spider/home.html')
+
+    # user_info = staff_member_required(user_info)
