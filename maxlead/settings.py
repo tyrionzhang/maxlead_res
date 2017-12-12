@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'maxlead_site',
 ]
 
+AUTH_PROFILE_MODULE='maxlead_site.UserProfile'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

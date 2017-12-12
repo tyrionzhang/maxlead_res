@@ -1,12 +1,39 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 # Create your models here.
+
+class MenberGroups(models.Model):
+    name = models.CharField('Name', max_length=50)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'menber_groups'
+
+    def __str__(self):
+        return self.name
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    state = models.IntegerField('State',default=0)
+    group = models.ManyToManyField(MenberGroups,related_name='MenberGroups')
+
+    class Meta:
+        db_table = 'user_profile'
+
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        profile, created = UserProfile.objects.get_or_create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
+
 
 class UserAsins(models.Model):
     user = models.ForeignKey(User)
     aid = models.CharField('AsinId',max_length=50)
     sku = models.CharField('SKU',max_length=50,default='')
+    keywords = models.CharField('Keywords',max_length=255,default='')
     review_watcher = models.BooleanField('Review Watcher', default=True)
     listing_watcher = models.BooleanField('Listing Watcher', default=True)
     is_email = models.BooleanField(u'是否邮件通知',default=1)
@@ -64,3 +91,23 @@ class Listings(models.Model):
 
     class Meta:
         db_table = 'product_list'
+
+class Questions(models.Model):
+    question = models.CharField('Question',max_length=225)
+    person = models.CharField('Person',max_length=50)
+    answer = models.TextField('Answer',null=True)
+    date = models.DateField('Date',null=True)
+    votes = models.IntegerField('Votes',default=0,null=True)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'questions'
+
+class Log(models.Model):
+    name = models.CharField('Name',max_length=225)
+    description = models.CharField('Description',max_length=225)
+    user = models.ForeignKey(User)
+    created = models.DateTimeField('Create Date',auto_now_add=True)
+
+    class Meta:
+        db_table = 'log'

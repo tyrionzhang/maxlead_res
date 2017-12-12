@@ -4,7 +4,7 @@ import xlsxwriter as xlsw
 from io import *
 import json,time
 from django.contrib import admin
-from maxlead_site.models import UserAsins,AsinReviews,Reviews
+from maxlead_site.models import UserAsins,AsinReviews,Reviews,UserProfile,MenberGroups
 
 # Register your models here.
 
@@ -99,6 +99,18 @@ class UserAsinsAdmin(admin.ModelAdmin):
     # list_filter = ('trouble', 'go_time', 'act_man__user_name', 'machine_room_id__machine_room_name')  # 过滤器
     search_fields = ('aid', 'name')  # 搜索字段
     # date_hierarchy = 'go_time'  # 详细时间分层筛选　
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('id','state')
+    fields = ('user','state','group')
+    filter_horizontal = ('group',)
+
+@admin.register(MenberGroups)
+class MenberGroupsAdmin(admin.ModelAdmin):
+    list_display = ('id','name','created')
+    fields = ('name',)
+    fk_fields = ('name',)
 
 @admin.register(Reviews)
 class ReviewsAdmin(admin.ModelAdmin):
