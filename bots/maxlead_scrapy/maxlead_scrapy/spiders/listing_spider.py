@@ -11,15 +11,12 @@ class ListingSpider(scrapy.Spider):
     name = "listing_spider"
     start_urls = []
     url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head"
-    qa_url = "https://www.amazon.com/dp/%s#Ask"
     res = list(UserAsins.objects.filter(is_use=True).values('aid','review_watcher','listing_watcher','sku').annotate(count=Count('aid')))
 
     if res:
         for re in res:
             asin = url % (re['aid'], int(time.time()))
-            qa = qa_url % re['aid']
             start_urls.append(asin)
-            start_urls.append(qa)
 
     def parse(self, response):
         res_asin = response.url.split('/')

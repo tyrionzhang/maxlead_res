@@ -27,3 +27,4 @@ class ListingsItem(DjangoItem):
     image_urls = scrapy.Field()
     images = scrapy.Field()
     django_model = Listings
+

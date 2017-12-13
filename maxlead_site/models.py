@@ -18,6 +18,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     state = models.IntegerField('State',default=0)
     group = models.ManyToManyField(MenberGroups,related_name='MenberGroups')
+    er_count = models.IntegerField(default=0)
+    er_time = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'user_profile'
@@ -94,14 +96,21 @@ class Listings(models.Model):
 
 class Questions(models.Model):
     question = models.CharField('Question',max_length=225)
-    person = models.CharField('Person',max_length=50)
-    answer = models.TextField('Answer',null=True)
-    date = models.DateField('Date',null=True)
+    asin = models.CharField('AsinId',max_length=50,default='')
+    asked = models.CharField('Asked',max_length=225,default='')
     votes = models.IntegerField('Votes',default=0,null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
         db_table = 'questions'
+class Answers(models.Model):
+    question = models.ForeignKey(Questions)
+    person = models.CharField('Person',max_length=225)
+    answer = models.TextField('Answer',null=True)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'answers'
 
 class Log(models.Model):
     name = models.CharField('Name',max_length=225)
