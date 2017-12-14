@@ -26,6 +26,9 @@ class Logins:
             user = auth.authenticate(username=username, password=password)
             user1 = User.objects.get(username=username)
             user_file = UserProfile.objects.filter(user=user1.id)
+            if user_file[0].state in (0,2):
+                return {'code': 0, 'msg': u'账号不存在/已被锁定,请联系管理员！'}
+
             if user and user.is_active and user_file[0].state == 1:
                 user_file.update(er_count=0,em_count=0)
                 auth.login(self, user)
