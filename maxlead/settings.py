@@ -175,3 +175,14 @@ SUIT_CONFIG = {
 CRONJOBS = [
     ('*/5 * * * *', "maxlead_site.cron.RunReview")
 ]
+
+ROOT_URL = "http://127.0.0.1:8000"
+
+KEY_STR = "2g4h6f7hhc1de4t6"
+
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.163.com'  # 如果是 163 改成 smtp.163.com
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'swlxyztd@163.com' # 帐号
+EMAIL_HOST_PASSWORD = '07568603043zwd'  # 密码
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

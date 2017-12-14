@@ -17,11 +17,16 @@ from django.conf.urls import url
 from django.contrib import admin
 from maxlead_site.views import views as max_views
 from maxlead_site.views.views import test as test_views
+from maxlead_site.views.users.login import Logins
 
 urlpatterns = [
     # url(r'^admin/warehouse/spiders/', warehouse_views.home),
     url(r'^admin/maxlead_site/spiders/', max_views.RunReview),
     url(r'^admin/maxlead_site/user_info/', test_views.user_info),
+    url(r'^admin/maxlead_site/login/', Logins.userLogin),
+    url(r'^admin/maxlead_site/logout/', Logins.logout),
+    url(r'^admin/maxlead_site/forget_pass/', Logins.forget_password_for_email),
+    url(r'^admin/maxlead_site/reset_pass/', Logins.email_reset_pass),
     url(r'^admin/', admin.site.urls),
 
 ]

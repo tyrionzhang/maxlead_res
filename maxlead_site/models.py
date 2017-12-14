@@ -19,6 +19,7 @@ class UserProfile(models.Model):
     state = models.IntegerField('State',default=0)
     group = models.ManyToManyField(MenberGroups,related_name='MenberGroups')
     er_count = models.IntegerField(default=0)
+    em_count = models.IntegerField(default=0)
     er_time = models.IntegerField(default=0)
 
     class Meta:

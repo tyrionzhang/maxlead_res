@@ -57,8 +57,7 @@ class JavaScriptMiddleware(object):
                     votes_list.append(val.find_element_by_class_name('count').text)
             if qa_res:
                 for i in range(len(qa_res)):
-                    qa_el = self.driver.find_elements_by_css_selector(
-                        '.askInlineWidget>.askTeaserQuestions>.a-spacing-base')
+                    qa_el = self.driver.find_elements_by_css_selector('.askInlineWidget>.askTeaserQuestions>.a-spacing-base')
                     cl_el = qa_el[i].find_element_by_css_selector('.a-spacing-base .a-link-normal')
                     cl_el.click()
                     time.sleep(2)
@@ -68,7 +67,8 @@ class JavaScriptMiddleware(object):
                     # body = r.content
                     self._save_qa_action(url=url,votes=votes_list[i])
                     self.driver.back()
-                    time.sleep(2)
+                    time.sleep(8)
+            self.driver.quit()
 
             return HtmlResponse(url, encoding='utf-8', status=200, body=body)
         except (IOError ,ZeroDivisionError):
