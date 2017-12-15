@@ -18,7 +18,6 @@ class JavaScriptMiddleware(object):
         qa_data = Questions(question=question, asin=asin_id, asked=asked, votes=votes)
         qa_data.id
         qa_data.save()
-        qa_data.id
         try:
             answers = self.driver.find_elements_by_css_selector('.askAnswersAndComments>.a-section')
             if answers:
@@ -28,7 +27,6 @@ class JavaScriptMiddleware(object):
                     answer_data = Answers(question=qa_data, person=person, answer=answer)
                     answer_data.id
                     answer_data.save()
-                    answer_data.id
         except (IOError, ZeroDivisionError):
             print(IOError)
 
