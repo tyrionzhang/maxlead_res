@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-  
 from selenium import webdriver
 from scrapy.http import HtmlResponse
-import requests,time,os
+import requests,time,random
 from bots.maxlead_scrapy.maxlead_scrapy import settings
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from maxlead_site.models import Questions,Answers
@@ -32,6 +32,9 @@ class JavaScriptMiddleware(object):
 
 
     def process_request(self, request, spider):
+        # thisip = random.choice(settings.IPPOOL)
+        # print("this is ip:" + thisip["ipaddr"])
+        # request.meta["proxy"] = "http://" + thisip["ipaddr"]
         dcap = dict(DesiredCapabilities.PHANTOMJS)  # 设置useragent
         dcap['phantomjs.page.settings.userAgent'] = settings.UA
         # user_agent = settings.UA
@@ -66,7 +69,7 @@ class JavaScriptMiddleware(object):
                     self._save_qa_action(url=url,votes=votes_list[i])
                     self.driver.back()
                     time.sleep(8)
-            self.driver.quit()
+            # self.driver.quit()
 
             return HtmlResponse(url, encoding='utf-8', status=200, body=body)
         except (IOError ,ZeroDivisionError):

@@ -107,6 +107,7 @@ DOWNLOADER_MIDDLEWARES = {
    #  'scrapy_splash.SplashMiddleware': 725,
    #  'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
     'maxlead_scrapy.middlewares.middleware.JavaScriptMiddleware': 543, #键为中间件类的路径，值为中间件的顺序
+    # 'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware':543,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None, #禁止内置的中间件
 }
 
@@ -144,3 +145,10 @@ DOWNLOADER_MIDDLEWARES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 STATIC_URL = '../static'
+
+IPPOOL=[
+    {"ipaddr":"182.253.152.131:80"},
+    {"ipaddr":"116.199.2.197:80"},
+    {"ipaddr":"170.246.114.213:8080"},
+    {"ipaddr":"36.67.118.201:80"},
+]

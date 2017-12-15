@@ -8,7 +8,7 @@ class QaSpider(scrapy.Spider):
 
     name = "qa_spider"
     start_urls = []
-    url = "https://www.amazon.com/ask/questions/asin/%s/ref=ask_ql_qlh_hza"
+    url = "https://www.amazon.com/ask/questions/asin/%s/"
     res = list(UserAsins.objects.filter(is_use=True).values('aid','review_watcher','listing_watcher','sku').annotate(count=Count('aid')))
 
     if res:

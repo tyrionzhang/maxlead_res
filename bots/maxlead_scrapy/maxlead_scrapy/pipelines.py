@@ -45,7 +45,7 @@ class MaxleadScrapyPipeline(object):
                 us = image_url.split('/')[3:]
                 image_file_name = '_'.join(us)
                 file_path = '%s/%s' % (dir_path, image_file_name)
-                images_str += file_path+'||'
+                images_str += file_path
                 images.append(file_path)
                 if os.path.exists(file_path):
                     continue
@@ -62,7 +62,7 @@ class MaxleadScrapyPipeline(object):
             item['image_thumbs'] = ''
             for img_file in images:
                 thunb_file = common.make_thumb(img_file,dir_path,40)
-                item['image_thumbs'] += thunb_file+'||'
+                item['image_thumbs'] += thunb_file
         item.save()
         return item
 

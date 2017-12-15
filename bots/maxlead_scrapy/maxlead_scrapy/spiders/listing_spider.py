@@ -2,7 +2,7 @@
 
 import scrapy,time,os
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
-from maxlead_site.models import UserAsins
+from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
 
 
@@ -77,12 +77,27 @@ class ListingSpider(scrapy.Spider):
 
         item['inventory'] = 0
         item['image_urls'] = []
-        for img_re in response.css('div#altImages ul.a-unordered-list li.item'):
-            res = img_re.css('span.a-button-text img::attr("src")').extract_first()
-            if res:
-                name_res = os.path.basename(res).split('._SS40_')
-                filename = name_res[0]+name_res[1]
-                if not os.path.splitext(filename)[1] == '.png':
-                    res = os.path.dirname(res)+'/'+filename
-                    item['image_urls'].append(res)
+        img_el = response.css('div#altImages ul.a-unordered-list li.item')
+        res = img_el[0].css('span.a-button-text img::attr("src")').extract_first()
+        if res:
+            name_res = os.path.basename(res).split('._SS40_')
+            filename = name_res[0] + name_res[1]
+            if not os.path.splitext(filename)[1] == '.png':
+                res = os.path.dirname(res) + '/' + filename
+                listing = Listings.objects.filter(asin=asin_id).latest('created')
+                us = res.split('/')[3:]
+                image_file_name = '_'.join(us)
+                item['image_urls'].append(res)
+                if not os.path.basename(listing.image_names) == image_file_name:
+                    item['image_date'] = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+                else:
+                    item['image_date'] = listing.image_date
+        # for img_re in response.css('div#altImages ul.a-unordered-list li.item'):
+        #     res = img_re.css('span.a-button-text img::attr("src")').extract_first()
+        #     if res:
+        #         name_res = os.path.basename(res).split('._SS40_')
+        #         filename = name_res[0]+name_res[1]
+        #         if not os.path.splitext(filename)[1] == '.png':
+        #             res = os.path.dirname(res)+'/'+filename
+        #             item['image_urls'].append(res)
         yield item
