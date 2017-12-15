@@ -7,9 +7,11 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
-from maxlead_site.models import UserProfile
+from django.contrib.admin.views.decorators import staff_member_required
+from maxlead_site.models import UserProfile,MenberGroups
 from maxlead import settings
 from maxlead_site.common.prpcrypt import Prpcrypt
+from maxlead_site.views import commons
 
 class Logins:
 
@@ -33,6 +35,7 @@ class Logins:
                 user_file.update(er_count=0,em_count=0)
                 auth.login(self, user)
                 self.session.set_expiry(604800) # 登陆状态生命
+                commons.loger(description='用户登陆正常',user=user,name='用户登陆')
                 return HttpResponseRedirect("/user")
             else:
                 if user_file[0].em_count >= 5:
@@ -96,3 +99,80 @@ class Logins:
                 return render(self, 'error/login_error.html', {'msg': 'url地址已过期/参数有误！'})
         else:
             return render(self, 'error/login_error.html', {'msg': 'url地址参数有误！'})
+
+    @csrf_exempt
+    def save_user(self):
+        users = self.user
+        if users.is_authenticated():
+            user_file = UserProfile.objects.get(user=users.id)
+            user_id = self.POST.get('id', '')
+            group = self.POST.get('group', '')
+            if isinstance(group, str) or isinstance(group, int):
+                group = [int(group)]
+            if user_file.role == 2:
+                user = User()
+                if user_id:
+                    user.id = user_id
+                else:
+                    user.id
+                user.username = self.POST.get('name', '')
+                user.set_password(self.POST.get('password', ''))
+                user.email = self.POST.get('email', '')
+
+                user.save()
+
+                user_file = UserProfile()
+                user_file.id = user.userprofile.id
+                user_file.user_id = user.id
+                user_file.state = self.POST.get('state', '')
+                user_file.role = self.POST.get('role', '')
+                user_file.save()
+
+                for val in group:
+                    if user_id:
+                        user_file.group.remove(val)
+                    user_file.group.add(val)
+
+                return render(self, 'error/error_page.html')
+            else:
+                if user_id and user_id==users.id:
+                    user = User()
+                    user.id = user_id
+                    user.set_password(self.POST.get('password', ''))
+                    user.save()
+                    user_file = UserProfile()
+                    user_file.user_id = user.id
+                    for val in group:
+                        user_file.group.remove(val)
+                        user_file.group.add(val)
+
+                return render(self, 'error/error_page.html', {'code':0,'msg':u'该用户没有添加用户的权限！'})
+
+    save_user = staff_member_required(save_user)
+
+    @csrf_exempt
+    def delete_user(self):
+        users = self.user
+        if users.is_authenticated():
+            user_file = UserProfile.objects.get(user=users.id)
+            if user_file.role == 2:
+                del_id = self.GET['id']
+                if isinstance(del_id, str):
+                    del_id = [int(del_id)]
+                res = UserProfile.objects.filter(id__in=del_id).update(state=0)
+                if res:
+                    return render(self, 'error/error_page.html')
+            else:
+                return render(self, 'error/error_page.html', {'code': 0, 'msg': u'没有删除用户的权限！'})
+
+    @csrf_exempt
+    def user_detail(self):
+        id = self.GET['id']
+        users = self.user
+        if users.is_authenticated():
+            user_file = UserProfile.objects.get(user=users.id)
+            if not user_file.role == 2 and not users.id == id:
+                return render(self, 'error/error_page.html', {'code': 0, 'msg': u'没有的权限！'})
+
+            user = User.objects.get(id=id)
+            return render(self, 'error/error_page.html', {'code': 1, 'data': user})

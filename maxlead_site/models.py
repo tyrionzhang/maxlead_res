@@ -17,6 +17,7 @@ class MenberGroups(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     state = models.IntegerField('State',default=0)
+    role = models.IntegerField('Role',default=0)
     group = models.ManyToManyField(MenberGroups,related_name='MenberGroups')
     er_count = models.IntegerField(default=0)
     em_count = models.IntegerField(default=0)

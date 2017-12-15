@@ -1,4 +1,5 @@
 import difflib
+from maxlead_site.models import Log
 
 def get_diff_str(content_list):
     line_list = []
@@ -29,3 +30,9 @@ def get_diff_str(content_list):
                             if not line[0] == "+" and not line[0] == "-":
                                line_list.append(line)
     return line_list
+
+def loger(description,user,name=''):
+    log_obj = Log(description=description,user=user,name=name)
+    log_obj.id
+    log_obj.save()
+    return log_obj.id

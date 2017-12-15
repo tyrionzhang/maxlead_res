@@ -27,6 +27,9 @@ urlpatterns = [
     url(r'^admin/maxlead_site/logout/', Logins.logout),
     url(r'^admin/maxlead_site/forget_pass/', Logins.forget_password_for_email),
     url(r'^admin/maxlead_site/reset_pass/', Logins.email_reset_pass),
+    url(r'^admin/maxlead_site/save_user/', Logins.save_user),
+    url(r'^admin/maxlead_site/delete_user/', Logins.delete_user),
+    url(r'^admin/maxlead_site/user_detail/', Logins.user_detail),
     url(r'^admin/', admin.site.urls),
 
 ]
