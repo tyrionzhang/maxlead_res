@@ -85,11 +85,11 @@ class ListingSpider(scrapy.Spider):
             if not os.path.splitext(filename)[1] == '.png':
                 res = os.path.dirname(res) + '/' + filename
                 listing = Listings.objects.filter(asin=asin_id)
+                item['image_urls'].append(res)
                 if listing:
                     listing = listing.latest('created')
                     us = res.split('/')[3:]
                     image_file_name = '_'.join(us)
-                    item['image_urls'].append(res)
                     if not os.path.basename(listing.image_names) == image_file_name:
                         item['image_date'] = time.strftime('%Y-%m-%d',time.localtime(time.time()))
                     else:
