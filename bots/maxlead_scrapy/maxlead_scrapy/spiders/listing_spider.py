@@ -84,14 +84,18 @@ class ListingSpider(scrapy.Spider):
             filename = name_res[0] + name_res[1]
             if not os.path.splitext(filename)[1] == '.png':
                 res = os.path.dirname(res) + '/' + filename
-                listing = Listings.objects.filter(asin=asin_id).latest('created')
-                us = res.split('/')[3:]
-                image_file_name = '_'.join(us)
-                item['image_urls'].append(res)
-                if not os.path.basename(listing.image_names) == image_file_name:
-                    item['image_date'] = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+                listing = Listings.objects.filter(asin=asin_id)
+                if listing:
+                    listing = listing.latest('created')
+                    us = res.split('/')[3:]
+                    image_file_name = '_'.join(us)
+                    item['image_urls'].append(res)
+                    if not os.path.basename(listing.image_names) == image_file_name:
+                        item['image_date'] = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+                    else:
+                        item['image_date'] = listing.image_date
                 else:
-                    item['image_date'] = listing.image_date
+                    item['image_date'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
         # for img_re in response.css('div#altImages ul.a-unordered-list li.item'):
         #     res = img_re.css('span.a-button-text img::attr("src")').extract_first()
         #     if res:

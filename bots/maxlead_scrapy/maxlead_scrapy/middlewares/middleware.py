@@ -68,7 +68,7 @@ class JavaScriptMiddleware(object):
                     # body = r.content
                     self._save_qa_action(url=url,votes=votes_list[i])
                     self.driver.back()
-                    time.sleep(8)
+                    time.sleep(3)
             # self.driver.quit()
 
             return HtmlResponse(url, encoding='utf-8', status=200, body=body)
