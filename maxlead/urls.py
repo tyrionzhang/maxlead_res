@@ -22,6 +22,7 @@ from maxlead_site.views.users.login import Logins
 urlpatterns = [
     # url(r'^admin/warehouse/spiders/', warehouse_views.home),
     url(r'^admin/maxlead_site/spiders/', max_views.RunReview),
+    url(r'^admin/maxlead_site/test/', max_views.test1),
     url(r'^admin/maxlead_site/user_info/', test_views.user_info),
     url(r'^admin/maxlead_site/login/', Logins.userLogin),
     url(r'^admin/maxlead_site/logout/', Logins.logout),
