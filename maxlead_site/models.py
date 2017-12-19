@@ -80,6 +80,8 @@ class Listings(models.Model):
     asin = models.CharField('AsinId', max_length=50)
     sku = models.CharField('SKU', max_length=50)
     brand = models.CharField('Brand', max_length=50)
+    description = models.TextField('Description',default='')
+    feature = models.TextField('Feature',default='')
     buy_box = models.CharField('Buy Box', max_length=50)
     price = models.CharField('Price', max_length=50,null=True)
     total_review = models.IntegerField('RVW QTY', default=0)

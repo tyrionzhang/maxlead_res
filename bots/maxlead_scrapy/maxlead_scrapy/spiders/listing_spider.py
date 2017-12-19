@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import scrapy,time,os
+import scrapy,time,os,re
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
@@ -10,7 +10,7 @@ class ListingSpider(scrapy.Spider):
 
     name = "listing_spider"
     start_urls = []
-    url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head"
+    url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head&th=1&psc=1"
     res = list(UserAsins.objects.filter(is_use=True).values('aid','review_watcher','listing_watcher','sku').annotate(count=Count('aid')))
 
     if res:
@@ -32,8 +32,19 @@ class ListingSpider(scrapy.Spider):
         if not item['brand']:
             item['brand'] = response.css('div#bylineInfo_feature_div a#bylineInfo::text').extract_first()
         item['brand'] = item['brand'].replace('\n','').strip()
+        item['feature'] = ''
+        des_li = response.css('div#feature-bullets li span.a-list-item::text').extract()
+        if des_li:
+            for val in des_li:
+                val = re.sub(r"\n|\t",'',val)
+                item['feature'] += val + '\n'
 
-        buyBoxs = response.css('div#availability_feature_div span#merchant-info a::text').extract()
+        des_res = re.sub("\n", ",",
+                          response.css("div#productDescription").xpath("string(p)").extract_first(default="").strip())
+        item['description'] = des_res
+
+        item['buy_box'] = []
+        buyBoxs = response.css('div#merchant-info a::text').extract()
         item['buy_box'] = 'Ours'
         item['price'] = response.css('tr#priceblock_ourprice_row span#priceblock_ourprice::text').extract_first()
         if not item['price']:
