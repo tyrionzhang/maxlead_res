@@ -45,7 +45,16 @@ class ListingSpider(scrapy.Spider):
 
         item['buy_box'] = []
         buyBoxs = response.css('div#merchant-info a::text').extract()
-        item['buy_box'] = 'Ours'
+        if not buyBoxs:
+            buyBoxs = re.sub("\n", ",",
+                          response.css("div#availability-brief").xpath("string(span[2])").extract_first(default="").strip())
+            if buyBoxs:
+                a = buyBoxs.split('sold by')[1]
+                buyBoxs = a.split('and')
+        if buyBoxs:
+            for v in buyBoxs:
+                item['buy_box'].append(v)
+        item['buy_box'] = str(item['buy_box'])
         item['price'] = response.css('tr#priceblock_ourprice_row span#priceblock_ourprice::text').extract_first()
         if not item['price']:
             item['price'] = response.css('tr#priceblock_dealprice_row span#priceblock_dealprice::text').extract_first()
