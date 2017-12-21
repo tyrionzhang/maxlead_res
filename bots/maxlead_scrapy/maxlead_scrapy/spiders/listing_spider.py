@@ -18,8 +18,36 @@ class ListingSpider(scrapy.Spider):
             asin = url % (re['aid'], int(time.time()))
             start_urls.append(asin)
 
+    def click_cart(self,response):
+        asin = response.url
+        el = ''
+        if response.css('#add-to-cart-button'):
+            el = 'add-to-cart-button'
+        if response.css('#hlb-view-cart-announce'):
+            el = 'hlb-view-cart-announce'
+
+        script = '''
+            function main(splash)
+                splash:autoload("http://libs.baidu.com/jquery/1.7.2/jquery.min.js")
+
+                splash:go("%s")
+
+                splash:runjs("$('#%s').click()")
+
+                return splash:html()
+
+            end
+        ''' % (asin, el)
+
+        yield scrapy.Request(asin,self.parse,meta={
+            'splash':{
+                'args':{'lua_source':script},
+                'endpoint':'execute',
+            }
+        })
+
+
     def parse(self, response):
-        url1 = "https://www.amazon.com/gp/cart/ajax-update.html/ref=ox_sc_update_quantity_1%7C1%7C999"
         res_asin = response.url.split('/')
         asin_id = res_asin[4]
         item = ListingsItem()
@@ -82,7 +110,6 @@ class ListingSpider(scrapy.Spider):
         else:
             rank_el = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(3) td span span::text').extract()
             if rank_el:
-                rank_item = ''
                 item['category_rank'] = rank_el[0].split(' (')[0]
                 rank_span = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(3) td span span')
                 for n,rank_a in enumerate(rank_span,0):
@@ -95,6 +122,23 @@ class ListingSpider(scrapy.Spider):
                                 item['category_rank'] += '|' + rank_el[2] + val + ' > '
                             else:
                                 item['category_rank'] += val + ' > '
+            else:
+                rank_el = response.css(
+                    'table#productDetails_detailBullets_sections1 tr:nth-child(7) td span span::text').extract()
+                if rank_el:
+                    item['category_rank'] = rank_el[0].split(' (')[0]
+                    rank_span = response.css(
+                        'table#productDetails_detailBullets_sections1 tr:nth-child(7) td span span')
+                    for n, rank_a in enumerate(rank_span, 0):
+                        if not n == 0:
+                            a = rank_a.css('a::text').extract()
+                            for s, val in enumerate(a, 1):
+                                if s == len(a):
+                                    item['category_rank'] += val
+                                elif s == 1:
+                                    item['category_rank'] += '|' + rank_el[2] + val + ' > '
+                                else:
+                                    item['category_rank'] += val + ' > '
 
         item['inventory'] = 0
         item['image_urls'] = []
@@ -117,6 +161,8 @@ class ListingSpider(scrapy.Spider):
                         item['image_date'] = listing.image_date
                 else:
                     item['image_date'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+
+
         # for img_re in response.css('div#altImages ul.a-unordered-list li.item'):
         #     res = img_re.css('span.a-button-text img::attr("src")').extract_first()
         #     if res:
