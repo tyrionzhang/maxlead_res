@@ -9,28 +9,6 @@ from maxlead_site.models import Questions,Answers
 class JavaScriptMiddleware(object):
     driver = webdriver.PhantomJS(executable_path='C:\\Users\\asus\\node_modules\\phantomjs\\lib\\phantom\\bin\\phantomjs.exe')
 
-    def _save_qa_action(self,url,votes):
-        question = self.driver.find_element_by_class_name('askAnswersAndComments').text
-        res_asin = url.split('/')
-        asin_id = res_asin[6]
-        votes = votes
-        asked = self.driver.find_element_by_css_selector('.a-spacing-base .a-text-left').text
-        qa_data = Questions(question=question, asin=asin_id, asked=asked, votes=votes)
-        qa_data.id
-        qa_data.save()
-        try:
-            answers = self.driver.find_elements_by_css_selector('.askAnswersAndComments>.a-section')
-            if answers:
-                for asw in answers:
-                    person = asw.find_element_by_class_name('a-color-tertiary').text
-                    answer = asw.find_element_by_tag_name('span').text
-                    answer_data = Answers(question=qa_data, person=person, answer=answer)
-                    answer_data.id
-                    answer_data.save()
-        except (IOError, ZeroDivisionError):
-            print(IOError)
-
-
     def process_request(self, request, spider):
         # thisip = random.choice(settings.IPPOOL)
         # print("this is ip:" + thisip["ipaddr"])
@@ -49,27 +27,6 @@ class JavaScriptMiddleware(object):
             # self.driver.save_screenshot('1.png')  # 截图保存
             # self.driver.find_element_by_id('dropdown_selected_size_name').click()
             # webdriver.ActionChains(self.driver).move_to_element() #鼠标移动
-            qa_res = self.driver.find_elements_by_css_selector('.askInlineWidget>.askTeaserQuestions>.a-spacing-base')
-            vote_el = self.driver.find_elements_by_css_selector('.askInlineWidget .voteAjax')
-            votes_list = []
-            if vote_el:
-                for val in vote_el:
-                    val.is_enabled()
-                    votes_list.append(val.find_element_by_class_name('count').text)
-            if qa_res:
-                for i in range(len(qa_res)):
-                    qa_el = self.driver.find_elements_by_css_selector('.askInlineWidget>.askTeaserQuestions>.a-spacing-base')
-                    cl_el = qa_el[i].find_element_by_css_selector('.a-spacing-base .a-link-normal')
-                    cl_el.click()
-                    time.sleep(2)
-                    # r = requests.get(url, headers=headers)
-                    # time.sleep(5)
-                    #
-                    # body = r.content
-                    self._save_qa_action(url=url,votes=votes_list[i])
-                    self.driver.back()
-                    time.sleep(3)
-            # self.driver.quit()
 
             return HtmlResponse(url, encoding='utf-8', status=200, body=body)
         except (IOError ,ZeroDivisionError):

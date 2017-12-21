@@ -7,7 +7,7 @@
 
 import scrapy
 from scrapy_djangoitem import DjangoItem
-from maxlead_site.models import AsinReviews,Reviews,Listings
+from maxlead_site.models import AsinReviews,Reviews,Listings,Questions,Answers
 
 
 class AsinReviewsItem(DjangoItem):
@@ -27,4 +27,12 @@ class ListingsItem(DjangoItem):
     image_urls = scrapy.Field()
     images = scrapy.Field()
     django_model = Listings
+
+class QuestionsItem(DjangoItem):
+    # define the fields for your item here like:
+    django_model = Questions
+
+class AnswersItem(DjangoItem):
+    # define the fields for your item here like:
+    django_model = Answers
 

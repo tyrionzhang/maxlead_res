@@ -19,6 +19,7 @@ class ListingSpider(scrapy.Spider):
             start_urls.append(asin)
 
     def parse(self, response):
+        url1 = "https://www.amazon.com/gp/cart/ajax-update.html/ref=ox_sc_update_quantity_1%7C1%7C999"
         res_asin = response.url.split('/')
         asin_id = res_asin[4]
         item = ListingsItem()
