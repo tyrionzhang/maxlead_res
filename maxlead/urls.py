@@ -18,9 +18,13 @@ from django.contrib import admin
 from maxlead_site.views import views as max_views
 from maxlead_site.views.views import test as test_views
 from maxlead_site.views.users.login import Logins
+from maxlead_site.views.index.index import Index
+from django.views import static
+from maxlead import settings
 
 urlpatterns = [
     # url(r'^admin/warehouse/spiders/', warehouse_views.home),
+    url(r'^static/(?P<path>.*)$', static.serve,{ 'document_root': settings.STATIC_URL }),
     url(r'^admin/maxlead_site/spiders/', max_views.RunReview),
     url(r'^admin/maxlead_site/test/', max_views.test1),
     url(r'^admin/maxlead_site/user_info/', test_views.user_info),
@@ -31,6 +35,9 @@ urlpatterns = [
     url(r'^admin/maxlead_site/save_user/', Logins.save_user),
     url(r'^admin/maxlead_site/delete_user/', Logins.delete_user),
     url(r'^admin/maxlead_site/user_detail/', Logins.user_detail),
+    url(r'^admin/maxlead_site/index/', Index.index),
+    url(r'^admin/maxlead_site/user_list/', Logins.user_list),
     url(r'^admin/', admin.site.urls),
 
 ]
+

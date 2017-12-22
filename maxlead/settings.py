@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'suit',
+    # 'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,7 +61,7 @@ ROOT_URLCONF = 'maxlead.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'maxlead_site\\templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,7 +133,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/maxlead_site/static/'
+STATICFILES_DIRS = (
+    os.path.join(os.path.dirname(__file__), '../maxlead_site/static/').replace('\\','/'),
+)
 
 SPIDER_URL = 'D:/maxlead/bots/maxlead_scrapy'
 
@@ -142,35 +145,35 @@ DOWNLOAD_URL = 'D:/maxlead/download'
 REVIEW_TIME = 300
 
 # django-suit config
-SUIT_CONFIG = {
-    'ADMIN_NAME': 'Maxlead信息管理系统',
-    'HEADER_DATE_FORMAT': '',
-    'HEADER_TIME_FORMAT': 'H:i',
-    'SHOW_REQUIRED_ASTERISK': True,
-    'CONFIRM_UNSAVED_CHANGES': True,
-    'LIST_PER_PAGE': 20,
-    'MENU_OPEN_FIRST_CHILD': True,
-    'MENU': (
-        # sites是默认原先的app和models
-        'maxlead_site',
-        # '-',
-        # {'app': 'Maxlead_Site', 'label': u'爬虫', 'icon': 'icon-user'},
-        # '-',
-        # {'app': 'duser', 'label': u'平台用户', 'icon': 'icon-user'},
-        # '-',
-        # {'app': 'dtheme', 'label': u'主题管理', 'icon': 'icon-tags'},
-        # '-',
-        # {'app': 'dpost', 'label': u'文章管理', 'icon': 'icon-edit'},
-        '-',
-        # 如果使用http这种绝对路径的话，菜单不会展开，且不会标记为active状态
-        # {'url': '/admin/warehouse/test', 'label': u'这是一个测试', 'icon': 'icon-lock'},
-        # '-',
-        # {'label': u'运行爬虫', 'icon': 'icon-tags', 'models': (
-        #     {'url': '/admin/warehouse/spiders', 'label': u'运行爬虫'},
-        #     {'url': '/admin/warehouse/spiders2', 'label': u'运行爬虫2'},
-        # )}
-    )
-}
+# SUIT_CONFIG = {
+#     'ADMIN_NAME': 'Maxlead信息管理系统',
+#     'HEADER_DATE_FORMAT': '',
+#     'HEADER_TIME_FORMAT': 'H:i',
+#     'SHOW_REQUIRED_ASTERISK': True,
+#     'CONFIRM_UNSAVED_CHANGES': True,
+#     'LIST_PER_PAGE': 20,
+#     'MENU_OPEN_FIRST_CHILD': True,
+#     'MENU': (
+#         # sites是默认原先的app和models
+#         'maxlead_site',
+#         # '-',
+#         # {'app': 'Maxlead_Site', 'label': u'爬虫', 'icon': 'icon-user'},
+#         # '-',
+#         # {'app': 'duser', 'label': u'平台用户', 'icon': 'icon-user'},
+#         # '-',
+#         # {'app': 'dtheme', 'label': u'主题管理', 'icon': 'icon-tags'},
+#         # '-',
+#         # {'app': 'dpost', 'label': u'文章管理', 'icon': 'icon-edit'},
+#         '-',
+#         # 如果使用http这种绝对路径的话，菜单不会展开，且不会标记为active状态
+#         # {'url': '/admin/warehouse/test', 'label': u'这是一个测试', 'icon': 'icon-lock'},
+#         # '-',
+#         # {'label': u'运行爬虫', 'icon': 'icon-tags', 'models': (
+#         #     {'url': '/admin/warehouse/spiders', 'label': u'运行爬虫'},
+#         #     {'url': '/admin/warehouse/spiders2', 'label': u'运行爬虫2'},
+#         # )}
+#     )
+# }
 
 CRONJOBS = [
     ('*/5 * * * *', "maxlead_site.cron.RunReview")

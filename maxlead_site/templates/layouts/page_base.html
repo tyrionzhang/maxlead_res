@@ -1,0 +1,58 @@
+<!-- head.php BEGIN -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+        <!--<link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon">-->
+        <link rel="stylesheet" href="../../../maxlead_site/static/css/stylesheet.css" type="text/css">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="../../../maxlead_site/static/js/basic.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            <header>
+                <a href="http://staffx.pro"><img id="logo" src="../../../maxlead_site/static/img/logo.png" /></a>
+                <div id="userNav">
+                    <p><span  class="avatar">{{ avator }}</span><!--取用户名首字母--><span class="userName">{{ user.user.username }}</span><img id="menuSwitch" src="../../../maxlead_site/static/img/downArrow.png" /></p>
+                    <ul style="display:none;">
+                        <li><a href="">Update Info</a></li>
+                        {% if not user.role == 2 %}
+                        <li><a href="/admin/maxlead_site/user_list/">User Admin</a></li> <!--只对role为admin的用户显示-->
+                        <li><a href="">Spider Admin</a></li><!--只对role为admin的用户显示-->
+                        {% endif %}
+                        <li><a href="/admin/maxlead_site/logout/">Log Out</a></li>
+                    </ul>
+                </div>
+            </header>
+<!-- head.php END -->
+
+<!-- nav.php BEGIN -->
+            <nav>
+                <ul>
+                    <a href=""><li>Dashboard</li></a>
+                    <li>Sniffer</li>
+                    <li class="subMenu"><a href="">Listing</a></li>
+                    <a href=""><li>Miner</li></a>
+                </ul>
+                <p>Show me</p>  <!--只dashboard，listing列表及miner页面显示此部分 &&  只对role为Leader或Admin的用户显示Show me及下拉选项-->
+                <select name="viewRange" id="viewRange">
+                    <option selected value="Mine">Mine</option> <!--第一项为Mine，是当前用户自己的数据；第二项为All，role为Admin显示全站所有用户的，为Leader则显示本组所有用户的；第三项开始显示用户列表，按首字母升序排列-->
+                    <option value="all">All</option>
+                    <option value="...">Member 1</option>
+                </select>
+            </nav>
+
+            {%  block container%}
+
+            {% endblock %}
+            <!-- footer.php BEGIN -->
+            <footer>
+                <p>&copy;2017 Staff X</p>
+            </footer>
+        </div>
+    </body>
+</html>
+<!-- footer.php END -->

@@ -1,0 +1,32 @@
+{% extends "layouts/base.html" %}
+
+        {% block container %}
+            <main class="signIn">
+                <form name="userLogin" autocomplete="on" action="/admin/maxlead_site/login/" method="post">
+                    <label>Username: </label>
+                    <input type="text" name="username" value="" autofocus="autofocus" />
+                    <br><br>
+                    <label>Password: </label>
+                    <input type="password" name="password" value="">
+                    <br><br>
+                    <input class="submitButton" type="submit" value="Sign in" />   
+                </form> 
+                <p id="ifmp">I forget my password</p>
+                <div id="pwdReset" style="display:none;">
+                    <p><b>Password Reset Request</b></p>
+                    <form name="pwdReset" action="admin/maxlead_site/forget_pass/" method="post">
+                        <label>Username:</label>
+                        <input type="text" name="username" value="" />
+                        <br><br>
+                        <label>Email:</label>
+                        <input type="email" name="email" value="">
+                        <br><br>
+                        <input class="prrButton" type="submit" value="Reset" />
+                        <input class="prrButton" id="prrCancel" type="button" value="Cancel">
+                    </form>                    
+                </div>
+            </main>
+            
+        {% endblock %}
+
+

@@ -1,0 +1,662 @@
+/*
+Date: 2017-12-18
+Author: Matt
+*/
+
+/* page Begins*/
+body {
+    background:#686963;
+    font-family:Arial;
+    
+}
+
+li {
+    list-style:none;
+}
+
+#container, .signIn {
+    width: 1200px;
+    margin: 0 auto;
+    background:#f1edee;
+}
+
+main > h2, .dashboard  h3, #editASIN h3, .productInfo h2 {
+    margin-top: 4px;
+
+}
+
+main {
+    margin-left: 15px;
+    width: 1050px;
+}
+
+main > h2, .headButton, .dashContent, #userNav, .pageNum > ul, .pageNum li, nav, main, .signIn form label, .userInfo label, #addMinerTask label, .pageNum, .pageStatics, .qtyUpdater,#userNav > p span, .detailGallery, .productInfo, .rvKeywords, .rvInfo {
+    display: inline-block;
+}
+
+.headButton {
+    width: 100px;
+    margin-left: 25px;
+}
+
+.pageNum, .pageStatics, .qtyUpdater {
+    margin: 25px 50px 10px;
+    font-size: 14px;
+}
+
+.pageNum input {
+    width: 40px;
+}
+
+.star5, .star4, .star3, .star2, .star1 {
+    width:80px;
+    height:20px;
+    display:block;
+}
+
+.star5{
+    background-image:url("../img/5star.PNG");
+}
+
+.star4{
+    background-image:url("../img/4star.PNG");
+}
+
+.star3{
+    background-image:url("../img/3star.PNG");
+}
+
+.star2{
+    background-image:url("../img/2star.PNG");
+}
+
+.star1{
+    background-image:url("../img/1star.PNG");
+}
+
+.asinON, .asinOFF, .rvON, .rvOFF, .listON, .listOFF {
+    display:inline-block;
+    width:8px;
+    height: 8px;
+    border-radius: 4px;
+    margin: 0 auto;
+    cursor:pointer;
+}
+
+.asinON,.rvON,.listON {
+    background:#769e31;
+}
+
+.asinOFF,.rvOFF,.listOFF {
+    background:#db5461;
+}
+
+
+
+/* page Ends*/
+
+
+/* header Begins*/
+header, #userNav > ul {
+    background:#415a77;
+}
+
+header {
+    height: 80px;
+
+}
+
+
+#logo {
+    width: 150px;
+    vertical-align: top;
+    margin: 20px 790px 0 40px;
+    
+}
+
+
+#userNav, #userNav a {
+    color: #ffffff;
+    text-decoration:none;
+}
+
+.avatar {
+    font-size:46px;
+    background:#f1edee;
+    color: #4a5177;
+    padding: 2px 5px 2px;
+    margin-right: 10px;
+    width: 45px;
+    text-align: center;
+    text-transform:uppercase;
+
+}
+
+.userName {
+    vertical-align: bottom;
+    margin-right: 7px;
+}
+
+
+#menuSwitch {
+    vertical-align: middle;
+    margin-top:16px;
+    cursor: pointer;
+}
+
+#userNav > ul {
+    position: relative;
+    left: 5px;
+    top: -15px;
+    padding: 1px 8px 5px 10px;
+    width: 95px;
+    height: 135px;
+    margin-left:52px;
+
+}
+
+#userNav > p {
+    margin-top: 12px;
+}
+
+#userNav li {
+    margin-top: 16px;
+    font-size:14px;
+}
+
+#userNav a:hover {
+    color:#db5461;
+    
+}
+
+/* header Ends*/
+
+/*nav Begins*/
+nav, main {
+    vertical-align:top;
+    margin-top: 20px;
+}
+
+nav {
+
+    margin-left: 20px;
+    width: 108px;
+    
+}
+
+nav a:link, nav a:visited, .listingDetail a:link, .listingDetail a:visited  {
+    text-decoration: none;
+    color:#db5461;
+}
+
+
+nav > ul {
+    padding:8px 8px 5px 10px;
+    font-weight:bold;
+    background:#ffffff;
+    margin-top: 5px;
+    margin-bottom: 8px;
+}
+
+nav li{
+    margin-bottom: 8px;
+}
+
+.subMenu{
+    padding-left: 15px;
+    font-weight:normal;
+    margin-top:-6px;
+}
+
+nav > p, nav>select {
+    margin-top: 0;
+    margin-bottom:3px;
+    width: 108px;
+}
+
+/*nav Ends*/
+
+/*footer begins*/
+footer > p{
+    text-align:center;
+    font-size: 12px;
+    margin-top: 18px;
+    padding-bottom: 30px;
+}
+
+/*footer ends*/
+
+
+/*Singin Begins*/
+
+.signIn > form{
+    margin:200px 454px 10px;
+    
+}
+
+.signIn form label, .userInfo label, #addMinerTask label {
+    margin-right: 10px;
+    text-align: right;
+    width: 100px;
+
+}
+
+.signIn form input, #editASINButton, .rvInfoButton {
+    width: 100px;
+}
+
+.submitButton {
+    margin-left: 96px;
+}
+
+#ifmp {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 40px;
+    margin-bottom: 200px;
+    cursor: pointer;
+}
+
+#pwdReset {
+    right: 25%;
+    width: 240px;
+}
+
+#pwdReset, #addMinerTask, #editASIN {
+    position:absolute;
+    top: 150px;
+    background:#fff;
+    border: 1px solid #333;
+    padding: 10px 15px 15px;
+}
+
+.prrButton {
+    margin-left: 14px;
+}
+
+/*Singin Ends*/
+
+
+/*Userinfo Begins*/
+.userInfo {
+
+    margin-bottom: 200px;
+}
+
+.userInfoButton {
+    width: 100px;
+    margin-left: 45px;
+}
+
+/*Userinfo Ends*/
+
+
+/*Miner Begins*/
+.miner > table, .userAdmin > table, .dashContent > table {
+    width: 100%;
+    text-align:center;
+    line-height:30px;
+    
+}
+
+.miner > table tr:nth-child(odd), .userAdmin > table tr:nth-child(odd), .listMgm >table tr:nth-child(odd) {
+    background:#fff;
+}
+
+#addMinerTask, #editASIN {
+    left: 35%;
+}
+
+.actionButton > input{
+    width: 100px;
+
+    margin-left: 90px;
+}
+
+
+/*Miner Ends*/
+
+/*userAdmin Begins*/
+
+.userAdmin > form input, .userAdmin > form select {
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+
+.userAdmin > table tr, .dashContent tr{
+    cursor: pointer;
+}
+/*userAdmin Ends*/
+
+
+/*dashboard Begins*/
+.dashContent {
+    width: 49%;
+}
+
+.dashContent > table {
+    margin-top: 10px;
+    margin-bottom:20px;
+    font-size: 14px;
+    border: 1px solid #000;
+    background:#fff;
+
+}
+
+.dashboard hr {
+    margin:-10px 0 2px;
+}
+
+.dashContent h4, .detailReview h4 {
+    margin: 10px 0 0;
+}
+
+
+.dashForm {
+    text-align: right;
+}
+
+.dashboard h3, #editASIN h3, .productInfo h2 {
+        margin-bottom: 12px;
+}
+
+.revWatTitle, .revWatSKU {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    -webkit-text-overflow:ellipsis;
+}
+
+.dashContent tr:hover {
+    background: #db5461;
+}
+
+
+/*dashboard Ends*/
+
+/*listingManagement Begins*/
+.listMgm > p {
+    font-size: 14px;
+    margin: -10px 0 3px;
+}
+
+form[name="listSearchForm"], .funcButtons {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+input[name="listKwd"] {
+    width: 240px;
+    height: 25px;
+    margin-bottom: 8px;
+}
+
+form[name="listSearchForm"] > input[type="submit"], .funcButtons, .listActionButton > input {
+    width:100px;
+    height: 25px;
+}
+
+form[name="listSearchForm"] > input {
+    margin-left: 5px;
+}
+
+form[name="listSearchForm"] > select, .funcButtons {
+    margin-right: 5px;
+}
+
+.listMgm > table {
+    width: 98%;
+    text-align: center;
+    font-size:14px;
+    
+}
+
+.listMgmPic {
+    margin:0;
+    padding: 0;
+    width:60px;
+    height:60px;
+}
+
+.listingTitle {
+    display: block;
+    max-width: 280px;
+    max-height: 42px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  
+}
+
+.listingASIN, .listingSKU {
+    font-size: 12px;
+    display: inline-block;
+}
+
+.listingASIN {
+    margin-right: 25px;
+}
+
+.lastCheck {
+    display: block;
+    max-width:80px;
+}
+
+.listMgm > table a {
+    text-decoration:none;
+    color:#415a77;
+}
+
+#editASIN {
+    font-size:14px;
+}
+
+.basicInfo {
+    display:inline-block;
+    vertical-align:middle;
+    margin-right: 10px;
+    text-align:right;
+    
+}
+
+.basicInfo input, .kwdTracking input {
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+input[name="cat1"],input[name="cat2"],input[name="cat3"] {
+    width: 120px;
+
+}
+
+.listActionButton > input {
+    margin: 10px 0 0 125px; 
+}
+
+/*listingManagement Ends*/
+
+
+/*listingDetail Begins*/
+.listingDetail {
+    font-size: 14px;
+    
+}
+.detailGallery, #detailBig {
+    width: 400px;
+}
+
+
+.productInfo {
+    width: 635px;
+    max-height:450px;
+    overflow: hidden;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.detailGallery, .productInfo{
+    vertical-align:top;
+
+}
+
+.galleryTime {
+    position:relative;
+    font-size: 12px;
+    text-align:center;
+    margin: 0;
+
+    background: #f1edee;
+}
+
+.detailSmall {
+    font-size:0;
+    max-width:400;
+    overflow:hidden;
+}
+.detailSmall img{
+    width: 50px;
+    height: 50px;
+
+}
+
+.productInfo h2 {
+
+    font-size: 22px;
+    margin-right:4px;
+}
+
+
+.productInfoTable, .productGBBW, .detailWatcherList > table, .rvInfo > table{
+    width: 100%;
+}
+
+.detailWatcherList, .rvInfo, .detailAct {
+    background: #ffffff;
+    margin-right: 20px;
+    padding: 10px 5px;
+}
+
+.productInfo h4 {
+    margin-bottom:8px;
+}
+
+.timestamp span {
+    margin-right: 25px; 
+}
+
+.moreButton,.goBack {
+    display: block;
+    margin: 10px auto;
+    width: 100px;
+}
+
+.listingDetail select {
+    height: 24px;
+    margin-bottom: 8px;
+
+}
+
+.listingDetail select, .listingDetail input {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+#screenshot {
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    top: 100px;
+    right: 35%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    background: #fff;
+    
+}
+
+#tsVisual, #krVisual{
+    width: 95%;
+    margin-bottom: 25px;
+    height: 300px;
+    background: #fff;
+}
+
+.rvKeywords {
+    background: #fff;
+    padding-left: 5px;
+    padding-right: 10px;
+    vertical-align:top;
+    max-height: 300px;
+    overflow-y: auto;
+    
+}
+
+.rvKeywords ul {
+    padding-left: 0;
+    width: 80px;
+}
+.rvKeywords li, .rvInfoButton {
+    margin-bottom: 10px;
+}
+
+.rvInfo {
+    width: 900px;
+    margin-bottom: 20px;
+}
+
+.rvInfo  select { 
+    width: 120px;
+    margin-bottom: 15px;
+}
+
+.rvInfoRV {
+    width: 75%;
+}
+
+#actOut {
+    position:fixed;
+    top: 0;
+    left:0;
+    height: 100%;
+    width: 100%;
+    background:#f1edee;
+}
+
+.actIn {
+    width: 1100px;
+    height: 550px;
+    background: #fff;
+    margin: 50px auto 0;
+}
+
+#actPrevious, #actNew {
+    display: inline-block;
+    font-size: 14px;
+    border: 1px solid #333;
+    width: 535px;
+    height: 500px;
+    max-width:535px;
+    max-height:500px;
+    margin: 10px 5px 0;
+    overflow-y:scroll;
+}
+
+.actMore {
+    cursor: pointer;
+}
+
+.detailAct {
+    width: 1000px;
+}
+
+.detailAct td {
+    max-width: 380px;
+    text-align:center;
+    line-height: 22px;
+}
+
+
+
+/*listingDetail Ends*/
+
+
+

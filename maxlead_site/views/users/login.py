@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import time
+import time,os
 from django.contrib import auth
 from django.shortcuts import render,render_to_response
 from django.template import RequestContext
@@ -8,35 +8,39 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 from maxlead_site.models import UserProfile,MenberGroups
 from maxlead import settings
 from maxlead_site.common.prpcrypt import Prpcrypt
 from maxlead_site.views import commons
+from maxlead_site.views.app import App
+
 
 class Logins:
+    role = ['member','Leader','admin']
 
     @csrf_exempt
     def userLogin(self):
         if self.user.is_authenticated():
-            return HttpResponseRedirect("/user")
-        curtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
+            return HttpResponseRedirect("/admin/maxlead_site/index/",{'user': self.user,'avator':self.user.username[0]})
         if self.method == 'POST':
-            print("POST")
-            username = self.POST.get('name', '')
+            username = self.POST.get('username', '')
             password = self.POST.get('password', '')
             user = auth.authenticate(username=username, password=password)
+            if not user:
+                return {'code': 0, 'msg': u'账号/密码错误，请确认后重试！'}
             user1 = User.objects.get(username=username)
             user_file = UserProfile.objects.filter(user=user1.id)
             if user_file[0].state in (0,2):
                 return {'code': 0, 'msg': u'账号不存在/已被锁定,请联系管理员！'}
 
-            if user and user.is_active and user_file[0].state == 1:
+            if user.is_active and user_file[0].state == 1:
                 user_file.update(er_count=0,em_count=0)
                 auth.login(self, user)
                 self.session.set_expiry(604800) # 登陆状态生命
                 commons.loger(description='用户登陆正常',user=user,name='用户登陆')
-                return HttpResponseRedirect("/user")
+                return HttpResponseRedirect("/admin/maxlead_site/index/",{'user': user,'avator':user.username[0]})
             else:
                 if user_file[0].em_count >= 5:
                     return {'code': 0, 'msg': u'密码错误超过5次，账号已被锁定'}
@@ -47,7 +51,7 @@ class Logins:
                     user_file.update(state=2) #2,账号锁定
                     return {'code': 0, 'msg': u'密码错误超过5次，账号已被锁定'}
 
-        return render_to_response("blog/userlogin.html", RequestContext(self, {'curtime': curtime}))
+        return render(self,"user/signin.html")
 
     def logout(self):
         auth.logout(self)
@@ -176,3 +180,60 @@ class Logins:
 
             user = User.objects.get(id=id)
             return render(self, 'error/error_page.html', {'code': 1, 'data': user})
+
+    def user_list(self):
+        user = App.get_user_info(self)
+        if not user or user.role == 0:
+            return HttpResponseRedirect("/admin/maxlead_site/index/")
+        role_list = ['member', 'Leader', 'Admin']
+        user_list = UserProfile.objects.filter(state__gt=0 )
+        menber_group = MenberGroups.objects.all()
+        role = self.GET.get('role','')
+        if role:
+            user_list = user_list.filter(role=role)
+        group = self.GET.get('group','')
+        if group:
+            user_list = user_list.filter(group=group)
+        status = self.GET.get('status','')
+        if status:
+            user_list = user_list.filter(state=status)
+        keywords = self.GET.get('keywords','')
+        if keywords:
+            user_list = user_list.filter(Q(username__icontains=keywords) | Q(email__icontains=keywords))
+
+        limit = self.GET.get('limit',1)
+        total_count = user_list.count()
+        if limit >= total_count:
+            limit = total_count
+        paginator = Paginator(user_list, limit)
+        page = self.GET.get('page')
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            users = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            users = paginator.page(paginator.num_pages)
+
+        for val in users:
+            val.group_str = ''
+            for i in list(val.group.all()):
+                val.group_str+=i.name + " "
+            val.role = role_list[val.role]
+            val.user.date_joined = val.user.date_joined.strftime("%Y-%m-%d %H:%M:%S")
+            if val.user.last_login:
+                val.user.last_login = val.user.last_login.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                val.user.last_login = ''
+
+        data = {
+            'users': users,
+            'groups':list(menber_group),
+            'total_count':total_count,
+            'total_page':int(total_count/limit),
+            'user': user,
+            'avator': user.user.username[0]
+        }
+
+        return render(self, 'user/useradmin.html', data)
