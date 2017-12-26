@@ -2,36 +2,39 @@
     {% block container %}
             <main class="userAdmin">
                 <h2>User Admin</h2>
-                <button class="headButton" onclick="创建新用户" type="button">Add</button>   <button class="headButton" onclick="删除用户" type="button">Delete</button>
+                <button class="headButton" id="addUser" type="button">Add</button>   <button class="headButton" id="delUser" type="button">Delete</button>
                 
-                <form name="userSearch" action="" method="post">
-                    <input type="search" name="keywords" value="" />
+                <form name="userSearch" action="" method="get">
+                    <input type="search" name="keywords" value="{{ keywords }}" />
                     Role: <select name="role">
-                        <option value="all">All</option>
-                        <option value="0">Member</option>
-                        <option value="1">Leader</option>
-                        <option value="2">Admin</option></select>
+                            <option value="">All</option>
+                            <option value="0" {% if role == 0 %} selected {% endif %}>Member</option>
+                            <option value="1" {% if role == 1 %} selected {% endif %}>Leader</option>
+                            <option value="2" {% if role == 2 %} selected {% endif %}>Admin</option>
+                          </select>
                     Group: <select name="group">
-                        <option value="">None</option>
-                    {% for val in groups %}
-                        <option value="{{ val.id }}">{{ val.name }}</option>
-                    {% endfor %}
-                        </select>
-                    Status: <select name="state">
                         <option value="">All</option>
-                        <option value="1">Active</option>
-                        <option value="2">Suspended</option>
+
+                        </select>
+                    Status: <select name="status">
+                        <option value="">All</option>
+                        <option value="1" {% if state == 1 %}selected{% endif %}>Active</option>
+                        <option value="2" {% if state == 2 %}selected{% endif %}>Suspended</option>
                         </select>                    
                     <input type="submit" value="Search">
                 </form>
+            {% if data %}
                 <table cellspacing=0>
+
                     {# Each "contact" is a Contact model object. #}
                     <tr><th><input type="checkbox" name="selectUser" value="all" id="selectAllUser" /></th><th>Username</th><th>Email</th><th>Role</th><th>Group</th><th>Status</th><th>Created</th><th>Last Login</th></tr>
                     <tr><td colspan="8"><hr></td></tr>
                     {% for val in users %}
-                    <tr><td><input type="checkbox" name="selectUser" value="{{ val.user.id }}"  /></td><td>{{ val.user.username }}</td><td>{{ val.user.email }}</td><td>{{ val.role }}</td><td>{{ val.group_str }}</td><td>{% if val.state == 2 %}Locked{% else %}Active{% endif %}</td><td>{{ val.user.date_joined }}</td><td>{{ val.user.last_login }}</td></tr>
+                    <tr><td><input type="checkbox" name="selectUser" value="{{ val.id }}" class="checkUser" /></td><td>
+                        <a href="/admin/maxlead_site/user_detail?id={{ val.id }}">{{ val.user.username }}</a></td><td>{{ val.user.email }}</td><td>{{ val.role }}</td><td>{{ val.group_str }}</td><td>{% if val.state == 2 %}Locked{% else %}Active{% endif %}</td><td>{{ val.user.date_joined }}</td><td>{{ val.user.last_login }}</td></tr>
                     {% endfor %}
                 </table>
+            <form action="" method="get" name="pageForm">
                 <div id="pagination">
                     <div class="pageNum">
                         <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in {{ total_page }} <!--总页数-->pages.
@@ -44,25 +47,61 @@
                             {% if users.has_next %}
                             <li><a href="?page={{ users.next_page_number }}">next</a></li>
                             {% endif %}
-                            <li><input type="number" name="page" value="" /></li>
-                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                            <li><input type="number" name="page" value="{{ page }}" /></li>
+
                         </ul>
+
                     <div class="qtyUpdater">
                         <select name="limit">
+                            <option value="6">6</option>
                         <option value="20">20</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
                         </select> results per page.
                     </div>
+                    <ul>
+
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                    </ul>
+
                     </div>
                 </div>
+        </form>
+            {% else %}
+                没有数据！
+            {% endif %}
             </main>
         <script>
-            $('#gotoPage').click(function () {
-                page = $('input[name="page"]').val()
-                url = '/admin/maxlead_site/user_list/?page=' + page +'&gotoPage=Go'
-                window.location.href = url;
-            });
+            $('#delUser').on('click',function () {
+                var user_li = []
+                $('.checkUser:checked').each(function(){
+                    user_li.push($(this).val())
+                })
+                if(user_li == false){
+                    alert('请选择用户！');
+                    return false;
+                }
+                var data = {
+                    'ids' : JSON.stringify(user_li),
+                }
+                if(user_li){
+                    $.post('/admin/maxlead_site/delete_user/',data,function (re) {
+                        if(re.code == 1){
+                            window.location.reload();
+                        }
+                        if(re.code == 0){
+                            alert(re.msg);
+                        }
+                        if(re.code == 2){
+                            if(confirm('登陆过期，确认登陆？')){
+                                window.href='/admin/maxlead_site/login';
+                            }
+                        }
+                    },'json')
+                }
+                console.log(user_li)
+            })
+
         </script>
 {% endblock %}
 

@@ -1,0 +1,63 @@
+{% extends "layouts/page_base.html" %}
+    {% block container %}
+            <main class="userInfo">
+                <h2>User Info</h2>
+                <form name="userInfo" action="/admin/maxlead_site/save_user/" method="post">
+                    <label>Username:</label> <input type="text" name="username" value="{{ user_info.user.username }}" /><br /><br />
+                    <input type="hidden" name="id" value="{{ user_info.id }}">
+                    <label>Email:</label> <input type="email" name="email" value="{{ user_info.user.email }}" /><br /><br />
+                    {% if user.role == 2 %}
+                    <label>Status:</label> <input type="radio" name="state" value="1" {% if user_info.state == 1 %}checked{% endif %}>Active    <input type="radio" name="state" value="2" {% if user_info.state == 2 %}checked{% endif %}>Suspended  <br /><br />
+                    <label>Role:</label> <input type="radio" name="role" value="0" {% if user_info.role == 0 %}checked{% endif %}>Member    <input type="radio" name="role" value="1" {% if user_info.role == 1 %}checked{% endif %}>Leader    <input type="radio" name="role" value="2" {% if user_info.role == 2 %}checked{% endif %}>Admin <br /><br />
+                    <label>Group:</label> <select name="group">
+                        <option value="">None</option>
+                        {% for val in member_groups %}
+                            {{ group_ids }}
+                        <option value="{{ val.id }}" {% if val.id in group_ids %}selected{% endif %}>{{ val.name }}</option>
+                        {% endfor %}
+                        </select><br /><br />
+                    {% endif %}
+                    <label>New Password:</label> <input type="password" name="password" value="" /><br /><br />
+                    <label>Confirm Password:</label> <input type="password" name="confirmPassword" value="" /><br /><br />
+                    <input class="userInfoButton" type="submit" value="Submit">    <input class="userInfoButton" type="button" onclick="window.history.go(-1); return false;" value="Cancel">
+                </form>
+            </main>
+
+        <script>
+            $('.userInfoButton').on('click',function(){
+                var name = $('input[name="username"]').val()
+                var email = $('input[name="email"]').val()
+                var pass = $('input[name="password"]').val()
+                var con_pass = $('input[name="confirmPassword"]').val()
+                if (con_pass != pass) {
+                    $('input[name="password"]').after("<span><b style='" +
+                        "    line-height: 18px;\n" +
+                        "    color: red;\n" +
+                        "    font-size: 14px;\n" +
+                        "    font-weight: 100;\n" +
+                        "    margin-left: 12px;'>两次密码输入不一致！</b></span>")
+                    return false
+                }
+                if(!name){
+                    $('input[name="username"]').after("<span><b style='" +
+                        "    line-height: 18px;\n" +
+                        "    color: red;\n" +
+                        "    font-size: 14px;\n" +
+                        "    font-weight: 100;\n" +
+                        "    margin-left: 12px;'>用户名不能为空！</b></span>")
+                    return false
+                }
+                if(!email){
+                    $('input[name="email"]').after("<span><b style='" +
+                        "    line-height: 18px;\n" +
+                        "    color: red;\n" +
+                        "    font-size: 14px;\n" +
+                        "    font-weight: 100;\n" +
+                        "    margin-left: 12px;'>邮箱不能为空！</b></span>")
+                    return false
+                }
+            })
+        </script>
+            
+{% endblock %}
+

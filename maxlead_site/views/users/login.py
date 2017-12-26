@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import time,os
+import time,json
 from django.contrib import auth
-from django.shortcuts import render,render_to_response
+from django.shortcuts import render,render_to_response,HttpResponse
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -29,11 +29,11 @@ class Logins:
             password = self.POST.get('password', '')
             user = auth.authenticate(username=username, password=password)
             if not user:
-                return {'code': 0, 'msg': u'账号/密码错误，请确认后重试！'}
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'账号/密码错误，请确认后重试！'}), content_type='application/json')
             user1 = User.objects.get(username=username)
             user_file = UserProfile.objects.filter(user=user1.id)
             if user_file[0].state in (0,2):
-                return {'code': 0, 'msg': u'账号不存在/已被锁定,请联系管理员！'}
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'账号不存在/已被锁定,请联系管理员！'}), content_type='application/json')
 
             if user.is_active and user_file[0].state == 1:
                 user_file.update(er_count=0,em_count=0)
@@ -43,13 +43,15 @@ class Logins:
                 return HttpResponseRedirect("/admin/maxlead_site/index/",{'user': user,'avator':user.username[0]})
             else:
                 if user_file[0].em_count >= 5:
-                    return {'code': 0, 'msg': u'密码错误超过5次，账号已被锁定'}
+                    return HttpResponse(json.dumps({'code': 0, 'msg': u'密码错误超过5次，账号已被锁定'}),
+                                        content_type='application/json')
                 er_count = user_file[0].er_count+1
                 now_time = int(time.time())
                 user_file.update(er_count=er_count,er_time=now_time)
                 if er_count>=5 and now_time-user_file[0].er_time<=86400:
                     user_file.update(state=2) #2,账号锁定
-                    return {'code': 0, 'msg': u'密码错误超过5次，账号已被锁定'}
+                    return HttpResponse(json.dumps({'code': 0, 'msg': u'密码错误超过5次，账号已被锁定'}),
+                                        content_type='application/json')
 
         return render(self,"user/signin.html")
 
@@ -106,87 +108,124 @@ class Logins:
 
     @csrf_exempt
     def save_user(self):
-        users = self.user
-        if users.is_authenticated():
-            user_file = UserProfile.objects.get(user=users.id)
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+        if self.method == 'POST':
             user_id = self.POST.get('id', '')
             group = self.POST.get('group', '')
-            if isinstance(group, str) or isinstance(group, int):
+            if group and isinstance(group, str):
                 group = [int(group)]
+            user_file = user
+
+            update_fields = ['username', 'email']
             if user_file.role == 2:
                 user = User()
                 if user_id:
-                    user.id = user_id
+                    user_pro = UserProfile.objects.get(id=user_id)
+                    user.id = user_pro.user.id
                 else:
                     user.id
-                user.username = self.POST.get('name', '')
-                user.set_password(self.POST.get('password', ''))
+                user.username = self.POST.get('username', '')
+                if self.POST.get('password', ''):
+                    user.set_password(self.POST.get('password', ''))
+                    update_fields.append('password')
                 user.email = self.POST.get('email', '')
 
-                user.save()
+                user.save(update_fields=update_fields)
 
+                update_fields1 = ['state', 'role']
                 user_file = UserProfile()
                 user_file.id = user.userprofile.id
                 user_file.user_id = user.id
                 user_file.state = self.POST.get('state', '')
                 user_file.role = self.POST.get('role', '')
-                user_file.save()
+                user_file.save(update_fields=update_fields1)
+                if group:
+                    for val in group:
+                        if user_id:
+                            user_file.group.remove(val)
+                        user_file.group.add(val)
+                else:
+                    user_file.group.clear()
 
-                for val in group:
-                    if user_id:
-                        user_file.group.remove(val)
-                    user_file.group.add(val)
-
-                return render(self, 'error/error_page.html')
+                return HttpResponseRedirect("/admin/maxlead_site/user_list/")
             else:
-                if user_id and user_id==users.id:
+                if user_id and int(user_id)==user.id:
                     user = User()
-                    user.id = user_id
-                    user.set_password(self.POST.get('password', ''))
-                    user.save()
+                    user.id = user_file.user.id
+                    user.username = self.POST.get('username', '')
+                    user.email = self.POST.get('email', '')
+                    if self.POST.get('password', ''):
+                        user.set_password(self.POST.get('password', ''))
+                        update_fields.append('password')
+                    user.save(update_fields=update_fields)
                     user_file = UserProfile()
-                    user_file.user_id = user.id
+                    user_file.id = user.id
                     for val in group:
                         user_file.group.remove(val)
                         user_file.group.add(val)
 
-                return render(self, 'error/error_page.html', {'code':0,'msg':u'该用户没有添加用户的权限！'})
+                return HttpResponseRedirect("/admin/maxlead_site/user_detail/")
+        else:
+            return render(self, 'user/add.html')
 
-    save_user = staff_member_required(save_user)
 
     @csrf_exempt
     def delete_user(self):
-        users = self.user
-        if users.is_authenticated():
-            user_file = UserProfile.objects.get(user=users.id)
-            if user_file.role == 2:
-                del_id = self.GET['id']
-                if isinstance(del_id, str):
-                    del_id = [int(del_id)]
-                res = UserProfile.objects.filter(id__in=del_id).update(state=0)
-                if res:
-                    return render(self, 'error/error_page.html')
-            else:
-                return render(self, 'error/error_page.html', {'code': 0, 'msg': u'没有删除用户的权限！'})
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 2, 'msg': u'没有登陆！'}), content_type='application/json')
+        if not user.role == 2:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'没有的权限！'}), content_type='application/json')
+
+        del_id = eval(self.POST['ids'])
+        res = UserProfile.objects.filter(id__in=del_id).exclude(id=user.id).update(state=0)
+        if res:
+            return HttpResponse(json.dumps({'code': 1, 'msg': u'删除成功！'}), content_type='application/json')
+        else:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'删除失败！'}), content_type='application/json')
 
     @csrf_exempt
     def user_detail(self):
-        id = self.GET['id']
-        users = self.user
-        if users.is_authenticated():
-            user_file = UserProfile.objects.get(user=users.id)
-            if not user_file.role == 2 and not users.id == id:
-                return render(self, 'error/error_page.html', {'code': 0, 'msg': u'没有的权限！'})
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-            user = User.objects.get(id=id)
-            return render(self, 'error/error_page.html', {'code': 1, 'data': user})
+        id = self.GET.get('id')
+        member_group = list(MenberGroups.objects.all())
+        group_ids = []
+
+        if not id:
+            user_info = user
+            groups = user_info.group.all()
+            if groups:
+                for v in groups:
+                    group_ids.append(v.id)
+            return render(self, 'user/userinfo.html', {'user': user,'avator': user.user.username[0],'user_info': user_info,'member_groups':member_group,'group_ids':group_ids})
+
+        if not user.role == 2:
+            return HttpResponseRedirect("/admin/maxlead_site/index/")
+
+        user_info = UserProfile.objects.get(id=id)
+        groups = user_info.group.all()
+        if groups:
+            for v in groups:
+                group_ids.append(v.id)
+        return render(self, 'user/userinfo.html', {'user': user,'avator': user.user.username[0],'user_info': user_info,'member_groups':member_group,'group_ids':group_ids})
 
     def user_list(self):
         user = App.get_user_info(self)
-        if not user or user.role == 0:
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+        if user.role == 0:
             return HttpResponseRedirect("/admin/maxlead_site/index/")
         role_list = ['member', 'Leader', 'Admin']
         user_list = UserProfile.objects.filter(state__gt=0 )
+        if user.role == 1:
+            groups = MenberGroups.objects.filter(user_id=user.user.id).all()
+            user_list = user_list.filter(group=groups)
+
         menber_group = MenberGroups.objects.all()
         role = self.GET.get('role','')
         if role:
@@ -199,12 +238,14 @@ class Logins:
             user_list = user_list.filter(state=status)
         keywords = self.GET.get('keywords','')
         if keywords:
-            user_list = user_list.filter(Q(username__icontains=keywords) | Q(email__icontains=keywords))
+            user_list = user_list.filter(Q(user__username__icontains=keywords) | Q(user__email__icontains=keywords))
 
-        limit = self.GET.get('limit',1)
+        limit = self.GET.get('limit',6)
         total_count = user_list.count()
-        if limit >= total_count:
+        if int(limit) >= total_count:
             limit = total_count
+        if not user_list:
+            return render(self, 'user/useradmin.html', {'data':''})
         paginator = Paginator(user_list, limit)
         page = self.GET.get('page')
         try:
@@ -226,14 +267,26 @@ class Logins:
                 val.user.last_login = val.user.last_login.strftime("%Y-%m-%d %H:%M:%S")
             else:
                 val.user.last_login = ''
-
+        urls = self.get_raw_uri()
+        urls_li = urls.split('page=')
+        if len(urls_li) >= 2:
+            urls = urls_li[0]+urls_li[1][2:]
+        if '?' not in urls:
+            urls = urls+'?'
+        urls = urls.replace('&amp;',' ')
         data = {
+            'data':True,
             'users': users,
             'groups':list(menber_group),
             'total_count':total_count,
             'total_page':int(total_count/limit),
             'user': user,
-            'avator': user.user.username[0]
+            'avator': user.user.username[0],
+            'urls': urls,
+            'page': page,
+            'role': role,
+            'keywords': keywords,
+            'state': status,
         }
 
         return render(self, 'user/useradmin.html', data)

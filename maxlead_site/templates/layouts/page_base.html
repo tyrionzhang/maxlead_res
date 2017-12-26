@@ -18,8 +18,8 @@
                 <div id="userNav">
                     <p><span  class="avatar">{{ avator }}</span><!--取用户名首字母--><span class="userName">{{ user.user.username }}</span><img id="menuSwitch" src="../../../maxlead_site/static/img/downArrow.png" /></p>
                     <ul style="display:none;">
-                        <li><a href="">Update Info</a></li>
-                        {% if not user.role == 2 %}
+                        <li><a href="/admin/maxlead_site/user_detail/">Update Info</a></li>
+                        {% if user.role == 2 %}
                         <li><a href="/admin/maxlead_site/user_list/">User Admin</a></li> <!--只对role为admin的用户显示-->
                         <li><a href="">Spider Admin</a></li><!--只对role为admin的用户显示-->
                         {% endif %}

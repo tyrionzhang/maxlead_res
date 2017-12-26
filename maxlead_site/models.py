@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 
 class MenberGroups(models.Model):
     name = models.CharField('Name', max_length=50)
+    user = models.ForeignKey(User,default=1)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
