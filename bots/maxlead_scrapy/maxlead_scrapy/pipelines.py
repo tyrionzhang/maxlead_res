@@ -33,6 +33,7 @@ class MaxleadScrapyPipeline(object):
             images = []  # 定义图片空集
 
             dir_path = '%s/%s' % (settings.IMAGES_STORE, spider.name)
+            dir_path1 = '%s/%s' % (settings.IMAGES, spider.name)
 
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
@@ -45,7 +46,8 @@ class MaxleadScrapyPipeline(object):
                 us = image_url.split('/')[3:]
                 image_file_name = '_'.join(us)
                 file_path = '%s/%s' % (dir_path, image_file_name)
-                images_str += file_path
+                path_str = '%s/%s' % (dir_path1, image_file_name)
+                images_str += path_str
                 images.append(file_path)
                 if os.path.exists(file_path):
                     continue
@@ -61,7 +63,7 @@ class MaxleadScrapyPipeline(object):
             item['image_names'] = images_str
             item['image_thumbs'] = ''
             for img_file in images:
-                thunb_file = common.make_thumb(img_file,dir_path,40)
+                thunb_file = common.make_thumb(img_file,dir_path,40,dir_path1)
                 item['image_thumbs'] += thunb_file
         item.save()
         return item

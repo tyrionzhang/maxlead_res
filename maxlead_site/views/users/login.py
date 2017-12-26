@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 import time,json
 from django.contrib import auth
-from django.shortcuts import render,render_to_response,HttpResponse
-from django.template import RequestContext
+from django.shortcuts import render,HttpResponse
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from maxlead_site.models import UserProfile,MenberGroups

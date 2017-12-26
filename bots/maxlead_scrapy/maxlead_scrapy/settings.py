@@ -32,6 +32,7 @@ ITEM_PIPELINES = {
 }
 
 IMAGES_STORE = 'D:\maxlead\download\images'
+IMAGES = '\download\images'
 
 IMAGES_EXPIRES = 90
 

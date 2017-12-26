@@ -140,7 +140,10 @@ STATICFILES_DIRS = (
 
 SPIDER_URL = 'D:/maxlead/bots/maxlead_scrapy'
 
-DOWNLOAD_URL = 'D:/maxlead/download'
+DOWNLOAD_URL = 'download/'
+DOWNLOADFILES_DIRS = (
+    os.path.join(os.path.dirname(__file__), '/download/').replace('\\','/'),
+)
 
 REVIEW_TIME = 300
 

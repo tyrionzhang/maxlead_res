@@ -11,7 +11,7 @@ class ListingSpider(scrapy.Spider):
     name = "listing_spider"
     start_urls = []
     url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head&th=1&psc=1"
-    res = list(UserAsins.objects.filter(is_use=True).values('aid','review_watcher','listing_watcher','sku').annotate(count=Count('aid')))
+    res = list(UserAsins.objects.filter(is_use=True).values('id','aid','review_watcher','listing_watcher','sku','buy_box').annotate(count=Count('aid')))
 
     if res:
         for re in res:
@@ -54,6 +54,9 @@ class ListingSpider(scrapy.Spider):
         for val in self.res:
             if val['aid'] == asin_id:
                 item['sku'] = val['sku']
+                user_asin = UserAsins.objects.get(id=val['id'])
+                item['user_asin'] = user_asin
+                buy_box = val['buy_box']
 
         item['title'] = response.css('div#titleSection span#productTitle::text').extract_first().replace('\n','').strip()
         item['asin'] = asin_id
@@ -72,7 +75,7 @@ class ListingSpider(scrapy.Spider):
                           response.css("div#productDescription").xpath("string(p)").extract_first(default="").strip())
         item['description'] = des_res
 
-        item['buy_box'] = []
+        item['buy_box_res'] = []
         buyBoxs = response.css('div#merchant-info a::text').extract()
         if not buyBoxs:
             buyBoxs = re.sub("\n", ",",
@@ -82,8 +85,12 @@ class ListingSpider(scrapy.Spider):
                 buyBoxs = a.split('and')
         if buyBoxs:
             for v in buyBoxs:
-                item['buy_box'].append(v)
-        item['buy_box'] = str(item['buy_box'])
+                item['buy_box_res'].append(v)
+        if buy_box in item['buy_box_res']:
+            item['buy_box'] = 'Ours'
+        else:
+            item['buy_box'] = 'Others'
+        item['buy_box_res'] = str(item['buy_box_res'])
         item['price'] = response.css('tr#priceblock_ourprice_row span#priceblock_ourprice::text').extract_first()
         if not item['price']:
             item['price'] = response.css('tr#priceblock_dealprice_row span#priceblock_dealprice::text').extract_first()

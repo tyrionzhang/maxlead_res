@@ -1,0 +1,94 @@
+{% extends "layouts/page_base.html" %}
+    {% block container %}
+            <main class="listMgm">
+                <h2>Listing Management</h2>
+                <p>I'm watching on XXX<!--当前用户关注的且status为ON的listing的数量--> listings for you. I'll be more efficient if unnecessary listings are turned off in time.</p><hr>
+                <form method="post" action="" name="listSearchForm" autocomplete="autocomplete" autofocus="autofocus">
+                    <input type="search" name="listKwd" />  <input type="submit" value="Search" /><br />
+                    <input type="radio" name="searchCol" value="SKU" />SKU  <input type="radio" name="searchCol" value="ASIN" />ASIN  <input type="radio" name="searchCol" value="title" checked />Title  <input type="radio" name="searchCol" value="brand" />Brand  <input type="radio" name="searchCol" value="seller" />Seller Ownership: <select name="owner">
+                        <option value="all">All</option>
+                        <option value="ours">Ours</option>
+                        <option value="others">Others</option></select>
+                        Buybox: <select name="buybox">
+                        <option value="all">All</option>
+                        <option value="ours">Ours</option>
+                        <option value="others">Others</option></select>
+                        Status: <select name="liststatus">
+                        <option value="">All</option>
+                        <option value="1">ON</option>
+                        <option value="0">OFF</option></select>
+                        Review Watcher: <select name="revstatus">
+                        <option value="">All</option>
+                        <option value="1">ON</option>
+                        <option value="0">OFF</option></select>
+                        Listing Watcher: <select name="liststatus">
+                        <option value="">All</option>
+                        <option value="1">ON</option>
+                        <option value="0">OFF</option></select>
+                </form>
+                <div >
+                    <button class="funcButtons" type="button" id="addASINButton">Add</button>
+                    <button class="funcButtons" type="button" onclick="编辑配置" id="editASINButton">Edit</button>
+                    <button class="funcButtons" type="button" onclick="将status设为ON">Turn ON</button>
+                    <button class="funcButtons" type="button" onclick="将status设为OFF">Turn OFF</button>
+                </div>
+                <table cellspacing=0>
+                    <tr><th><input type="checkbox" name="selectallListing" value="all" id="selectAllListing"/></th><th>Image</th><th>Title</th><th>Brand</th><th>Price</th><th>Review</th><th>Score</th><th>BSR</th><th>Buybox</th><th>Status</th><th>Review<br />Watcher</th><th>Listing<br />Watcher</th><th>Last Check</th></tr>
+                    <tr><td colspan="13"><hr></td></tr>
+                    {% for val in list_data %}
+                    <tr><td><input type="checkbox" name="selectListing" value="{{ val.id }}"  /></td><td><img src="{{ val.image_thumbs }}" class="listMgmPic"/></td><td><a title="显示完整title" href="进入listing详情页"><SPAn class="listingTitle">{{ val.title }}</span><span class="listingASIN">{{ val.asin }}</SPAN><span class="listingSKU">{{ val.sku }}</span></a></td><td>{{ val.brand }}</td><td>{{ val.price }}<BR>-$5.55</td><td>{{ val.total_review }}<BR>+4</td><td>{{ val.rvw_score }}<br>-0.2</td><td>{{ val.category_rank }}<br>65535</td><td>Brandline</td><td><span class="{% if val.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}" ></span></td><td><span class="{% if val.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}" ></span><!--开启状态为statusON,关闭为statusOFF--></td><td><span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}" ></span></td><td><span class="lastCheck">2017-12-15 09:11</span></td></tr>
+                    {% endfor %}
+                </table>
+                <hr>
+                <input type="checkbox" name="selectallListing" value="all" id="selectAllListing2"/> <button class="funcButtons" type="button" onclick="导出选中条目数据">Export</button>
+                <div id="editASIN"  style="display:none;">
+                    <h3>Basic Info</h3>
+                    <form name="editASIN" method="post" action="">
+                        <div class="basicInfo">*ASIN<br><textarea name="newASIN" rows=5 cols=18 title="one ASIN per line" /></textarea><!--如果是通过编辑进来，增加readonly属性--></div>
+                        <div class="basicInfo">SKU<br><textarea name="newASIN" rows="5" cols="18" title="one SKU per line, should be in the same sequence as ASIN"/></textarea></div>
+                        <div class="basicInfo">
+                            *Ownership: <input type="radio" name="ownership" value="ours" />Ours  <input type="radio" name="ownership" value="others" />Others<br />
+                            *Status: <input type="radio" name="status" value="on" />ON  <input type="radio" name="status" value="off" />OFF<br />
+                            *Review Watcher: <input type="radio" name="revWatcher" value="on" />ON  <input type="radio" name="revWatcher" value="off" />OFF<br />
+                            *Listing Watcher: <input type="radio" name="listWatcher" value="on" />ON  <input type="radio" name="listWatcher" value="off" />OFF
+                        </div>
+                        <div class="kwdTracking">
+                            <h3>Keywords Tracking</h3>
+                            Keyword Set 1: <input type="" name="kwdSet1" title="3 keywords/set max. separated by comma" />  Category Node: <input type="number" name="cat1" title="category node ID, number only"/><br />
+                            Keyword Set 2: <input type="text" name="kwdSet2" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat2" /><br />
+                            Keyword Set 3: <input type="text" name="kwdSet3" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat3" /><br />
+                        </div>
+                        <div class="listActionButton"><input type="submit" value="Add" /><input type="button" value="Cancel" id="editASINCancel"/></div>
+                    </form>
+                </div>
+                <div id="pagination">
+                    <div class="pageNum">
+                         <p class="pageStatics"> 195 <!--符合当前查询条件的数量-->results in 10 <!--总页数-->pages.
+                    </p>
+                        <ul>
+                            <li><a href="">|&lt;</a></li>
+                            <li><a href="">&lt;</a></li>
+                            <li><a href="">1</a></li>
+                            <li><a href="">2</a></li>
+                            <li><a href="">3</a></li>
+                            <li>...</li>
+                            <li><a href="">9</a></li>
+                            <li><a href="">10</a></li>
+                            <li><a href="">&gt;</a></li>
+                            <li><a href="">&gt;|</a></li>
+                            <li><input type="number" name="pageNo" value="" /></li>
+                            <li><input type="button" name="gotoPage" value="Go" /></li>
+                        </ul>
+                    </div>
+                   
+                    <div class="qtyUpdater">
+                        <select name="qtyPerPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        </select> results per page.
+                    </div>
+                </div>
+            </main>
+    {% endblock %}
+

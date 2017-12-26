@@ -2,7 +2,7 @@ from PIL import Image
 import os
 
 
-def make_thumb(path, thumb_path, size):
+def make_thumb(path, thumb_path, size, img_url):
     """生成缩略图"""
     img = Image.open(path)
     width, height = img.size
@@ -23,7 +23,8 @@ def make_thumb(path, thumb_path, size):
 
     base, ext = os.path.splitext(os.path.basename(path))
     filename = os.path.join(thumb_path, '%s_thumb.jpg' % (base,))
+    filename1 = os.path.join(img_url, '%s_thumb.jpg' % (base,))
     if not os.path.exists(filename):
         # 保存
         thumb.save(filename, quality=70)
-    return filename
+    return filename1

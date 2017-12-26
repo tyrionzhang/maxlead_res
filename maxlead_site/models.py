@@ -38,6 +38,7 @@ class UserAsins(models.Model):
     user = models.ForeignKey(User)
     aid = models.CharField('AsinId',max_length=50)
     sku = models.CharField('SKU',max_length=50,default='')
+    buy_box = models.CharField('BuyBox',max_length=50,default='')
     keywords = models.CharField('Keywords',max_length=255,default='')
     review_watcher = models.BooleanField('Review Watcher', default=True)
     listing_watcher = models.BooleanField('Listing Watcher', default=True)
@@ -77,6 +78,7 @@ class Reviews(models.Model):
         db_table = 'reviews'
 
 class Listings(models.Model):
+    user_asin = models.ForeignKey(UserAsins,default=4)
     title = models.CharField('Title', max_length=255)
     asin = models.CharField('AsinId', max_length=50)
     sku = models.CharField('SKU', max_length=50)
@@ -84,6 +86,7 @@ class Listings(models.Model):
     description = models.TextField('Description',default='')
     feature = models.TextField('Feature',default='')
     buy_box = models.CharField('Buy Box', max_length=50)
+    buy_box_res = models.CharField('Buy Box Data', max_length=255, default='')
     price = models.CharField('Price', max_length=50,null=True)
     total_review = models.IntegerField('RVW QTY', default=0)
     rvw_score = models.DecimalField('RVW Score', max_digits=2, decimal_places=1,null=True)
