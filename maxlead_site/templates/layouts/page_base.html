@@ -28,7 +28,7 @@
                 </div>
             </header>
 <!-- head.php END -->
-
+{%  if not user.role == 99 %}
 <!-- nav.php BEGIN -->
             <nav>
                 <ul>
@@ -44,7 +44,7 @@
                     <option value="...">Member 1</option>
                 </select>
             </nav>
-
+{% endif %}
             {%  block container%}
 
             {% endblock %}

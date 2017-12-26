@@ -61,21 +61,24 @@ class Logins:
 
     @csrf_exempt
     def forget_password_for_email(self):
-        username = self.POST.get('name', '')
+        username = self.POST.get('username', '')
         email = self.POST.get('email', '')
         user = User.objects.get(username=username,email=email)
 
         if not user:
             user_file = UserProfile.objects.filter(user=user.id)
             if user_file[0].em_count>=5:
-                return {'code':0,'msg':u'连续输入错误邮箱超过5次，账号已被锁定'}
+                return HttpResponse(json.dumps({'code':0,'msg':u'连续输入错误邮箱超过5次，账号已被锁定'}),
+                                content_type='application/json')
             em_count = user_file[0].em_count + 1
             now_time = int(time.time())
             user_file.update(em_count=em_count, er_time=now_time)
             if em_count >= 5 and now_time - user_file[0].er_time <= 86400:
                 user_file.update(state=2)  # 2,
-                return {'code': 0, 'msg': u'连续输入错误邮箱超过5次，账号已被锁定'}
-            return {'code':0, 'msg':'邮箱有误！'}
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'连续输入错误邮箱超过5次，账号已被锁定'}),
+                                    content_type='application/json')
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'邮箱有误'}),
+                                content_type='application/json')
 
         url = '%s/admin/maxlead_site/reset_pass?key_words=%s&did=%s'
         key_words = Prpcrypt.encrypt(self,text=username + '||' + email)
@@ -88,7 +91,8 @@ class Logins:
         ''' % (username,urls)
         from_email = settings.EMAIL_HOST_USER
         send_mail(subject, msg, from_email, [email], fail_silently=False)
-        return HttpResponseRedirect("/admin/maxlead_site/login/")
+        return HttpResponse(json.dumps({'code': 1, 'msg': u'提交成功，请尽快完成密码重置'}),
+                            content_type='application/json')
 
     def email_reset_pass(self):
         key_words = self.GET['key_words']
@@ -97,14 +101,38 @@ class Logins:
             key_words = Prpcrypt.decrypt(self,key_words)
             did = Prpcrypt.decrypt(self,did)
             now_time = int(time.time())
-            if now_time - int(did) < 180 and key_words:
+            # if now_time - int(did) < 180 and key_words:
+            if key_words:
                 username = key_words.split('||')[0]
-                url = "/admin/maxlead_site/reset_pass?username=%s&did=%s" % (Prpcrypt.encrypt(self,username),Prpcrypt.encrypt(self,username+settings.KEY_STR))
-                return HttpResponseRedirect(url)
+                email = key_words.split('||')[1]
+                user_info = UserProfile.objects.get(user__username=username,user__email=email)
+                user = user_info
+                user.role=99
+                return render(self, 'user/reset_pass.html',
+                              {'user': user, 'avator': user.user.username[0], 'user_info': user_info,'key_words':key_words,'did':did})
             else:
-                return render(self, 'error/login_error.html', {'msg': 'url地址已过期/参数有误！'})
+                return render(self, 'error/login_page.html', {'msg': 'url地址已过期/参数有误！'})
         else:
-            return render(self, 'error/login_error.html', {'msg': 'url地址参数有误！'})
+            return render(self, 'error/login_page.html', {'msg': 'url地址参数有误！'})
+
+    @csrf_exempt
+    def change_pass(self):
+        key_words = self.POST.get('key_words','')
+        did = self.POST.get('did','')
+        username = self.POST.get('username','')
+        email = self.POST.get('email','')
+        password = self.POST.get('password','')
+
+        now_time = int(time.time())
+        if now_time - int(did) < 180 and key_words:
+            user_info = User.objects.filter(username=username, email=email)
+            users = User()
+            users.set_password(password)
+            re = user_info.update(password=users.password)
+            if not re:
+                return render(self, 'error/login_page.html', {'msg': '修改失败！'})
+            return HttpResponseRedirect("/admin/maxlead_site/login/", {'msg': '修改成功！'})
+
 
     @csrf_exempt
     def save_user(self):
@@ -121,18 +149,18 @@ class Logins:
             update_fields = ['username', 'email']
             if user_file.role == 2:
                 user = User()
-                if user_id:
-                    user_pro = UserProfile.objects.get(id=user_id)
-                    user.id = user_pro.user.id
-                else:
-                    user.id
                 user.username = self.POST.get('username', '')
                 if self.POST.get('password', ''):
                     user.set_password(self.POST.get('password', ''))
                     update_fields.append('password')
                 user.email = self.POST.get('email', '')
-
-                user.save(update_fields=update_fields)
+                if user_id:
+                    user_pro = UserProfile.objects.get(id=user_id)
+                    user.id = user_pro.user.id
+                    user.save(update_fields=update_fields)
+                else:
+                    user.id
+                    user.save()
 
                 update_fields1 = ['state', 'role']
                 user_file = UserProfile()
@@ -168,7 +196,11 @@ class Logins:
 
                 return HttpResponseRedirect("/admin/maxlead_site/user_detail/")
         else:
-            return render(self, 'user/add.html')
+            if user.role == 2:
+                menber_group = MenberGroups.objects.all()
+                return render(self, 'user/add.html', {'user': user,'avator': user.user.username[0],'member_groups':menber_group})
+            else:
+                return HttpResponseRedirect("/admin/maxlead_site/index/")
 
 
     @csrf_exempt

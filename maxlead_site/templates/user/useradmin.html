@@ -72,6 +72,10 @@
             {% endif %}
             </main>
         <script>
+            $('#addUser').on('click',function () {
+                window.location.href='/admin/maxlead_site/save_user/'
+            })
+
             $('#delUser').on('click',function () {
                 var user_li = []
                 $('.checkUser:checked').each(function(){
@@ -85,21 +89,22 @@
                     'ids' : JSON.stringify(user_li),
                 }
                 if(user_li){
-                    $.post('/admin/maxlead_site/delete_user/',data,function (re) {
-                        if(re.code == 1){
-                            window.location.reload();
-                        }
-                        if(re.code == 0){
-                            alert(re.msg);
-                        }
-                        if(re.code == 2){
-                            if(confirm('登陆过期，确认登陆？')){
-                                window.href='/admin/maxlead_site/login';
+                    if(confirm('确认删除？')) {
+                        $.post('/admin/maxlead_site/delete_user/', data, function (re) {
+                            if (re.code == 1) {
+                                window.location.reload();
                             }
-                        }
-                    },'json')
+                            if (re.code == 0) {
+                                alert(re.msg);
+                            }
+                            if (re.code == 2) {
+                                if (confirm('登陆过期，确认登陆？')) {
+                                    window.href = '/admin/maxlead_site/login';
+                                }
+                            }
+                        }, 'json')
+                    }
                 }
-                console.log(user_li)
             })
 
         </script>

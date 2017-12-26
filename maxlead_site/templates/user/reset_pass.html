@@ -2,16 +2,20 @@
     {% block container %}
             <main class="userInfo">
                 <h2>User Info</h2>
-                <form name="userInfo" action="" method="post">
-                    <label>Username:</label> <input type="text" name="username" value="" /><br /><br />
-                    <label>Email:</label> <input type="email" name="email" value="" /><br /><br />
+                <form name="userInfo" action="/admin/maxlead_site/change_pass/" method="post">
+                    <label>Username:</label> <input type="text" name="username" value="{{ user_info.user.username }}" readonly/><br /><br />
+                    <input type="hidden" name="id" value="{{ user_info.id }}">
+                    <input type="hidden" name="key_words" value="{{ key_words }}">
+                    <input type="hidden" name="did" value="{{ did }}">
+                    <label>Email:</label> <input type="email" name="email" value="{{ user_info.user.email }}" readonly/><br /><br />
                     {% if user.role == 2 %}
-                    <label>Status:</label> <input type="radio" name="state" value="1">Active    <input type="radio" name="state" value="2">Suspended  <br /><br />
-                    <label>Role:</label> <input type="radio" name="role" value="0">Member    <input type="radio" name="role" value="1">Leader    <input type="radio" name="role" value="2">Admin <br /><br />
+                    <label>Status:</label> <input type="radio" name="state" value="1" {% if user_info.state == 1 %}checked{% endif %}>Active    <input type="radio" name="state" value="2" {% if user_info.state == 2 %}checked{% endif %}>Suspended  <br /><br />
+                    <label>Role:</label> <input type="radio" name="role" value="0" {% if user_info.role == 0 %}checked{% endif %}>Member    <input type="radio" name="role" value="1" {% if user_info.role == 1 %}checked{% endif %}>Leader    <input type="radio" name="role" value="2" {% if user_info.role == 2 %}checked{% endif %}>Admin <br /><br />
                     <label>Group:</label> <select name="group">
                         <option value="">None</option>
                         {% for val in member_groups %}
-                        <option value="{{ val.id }}">{{ val.name }}</option>
+                            {{ group_ids }}
+                        <option value="{{ val.id }}" {% if val.id in group_ids %}selected{% endif %}>{{ val.name }}</option>
                         {% endfor %}
                         </select><br /><br />
                     {% endif %}
@@ -23,8 +27,6 @@
 
         <script>
             $('.userInfoButton').on('click',function(){
-                var name = $('input[name="username"]').val()
-                var email = $('input[name="email"]').val()
                 var pass = $('input[name="password"]').val()
                 var con_pass = $('input[name="confirmPassword"]').val()
                 if (con_pass != pass) {
@@ -36,25 +38,7 @@
                         "    margin-left: 12px;'>两次密码输入不一致！</b></span>")
                     return false
                 }
-                if(!name){
-                    $('input[name="username"]').after("<span><b style='" +
-                        "    line-height: 18px;\n" +
-                        "    color: red;\n" +
-                        "    font-size: 14px;\n" +
-                        "    font-weight: 100;\n" +
-                        "    margin-left: 12px;'>用户名不能为空！</b></span>")
-                    return false
-                }
-                if(!email){
-                    $('input[name="email"]').after("<span><b style='" +
-                        "    line-height: 18px;\n" +
-                        "    color: red;\n" +
-                        "    font-size: 14px;\n" +
-                        "    font-weight: 100;\n" +
-                        "    margin-left: 12px;'>邮箱不能为空！</b></span>")
-                    return false
-                }
-                if(!password){
+                if(!pass){
                     $('input[name="password"]').after("<span><b style='" +
                         "    line-height: 18px;\n" +
                         "    color: red;\n" +
@@ -63,6 +47,7 @@
                         "    margin-left: 12px;'>密码不能为空！</b></span>")
                     return false
                 }
+
             })
         </script>
             
