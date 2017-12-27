@@ -82,9 +82,9 @@ class Listing:
             if list_data:
                 for v in list_data:
                     listing = Listings.objects.filter(asin=v['asin']).order_by('-created')[:2]
-                    buy_box_res = listing[0].buy_box_res
+                    buy_box_res = eval(listing[0].buy_box_res)
                     if buy_box_res:
-                        buy_box_res = eval(buy_box_res)[0]
+                        buy_box_res = buy_box_res[0]
                     else:
                         buy_box_res = ''
                     category_rank = listing[0].category_rank
@@ -178,10 +178,44 @@ class Listing:
                 UserAsins.objects.bulk_create(querysetlist)
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'添加成功！'}), content_type='application/json')
             else:
-                userAsin_obj = UserAsins.objects.filter(id__in=ids).all()
+                userAsin_obj = UserAsins.objects.filter(id__in=eval(ids)).all()
                 if userAsin_obj:
                     userAsin_obj.update(keywords=keywords,cat=cat,review_watcher=revWatcher,listing_watcher=listWatcher,
                                         is_use=status,ownership=ownership)
 
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'修改成功！'}), content_type='application/json')
 
+    @csrf_exempt
+    def ajax_get_asins(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 1, 'msg': u'用户未登录！'}), content_type='application/json')
+        ids = self.POST.get('ids')
+        asins = UserAsins.objects.values('aid','sku').filter(id__in=eval(ids)).all()
+        aid_str = ''
+        sku_str = ''
+        for val in asins:
+            aid_str += val['aid']+'|'
+            sku_str += val['sku']+'|'
+
+        return HttpResponse(json.dumps({'code':1,'aid_str': aid_str, 'sku_str': sku_str}), content_type='application/json')
+
+    @csrf_exempt
+    def ajax_get_asins1(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 1, 'msg': u'用户未登录！'}), content_type='application/json')
+        ids = self.POST.get('ids')
+        status = self.POST.get('status','')
+        review_watcher = self.POST.get('review_watcher','')
+        listing_watcher = self.POST.get('listing_watcher','')
+        asins = UserAsins.objects.values('aid', 'sku').filter(id__in=eval(ids)).all()
+        if status:
+            asins.update(is_use=status)
+        if review_watcher:
+            asins.update(review_watcher=review_watcher)
+        if listing_watcher:
+            asins.update(listing_watcher=listing_watcher)
+
+        return HttpResponse(json.dumps({'code': 1, 'msg':u'修改成功'}),
+                            content_type='application/json')

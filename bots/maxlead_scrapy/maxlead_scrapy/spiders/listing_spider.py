@@ -100,6 +100,7 @@ class ListingSpider(scrapy.Spider):
         score = response.css('span#acrPopover::attr("title")').extract_first().split(' ')
         item['rvw_score'] = score[0]
         category_rank1 = response.css('li#SalesRank::text').extract()
+        category_rank2 = response.css('tr#SalesRank td.value::text').extract()
         if category_rank1:
             item['category_rank'] = category_rank1[1].replace('\n','').split(' (')[0]
             rank_list = response.css('ul.zg_hrsr li.zg_hrsr_item')
@@ -114,6 +115,20 @@ class ListingSpider(scrapy.Spider):
                             rank_list_item+=val +' > '
 
                 item['category_rank'] = item['category_rank']+rank_list_item
+        elif category_rank2:
+            item['category_rank'] = category_rank2[0].replace('\n', '').split(' (')[0]
+            rank_list = response.css('ul.zg_hrsr li.zg_hrsr_item')
+            if rank_list:
+                rank_list_item = ''
+                for res in rank_list:
+                    rank_list_item += '|' + res.css('span.zg_hrsr_rank::text').extract_first() + ' in '
+                    for i, val in enumerate(res.css('a::text').extract(), 1):
+                        if i == len(res.css('a::text').extract()):
+                            rank_list_item += val
+                        else:
+                            rank_list_item += val + ' > '
+
+                item['category_rank'] = item['category_rank'] + rank_list_item
         else:
             rank_el = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(3) td span span::text').extract()
             if rank_el:

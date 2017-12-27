@@ -63,7 +63,7 @@ class MaxleadScrapyPipeline(object):
             item['image_names'] = images_str
             item['image_thumbs'] = ''
             for img_file in images:
-                thunb_file = common.make_thumb(img_file,dir_path,40,dir_path1)
+                thunb_file = common.make_thumb(img_file,dir_path,60,dir_path1)
                 item['image_thumbs'] += thunb_file
         item.save()
         return item

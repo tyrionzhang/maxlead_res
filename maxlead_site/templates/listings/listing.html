@@ -30,20 +30,21 @@
                 <div >
                     <button class="funcButtons" type="button" id="addASINButton">Add</button>
                     <button class="funcButtons" type="button" id="editASINButton">Edit</button>
-                    <button class="funcButtons" type="button" onclick="将status设为ON">Turn ON</button>
-                    <button class="funcButtons" type="button" onclick="将status设为OFF">Turn OFF</button>
+                    <button class="funcButtons" type="button" id="status_on">Turn ON</button>
+                    <button class="funcButtons" type="button" id="status_off">Turn OFF</button>
                 </div>
                 <table cellspacing=0>
                     <tr><th><input type="checkbox" name="selectallListing" value="all" id="selectAllListing"/></th><th>Image</th><th>Title</th><th>Brand</th><th>Price</th><th>Review</th><th>Score</th><th>BSR</th><th>Buybox</th><th>Status</th><th>Review<br />Watcher</th><th>Listing<br />Watcher</th><th>Last Check</th></tr>
                     <tr><td colspan="13"><hr></td></tr>
                     {% for val in res %}
-                    <tr><td><input type="checkbox" name="selectListing" value="{{ val.id }}"  /></td><td><img src="{{ val.image_thumbs }}" class="listMgmPic"/></td><td><a title="显示完整title" href="进入listing详情页"><SPAn class="listingTitle">{{ val.title }}</span><span class="listingASIN">{{ val.asin }}</SPAN><span class="listingSKU">{{ val.sku }}</span></a></td><td>{{ val.brand }}</td><td>{{ val.price }}<BR>{{ val.price2 }}</td><td>{{ val.total_review }}<BR>{{ val.total_review2 }}</td><td>{{ val.rvw_score }}<br>{{ val.rvw_score2 }}</td><td>{{ val.category_rank }}<br>{{ val.category_rank2 }}</td><td>{{ val.buy_box_res }}</td><td><span class="{% if val.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}" ></span></td><td><span class="{% if val.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}" ></span><!--开启状态为statusON,关闭为statusOFF--></td><td><span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}" ></span></td><td><span class="lastCheck">{{ val.last_check }}</span></td></tr>
+                    <tr><td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td><td><img src="{{ val.image_thumbs }}" class="listMgmPic"/></td><td><a title="显示完整title" href="进入listing详情页"><SPAn class="listingTitle">{{ val.title }}</span><span class="listingASIN">{{ val.asin }}</SPAN><span class="listingSKU">{{ val.sku }}</span></a></td><td>{{ val.brand }}</td><td>{{ val.price }}<BR>{{ val.price2 }}</td><td>{{ val.total_review }}<BR>{{ val.total_review2 }}</td><td>{{ val.rvw_score }}<br>{{ val.rvw_score2 }}</td><td>{{ val.category_rank }}<br>{{ val.category_rank2 }}</td><td>{{ val.buy_box_res }}</td><td><span class="{% if val.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}" ></span></td><td><span class="{% if val.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}" ></span><!--开启状态为statusON,关闭为statusOFF--></td><td><span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}" ></span></td><td><span class="lastCheck">{{ val.last_check }}</span></td></tr>
                     {% endfor %}
                 </table>
                 <hr>
                 <input type="checkbox" name="selectallListing" value="all" id="selectAllListing2"/> <button class="funcButtons" type="button" onclick="导出选中条目数据">Export</button>
                 <div id="editASIN"  style="display:none;">
                     <h3>Basic Info</h3>
+                        <input type="hidden" name="ids" value="" />
                         <div class="basicInfo">*ASIN<br><textarea name="newASIN" rows=5 cols=18 title="one ASIN per line" /></textarea><!--如果是通过编辑进来，增加readonly属性--></div>
                         <div class="basicInfo">SKU<br><textarea name="newSKU" rows="5" cols="18" title="one SKU per line, should be in the same sequence as ASIN"/></textarea></div>
                         <div class="basicInfo">
@@ -54,7 +55,7 @@
                         </div>
                         <div class="kwdTracking">
                             <h3>Keywords Tracking</h3>
-                            Keyword Set 1: <input type="" name="kwdSet1" title="3 keywords/set max. separated by comma" />  Category Node: <input type="number" name="cat1" title="category node ID, number only"/><br />
+                            Keyword Set 1: <input type="text" name="kwdSet1" title="3 keywords/set max. separated by comma" />  Category Node: <input type="number" name="cat1" title="category node ID, number only"/><br />
                             Keyword Set 2: <input type="text" name="kwdSet2" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat2" /><br />
                             Keyword Set 3: <input type="text" name="kwdSet3" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat3" /><br />
                         </div>
@@ -97,12 +98,13 @@
         <script>
             $("#btn-asin-add").on('click',function () {
                 var data = {
+                    'ids':$('input[name="ids"]').val(),
                     'newASIN':$("textarea[name='newASIN']").val(),
                     'newSKU':$("textarea[name='newSKU']").val(),
-                    'ownership':$("input[name='ownership']").val(),
-                    'status':$("input[name='status']").val(),
-                    'revWatcher':$("input[name='revWatcher']").val(),
-                    'listWatcher':$("input[name='listWatcher']").val(),
+                    'ownership':$("input[name='ownership']:checked").val(),
+                    'status':$("input[name='status']:checked").val(),
+                    'revWatcher':$("input[name='revWatcher']:checked").val(),
+                    'listWatcher':$("input[name='listWatcher']:checked").val(),
                     'kwdSet1':$("input[name='kwdSet1']").val(),
                     'kwdSet2':$("input[name='kwdSet2']").val(),
                     'kwdSet3':$("input[name='kwdSet3']").val(),
@@ -112,14 +114,142 @@
                 };
                 $.post('/admin/maxlead_site/add_asin/',data,function (re) {
                     if(re.code==1){
-                        alert('添加成功！');
-                        $('#editASIN').attr('style','display:none;')
+                        alert(re.msg);
+                        $('#editASIN').attr('style','display:none;');
+                        window.location.reload();
                     }
                 },'json')
             })
         $('#editASINButton').on('click',function () {
-            console.log(1)
+            var asins = [];
+
+            $('input[name="selectListing"]:checked').each(function () {
+                asins.push(parseInt($(this).val()))
+            });
+            if(asins == false){
+                alert('请选择listings！');
+                return false;
+            }
+            var data = {
+                'ids' : JSON.stringify(asins)
+            };
+            $('#btn-asin-add').val('Edit');
+            $.post('/admin/maxlead_site/get_asin_edits/',data,function (re) {
+                if(re.code==1){
+                    $('textarea[name="newASIN"]').val(re.aid_str).attr('readonly','readonly');
+                    $('textarea[name="newSKU"]').val(re.sku_str).attr('readonly','readonly');
+                    $('input[name="ids"]').val(data['ids']);
+                }
+            },'json');
+
         })
+
+        $('#status_on').on('click',function () {
+            var asins = [];
+
+            $('input[name="selectListing"]:checked').each(function () {
+                asins.push(parseInt($(this).val()))
+            });
+            if(asins == false){
+                alert('请选择listings！');
+                return false;
+            }
+            var data = {
+                'ids' : JSON.stringify(asins),
+                'status':1
+            };
+
+            $.post('/admin/maxlead_site/ajax_edit/',data,function (re) {
+                if(re.code==1){
+                    window.location.reload()
+                }
+            },'json');
+        })
+
+        $('#status_off').on('click',function () {
+            var asins = [];
+
+            $('input[name="selectListing"]:checked').each(function () {
+                asins.push(parseInt($(this).val()))
+            });
+            if(asins == false){
+                alert('请选择listings！');
+                return false;
+            }
+            var data = {
+                'ids' : JSON.stringify(asins),
+                'status':0
+            };
+
+            $.post('/admin/maxlead_site/ajax_edit/',data,function (re) {
+                if(re.code==1){
+                    window.location.reload()
+                }
+            },'json');
+        })
+
+    function span_click(data) {
+
+        $.post('/admin/maxlead_site/ajax_edit/',data,function (re) {
+            if(re.code==1){
+                window.location.reload();
+            }
+        },'json');
+    }
+
+    $(".asinON, .asinOFF").click(function(){
+        var id = $(this).parent().parent('tr').children("td:first-child").children("input:first-child").val();
+                var asins = [];
+
+        asins.push(parseInt(id));
+        var data = {
+            'ids' : JSON.stringify(asins),
+        };
+        if ($(this).attr("class") == "asinON") {
+            data['status'] = 0;
+            span_click(data);
+        } else {
+            data['status'] = 1;
+            span_click(data);
+        }
+
+    }); //asin status
+
+    $(".rvON, .rvOFF").click(function(){
+        var id = $(this).parent().parent('tr').children("td:first-child").children("input:first-child").val();
+                var asins = [];
+
+        asins.push(parseInt(id));
+        var data = {
+            'ids' : JSON.stringify(asins),
+        };
+        if ($(this).attr("class") == "rvON"){
+            data['review_watcher'] = 0;
+            span_click(data);
+        } else {
+            data['review_watcher'] = 1;
+            span_click(data);
+        }
+
+    }); //review status
+
+    $(".listON, .listOFF").click(function(){
+        var id = $(this).parent().parent('tr').children("td:first-child").children("input:first-child").val();
+                var asins = [];
+
+        asins.push(parseInt(id));
+        var data = {
+            'ids' : JSON.stringify(asins),
+        };
+        if ($(this).attr("class") == "listON"){
+           data['listing_watcher'] = 0;
+            span_click(data);
+        } else {
+            data['listing_watcher'] = 1;
+            span_click(data);
+        }
+
+    }); //review status
         </script>
     {% endblock %}
 

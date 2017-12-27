@@ -42,6 +42,8 @@ urlpatterns = [
     url(r'^admin/maxlead_site/user_list/', Logins.user_list),
     url(r'^admin/maxlead_site/listings/', Listing.index),
     url(r'^admin/maxlead_site/add_asin/', Listing.save_user_asin),
+    url(r'^admin/maxlead_site/get_asin_edits/', Listing.ajax_get_asins),
+    url(r'^admin/maxlead_site/ajax_edit/', Listing.ajax_get_asins1),
     url(r'^admin/', admin.site.urls),
 
 ]
