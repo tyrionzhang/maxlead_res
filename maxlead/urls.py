@@ -41,6 +41,7 @@ urlpatterns = [
     url(r'^admin/maxlead_site/index/', Index.index),
     url(r'^admin/maxlead_site/user_list/', Logins.user_list),
     url(r'^admin/maxlead_site/listings/', Listing.index),
+    url(r'^admin/maxlead_site/add_asin/', Listing.save_user_asin),
     url(r'^admin/', admin.site.urls),
 
 ]
