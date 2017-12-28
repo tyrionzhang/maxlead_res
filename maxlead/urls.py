@@ -20,6 +20,7 @@ from maxlead_site.views.views import test as test_views
 from maxlead_site.views.users.login import Logins
 from maxlead_site.views.index.index import Index
 from maxlead_site.views.listing.listing import Listing
+from maxlead_site.views.listing.item import Item
 from django.views import static
 from maxlead import settings
 
@@ -45,6 +46,8 @@ urlpatterns = [
     url(r'^admin/maxlead_site/get_asin_edits/', Listing.ajax_get_asins),
     url(r'^admin/maxlead_site/ajax_edit/', Listing.ajax_get_asins1),
     url(r'^admin/maxlead_site/listing_export/', Listing.ajax_export),
+    url(r'^admin/maxlead_site/listing_item/', Item.item),
+    url(r'^admin/maxlead_site/review_search/', Item.ajax_get_review),
     url(r'^admin/', admin.site.urls),
 
 ]

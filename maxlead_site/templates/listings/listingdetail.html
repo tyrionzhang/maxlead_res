@@ -1,0 +1,218 @@
+{% extends "layouts/page_base.html" %}
+    {% block container %}
+            <main class="listingDetail">
+                <section class="detailInfo">
+                    <div class="detailGallery">
+                        <img src="{{ res.image_names }}" id="detailBig" />
+                        <p class="galleryTime">{{ res.image_date }}</p>
+{#                        <div class="detailSmall">#}
+{#                            <img src="" />#}
+{#                            <img src="" />#}
+{#                            <img src="" />#}
+{#                        </div>#}
+                    </div>
+                    <div class="productInfo">
+                        <a href="https://www.amazon.com/dp/{{ res.asin }}/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head&th=1&psc=1" target="_blank"><h2>{{ res.title }}</h2></a>
+                        <table class="productInfoTable">
+                            <tr><td>Stauts: <span class="{% if res.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}"></span> </td><td>Review Watcher: <span class="{% if res.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}"></span></td><td>Listing Watcher: <span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}"></span></td><td><button type="button" id="editASINButton">Edit</button></td></tr>
+                            <tr><td>ASIN: {{ res.asin }}</td>
+                                <td>Brand: {{ res.brand }}</td>
+                                <td>SKU: {{ res.sku }}</td>
+                                <td>Inventory: unknown</td></tr>
+                            <tr><td>New Item Offers: 5</td>
+                                <td><a href="https://www.amazon.com/product-reviews/{{ res.asin }}/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews" target="_blank">Reviews: {{ res.total_review }}</a></td>
+                                <td><span class="star{{ res.rvw_score }}"></span></td>
+                                <td><a href="https://www.amazon.com/ask/questions/asin/{{ res.asin }}/" target="_blank">QA: {{ res.question_answer }}</a>
+                                    <button type="button" onclick="执行导出操作">Export QA</button></td></tr>
+                        </table>
+                        <h4>Golden Buy Box Winner</h4>
+                        <hr>
+                        <table class="productGBBW">
+                            <tr><td>Price: $99.99</td><td><a href="" target="_blank">Seller: Big Player</a></td><td>FBA</td><td>Prime</td><td>Free Shipping</td></tr>
+                        </table>
+                        <h4>BSR</h4>
+                        <hr>
+                        {% for val in res.category_rank %}
+                        <p>{{ val }}</p>
+                        {% endfor %}
+                        <p class="timestamp"><span>Add: {{ res.created }}</span><span>Last updated: {{ res.user_asin.update_time }}</span><span>Last view: {{ res.user_asin.last_check }}</span></p>
+                    </div>
+                </section>
+                <section class="detailWatcher">
+                    <h3>Listing Watcher</h3>
+                    <div class="detailWatcherList">
+                        <p>No one is listing against this ASIN.</p><!--没有跟列记录时的文字提示-->
+                        <table><!--默认只显示5条-->
+                            <tr><td>2017-12-01  03:35</td><td><a href="" target="_blank">Seller: Big Player</a></td><td>Price: $99.99</td><td>FBA</td><td>Prime</td><td>Free Shipping</td><td>Buy box winner</td><td><button id="截屏图片ID" type="button" class="screenshotButton">Screenshot</button></td></tr>
+                            <tr><td>2017-12-01  03:35</td><td><a href="" target="_blank">Seller: Big Player</a></td><td>Price: $99.99</td><td>FBA</td><td>Prime</td><td>Free Shipping</td><td>Buy box winner</td><td><button id="截屏图片ID" type="button"  class="screenshotButton">Screenshot</button></td></tr>
+                            <tr><td>2017-12-01  03:35</td><td><a href="" target="_blank">Seller: Big Player</a></td><td>Price: $99.99</td><td>FBA</td><td>Prime</td><td>Free Shipping</td><td>Buy box winner</td><td><button id="截屏图片ID" type="button"  class="screenshotButton">Screenshot</button></td></tr>
+                        </table>
+                        <button type="button" class="moreButton" onclick="">More</button>
+                        <div >
+                            <img src ="./img/test.jpg" style="display:none" id="screenshot" />
+                        </div>
+                    </div>                    
+                </section>
+                <section class="detailChart">
+                    <h3>Time Shuttle</h3>
+                    <form name="timeShuttle" method="post" action="">
+                        Data1: <select name="tsData1"><option selected value="price">Price</option><option value="bsr">BSR</option><option value="reviews">Reviews</option><option value="score">Score</option><option value="qa">QA</option></select>
+                        Data2: <select name="tsData2"><option value="price">Price</option><option selected  value="bsr">BSR</option><option value="reviews">Reviews</option><option value="score">Score</option><option value="qa">QA</option></select>
+                        <input type="date" name="tsStartDate" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="tsEndDate" max="传入当前日期" min="2017-12-15" />  <input  class="rvInfoButton" type="submit" value="Update" />  <button type="button"  class="rvInfoButton" onclick="导出当前数据">Export</button>
+                    </form>
+                    <div id="tsVisual">
+                    </div>
+                </section>
+                <section class="detailRanking">
+                    <h3>Keywords Ranking</h3>
+                    <form name="kwdRank" method="post" action="">
+                        Category: <select name="kwdCat"><option value="all">All</option><option value="cat1">Cat1</option></select><input type="date" name="krStartDate" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="krEndDate" max="传入当前日期" min="2017-12-15" />  <input type="submit"  class="rvInfoButton" value="Update" />  <button type="button"  class="rvInfoButton" onclick="导出当前数据">Export</button>
+                    </form>
+                    <div id="krVisual">
+                    </div>
+                </section>
+                <section class="detailReview">
+                    <h3>Reviews</h3>
+                    <div class="rvKeywords">
+                        <h4>Keywords</h4>
+                        <ul>
+                            {% for v in asinreview %}
+                            <li><a title="显示该关键词出现的次数" onclick="显示当前筛选条件下包含该关键词的review">{{ v.words }} {{ v.count }}</a></li>
+                            {% endfor %}
+
+                        </ul>
+                    </div>
+                    <div class="rvInfo">
+                        <form name="rvFilter" method="post" action = "">
+                            <select name="rvSort">
+                                <option selected value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="top">Top Rated</option></select>
+                            <select name="is_vp">
+                                <option value="">All Reviews</option>
+                                <option value="1" selected>VP Only</option></select>
+                            <select name="score">
+                                <option value="">All</option>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Star</option>
+                                <option value="3">3 Star</option>
+                                <option value="4">4 Star</option>
+                                <option value="5">5Star</option>
+                                <option value="positive">All Positive</option>
+                                <option value="critical">All Critical</option></select><br>
+                            <input type="search" name="rvKwd" />  <input type="date" name="start_date" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="end_date" max="传入当前日期" min="2017-12-15" />
+                            <input type="submit" value="Search" class="rvInfoButton" id="btn-review-search" data-asin="{{ res.asin }}"/>  <button class="rvInfoButton" type="button" onclick="导出当前数据">Export</button>
+                        </form>
+                        <table id="table-review-list"><!--默认只显示3条-->
+                            {% for val in review %}
+                            <tr>
+                                <td><span class="star{{ val.score }}"><!--给class传入相应的1-5star，显示图片--></span>{% if val.is_vp == 1 %}Verified Purchase{% endif %}<!--如果是非VP则不显示--></td>
+                                <td>{{ val.name }}<!--reviewer名字--><br />{{ val.review_date }}<!--review日期--></td>
+                                <td class="rvInfoRV">{{ val.content }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <button type="button" class="moreButton" id="btn-review-more" data-page="{{ review_page }}">More</button>
+                    </div>
+                </section>
+                <section class="detailRadar">
+                    <h3>Activity Radar</h3>
+                    <div class="detailAct">
+                        
+                        <table><!--默认只显示3条-->
+                            <tr><th>Time</th><th>Object</th><th>Previous</th><th>New</th><th></th><tr>
+                            <tr><td>2017-12-12<br>05:23:11</td><td>Title</td><td>This is the previous title in records.</td><td>This is the new title on the webpage.</td><td><span class="actMore">Show More</span></td></tr>
+                            <tr><td>2017-12-12<br>05:23:11</td><td>Price</td><td>$45.99</td><td>$42.99</td><td><span class="actMore">Show More</span></td></tr>
+                            <tr><td>2017-12-12<br>05:23:11</td><td>Description</td><td>This is the previous title in records.fdsafdsfasfsafsa fdsaf fdsf ew gqrg rj u6k 76r w4 </td><td>This is the new title on the webpage.rewq  4 4hh hyh dsfheq g54y 65 hrt h4 h24 h sgdag 34ukyk iy</td><td><span class="actMore">Show More</span></td></tr>
+                        </table>
+                        <div id="actOut" style="display:none;">
+                            <div class="actIn">
+                            <div id="actPrevious"></div>
+                            <div id="actNew"></div>
+                            <button class="moreButton">Close</button>
+                            </div>
+                        </div>
+                        <button type="button" class="moreButton" onclick="">More</button>
+                        
+                    </div>                    
+                </section>
+                <div id="editASIN"  style="display:none;">
+                    <h3>Basic Info</h3>
+                    <form name="editASIN" method="post" action="">
+                        <div class="basicInfo">*ASIN<br><textarea readonly="readonly" name="newASIN" rows=1 cols=18 title="You cannot edit ASIN." /></textarea></div>
+                        <div class="basicInfo">SKU<br><textarea name="newASIN" rows="1" cols="18" title="only one SKU per ASIN"/></textarea></div>
+                        <div class="basicInfo">
+                            *Ownership: <input type="radio" name="ownership" value="ours" />Ours  <input type="radio" name="ownership" value="others" />Others<br />
+                            *Status: <input type="radio" name="status" value="on" />ON  <input type="radio" name="status" value="off" />OFF<br />
+                            *Review Watcher: <input type="radio" name="revWatcher" value="on" />ON  <input type="radio" name="revWatcher" value="off" />OFF<br />
+                            *Listing Watcher: <input type="radio" name="listWatcher" value="on" />ON  <input type="radio" name="listWatcher" value="off" />OFF
+                        </div>
+                        <div class="kwdTracking">
+                            <h3>Keywords Tracking</h3>
+                            Keyword Set 1: <input type="" name="kwdSet1" title="3 keywords/set max. separated by comma" />  Category Node: <input type="number" name="cat1" title="category node ID, number only"/><br />
+                            Keyword Set 2: <input type="text" name="kwdSet2" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat2" /><br />
+                            Keyword Set 3: <input type="text" name="kwdSet3" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat3" /><br />
+                        </div>
+                        <div class="listActionButton"><input type="submit" value="Edit" /><input type="button" value="Cancel" id="editASINCancel"/></div>
+                    </form>
+                </div>
+                <a class="goBack" href="" onclick="window.history.go(-1); return false;">&lt;&lt;&lt;Go Back</a>
+            </main>
+        <script>
+            $('#btn-review-search').on('click',function () {
+                var data = {
+                    'asin': $(this).data('asin'),
+                    'is_vp':$('select[name="is_vp"]').val(),
+                    'score':$('select[name="score"]').val(),
+                    'rvKwd':$('input[name="rvKwd"]').val(),
+                    'start_date':$('input[name="start_date"]').val(),
+                    'end_date':$('input[name="end_date"]').val()
+                };
+                $.get('/admin/maxlead_site/review_search/',data,function (re) {
+                    if(re.code == 1){
+                        var el = '';
+                        $.each(re.data.data,function(index,value){
+                          el += '<tr>'+
+                              '<td><span class="star'+value['score']+'"></span>'+
+                              value['is_vp']+'</td>' +
+                              '<td>'+value['name']+'<!--reviewer名字--><br />'+value['review_date']+'<!--review日期--></td>'+
+                              '<td class="rvInfoRV">'+value['content']+'</td>' +
+                              '</tr>';
+                        });
+                        $('#table-review-list').html(el);
+                    }
+                },'json');
+                return false;
+            });
+
+            $('#btn-review-more').on('click',function () {
+                var page = parseInt($(this).data('page'))+1;
+                var data = {
+                    'asin': $('#btn-review-search').data('asin'),
+                    'review_page': page,
+                    'is_vp':$('select[name="is_vp"]').val(),
+                    'score':$('select[name="score"]').val(),
+                    'rvKwd':$('input[name="rvKwd"]').val(),
+                    'start_date':$('input[name="start_date"]').val(),
+                    'end_date':$('input[name="end_date"]').val()
+                };
+                $.get('/admin/maxlead_site/review_search/',data,function (re) {
+                    if(re.code == 1){
+                        var el = '';
+                        $.each(re.data.data,function(index,value){
+                          el += '<tr>'+
+                              '<td><span class="star'+value['score']+'"></span>'+
+                              value['is_vp']+'</td>' +
+                              '<td>'+value['name']+'<!--reviewer名字--><br />'+value['review_date']+'<!--review日期--></td>'+
+                              '<td class="rvInfoRV">'+value['content']+'</td>' +
+                              '</tr>';
+                        });
+                        $('#table-review-list').append(el);
+                        $('#btn-review-more').data('page', page);
+                    }
+                },'json');
+                return false;
+            })
+        </script>
+    {% endblock %}
+

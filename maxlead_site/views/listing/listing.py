@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+import json,datetime
 from django.shortcuts import render,HttpResponse
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -107,6 +107,7 @@ class Listing:
                         last_check = last_check_data.strftime("%Y-%m-%d %H:%M:%S")
 
                     re = {
+                        'id':listing[0].id,
                         'title':listing[0].title,
                         'asin':listing[0].asin,
                         'sku':listing[0].sku,
@@ -196,7 +197,7 @@ class Listing:
                 userAsin_obj = UserAsins.objects.filter(id__in=eval(ids)).all()
                 if userAsin_obj:
                     userAsin_obj.update(keywords=keywords,cat=cat,review_watcher=revWatcher,listing_watcher=listWatcher,
-                                        is_use=status,ownership=ownership)
+                                        is_use=status,ownership=ownership,last_check=datetime.datetime.now())
 
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'修改成功！'}), content_type='application/json')
 
@@ -231,6 +232,8 @@ class Listing:
             asins.update(review_watcher=review_watcher)
         if listing_watcher:
             asins.update(listing_watcher=listing_watcher)
+
+        asins.update(last_check=datetime.datetime.now())
 
         return HttpResponse(json.dumps({'code': 1, 'msg':u'修改成功'}),
                             content_type='application/json')

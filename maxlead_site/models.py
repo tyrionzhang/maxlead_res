@@ -47,6 +47,7 @@ class UserAsins(models.Model):
     is_email = models.BooleanField(u'是否邮件通知',default=1)
     is_use = models.BooleanField('Status', default=True)
     last_check = models.DateTimeField('Last Check', null=True)
+    update_time = models.DateTimeField('Update Time', null=True)
 
     class Meta:
         db_table = 'user_asins'
@@ -74,6 +75,7 @@ class Reviews(models.Model):
     review_date = models.DateField('Date')
     created = models.DateField('Create Date',auto_now_add=True)
     image_names = models.TextField('Images', null=True)
+    image_thumbs = models.TextField('Images Thumb', null=True)
     image_urls = models.TextField('Image Urls', null=True)
 
     class Meta:
