@@ -37,11 +37,15 @@
                     <tr><th><input type="checkbox" name="selectallListing" value="all" id="selectAllListing"/></th><th>Image</th><th>Title</th><th>Brand</th><th>Price</th><th>Review</th><th>Score</th><th>BSR</th><th>Buybox</th><th>Status</th><th>Review<br />Watcher</th><th>Listing<br />Watcher</th><th>Last Check</th></tr>
                     <tr><td colspan="13"><hr></td></tr>
                     {% for val in res %}
-                    <tr><td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td><td><img src="{{ val.image_thumbs }}" class="listMgmPic"/></td><td><a title="显示完整title" href="进入listing详情页"><SPAn class="listingTitle">{{ val.title }}</span><span class="listingASIN">{{ val.asin }}</SPAN><span class="listingSKU">{{ val.sku }}</span></a></td><td>{{ val.brand }}</td><td>{{ val.price }}<BR>{{ val.price2 }}</td><td>{{ val.total_review }}<BR>{{ val.total_review2 }}</td><td>{{ val.rvw_score }}<br>{{ val.rvw_score2 }}</td><td>{{ val.category_rank }}<br>{{ val.category_rank2 }}</td><td>{{ val.buy_box_res }}</td><td><span class="{% if val.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}" ></span></td><td><span class="{% if val.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}" ></span><!--开启状态为statusON,关闭为statusOFF--></td><td><span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}" ></span></td><td><span class="lastCheck">{{ val.last_check }}</span></td></tr>
+                    <tr><td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td><td><img src="{{ val.image_thumbs }}" class="listMgmPic"/></td><td><a title="显示完整title" href="进入listing详情页"><SPAn class="listingTitle">{{ val.title }}</span><span class="listingASIN">{{ val.asin }}</SPAN><span class="listingSKU">{{ val.sku }}</span></a></td><td>{{ val.brand }}</td><td>{{ val.price }}<BR> {{ val.price2 }}</td><td>{{ val.total_review }}<BR> {{ val.total_review2 }}</td><td>{{ val.rvw_score }}<br> {{ val.rvw_score2 }}</td><td>{{ val.category_rank }}<br>{{ val.category_rank2 }}</td><td>{{ val.buy_box_res }}</td><td><span class="{% if val.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}" ></span></td><td><span class="{% if val.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}" ></span><!--开启状态为statusON,关闭为statusOFF--></td><td><span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}" ></span></td><td><span class="lastCheck">{{ val.last_check }}</span></td></tr>
                     {% endfor %}
                 </table>
                 <hr>
-                <input type="checkbox" name="selectallListing" value="all" id="selectAllListing2"/> <button class="funcButtons" type="button" onclick="导出选中条目数据">Export</button>
+                <input type="checkbox" name="selectallListing" value="all" id="selectAllListing2"/>
+                <form name="export-form" action="/admin/maxlead_site/listing_export/" method="post">
+                    <input type="hidden" name="data" id="export-data" value=""/>
+                    <button class="funcButtons" type="submit" id="btn-export">Export</button>
+                </form>
                 <div id="editASIN"  style="display:none;">
                     <h3>Basic Info</h3>
                         <input type="hidden" name="ids" value="" />
@@ -250,6 +254,45 @@
         }
 
     }); //review status
+
+        $('#btn-export').on('click',function () {
+            var listings = [];
+
+            $('input[name="selectListing"]:checked').each(function () {
+                var tr = $(this).parent().parent('tr');
+                var status = tr.find('td').eq(9).children('span').attr('class');
+                var review_watcher = tr.find('td').eq(10).children('span').attr('class');
+                var listing_watcher = tr.find('td').eq(11).children('span').attr('class');
+                status = status == 'asinON' ? 'Normal':'Disable';
+                review_watcher = review_watcher == 'rvON' ? 'Normal':'Disable';
+                listing_watcher = listing_watcher == 'listON' ? 'Normal':'Disable';
+
+                var listing = {
+                    'image_names':tr.find('td').eq(1).children('img').attr('src'),
+                    'title':tr.find('td').eq(2).find('.listingTitle').text(),
+                    'asin':tr.find('td').eq(2).find('.listingASIN').text(),
+                    'sku':tr.find('td').eq(2).find('.listingSKU').text(),
+                    'brand':tr.find('td').eq(3).text(),
+                    'price':tr.find('td').eq(4).text(),
+                    'total_review':tr.find('td').eq(5).text(),
+                    'rvw_score':tr.find('td').eq(6).text(),
+                    'category_rank':tr.find('td').eq(7).text(),
+                    'buy_box':tr.find('td').eq(8).text(),
+                    'status':status,
+                    'review_watcher':review_watcher,
+                    'listing_watcher':listing_watcher,
+                    'last_check':tr.find('td').eq(12).children('span').text()
+                };
+                listings.push(listing);
+            });
+            if(listings == false){
+                alert('请选择listings！');
+                return false;
+            }
+
+            $('#export-data').val(JSON.stringify(listings))
+
+        })
         </script>
     {% endblock %}
 

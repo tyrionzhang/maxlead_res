@@ -95,10 +95,14 @@ class ListingSpider(scrapy.Spider):
         if not item['price']:
             item['price'] = response.css('tr#priceblock_dealprice_row span#priceblock_dealprice::text').extract_first()
 
-        review = response.css('span#acrCustomerReviewText::text').extract_first().split(' ')
-        item['total_review'] = review[0]
-        score = response.css('span#acrPopover::attr("title")').extract_first().split(' ')
-        item['rvw_score'] = score[0]
+        review = response.css('span#acrCustomerReviewText::text').extract_first()
+        item['total_review'] = 0
+        if review:
+            item['total_review'] = review.split(' ')[0]
+        score = response.css('span#acrPopover::attr("title")').extract_first()
+        item['rvw_score'] = 0
+        if score:
+            item['rvw_score'] = score.split(' ')[0]
         category_rank1 = response.css('li#SalesRank::text').extract()
         category_rank2 = response.css('tr#SalesRank td.value::text').extract()
         if category_rank1:
@@ -131,6 +135,7 @@ class ListingSpider(scrapy.Spider):
                 item['category_rank'] = item['category_rank'] + rank_list_item
         else:
             rank_el = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(3) td span span::text').extract()
+            rank_el1 = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(9) td span span::text').extract()
             if rank_el:
                 item['category_rank'] = rank_el[0].split(' (')[0]
                 rank_span = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(3) td span span')
@@ -142,6 +147,20 @@ class ListingSpider(scrapy.Spider):
                                 item['category_rank'] += val
                             elif s == 1:
                                 item['category_rank'] += '|' + rank_el[2] + val + ' > '
+                            else:
+                                item['category_rank'] += val + ' > '
+            elif rank_el1:
+                item['category_rank'] = rank_el1[0].split(' (')[0]
+                rank_span = response.css(
+                    'table#productDetails_detailBullets_sections1 tr:nth-child(9) td span span')
+                for n, rank_a in enumerate(rank_span, 0):
+                    if not n == 0:
+                        a = rank_a.css('a::text').extract()
+                        for s, val in enumerate(a, 1):
+                            if s == len(a):
+                                item['category_rank'] += val
+                            elif s == 1:
+                                item['category_rank'] += '|' + rank_el1[2] + val + ' > '
                             else:
                                 item['category_rank'] += val + ' > '
             else:

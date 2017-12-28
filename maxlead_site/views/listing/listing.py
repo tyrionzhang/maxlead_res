@@ -8,6 +8,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 from maxlead_site.models import Listings,UserAsins,MenberGroups
 from maxlead_site.views.app import App
+from maxlead_site.common.excel_world import get_excel_file
 
 class Listing:
 
@@ -91,16 +92,30 @@ class Listing:
                     if category_rank:
                         category_rank = category_rank.split('|')[0]
 
+                    if len(listing) == 2:
+                        price2 = float(listing[0].price[1:]) - float(listing[1].price[1:])
+                        total_review2 = int(listing[0].total_review) - int(listing[1].total_review)
+                        rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
+                    else:
+                        price2 = ''
+                        total_review2 = ''
+                        rvw_score2 = ''
+
+                    last_check_data = listing[0].user_asin.last_check
+                    last_check = ''
+                    if last_check_data:
+                        last_check = last_check_data.strftime("%Y-%m-%d %H:%M:%S")
+
                     re = {
                         'title':listing[0].title,
                         'asin':listing[0].asin,
                         'sku':listing[0].sku,
                         'brand':listing[0].brand,
                         'price':listing[0].price,
-                        'price2':float(listing[0].price[1:]) - float(listing[1].price[1:]),
+                        'price2':price2,
                         'total_review':listing[0].total_review,
-                        'total_review2':int(listing[0].total_review) - int(listing[0].total_review),
-                        'rvw_score2':float(listing[0].rvw_score) - float(listing[0].rvw_score),
+                        'total_review2':total_review2,
+                        'rvw_score2':rvw_score2,
                         'rvw_score':float(listing[0].rvw_score),
                         'category_rank':category_rank.split('in')[1],
                         'category_rank2':category_rank.split('in')[0],
@@ -108,7 +123,7 @@ class Listing:
                         'buy_box_res':buy_box_res,
                         'user_asin': listing[0].user_asin,
                         'image_thumbs': listing[0].image_thumbs,
-                        'last_check': listing[0].user_asin.last_check.strftime("%Y-%m-%d %H:%M:%S"),
+                        'last_check': last_check,
                     }
                     res.append(re)
             data = {
@@ -204,7 +219,7 @@ class Listing:
     def ajax_get_asins1(self):
         user = App.get_user_info(self)
         if not user:
-            return HttpResponse(json.dumps({'code': 1, 'msg': u'用户未登录！'}), content_type='application/json')
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'用户未登录！'}), content_type='application/json')
         ids = self.POST.get('ids')
         status = self.POST.get('status','')
         review_watcher = self.POST.get('review_watcher','')
@@ -219,3 +234,42 @@ class Listing:
 
         return HttpResponse(json.dumps({'code': 1, 'msg':u'修改成功'}),
                             content_type='application/json')
+
+    @csrf_exempt
+    def ajax_export(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'用户未登录！'}), content_type='application/json')
+        data = eval(self.POST.get('data'))
+        fields = [
+            'Image Thumbs',
+            'Title',
+            'Asin',
+            'Sku',
+            'Brand',
+            'Price',
+            'Total Review',
+            'Rvw Ecore',
+            'Category Rank',
+            'Buy Box',
+            'Status',
+            'Review Watcher',
+            'Listing Watcher',
+            'Last Check'
+        ]
+        data_fields = [
+            'title',
+            'asin',
+            'sku',
+            'brand',
+            'price',
+            'total_review',
+            'rvw_score',
+            'category_rank',
+            'buy_box',
+            'status',
+            'review_watcher',
+            'listing_watcher',
+            'last_check'
+        ]
+        return get_excel_file(self,data,fields,data_fields)
