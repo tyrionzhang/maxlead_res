@@ -68,7 +68,16 @@ class Listing:
             if int(limit) >= total_count:
                 limit = total_count
             if not listings:
-                return render(self, 'listings/listing.html', {'data': ''})
+                return render(self, 'listings/listing.html', {
+                    'data': '',
+                    'user': user,
+                    'avator': user.user.username[0],
+                    'searchCol': searchCol,
+                    'buybox': buybox,
+                    'listKwd': listKwd,
+                    'status': status,
+                    'revstatus': revstatus,
+                    'liststatus': liststatus,})
             paginator = Paginator(listings, limit)
             page = self.GET.get('page')
             try:
@@ -196,6 +205,8 @@ class Listing:
             else:
                 userAsin_obj = UserAsins.objects.filter(id__in=eval(ids)).all()
                 if userAsin_obj:
+                    if newSKU:
+                        userAsin_obj.update(sku=newSKU[0])
                     userAsin_obj.update(keywords=keywords,cat=cat,review_watcher=revWatcher,listing_watcher=listWatcher,
                                         is_use=status,ownership=ownership,last_check=datetime.datetime.now())
 

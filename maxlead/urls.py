@@ -48,6 +48,8 @@ urlpatterns = [
     url(r'^admin/maxlead_site/listing_export/', Listing.ajax_export),
     url(r'^admin/maxlead_site/listing_item/', Item.item),
     url(r'^admin/maxlead_site/review_search/', Item.ajax_get_review),
+    url(r'^admin/maxlead_site/export_qa/', Item.export_qa),
+    url(r'^admin/maxlead_site/export_reviews/', Item.export_reviews),
     url(r'^admin/', admin.site.urls),
 
 ]

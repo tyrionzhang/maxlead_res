@@ -195,9 +195,7 @@
     function span_click(data) {
 
         $.post('/admin/maxlead_site/ajax_edit/',data,function (re) {
-            if(re.code==1){
-                window.location.reload();
-            }
+
         },'json');
     }
 

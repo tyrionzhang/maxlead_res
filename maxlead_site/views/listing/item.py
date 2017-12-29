@@ -70,6 +70,10 @@ class Item:
             item.rvw_score = int(item.rvw_score)
         if item.category_rank:
             item.category_rank = item.category_rank.split('|')
+        if item.user_asin.keywords:
+            item.user_asin.keywords = item.user_asin.keywords.split('|')
+        if item.user_asin.cat:
+            item.user_asin.cat = item.user_asin.cat.split('|')
 
         data = {
             'user': user,
@@ -83,6 +87,9 @@ class Item:
 
     @csrf_exempt
     def ajax_get_review(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
         asin = self.GET.get('asin', '')
         is_vp = self.GET.get('is_vp', '')
         score = self.GET.get('score', '')
@@ -115,14 +122,7 @@ class Item:
         offset = (int(review_page)-1) * int(review_limit)
         page_limit = offset + int(review_limit)
         review = review.all()[offset:page_limit]
-        # try:
-        #     review_data = paginator.page(review_page)
-        # except PageNotAnInteger:
-        #     # If page is not an integer, deliver first page.
-        #     review_data = paginator.page(1)
-        # except EmptyPage:
-        #     # If page is out of range (e.g. 9999), deliver last page of results.
-        #     review_data = paginator.page(paginator.num_pages)
+
         data = []
         for val in review:
             if val.created:
@@ -135,3 +135,138 @@ class Item:
             data.append(model_to_dict(val))
 
         return HttpResponse(json.dumps({'code': 1, 'data': {'data':data,'review_page':review_page}}), content_type='application/json')
+
+    @csrf_exempt
+    def export_qa(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+
+        asin = self.GET.get('qa_asin', '')
+
+        qa_max = Questions.objects.aggregate(Max('created'))
+        question = Questions.objects.filter(asin=asin, created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
+        answer = Answers.objects.filter(question__in=question)
+        data = []
+        for val in answer:
+            re = {
+                'question':val.question.question,
+                'asin':val.question.asin,
+                'asked':val.question.asked,
+                'votes':val.question.votes,
+                'answer':val.answer,
+                'person':val.person,
+                'created':val.created.strftime("%Y-%m-%d %H:%M:%S")
+            }
+
+            data.append(re)
+
+        fields = [
+            'Question',
+            'Asin',
+            'Asked',
+            'Votes',
+            'Answer',
+            'Answerer',
+            'Create Date'
+        ]
+
+        data_fields = [
+            'question',
+            'asin',
+            'asked',
+            'votes',
+            'answer',
+            'person',
+            'created'
+        ]
+
+        return get_excel_file(self, data, fields, data_fields)
+
+    @csrf_exempt
+    def export_reviews(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+
+        asin = self.GET.get('review_asin', '')
+        is_vp = self.GET.get('is_vp', '')
+        score = self.GET.get('score', '')
+        rvKwd = self.GET.get('rvKwd', '')
+        end_date = self.GET.get('end_date', '')
+        start_date = self.GET.get('start_date', '')
+
+        review = Reviews.objects.filter(asin=asin, created__icontains=Reviews.objects.aggregate(Max('created'))
+        ['created__max'].strftime("%Y-%m-%d")).all()
+
+        if is_vp:
+            review = review.filter(is_vp=is_vp)
+        if score and not score == 'positive' and not score == 'critical':
+            review = review.filter(score=score)
+        if score == 'positive':
+            review = review.filter(score__gte=3)
+        if score == 'critical':
+            review = review.filter(score__lt=3)
+        if rvKwd:
+            review = review.filter(content__icontains=rvKwd)
+        if end_date:
+            review = review.filter(created__lte=end_date)
+        if start_date:
+            review = review.filter(created__gte=start_date)
+
+        asinreview = AsinReviews.objects.filter(aid=asin,created__icontains=AsinReviews.objects.aggregate(Max('created'))
+                                                ['created__max'].strftime("%Y-%m-%d")).all()
+
+        data = []
+        for val in review:
+            re = {
+                'title':val.title,
+                'variation':val.variation,
+                'asin':val.asin,
+                'name':val.name,
+                'score':val.score,
+                'avg_score': asinreview[0].avg_score,
+                'is_vp':val.is_vp,
+                'review_date':val.review_date.strftime("%Y-%m-%d"),
+                'content':val.content,
+                'positive_keywords':asinreview[0].positive_keywords,
+                'negative_keywords':asinreview[0].negative_keywords,
+                'total_review':asinreview[0].total_review,
+                'review_link':val.review_link,
+                'created':val.created.strftime("%Y-%m-%d"),
+            }
+            data.append(re)
+
+        fields = [
+            'Title',
+            'Variation',
+            'Asin',
+            'Name',
+            'Score',
+            'Avg Score',
+            'VP',
+            'Review Date',
+            'Content',
+            'Positive Keywords',
+            'Negative Keywords',
+            'Total Review',
+            'Review Link',
+            'Created'
+        ]
+        data_fields = [
+            'title',
+            'variation',
+            'asin',
+            'name',
+            'score',
+            'avg_score',
+            'is_vp',
+            'review_date',
+            'content',
+            'positive_keywords',
+            'negative_keywords',
+            'total_review',
+            'review_link',
+            'created'
+        ]
+        return get_excel_file(self, data, fields, data_fields)

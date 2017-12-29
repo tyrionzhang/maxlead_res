@@ -14,7 +14,12 @@
                     <div class="productInfo">
                         <a href="https://www.amazon.com/dp/{{ res.asin }}/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head&th=1&psc=1" target="_blank"><h2>{{ res.title }}</h2></a>
                         <table class="productInfoTable">
-                            <tr><td>Stauts: <span class="{% if res.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}"></span> </td><td>Review Watcher: <span class="{% if res.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}"></span></td><td>Listing Watcher: <span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}"></span></td><td><button type="button" id="editASINButton">Edit</button></td></tr>
+                            <tr>
+                                <td style="display: none;"><input type="hidden" name="id" value="{{ res.user_asin.id }}"></td>
+                                <td>Stauts: <span class="{% if res.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}"></span> </td>
+                                <td>Review Watcher: <span class="{% if res.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}"></span></td>
+                                <td>Listing Watcher: <span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}"></span></td>
+                                <td><button type="button" id="editASINButton">Edit</button></td></tr>
                             <tr><td>ASIN: {{ res.asin }}</td>
                                 <td>Brand: {{ res.brand }}</td>
                                 <td>SKU: {{ res.sku }}</td>
@@ -22,8 +27,11 @@
                             <tr><td>New Item Offers: 5</td>
                                 <td><a href="https://www.amazon.com/product-reviews/{{ res.asin }}/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews" target="_blank">Reviews: {{ res.total_review }}</a></td>
                                 <td><span class="star{{ res.rvw_score }}"></span></td>
-                                <td><a href="https://www.amazon.com/ask/questions/asin/{{ res.asin }}/" target="_blank">QA: {{ res.question_answer }}</a>
-                                    <button type="button" onclick="执行导出操作">Export QA</button></td></tr>
+                                <td><form action="/admin/maxlead_site/export_qa/" method="get" name="export_qa">
+                                    <a href="https://www.amazon.com/ask/questions/asin/{{ res.asin }}/" target="_blank">QA: {{ res.question_answer }}</a>
+
+                                        <input type="hidden" name="qa_asin" value="{{ res.asin }}">
+                                    <button type="submit" id="export-qa">Export QA</button></form></td></tr>
                         </table>
                         <h4>Golden Buy Box Winner</h4>
                         <hr>
@@ -83,7 +91,7 @@
                         </ul>
                     </div>
                     <div class="rvInfo">
-                        <form name="rvFilter" method="post" action = "">
+                        <form name="rvFilter" method="get" action = "/admin/maxlead_site/export_reviews/">
                             <select name="rvSort">
                                 <option selected value="newest">Newest First</option>
                                 <option value="oldest">Oldest First</option>
@@ -101,7 +109,9 @@
                                 <option value="positive">All Positive</option>
                                 <option value="critical">All Critical</option></select><br>
                             <input type="search" name="rvKwd" />  <input type="date" name="start_date" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="end_date" max="传入当前日期" min="2017-12-15" />
-                            <input type="submit" value="Search" class="rvInfoButton" id="btn-review-search" data-asin="{{ res.asin }}"/>  <button class="rvInfoButton" type="button" onclick="导出当前数据">Export</button>
+                            <input type="button" value="Search" class="rvInfoButton" id="btn-review-search" data-asin="{{ res.asin }}"/>
+                            <input type="hidden" name="review_asin" value="{{ res.asin }}">
+                            <button class="rvInfoButton" type="submit">Export</button>
                         </form>
                         <table id="table-review-list"><!--默认只显示3条-->
                             {% for val in review %}
@@ -139,21 +149,33 @@
                 <div id="editASIN"  style="display:none;">
                     <h3>Basic Info</h3>
                     <form name="editASIN" method="post" action="">
-                        <div class="basicInfo">*ASIN<br><textarea readonly="readonly" name="newASIN" rows=1 cols=18 title="You cannot edit ASIN." /></textarea></div>
-                        <div class="basicInfo">SKU<br><textarea name="newASIN" rows="1" cols="18" title="only one SKU per ASIN"/></textarea></div>
+                        <div class="basicInfo">*ASIN<br><textarea readonly="readonly" name="newASIN" rows=1 cols=18 title="You cannot edit ASIN.">{{ res.asin }}</textarea></div>
+                        <div class="basicInfo">SKU<br><textarea name="newSKU" rows="1" cols="18" title="only one SKU per ASIN">{{ res.sku }}</textarea></div>
                         <div class="basicInfo">
-                            *Ownership: <input type="radio" name="ownership" value="ours" />Ours  <input type="radio" name="ownership" value="others" />Others<br />
-                            *Status: <input type="radio" name="status" value="on" />ON  <input type="radio" name="status" value="off" />OFF<br />
-                            *Review Watcher: <input type="radio" name="revWatcher" value="on" />ON  <input type="radio" name="revWatcher" value="off" />OFF<br />
-                            *Listing Watcher: <input type="radio" name="listWatcher" value="on" />ON  <input type="radio" name="listWatcher" value="off" />OFF
+                            *Ownership: <input type="radio" name="ownership" value="Ours" {% if res.user_asin.ownership == 'Ours' %}checked{% endif %}/>Ours
+                            <input type="radio" name="ownership" value="Others" {% if res.user_asin.ownership == 'Others' %}checked{% endif %}/>Others<br />
+                            *Status: <input type="radio" name="status" value="1" {% if res.user_asin.is_use == 1 %}checked{% endif %}/>ON  <input type="radio" name="status" value="0" {% if res.user_asin.is_use == 0 %}checked{% endif %} />OFF<br />
+                            *Review Watcher: <input type="radio" name="revWatcher" value="1" {% if res.user_asin.review_watcher == 1 %}checked{% endif %}/>ON
+                            <input type="radio" name="revWatcher" value="0" {% if res.user_asin.review_watcher == 0 %}checked{% endif %} />OFF<br />
+                            *Listing Watcher: <input type="radio" name="listWatcher" value="1" {% if res.user_asin.listing_watcher == 1 %}checked{% endif %}/>ON
+                            <input type="radio" name="listWatcher" value="0" {% if res.user_asin.listing_watcher == 0 %}checked{% endif %}/>OFF
                         </div>
                         <div class="kwdTracking">
                             <h3>Keywords Tracking</h3>
-                            Keyword Set 1: <input type="" name="kwdSet1" title="3 keywords/set max. separated by comma" />  Category Node: <input type="number" name="cat1" title="category node ID, number only"/><br />
-                            Keyword Set 2: <input type="text" name="kwdSet2" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat2" /><br />
-                            Keyword Set 3: <input type="text" name="kwdSet3" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat3" /><br />
+                            <div style="float: left;">
+                                {% for v in res.user_asin.keywords %}
+                                Keyword Set {{ forloop.counter }}: <input type="text" name="kwdSet{{ forloop.counter }}" title="3 keywords/set max. separated by comma" value="{{ v }}"/><br>
+                                {% endfor %}
+                            </div>
+                            <div style="float: right;">
+                                {% for v in res.user_asin.cat %}
+                                Category Node: <input type="number" title="category node ID, number only" name="cat{{ forloop.counter }}" value="{{ v }}"/><br />
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="asin_id" value="{{ res.user_asin.id }}">
+                            <div style="clear: both;"></div>
                         </div>
-                        <div class="listActionButton"><input type="submit" value="Edit" /><input type="button" value="Cancel" id="editASINCancel"/></div>
+                        <div class="listActionButton"><input type="button" value="Edit" id="btn-asin-add" /><input type="button" value="Cancel" id="editASINCancel"/></div>
                     </form>
                 </div>
                 <a class="goBack" href="" onclick="window.history.go(-1); return false;">&lt;&lt;&lt;Go Back</a>
@@ -212,7 +234,93 @@
                     }
                 },'json');
                 return false;
-            })
+            });
+
+            function span_click(data) {
+
+                $.post('/admin/maxlead_site/ajax_edit/',data,function (re) {
+
+                },'json');
+            }
+
+            $(".asinON, .asinOFF").click(function(){
+                var id = $(this).parent().parent('tr').children("td:first-child").children("input:first-child").val();
+                        var asins = [];
+
+                asins.push(parseInt(id));
+                var data = {
+                    'ids' : JSON.stringify(asins),
+                };
+                if ($(this).attr("class") == "asinON") {
+                    data['status'] = 0;
+                    span_click(data);
+                } else {
+                    data['status'] = 1;
+                    span_click(data);
+                }
+
+            }); //asin status
+
+            $(".rvON, .rvOFF").click(function(){
+                var id = $(this).parent().parent('tr').children("td:first-child").children("input:first-child").val();
+                        var asins = [];
+
+                asins.push(parseInt(id));
+                var data = {
+                    'ids' : JSON.stringify(asins),
+                };
+                if ($(this).attr("class") == "rvON"){
+                    data['review_watcher'] = 0;
+                    span_click(data);
+                } else {
+                    data['review_watcher'] = 1;
+                    span_click(data);
+                }
+
+            }); //review status
+
+            $(".listON, .listOFF").click(function(){
+                var id = $(this).parent().parent('tr').children("td:first-child").children("input:first-child").val();
+                        var asins = [];
+
+                asins.push(parseInt(id));
+                var data = {
+                    'ids' : JSON.stringify(asins),
+                };
+                if ($(this).attr("class") == "listON"){
+                   data['listing_watcher'] = 0;
+                    span_click(data);
+                } else {
+                    data['listing_watcher'] = 1;
+                    span_click(data);
+                }
+
+            }); //review status
+
+            $("#btn-asin-add").on('click',function () {
+                var data = {
+                    'ids':JSON.stringify([parseInt($('input[name="asin_id"]').val())]),
+                    'newASIN':$("textarea[name='newASIN']").val(),
+                    'newSKU':$("textarea[name='newSKU']").val(),
+                    'ownership':$("input[name='ownership']:checked").val(),
+                    'status':$("input[name='status']:checked").val(),
+                    'revWatcher':$("input[name='revWatcher']:checked").val(),
+                    'listWatcher':$("input[name='listWatcher']:checked").val(),
+                    'kwdSet1':$("input[name='kwdSet1']").val(),
+                    'kwdSet2':$("input[name='kwdSet2']").val(),
+                    'kwdSet3':$("input[name='kwdSet3']").val(),
+                    'cat1':$("input[name='cat1']").val(),
+                    'cat2':$("input[name='cat2']").val(),
+                    'cat3':$("input[name='cat3']").val()
+                };
+                $.post('/admin/maxlead_site/add_asin/',data,function (re) {
+                    if(re.code==1){
+                        alert(re.msg);
+                        $('#editASIN').attr('style','display:none;');
+                        window.location.reload();
+                    }
+                },'json')
+            });
         </script>
     {% endblock %}
 
