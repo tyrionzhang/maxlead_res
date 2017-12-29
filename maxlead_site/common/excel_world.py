@@ -24,7 +24,6 @@ def get_excel_file(self, data,fields,data_fields=[]):
         workbook = xlsw.Workbook(output, {'in_memory': True})
         worksheet1 = workbook.add_worksheet(u"Review-Datas")
         bold = workbook.add_format({'bold': 1,'align':'center'})
-        align = workbook.add_format({'align':'center'})
         for i, val in enumerate(fields,0):
             headings.append(val)
         worksheet1.write_row('A1', headings, bold)

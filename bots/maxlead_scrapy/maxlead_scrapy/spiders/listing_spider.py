@@ -99,6 +99,10 @@ class ListingSpider(scrapy.Spider):
         item['total_review'] = 0
         if review:
             item['total_review'] = review.split(' ')[0]
+        qa = response.css('a#askATFLink span::text').extract_first()
+        item['total_qa'] = 0
+        if qa:
+            item['total_qa'] = qa.split(' ')[0]
         score = response.css('span#acrPopover::attr("title")').extract_first()
         item['rvw_score'] = 0
         if score:

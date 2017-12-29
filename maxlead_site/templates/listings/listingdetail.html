@@ -1,5 +1,6 @@
 {% extends "layouts/page_base.html" %}
     {% block container %}
+        <script src="../../../maxlead_site/static/js/plotly-latest.min.js"></script>
             <main class="listingDetail">
                 <section class="detailInfo">
                     <div class="detailGallery">
@@ -63,13 +64,28 @@
                 </section>
                 <section class="detailChart">
                     <h3>Time Shuttle</h3>
-                    <form name="timeShuttle" method="post" action="">
-                        Data1: <select name="tsData1"><option selected value="price">Price</option><option value="bsr">BSR</option><option value="reviews">Reviews</option><option value="score">Score</option><option value="qa">QA</option></select>
-                        Data2: <select name="tsData2"><option value="price">Price</option><option selected  value="bsr">BSR</option><option value="reviews">Reviews</option><option value="score">Score</option><option value="qa">QA</option></select>
-                        <input type="date" name="tsStartDate" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="tsEndDate" max="传入当前日期" min="2017-12-15" />  <input  class="rvInfoButton" type="submit" value="Update" />  <button type="button"  class="rvInfoButton" onclick="导出当前数据">Export</button>
+                    <form name="timeShuttle" method="get" action="/admin/maxlead_site/export_shuttle/">
+                        Data1: <select name="tsData1">
+                        <option selected value="price">Price</option>
+                        <option value="bsr">BSR</option>
+                        <option value="reviews">Reviews</option>
+                        <option value="score">Score</option>
+                        <option value="qa">QA</option>
+                    </select>
+                        Data2: <select name="tsData2">
+                        <option value="price">Price</option>
+                        <option value="bsr">BSR</option>
+                        <option value="reviews" selected>Reviews</option>
+                        <option value="score">Score</option>
+                        <option value="qa">QA</option>
+                    </select>
+                        <input type="date" name="tsStartDate" max="" min="2017-12-15" /> -
+                        <input type="date" name="tsEndDate" max="" min="2017-12-15" />
+                        <input type="hidden" name="shuttle_asin" value="{{ res.asin }}"/>
+                        <input  class="rvInfoButton" type="button" value="Update" id="btn-shuttle-update"/>
+                        <button type="submit"  class="rvInfoButton">Export</button>
                     </form>
-                    <div id="tsVisual">
-                    </div>
+                    <div id="time_shuttle" style="width:95%;height:250px;"></div>
                 </section>
                 <section class="detailRanking">
                     <h3>Keywords Ranking</h3>
@@ -181,6 +197,25 @@
                 <a class="goBack" href="" onclick="window.history.go(-1); return false;">&lt;&lt;&lt;Go Back</a>
             </main>
         <script>
+            var line_x = {{ line_x }};
+            var line_price_y = {{ line_price_y }};
+            var line_review_y = {{ line_review_y }};
+            var price = {
+              x: line_x,
+              y: line_price_y,
+              type: 'scatter'
+            };
+
+            var reviews = {
+              x: line_x,
+              y: line_review_y,
+              type: 'scatter'
+            };
+
+            var data = [price, reviews];
+            Plotly.newPlot('time_shuttle', data);
+
+
             $('#btn-review-search').on('click',function () {
                 var data = {
                     'asin': $(this).data('asin'),
@@ -321,6 +356,35 @@
                     }
                 },'json')
             });
+
+            $('#btn-shuttle-update').on('click',function () {
+                var data = {
+                    'asin':$('input[name="review_asin"]').val(),
+                    'tsData1':$('select[name="tsData1"]').val(),
+                    'tsData2':$('select[name="tsData2"]').val(),
+                    'tsStartDate':$('input[name="tsStartDate"]').val(),
+                    'tsEndDate':$('input[name="tsEndDate"]').val()
+                };
+                $.get('/admin/maxlead_site/shuttle_chart/',data,function (re) {
+                    if(re.code == 1){
+                        var line1 = {
+                          x: re.data['line_x'],
+                          y: re.data['line_y1'],
+                          type: 'scatter'
+                        };
+
+                        var line2 = {
+                          x: re.data['line_x'],
+                          y: re.data['line_y2'],
+                          type: 'scatter'
+                        };
+
+                        var data = [line1, line2];
+                        Plotly.newPlot('time_shuttle', data);
+                    }
+                },'json')
+
+            })
         </script>
     {% endblock %}
 

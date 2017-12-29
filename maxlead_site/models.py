@@ -93,6 +93,7 @@ class Listings(models.Model):
     buy_box_res = models.CharField('Buy Box Data', max_length=255, default='')
     price = models.CharField('Price', max_length=50,null=True)
     total_review = models.IntegerField('RVW QTY', default=0)
+    total_qa = models.IntegerField('qa', default=0)
     rvw_score = models.DecimalField('RVW Score', max_digits=2, decimal_places=1,null=True)
     category_rank = models.TextField('Category Rank', null=True)
     inventory = models.IntegerField('Inventory', default=0)

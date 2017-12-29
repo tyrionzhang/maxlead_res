@@ -17,9 +17,11 @@ class Item:
         user = App.get_user_info(self)
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
-        id = self.GET.get('id', '')
-
-        item = Listings.objects.get(id=int(id))
+        asin = self.GET.get('asin', '')
+        listing_max = Listings.objects.aggregate(Max('created'))
+        listing = Listings.objects.filter(asin=asin).filter(created__gte=listing_max['created__max'].strftime("%Y-%m-1"))\
+            .filter(created__lte=listing_max['created__max']).order_by('-created')
+        item = listing[0]
         UserAsins.objects.filter(id=item.user_asin.id).update(last_check=datetime.datetime.now())
         qa_max = Questions.objects.aggregate(Max('created'))
         question_count = Questions.objects.filter(asin=item.asin,created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
@@ -28,6 +30,15 @@ class Item:
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
         review = Reviews.objects.filter(asin=item.asin,created__icontains=Reviews.objects.aggregate(Max('created'))
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
+        line_x = []
+        line_price_y = []
+        line_review_y = []
+        for v in listing:
+            if v.price:
+                line_price_y.append(float(v.price[1:]))
+            if v.total_review:
+                line_review_y.append(int(v.total_review))
+            line_x.append(int(v.created.strftime("%d")))
 
         positive_words = []
         for ar in asinreview:
@@ -82,6 +93,9 @@ class Item:
             'asinreview':positive_words,
             'review':review_data,
             'review_page':review_page,
+            'line_x':line_x,
+            'line_price_y':line_price_y,
+            'line_review_y':line_review_y,
         }
         return render(self, 'listings/listingdetail.html',data)
 
@@ -270,3 +284,126 @@ class Item:
             'created'
         ]
         return get_excel_file(self, data, fields, data_fields)
+
+    @csrf_exempt
+    def ajax_chart(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+
+        asin = self.GET.get('asin', '')
+        tsData1 = self.GET.get('tsData1', '')
+        tsData2 = self.GET.get('tsData2', '')
+        tsStartDate = self.GET.get('tsStartDate', '')
+        tsEndDate = self.GET.get('tsEndDate', '')
+        listing = Listings.objects.filter(asin=asin).order_by('-created')
+        if tsStartDate:
+            listing = listing.filter(created__gte=tsStartDate)
+        if tsEndDate:
+            listing = listing.filter(created__gte=tsEndDate)
+
+        line_x = []
+        line_y1 = []
+        line_y2 = []
+        for v in listing:
+            if v.price:
+                if tsData1 == 'price':
+                    line_y1.append(float(v.price[1:]))
+                if tsData2 == 'price':
+                    line_y2.append(float(v.price[1:]))
+            if v.total_review:
+                if tsData1 == 'reviews':
+                    line_y1.append(int(v.total_review))
+                if tsData2 == 'reviews':
+                    line_y2.append(int(v.total_review))
+            if v.rvw_score:
+                if tsData1 == 'score':
+                    line_y1.append(float(v.rvw_score))
+                if tsData2 == 'score':
+                    line_y2.append(float(v.rvw_score))
+            if v.total_qa:
+                if tsData1 == 'qa':
+                    line_y1.append(int(v.total_qa))
+                if tsData2 == 'qa':
+                    line_y2.append(int(v.total_qa))
+            line_x.append(int(v.created.strftime("%d")))
+
+        return HttpResponse(json.dumps({'code': 1, 'data': {'line_x':line_x,'line_y1':line_y1,'line_y2':line_y2}}),
+                            content_type='application/json')
+
+    @csrf_exempt
+    def export_shuttle(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+
+        asin = self.GET.get('shuttle_asin', '')
+        tsStartDate = self.GET.get('tsStartDate', '')
+        tsEndDate = self.GET.get('tsEndDate', '')
+        listing = Listings.objects.filter(asin=asin).order_by('-created')
+        if tsStartDate:
+            listing = listing.filter(created__gte=tsStartDate)
+        if tsEndDate:
+            listing = listing.filter(created__gte=tsEndDate)
+        data = []
+        for v in listing:
+            re = {
+                'image_names':v.image_thumbs,
+                'title':v.title,
+                'asin':v.asin,
+                'sku':v.sku,
+                'description':v.description,
+                'feature':v.feature,
+                'buy_box':v.buy_box,
+                'price':v.price,
+                'total_review':v.total_review,
+                'total_qa':v.total_qa,
+                'rvw_score':v.rvw_score,
+                'category_rank':v.category_rank,
+                'inventory':v.inventory,
+                'last_check':v.user_asin.last_check.strftime("%Y-%m-%d %H:%M:%S"),
+                'created':v.created.strftime("%Y-%m-%d %H:%M:%S"),
+                'image_date':v.image_date.strftime("%Y-%m-%d"),
+            }
+            data.append(re)
+
+        fields = [
+            'Image Names',
+            'Ttile',
+            'Asin',
+            'SKU',
+            'Description',
+            'Feature',
+            'Buy Box',
+            'Price',
+            'Total Review',
+            'Total Qa',
+            'Rvw Score',
+            'Category Rank',
+            'Inventory',
+            'Last Check',
+            'Created',
+            'Image Date'
+        ]
+
+        data_fields = [
+            'title',
+            'asin',
+            'sku',
+            'description',
+            'feature',
+            'buy_box',
+            'price',
+            'total_review',
+            'total_qa',
+            'rvw_score',
+            'category_rank',
+            'inventory',
+            'last_check',
+            'created',
+            'image_date'
+        ]
+        return get_excel_file(self, data, fields, data_fields)
+
+
+
