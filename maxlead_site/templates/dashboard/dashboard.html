@@ -1,0 +1,63 @@
+{% extends "layouts/page_base.html" %}
+    {% block container %}
+            <main class="dashboard">
+                <div>
+                    <div class = "dashContent">
+                        <h3>Review Watcher</h3>
+                        <form name="revWatcher" method="post" action="" class="dashForm"><input type="date" name="revBgn"  max="传入当前日期" min="2017-12-15" /> - <input type="date" name="revEnd" max="传入当前日期" min="2017-12-15" />  <input type="submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
+                        <table cellspacing=0>
+                            <tr id="854"><!--在td上一层的tr中传入ASIN中传入ASIN id，点击后跳转到ASIN详情页--><td class="revWatDate">2017-12-07</td><td class="revWatSKU">ML-HL-TEST13456-S-Y-2P</td><td><span class="star4"></span></td><td class="revWatTitle">Review Title Here. Just show the firt 30 characters and hide the rest.</td></tr>
+                            <tr><td class="revWatDate">2017-12-07</td><td class="revWatSKU">ML-HL-TEST13456-S-Y-2P</td><td><span class="star4"></span></td><td class="revWatTitle">Review Title Here. Just show the firt 30 characters and hide the rest.</td></tr>
+                            <tr><td class="revWatDate">2017-12-07</td><td class="revWatSKU">ML-HL-TEST13456-S-Y-2P</td><td><span class="star4"></span></td><td class="revWatTitle">Review Title Here. Just show the firt 30 characters and hide the rest.</td></tr>                         
+                        </table>
+                    </div>
+                    <div class = "dashContent">
+                        <h3>Listing Watcher</h3>
+                        <form name="lstWatcher" method="post" action="" class="dashForm"><input type="date" name="listBgn"  max="传入当前日期" min="2017-12-15" /> - <input type="date" name="listEnd"  max="传入当前日期" min="2017-12-15" />  <input type="submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
+                        <table cellspacing=0>
+                            <tr><td>2017-12-07</td><td>ML-HL-TEST13456-S-Y-2P</td><td>Price $99.99</td><td>Seller Name</td><td>FBA</td></tr>
+                            <tr><td>2017-12-07</td><td>ML-HL-TEST13456-S-Y-2P</td><td>Price $99.99</td><td>Seller Name</td><td>FBA</td></tr>
+                            <tr><td>2017-12-07</td><td>ML-HL-TEST13456-S-Y-2P</td><td>Price $99.99</td><td>Seller Name</td><td>FBA</td></tr>
+                        </table>
+                    </div>
+                    
+                </div>
+                <div>
+                    <h3>Rising Star</h3>
+                    <hr>
+                    <div class = "dashContent">
+                        <h4>Ours</h4>
+                        <form name="ourRising" method="post" action="" class="dashForm"><input type="date" name="ourBgn"  max="传入当前日期" min="2017-12-15" value="当前日期-7"/> - <input type="date" name="ourEnd"  max="传入当前日期" min="2017-12-15"  value="当前日期"/>  <input type="submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
+                        <table cellspacing=0>
+                            <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
+                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
+                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
+                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
+                        </table>
+                    </div>
+                    <div class = "dashContent">
+                        <h4>Others</h4>
+                        <form name="othRising" method="post" action="" class="dashForm"><input type="date" name="othBgn" max="传入当前日期" min="2017-12-15"  value="当前日期-7"/> - <input type="date" name="othEnd" max="传入当前日期" min="2017-12-15" value="当前日期"/>  <input type="Submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
+                        <table cellspacing=0>
+                            <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
+                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
+                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
+                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class = "dashContent">
+                        <h3>Activity Radar</h3>
+                        <form name="atyRadar" method="post" action="" class="dashForm"><input type="date" name="actBgn" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="actEnd" max="传入当前日期" min="2017-12-15" />  <input type="submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
+                        <table cellspacing=0>
+                            <tr><td>2017-12-07</td><td>B0323FD92K4</td><td>Price, Title, Gallery, Promotion</td><td>Seller Name</td></tr>
+                            <tr><td>2017-12-07</td><td>B0323FD92K4</td><td>Price, Title, Gallery, Promotion</td><td>Seller Name</td></tr>
+                            <tr><td>2017-12-07</td><td>B0323FD92K4</td><td>Price, Title, Gallery, Promotion</td><td>Seller Name</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </main>
+            
+{% endblock %}
+

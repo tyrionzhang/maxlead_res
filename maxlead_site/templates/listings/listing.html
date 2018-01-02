@@ -4,8 +4,13 @@
                 <h2>Listing Management</h2>
                 <p>I'm watching on XXX<!--当前用户关注的且status为ON的listing的数量--> listings for you. I'll be more efficient if unnecessary listings are turned off in time.</p><hr>
                 <form method="get" action="" name="listSearchForm" autocomplete="autocomplete" autofocus="autofocus">
-                    <input type="search" name="listKwd" value="{{ listKwd }}" />  <input type="submit" value="Search" /><br />
-                    <input type="radio" name="searchCol" value="SKU" {% if searchCol == 'SKU' %}checked{% endif %}/>SKU  <input type="radio" name="searchCol" value="ASIN" />ASIN  <input type="radio" name="searchCol" value="title" checked />Title  <input type="radio" name="searchCol" value="brand" />Brand  <input type="radio" name="searchCol" value="seller" />
+                    <input type="search" name="listKwd" value="{{ listKwd }}" />
+                    <input type="submit" value="Search" /><br />
+                    <input type="radio" name="searchCol" value="SKU" {% if searchCol == 'SKU' %}checked{% endif %}/>SKU
+                    <input type="radio" name="searchCol" value="ASIN" {% if searchCol == 'ASIN' %}checked{% endif %}/>ASIN
+                    <input type="radio" name="searchCol" value="title" {% if searchCol == 'title' %}checked{% endif %} />Title
+                    <input type="radio" name="searchCol" value="brand" {% if searchCol == 'title' %}checked{% endif %}/>Brand
+                    <input type="radio" name="searchCol" value="seller" {% if searchCol == 'title' %}checked{% endif %}/>
                         Seller Ownership: <select name="owner">
                         <option value="">All</option>
                         <option value="ours">Ours</option>
@@ -49,8 +54,8 @@
                 <div id="editASIN"  style="display:none;">
                     <h3>Basic Info</h3>
                         <input type="hidden" name="ids" value="" />
-                        <div class="basicInfo">*ASIN<br><textarea name="newASIN" rows=5 cols=18 title="one ASIN per line" /></textarea><!--如果是通过编辑进来，增加readonly属性--></div>
-                        <div class="basicInfo">SKU<br><textarea name="newSKU" rows="5" cols="18" title="one SKU per line, should be in the same sequence as ASIN"/></textarea></div>
+                        <div class="basicInfo">*ASIN<br><textarea name="newASIN" rows=5 cols=18 title="one ASIN per line"></textarea><!--如果是通过编辑进来，增加readonly属性--></div>
+                        <div class="basicInfo">SKU<br><textarea name="newSKU" rows="5" cols="18" title="one SKU per line, should be in the same sequence as ASIN"></textarea></div>
                         <div class="basicInfo">
                             *Ownership: <input type="radio" name="ownership" value="Ours" />Ours  <input type="radio" name="ownership" value="Others" />Others<br />
                             *Status: <input type="radio" name="status" value="1" />ON  <input type="radio" name="status" value="0" />OFF<br />
@@ -65,18 +70,18 @@
                         </div>
                         <div class="listActionButton"><input type="submit" value="Add" id="btn-asin-add"/><input type="button" value="Cancel" id="editASINCancel"/></div>
                 </div>
-        <form action="" method="get" name="pageForm">
+        <form action="" method="get" name="pageForm" id="page_form">
                 <div id="pagination">
                     <div class="pageNum">
                         <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in {{ total_page }} <!--总页数-->pages.
                     </p>
                         <ul>
                             {% if list_data.has_previous %}
-                            <li><a href="?page={{ list_data.previous_page_number }}">previous</a></li>
+                            <li><a href="?page={{ list_data.previous_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}">previous</a></li>
                             {% endif %}
                             <li>Page {{ list_data.number }} of {{ list_data.paginator.num_pages }}.</li>
                             {% if list_data.has_next %}
-                            <li><a href="?page={{ list_data.next_page_number }}">next</a></li>
+                            <li><a href="?page={{ list_data.next_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}">next</a></li>
                             {% endif %}
                             <li><input type="number" name="page" value="{{ page }}" /></li>
 
@@ -84,10 +89,10 @@
 
                     <div class="qtyUpdater">
                         <select name="limit">
-                            <option value="6">6</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
+                            <option value="6" {% if limit == 6 %}selected{% endif %}>6</option>
+                            <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
                         </select> results per page.
                     </div>
                     <ul>
@@ -290,6 +295,14 @@
 
             $('#export-data').val(JSON.stringify(listings))
 
+        });
+        $('#gotoPage').on('click',function () {
+            var param = "&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}";
+            var page = $('input[name="page"]').val();
+            var limit = $('select[name="limit"]').val();
+            var url = '/admin/maxlead_site/listings/?page='+page+param+'&limit='+limit;
+            window.location.href = url;
+            return false;
         })
         </script>
     {% endblock %}

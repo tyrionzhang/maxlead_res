@@ -18,7 +18,7 @@ class Listing:
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
         listKwd = self.GET.get('listKwd','')
-        searchCol = self.GET.get('searchCol','')
+        searchCol = self.GET.get('searchCol','title')
         buybox = self.GET.get('buybox','')
         status = self.GET.get('status','')
         revstatus = self.GET.get('revstatus','')
@@ -63,7 +63,7 @@ class Listing:
                     listings = listings.filter(buy_box_res__icontains=listKwd)
             listings = listings.all()
 
-            limit = self.GET.get('limit', 1)
+            limit = int(self.GET.get('limit', 1))
             total_count = listings.count()
             if int(limit) >= total_count:
                 limit = total_count
@@ -77,7 +77,9 @@ class Listing:
                     'listKwd': listKwd,
                     'status': status,
                     'revstatus': revstatus,
-                    'liststatus': liststatus,})
+                    'liststatus': liststatus,
+                    'limit': limit
+                })
             paginator = Paginator(listings, limit)
             page = self.GET.get('page')
             try:
@@ -151,6 +153,7 @@ class Listing:
                 'status': status,
                 'revstatus': revstatus,
                 'liststatus': liststatus,
+                'limit': limit,
             }
 
             return render(self, 'listings/listing.html', data)

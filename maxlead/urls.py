@@ -21,6 +21,8 @@ from maxlead_site.views.users.login import Logins
 from maxlead_site.views.index.index import Index
 from maxlead_site.views.listing.listing import Listing
 from maxlead_site.views.listing.item import Item
+from maxlead_site.views.dashboard.dashboard import Dashboard
+from maxlead_site.views.miner.miner import Miner
 from django.views import static
 from maxlead import settings
 
@@ -52,6 +54,8 @@ urlpatterns = [
     url(r'^admin/maxlead_site/export_reviews/', Item.export_reviews),
     url(r'^admin/maxlead_site/shuttle_chart/', Item.ajax_chart),
     url(r'^admin/maxlead_site/export_shuttle/', Item.export_shuttle),
+    url(r'^admin/maxlead_site/dashboard/', Dashboard.index),
+    url(r'^admin/maxlead_site/miner/', Miner.index),
     url(r'^admin/', admin.site.urls),
 
 ]
