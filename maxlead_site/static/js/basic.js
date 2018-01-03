@@ -18,10 +18,6 @@ $(document).ready(function(){
       $(".userAdmin > table [type='checkbox']").attr("checked", false);}   
       });
     //select all users
-    
-    $(".dashContent tr").click(function(){
-        window.location.href="./listingdetail.html"
-    });
     //dashboard click 
     
 

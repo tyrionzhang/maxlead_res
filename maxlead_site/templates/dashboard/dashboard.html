@@ -1,15 +1,36 @@
 {% extends "layouts/page_base.html" %}
     {% block container %}
+        <style>
+        .dashContent {
+            height: 280px;
+            overflow: scroll;
+        }
+        </style>
             <main class="dashboard">
                 <div>
                     <div class = "dashContent">
                         <h3>Review Watcher</h3>
-                        <form name="revWatcher" method="post" action="" class="dashForm"><input type="date" name="revBgn"  max="传入当前日期" min="2017-12-15" /> - <input type="date" name="revEnd" max="传入当前日期" min="2017-12-15" />  <input type="submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
-                        <table cellspacing=0>
-                            <tr id="854"><!--在td上一层的tr中传入ASIN中传入ASIN id，点击后跳转到ASIN详情页--><td class="revWatDate">2017-12-07</td><td class="revWatSKU">ML-HL-TEST13456-S-Y-2P</td><td><span class="star4"></span></td><td class="revWatTitle">Review Title Here. Just show the firt 30 characters and hide the rest.</td></tr>
-                            <tr><td class="revWatDate">2017-12-07</td><td class="revWatSKU">ML-HL-TEST13456-S-Y-2P</td><td><span class="star4"></span></td><td class="revWatTitle">Review Title Here. Just show the firt 30 characters and hide the rest.</td></tr>
-                            <tr><td class="revWatDate">2017-12-07</td><td class="revWatSKU">ML-HL-TEST13456-S-Y-2P</td><td><span class="star4"></span></td><td class="revWatTitle">Review Title Here. Just show the firt 30 characters and hide the rest.</td></tr>                         
+                        <form name="revWatcher" method="get" action="/admin/maxlead_site/expload_dash_reviews/" class="dashForm">
+                            <input type="date" name="revBgn"  max="" min="2017-12-15" /> -
+                            <input type="date" name="revEnd" max="" min="2017-12-15" />
+                            <input type="submit" value="Update" id="btn_reviews_search"/>
+                            <input type="submit" value="Export"/></form>
+                        <table cellspacing=0 id="tb-reviews" class="tb-dash-content">
+                            {% for val in reviews %}
+                            <tr class="tr-to-listing" data-asin="{{ val.asin }}">
+                                <td class="revWatDate">{{ val.review_date }}</td>
+                                <td class="revWatSKU">{{ val.sku }}</td>
+                                <td><span class="star{{ val.score }}"></span></td>
+                                <td class="revWatTitle">{{ val.title }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% if is_page %}
+                            <tr id="tr-more-review">
+                                <td colspan="4"><input type="button" name="rvbtn" id="btn-review-more" value="more" data-page=""></td>
+                            </tr>
+                            {% endif %}
                         </table>
+
                     </div>
                     <div class = "dashContent">
                         <h3>Listing Watcher</h3>
@@ -27,22 +48,50 @@
                     <hr>
                     <div class = "dashContent">
                         <h4>Ours</h4>
-                        <form name="ourRising" method="post" action="" class="dashForm"><input type="date" name="ourBgn"  max="传入当前日期" min="2017-12-15" value="当前日期-7"/> - <input type="date" name="ourEnd"  max="传入当前日期" min="2017-12-15"  value="当前日期"/>  <input type="submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
-                        <table cellspacing=0>
+                        <form name="ourRising" method="post" action="" class="dashForm">
+                            <input type="date" name="ourBgn"  max="传入当前日期" min="2017-12-15" value="当前日期-7"/> -
+                            <input type="date" name="ourEnd"  max="传入当前日期" min="2017-12-15"  value="当前日期"/>
+                            <input type="submit" value="Update" class="rising_search" data-type="Ours"/>
+                            <input type="button" value="Export" onclick="执行导出功能" /></form>
+                        <table cellspacing=0 class="tb-dash-content">
                             <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
-                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
-                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
-                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
+                            {% for val in ours_li %}
+                            <tr class="tr-to-listing" data-asin="{{ val.asin }}">
+                                <td>{{ val.sku }}</td>
+                                <td>{{ val.total_review }}</td>
+                                <td>{{ val.s }}</td>
+                                <td>{{ val.rvw_score }}</td>
+                                <td>{{ val.rvw_score2 }}</td></tr>
+                            {% endfor %}
+                            {% if o_rising_page %}
+                            <tr class="tr-more-rising">
+                                <td colspan="4"><input type="button" name="rvbtn" class="btn-rising-more" value="more" data-page=""></td>
+                            </tr>
+                            {% endif %}
                         </table>
                     </div>
                     <div class = "dashContent">
                         <h4>Others</h4>
-                        <form name="othRising" method="post" action="" class="dashForm"><input type="date" name="othBgn" max="传入当前日期" min="2017-12-15"  value="当前日期-7"/> - <input type="date" name="othEnd" max="传入当前日期" min="2017-12-15" value="当前日期"/>  <input type="Submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
-                        <table cellspacing=0>
+                        <form name="othRising" method="post" action="" class="dashForm">
+                            <input type="date" name="othBgn" max="传入当前日期" min="2017-12-15"  value="当前日期-7"/> -
+                            <input type="date" name="othEnd" max="传入当前日期" min="2017-12-15" value="当前日期"/>
+                            <input type="Submit" value="Update" class="rising_search" data-type="Others" />
+                            <input type="button" value="Export" onclick="执行导出功能" /></form>
+                        <table cellspacing=0 class="tb-dash-content">
                             <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
-                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
-                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
-                            <tr><td>ML-HL-TEST13456-S-Y-2P</td><td>120</td><td>20</td><td>3.3</td><td>-0.3</td></tr>
+                            {% for val in others_li %}
+                            <tr class="tr-to-listing" data-asin="{{ val.asin }}">
+                                <td>{{ val.sku }}</td>
+                                <td>{{ val.total_review }}</td>
+                                <td>{{ val.s }}</td>
+                                <td>{{ val.rvw_score }}</td>
+                                <td>{{ val.rvw_score2 }}</td></tr>
+                            {% endfor %}
+                            {% if th_rising_page %}
+                            <tr class="tr-more-rising">
+                                <td colspan="4"><input type="button" name="rvbtn" class="btn-rising-more" value="more" data-page=""></td>
+                            </tr>
+                            {% endif %}
                         </table>
                     </div>
                 </div>
@@ -58,6 +107,152 @@
                     </div>
                 </div>
             </main>
+
+    <script>
+        $('#btn_reviews_search').on('click',function () {
+            var data = {
+                'revBgn' : $('input[name="revBgn"]').val(),
+                'revEnd' : $('input[name="revEnd"]').val()
+            };
+            $.get('/admin/maxlead_site/ajax_reviews/',data,function (re) {
+                if(re.code==1){
+                    var el = '';
+                    $.each(re.data.data,function (index,val) {
+                        el += "<tr>" +
+                            "<td class=\"revWatDate\">"+val['review_date']+"</td>" +
+                            " <td class=\"revWatSKU\">"+val['sku']+"</td>" +
+                            "<td><span class=\"star"+val['score']+"\"></span></td>" +
+                            "<td class=\"revWatTitle\">"+val['title']+"</td>" +
+                            "</tr>";
+                    });
+                    $('#tb-reviews').html(el);
+                    if(re.data.is_page){
+                        $('#tb-reviews').append('<tr id="tr-more-review">' +
+                            '<td colspan="4"><input type="button" name="rvbtn" id="btn-review-more" value="more" data-page=""></td>\n' +
+                            '</tr>');
+                    }
+                    $('#btn-review-more').data('page',re.data.review_page);
+                }else {
+                    alert(re.msg)
+                }
+            },'json');
+            return false;
+        });
+
+        $('#tb-reviews').on('click','#btn-review-more',function () {
+            var page = $(this).data('page')?$(this).data('page'):2;
+            var data = {
+                'revBgn' : $('input[name="revBgn"]').val(),
+                'revEnd' : $('input[name="revEnd"]').val(),
+                'page' : page
+            };
+            $.get('/admin/maxlead_site/ajax_reviews/',data,function (re) {
+                if(re.code==1){
+                    var el = '';
+                    $.each(re.data.data,function (index,val) {
+                        el += "<tr>" +
+                            "<td class=\"revWatDate\">"+val['review_date']+"</td>" +
+                            " <td class=\"revWatSKU\">"+val['sku']+"</td>" +
+                            "<td><span class=\"star"+val['score']+"\"></span></td>" +
+                            "<td class=\"revWatTitle\">"+val['title']+"</td>" +
+                            "</tr>";
+                    });
+                    $('#tr-more-review').before(el);
+                    if(!re.data.is_page){
+                        $('#tr-more-review').remove();
+                        return false;
+                    }
+                    $('#btn-review-more').data('page',parseInt(page)+1);
+                }else {
+                    alert(re.msg)
+                }
+            },'json');
+            return false;
+        });
+        $('.tb-dash-content').on('click', '.tr-to-listing',function () {
+            var asin = $(this).data('asin');
+            window.location.href = '/admin/maxlead_site/listing_item/?asin='+asin;
+        });
+
+        $('.rising_search').on('click',function () {
+            var type = $(this).data('type');
+            var tb = $(this).parent().next();
+            if(type == 'Ours'){
+                var data = {
+                    'ourBgn' : $('input[name="ourBgn"]').val(),
+                    'ourEnd' : $('input[name="ourEnd"]').val(),
+                    'type' : 'Ours'
+                };
+            }else {
+                var data = {
+                    'othBgn' : $('input[name="othBgn"]').val(),
+                    'othEnd' : $('input[name="othEnd"]').val(),
+                    'type' : 'Others'
+                };
+            }
+
+            $.get('/admin/maxlead_site/ajax_rising/',data,function (re) {
+                if(re.code==1){
+                    var el = '<tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>';
+                    $.each(re.data.data,function (index,val) {
+                        el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
+                            '<td>'+val['sku']+'</td>\n' +
+                            '<td>'+val['total_review']+'</td>\n' +
+                            '<td></td>\n' +
+                            '<td>'+val['rvw_score']+'</td>\n' +
+                            '<td>'+val['rvw_score2']+'</td></tr>';
+                    });
+                    tb.html(el);
+                    if(re.data.is_page){
+                        tb.append('<tr class="tr-more-rising">' +
+                            '<td colspan="5"><input type="button" name="rvbtn" class="btn-rising-more" value="more" data-page=""></td>\n' +
+                            '</tr>');
+                    }
+                    $('.btn-rising-more').data('page',re.data.page);
+                }else {
+                    alert(re.msg)
+                }
+            },'json');
+            return false;
+        });
+
+        $('.tb-dash-content').on('click', '.btn-rising-more', function () {
+            var more = $(this);
+            var dash_el = $(this).parents('.dashContent');
+            var input1 = dash_el.find('input').eq(0);
+            var input2 = dash_el.find('input').eq(1);
+            var name1 = input1.attr('name');
+            var name2 = input2.attr('name');
+            var page = $(this).data('page')?$(this).data('page'):1;
+            var type = name1=='othBgn'?'Others':'Ours';
+            var data = {
+                'page':parseInt(page)+1,
+                'type':type
+            };
+            data[name1] = input1.val();
+            data[name2] = input2.val();
+            $.get('/admin/maxlead_site/ajax_rising/',data,function (re) {
+                if(re.code==1){
+                    var el = '';
+                    $.each(re.data.data,function (index,val) {
+                        el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
+                            '<td>'+val['sku']+'</td>\n' +
+                            '<td>'+val['total_review']+'</td>\n' +
+                            '<td></td>\n' +
+                            '<td>'+val['rvw_score']+'</td>\n' +
+                            '<td>'+val['rvw_score2']+'</td></tr>';
+                    });
+                    more.parent().parent().before(el);
+                    if(!re.data.is_page){
+                        dash_el.find('.tr-more-rising').remove();
+                    }
+                    $('.btn-rising-more').data('page',re.data.page);
+                }else {
+                    alert(re.msg)
+                }
+            },'json');
+        })
+    </script>
             
 {% endblock %}
 

@@ -2,7 +2,6 @@
 import json,datetime
 from django.shortcuts import render,HttpResponse
 from django.forms.models import model_to_dict
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
