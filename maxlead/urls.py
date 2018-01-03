@@ -59,6 +59,9 @@ urlpatterns = [
     url(r'^admin/maxlead_site/ajax_reviews/', Dashboard.ajax_get_reviews),
     url(r'^admin/maxlead_site/expload_dash_reviews/', Dashboard.export_dash_reviews),
     url(r'^admin/maxlead_site/ajax_rising/', Dashboard.ajax_rising),
+    url(r'^admin/maxlead_site/export_rising/', Dashboard.export_rising),
+    url(r'^admin/maxlead_site/ajax_radar/', Dashboard.ajax_radar),
+    url(r'^admin/maxlead_site/export_radar/', Dashboard.export_radar),
     url(r'^admin/', admin.site.urls),
 
 ]

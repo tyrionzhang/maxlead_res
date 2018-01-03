@@ -48,11 +48,12 @@
                     <hr>
                     <div class = "dashContent">
                         <h4>Ours</h4>
-                        <form name="ourRising" method="post" action="" class="dashForm">
-                            <input type="date" name="ourBgn"  max="传入当前日期" min="2017-12-15" value="当前日期-7"/> -
-                            <input type="date" name="ourEnd"  max="传入当前日期" min="2017-12-15"  value="当前日期"/>
+                        <form name="ourRising" method="get" action="/admin/maxlead_site/export_rising/" class="dashForm">
+                            <input type="date" name="ourBgn"  max="传入当前日期" min="2017-12-15" value=""/> -
+                            <input type="date" name="ourEnd"  max="传入当前日期" min="2017-12-15"  value=""/>
+                            <input type="hidden" name="type"  value="Ours"/>
                             <input type="submit" value="Update" class="rising_search" data-type="Ours"/>
-                            <input type="button" value="Export" onclick="执行导出功能" /></form>
+                            <input type="submit" value="Export" /></form>
                         <table cellspacing=0 class="tb-dash-content">
                             <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
                             {% for val in ours_li %}
@@ -72,11 +73,12 @@
                     </div>
                     <div class = "dashContent">
                         <h4>Others</h4>
-                        <form name="othRising" method="post" action="" class="dashForm">
-                            <input type="date" name="othBgn" max="传入当前日期" min="2017-12-15"  value="当前日期-7"/> -
-                            <input type="date" name="othEnd" max="传入当前日期" min="2017-12-15" value="当前日期"/>
+                        <form name="othRising" method="get" action="/admin/maxlead_site/export_rising/" class="dashForm">
+                            <input type="date" name="othBgn" max="传入当前日期" min="2017-12-15"  value=""/> -
+                            <input type="date" name="othEnd" max="传入当前日期" min="2017-12-15" value=""/>
+                            <input type="hidden" name="type"  value="Others"/>
                             <input type="Submit" value="Update" class="rising_search" data-type="Others" />
-                            <input type="button" value="Export" onclick="执行导出功能" /></form>
+                            <input type="submit" value="Export"/></form>
                         <table cellspacing=0 class="tb-dash-content">
                             <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
                             {% for val in others_li %}
@@ -98,11 +100,24 @@
                 <div>
                     <div class = "dashContent">
                         <h3>Activity Radar</h3>
-                        <form name="atyRadar" method="post" action="" class="dashForm"><input type="date" name="actBgn" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="actEnd" max="传入当前日期" min="2017-12-15" />  <input type="submit" value="Update" onclick="执行查询刷新" />  <input type="button" value="Export" onclick="执行导出功能" /></form>
-                        <table cellspacing=0>
-                            <tr><td>2017-12-07</td><td>B0323FD92K4</td><td>Price, Title, Gallery, Promotion</td><td>Seller Name</td></tr>
-                            <tr><td>2017-12-07</td><td>B0323FD92K4</td><td>Price, Title, Gallery, Promotion</td><td>Seller Name</td></tr>
-                            <tr><td>2017-12-07</td><td>B0323FD92K4</td><td>Price, Title, Gallery, Promotion</td><td>Seller Name</td></tr>
+                        <form name="atyRadar" method="get" action="/admin/maxlead_site/export_radar/" class="dashForm">
+                            <input type="date" name="actBgn" max="" min="2017-12-15" /> -
+                            <input type="date" name="actEnd" max="" min="2017-12-15" />
+                            <input type="submit" value="Update" id="radar_search"/>
+                            <input type="submit" value="Export" /></form>
+                        <table cellspacing=0 id="tb_radar">
+                            {% for val in activity_radar %}
+                            <tr>
+                                <td>{{ val.created }}</td>
+                                <td>{{ val.asin }}</td>
+                                <td>{{ val.changed }}</td>
+                                <td>{{ val.buy_box_res }}</td></tr>
+                            {% endfor %}
+                            {% if radar_page %}
+                            <tr id="tr-more-radar">
+                                <td colspan="4"><input type="button" name="rvbtn" id="btn-radar-more" value="more" data-page=""></td>
+                            </tr>
+                            {% endif %}
                         </table>
                     </div>
                 </div>
@@ -249,6 +264,64 @@
                     $('.btn-rising-more').data('page',re.data.page);
                 }else {
                     alert(re.msg)
+                }
+            },'json');
+        });
+
+        $('#radar_search').on('click',function () {
+            var data = {
+                'actBgn':$('input[name="actBgn"]').val(),
+                'actEnd':$('input[name="actEnd"]').val()
+            };
+            $.get('/admin/maxlead_site/ajax_radar/',data,function (re) {
+                if(re.code == 1){
+                    var el = '';
+                    $.each(re.data.data,function (index,val) {
+                        el += "<tr class=\"tr-to-listing\" data-asin="+val['asin']+">\n" +
+                            "<td>"+val['created']+"</td>\n" +
+                            "<td>"+val['asin']+"</td>\n" +
+                            "<td>"+val['changed']+"</td>\n" +
+                            "<td>"+val['buy_box_res']+"</td></tr>";
+                    });
+                    $('#tb_radar').html(el);
+                    if(re.data.is_page){
+                        $('#tb_radar').append('<tr id="tr-more-radar">' +
+                            '<td colspan="4"><input type="button" name="rvbtn" id="btn-radar-more" value="more" data-page=""></td>\n' +
+                            '</tr>');
+                    }
+                    console.log(re.data);
+                }else{
+                    alert(re.msg);
+                }
+            },'json');
+            return false;
+        });
+
+        $('#tb_radar').on('click','#btn-radar-more',function () {
+            var page = $(this).data('page')?$(this).data('page'):1;
+            var data = {
+                'actBgn':$('input[name="actBgn"]').val(),
+                'actEnd':$('input[name="actEnd"]').val(),
+                'page':parseInt(page)+1
+            };
+
+            $.get('/admin/maxlead_site/ajax_radar/',data,function (re) {
+                if(re.code == 1){
+                    var el = '';
+                    $.each(re.data.data,function (index,val) {
+                        el += "<tr class=\"tr-to-listing\" data-asin="+val['asin']+">\n" +
+                            "<td>"+val['created']+"</td>\n" +
+                            "<td>"+val['asin']+"</td>\n" +
+                            "<td>"+val['changed']+"</td>\n" +
+                            "<td>"+val['buy_box_res']+"</td></tr>";
+                    });
+                    $('#tr-more-radar').before(el);
+                    $('#btn-radar-more').data('page',parseInt(page)+1)
+                    if(!re.data.is_page){
+                        $('#btn-radar-more').remove();
+                    }
+                }else{
+                    alert(re.msg);
                 }
             },'json');
         })

@@ -32,7 +32,8 @@ def get_excel_file(self, data,fields,data_fields=[]):
             res = []
             if data_fields:
                 for v in data_fields:
-                    res.append(obj[v])
+                    if not v == 'image_names':
+                        res.append(obj[v])
             if 'image_names' in obj.keys():
                 if obj['image_names']:
                     col_name = ord('A')
@@ -41,6 +42,7 @@ def get_excel_file(self, data,fields,data_fields=[]):
                     worksheet1.set_column('%s:%s' % (chr(col_name), chr(col_name + 1)), 10)
                     col_name += 1
                 worksheet1.write_row('B%s' % str(c), res)
+
             else:
                 worksheet1.write_row('A%s' % str(c), res)
 

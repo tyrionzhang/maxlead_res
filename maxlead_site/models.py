@@ -134,3 +134,12 @@ class Log(models.Model):
 
     class Meta:
         db_table = 'log'
+
+class Task(models.Model):
+    name = models.CharField('Name', max_length=225)
+    user = models.ForeignKey(User)
+    type = models.IntegerField('Type',default=1)
+    description = models.CharField('Description', max_length=225)
+    asins = models.CharField('Asins', max_length=225)
+    finish_time = models.DateTimeField('Created', null=True)
+    created = models.DateTimeField('Created', auto_now_add=True)

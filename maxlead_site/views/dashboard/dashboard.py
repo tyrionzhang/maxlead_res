@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json,datetime
+import json,datetime,operator
 from django.shortcuts import render,HttpResponse
 from django.forms.models import model_to_dict
 from django.contrib.auth.models import User
@@ -31,6 +31,43 @@ class Dashboard:
 
         return asins
 
+    def _get_activity_radar(self, others_asins, param={}):
+        if param:
+            actBgn = param.get('actBgn', '')
+            actEnd = param.get('actEnd', '')
+        activity_radar = []
+        for val in others_asins:
+            listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
+            if param:
+                if actBgn:
+                    listing = listing.filter(created__gte=actBgn)
+                if actEnd:
+                    listing = listing.filter(created__lte=actEnd)
+
+            if len(listing) == 2:
+                if not listing[0].price == listing[1].price or not listing[0].title == listing[1].title or not listing[0]. \
+                                           image_date == listing[1].image_date or not operator.eq(listing[0].description,
+                                           listing[1].description) or not operator.eq(listing[0].feature, listing[1].feature):
+
+                    listing[1].changed = ''
+                    if not listing[0].price == listing[1].price:
+                        listing[1].changed += 'price,'
+                    if not listing[0].image_date == listing[1].image_date:
+                        listing[1].changed += 'Gallery,'
+                    if not listing[0].title == listing[1].title:
+                        listing[1].changed += 'title,'
+                    if not listing[0].feature == listing[1].feature or not listing[0].description == listing[
+                        1].description:
+                        listing[1].changed += 'Promotion,'
+
+                    listing[1].created = listing[1].created.strftime('%Y-%m-%d')
+                    if eval(listing[1].buy_box_res):
+                        listing[1].buy_box_res = eval(listing[1].buy_box_res)[0]
+                    else:
+                        listing[1].buy_box_res = ''
+                    activity_radar.append(listing[1])
+        return activity_radar
+
     def index(self):
         user = App.get_user_info(self)
         if not user:
@@ -56,6 +93,13 @@ class Dashboard:
                 'rvw_score2':rvw_score2
             }
             ours_li.append(re)
+
+        activity_radar = Dashboard._get_activity_radar(self,others_asins)
+        if activity_radar:
+            activity_radar = activity_radar[0:6]
+        radar_page = 0
+        if len(activity_radar)>=6:
+            radar_page = 1
 
         for val in others_asins[0:6]:
             listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
@@ -103,6 +147,8 @@ class Dashboard:
             'is_page': is_page,
             'th_rising_page': th_rising_page,
             'o_rising_page': o_rising_page,
+            'radar_page': radar_page,
+            'activity_radar': activity_radar,
         }
         return render(self, 'dashboard/dashboard.html', data)
 
@@ -156,12 +202,12 @@ class Dashboard:
         othEnd = self.GET.get('othEnd', '')
         type = self.GET.get('type', 'Ours')
         page = self.GET.get('page', 1)
-        offset = (int(page) - 1) * 1
+        offset = (int(page) - 1) * 6
 
         asins = Dashboard._get_asins(self, user, ownership=type)
 
         res = []
-        for val in asins[offset:offset+1]:
+        for val in asins[offset:offset+6]:
             listing = Listings.objects.filter(asin=val)
             if ourBgn:
                 listing = listing.filter(created__gte=ourBgn)
@@ -186,7 +232,7 @@ class Dashboard:
             }
             res.append(re)
         is_page = 1
-        if len(res) < 1:
+        if len(res) < 6:
             is_page = 0
 
         data = {
@@ -195,6 +241,44 @@ class Dashboard:
             'page':page
         }
         return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
+
+    @csrf_exempt
+    def ajax_radar(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+
+        page = self.GET.get('page', 1)
+        offset = (int(page) - 1) * 6
+        asins = Dashboard._get_asins(self, user, ownership='Others')
+        res = Dashboard._get_activity_radar(self,asins,page = page, param=self.GET)
+        is_page = 1
+        if len(res)<6:
+            is_page = 0
+        data = []
+        if res:
+            res = res[offset:offset+6]
+            for val in res:
+                re = {
+                    'asin':val.asin,
+                    'created':val.created,
+                    'changed':val.changed,
+                    'buy_box_res':val.buy_box_res
+                }
+                data.append(re)
+            data = {
+                'data': data,
+                'page': page,
+                'is_page': is_page
+            }
+            return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
+        else:
+            data = {
+                'data': [],
+                'page': page,
+                'is_page': is_page
+            }
+            return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
 
     @csrf_exempt
     def export_dash_reviews(self):
@@ -254,3 +338,116 @@ class Dashboard:
             'created'
         ]
         return get_excel_file(self, data, fields, data_fields)
+
+    @csrf_exempt
+    def export_rising(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+
+        ourBgn = self.GET.get('ourBgn', '')
+        ourEnd = self.GET.get('ourEnd', '')
+        othBgn = self.GET.get('othBgn', '')
+        othEnd = self.GET.get('othEnd', '')
+        type = self.GET.get('type', 'Ours')
+
+        asins = Dashboard._get_asins(self, user, ownership=type)
+
+        res = []
+        for val in asins:
+            listing = Listings.objects.filter(asin=val)
+            if ourBgn:
+                listing = listing.filter(created__gte=ourBgn)
+            if ourEnd:
+                listing = listing.filter(created__lte=ourEnd)
+            if othBgn:
+                listing = listing.filter(created__gte=othBgn)
+            if othEnd:
+                listing = listing.filter(created__lte=othEnd)
+            listing = listing.order_by('-created')[:2]
+
+            if len(listing) == 2:
+                rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
+            else:
+                rvw_score2 = ''
+            re = {
+                'asin': listing[0].asin,
+                'sku': listing[0].user_asin.sku,
+                'brand': listing[0].brand,
+                'total_review': listing[0].total_review,
+                'rvw_score': float(listing[0].rvw_score),
+                'rvw_score2': rvw_score2,
+                'created': listing[0].created.strftime('%Y-%m-%d')
+            }
+            res.append(re)
+
+        fields = [
+            'SKU',
+            'Asin',
+            'Reviews',
+            'Growth',
+            'Score',
+            'Score Change',
+            'Created'
+        ]
+        data_fields = [
+            'sku',
+            'asin',
+            'total_review',
+            'brand',
+            'rvw_score',
+            'rvw_score2',
+            'created'
+        ]
+        return get_excel_file(self, res, fields, data_fields)
+
+    @csrf_exempt
+    def export_radar(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+
+        asins = Dashboard._get_asins(self, user, ownership='Others')
+        res = Dashboard._get_activity_radar(self, asins,param=self.GET)
+        data = []
+        if res:
+            for val in res:
+                re = {
+                    'asin': val.asin,
+                    'title': val.title,
+                    'price': val.price,
+                    'feature': val.feature,
+                    'description': val.description,
+                    'image_date': val.image_date.strftime('%Y-%m-%d'),
+                    'image_names': val.image_thumbs,
+                    'created': val.created,
+                    'changed': val.changed,
+                    'buy_box_res': val.buy_box_res
+                }
+                data.append(re)
+
+            fields = [
+                'Image Thumbs',
+                'Title',
+                'Asin',
+                'Price',
+                'Changed',
+                'Feature',
+                'Description',
+                'Image Date',
+                'Buy Box',
+                'Created'
+            ]
+            data_fields = [
+                'image_names',
+                'title',
+                'asin',
+                'price',
+                'changed',
+                'feature',
+                'description',
+                'image_date',
+                'buy_box_res',
+                'created'
+            ]
+            return get_excel_file(self, data, fields, data_fields)
