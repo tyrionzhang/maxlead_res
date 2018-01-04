@@ -145,11 +145,24 @@
                     <h3>Activity Radar</h3>
                     <div class="detailAct">
                         
-                        <table><!--默认只显示3条-->
+                        <table id="tb_detail_act"><!--默认只显示3条-->
                             <tr><th>Time</th><th>Object</th><th>Previous</th><th>New</th><th></th><tr>
-                            <tr><td>2017-12-12<br>05:23:11</td><td>Title</td><td>This is the previous title in records.</td><td>This is the new title on the webpage.</td><td><span class="actMore">Show More</span></td></tr>
-                            <tr><td>2017-12-12<br>05:23:11</td><td>Price</td><td>$45.99</td><td>$42.99</td><td><span class="actMore">Show More</span></td></tr>
-                            <tr><td>2017-12-12<br>05:23:11</td><td>Description</td><td>This is the previous title in records.fdsafdsfasfsafsa fdsaf fdsf ew gqrg rj u6k 76r w4 </td><td>This is the new title on the webpage.rewq  4 4hh hyh dsfheq g54y 65 hrt h4 h24 h sgdag 34ukyk iy</td><td><span class="actMore">Show More</span></td></tr>
+                            <tr>
+                                <td>{{ activity_radar.created }}</td>
+                                <td>Title</td><td>{{ activity_radar.title_re }}</td>
+                                <td>{{ activity_radar.title1_re }}</td>
+                                <td><span class="actMore" data-text1="{{ activity_radar.title }}" data-text2="{{ activity_radar.title1 }}">Show More</span></td></tr>
+                            <tr>
+                                <td>{{ activity_radar.created }}</td>
+                                <td>Price</td>
+                                <td>{{ activity_radar.price }}</td>
+                                <td>{{ activity_radar.price1 }}</td>
+                                <td><span class="actMore" data-text1="{{ activity_radar.price }}" data-text2="{{ activity_radar.price1 }}">Show More</span></td></tr>
+                            <tr><td>{{ activity_radar.created }}</td>
+                                <td>Description</td>
+                                <td>{{ activity_radar.description_re }}</td>
+                                <td>{{ activity_radar.description1_re }}</td>
+                                <td><span class="actMore" data-text1="{{ activity_radar.description }}" data-text2="{{ activity_radar.description1 }}">Show More</span></td></tr>
                         </table>
                         <div id="actOut" style="display:none;">
                             <div class="actIn">
@@ -158,7 +171,7 @@
                             <button class="moreButton">Close</button>
                             </div>
                         </div>
-                        <button type="button" class="moreButton" onclick="">More</button>
+                        <button type="button" class="moreButton" id="act_more" data-page>More</button>
                         
                     </div>                    
                 </section>
@@ -257,15 +270,22 @@
                     if(re.code == 1){
                         var el = '';
                         $.each(re.data.data,function(index,value){
-                          el += '<tr>'+
+                            if (value){
+                                el += '<tr>'+
                               '<td><span class="star'+value['score']+'"></span>'+
                               value['is_vp']+'</td>' +
                               '<td>'+value['name']+'<!--reviewer名字--><br />'+value['review_date']+'<!--review日期--></td>'+
                               '<td class="rvInfoRV">'+value['content']+'</td>' +
                               '</tr>';
+                            }
                         });
                         $('#table-review-list').append(el);
                         $('#btn-review-more').data('page', page);
+
+                        if(!re.data.is_page){
+                            $('#act_more').remove();
+                            return false;
+                        }
                     }
                 },'json');
                 return false;
@@ -384,7 +404,53 @@
                     }
                 },'json')
 
-            })
+            });
+
+            $('.detailAct').on('click','.actMore',function () {
+                var text1 = $(this).data('text1');
+                var text2 = $(this).data('text2');
+                $("#actPrevious").html(text1);
+                $("#actNew").html(text2);
+                $("#actOut").toggle();
+            });
+
+            $('.detailAct').on('click', '#act_more',function () {
+                var page = $(this).data('page')?$(this).data('page'):1;
+                var asin = '{{ res.asin }}';
+                $.get('/admin/maxlead_site/ajax_get_radar/',{'asin':asin,'page':parseInt(page)},function (re) {
+                    if(re.code == 1){
+                        if (re.data.data){
+                            var el = '<tr>\n' +
+                                '<td>'+re.data.data['created']+'</td>\n' +
+                                '<td>Title</td><td>'+re.data.data['title_re']+'</td>\n' +
+                                '<td>'+re.data.data['title1_re']+'</td>\n' +
+                                '<td><span class="actMore" data-text1="'+re.data.data['title']+'" data-text2="'+re.data.data['title1']+'">Show More</span></td></tr>\n' +
+                                '<tr>\n' +
+                                '<td>'+re.data.data['created']+'</td>\n' +
+                                '<td>Price</td>\n' +
+                                '<td>'+re.data.data['price']+'</td>\n' +
+                                '<td>'+re.data.data['price1']+'</td>\n' +
+                                '<td><span class="actMore" data-text1="'+re.data.data['price']+'" data-text2="'+re.data.data['price1']+'">Show More</span></td></tr>\n' +
+                                '<tr><td>'+re.data.data['created']+'</td>\n' +
+                                '<td>Description</td>\n' +
+                                '<td>'+re.data.data['description_re']+'</td>\n' +
+                                '<td>'+re.data.data['description1_re']+'</td>\n' +
+                                '<td><span class="actMore" data-text1="'+re.data.data['description']+'" data-text2="'+re.data.data['description1']+'">Show More</span></td></tr>';
+                            $('#tb_detail_act').append(el);
+                            $('#act_more').data('page', parseInt(page)+1);
+                        }
+
+                        if(!re.data.is_page){
+                            $('#act_more').remove();
+                            return false;
+                        }
+
+                    }else{
+                        alert(re.msg);
+                    }
+                },'json');
+            });
+
         </script>
     {% endblock %}
 

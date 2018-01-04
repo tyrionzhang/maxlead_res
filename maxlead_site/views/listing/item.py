@@ -5,10 +5,11 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Count,Max
+from django.db.models import Max
 from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
+from maxlead_site.views.dashboard.dashboard import Dashboard
 
 class Item:
 
@@ -29,6 +30,19 @@ class Item:
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
         review = Reviews.objects.filter(asin=item.asin,created__icontains=Reviews.objects.aggregate(Max('created'))
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
+
+        activity_radar = Dashboard._get_activity_radar(self, asin=asin)
+        if not activity_radar:
+            others_asins = Dashboard._get_asins(self, user, ownership='Others')
+            activity_radar = Dashboard._get_activity_radar(self, others_asins=others_asins)
+            if activity_radar:
+                activity_radar = activity_radar
+
+        if activity_radar:
+            activity_radar[0].title_re = activity_radar[0].title[0:90]
+            activity_radar[0].title1_re = activity_radar[0].title1[0:90]
+            activity_radar[0].description_re = activity_radar[0].description[0:90]
+            activity_radar[0].description1_re = activity_radar[0].description1[0:90]
         line_x = []
         line_price_y = []
         line_review_y = []
@@ -95,6 +109,7 @@ class Item:
             'line_x':line_x,
             'line_price_y':line_price_y,
             'line_review_y':line_review_y,
+            'activity_radar':activity_radar[0],
         }
         return render(self, 'listings/listingdetail.html',data)
 
@@ -135,6 +150,9 @@ class Item:
         offset = (int(review_page)-1) * int(review_limit)
         page_limit = offset + int(review_limit)
         review = review.all()[offset:page_limit]
+        is_page = 1
+        if len(review) < 6:
+            is_page = 0
 
         data = []
         for val in review:
@@ -147,7 +165,46 @@ class Item:
                     val.is_vp = ''
             data.append(model_to_dict(val))
 
-        return HttpResponse(json.dumps({'code': 1, 'data': {'data':data,'review_page':review_page}}), content_type='application/json')
+        return HttpResponse(json.dumps({'code': 1, 'data': {'data':data,'review_page':review_page,'is_page':is_page}}), content_type='application/json')
+
+    @csrf_exempt
+    def ajax_get_radar(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+
+        asin = self.GET.get('asin', '')
+        page = int(self.GET.get('page', 1))
+
+        activity_radar = Dashboard._get_activity_radar(self, asin=asin)
+        if not activity_radar:
+            others_asins = Dashboard._get_asins(self, user, ownership='Others')
+            activity_radar = Dashboard._get_activity_radar(self, others_asins=others_asins)
+            if activity_radar:
+                activity_radar = activity_radar
+        is_page = 1
+        if len(activity_radar) < page+1:
+            is_page = 0
+            return HttpResponse(
+                json.dumps({'code': 1, 'data': {'data':'','page': page, 'is_page': is_page}}),content_type='application/json')
+
+        if activity_radar:
+            activity_radar = {
+                'title_re':activity_radar[page].title[0:90],
+                'title1_re':activity_radar[page].title1[0:90],
+                'description_re':activity_radar[page].description[0:90],
+                'description1_re':activity_radar[page].description1[0:90],
+                'created':activity_radar[page].created,
+                'title':activity_radar[page].title,
+                'price1':activity_radar[page].price1,
+                'price':activity_radar[page].price,
+                'title1':activity_radar[page].title1,
+                'description':activity_radar[page].description,
+                'description1':activity_radar[page].description1,
+            }
+
+        return HttpResponse(json.dumps({'code': 1, 'data': {'data':activity_radar,'page':page,'is_page':is_page}}),
+                            content_type='application/json')
 
     @csrf_exempt
     def export_qa(self):

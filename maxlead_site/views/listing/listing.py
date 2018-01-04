@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import json,datetime
 from django.shortcuts import render,HttpResponse
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
-from maxlead_site.models import Listings,UserAsins,MenberGroups
+from maxlead_site.models import Listings,UserAsins
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
+from maxlead_site.common.common import get_asins
 
 class Listing:
 
@@ -24,28 +24,9 @@ class Listing:
         revstatus = self.GET.get('revstatus','')
         liststatus = self.GET.get('liststatus','')
 
-        asins = []
-        user_asins = UserAsins.objects.values('aid').annotate(count=Count('aid'))
-        if user.role == 2:
-            user_asins = user_asins.filter()
+        asins = get_asins(user,ownership=False,status=status,revstatus=revstatus,liststatus=liststatus,type=1)
 
-        elif user.role == 0:
-            user_asins = user_asins.filter(user=user.user)
-        elif user.role == 1:
-            groups = MenberGroups.objects.filter(user=user.user)
-            user_list = User.objects.filter(group=groups)
-            user_asins = user_asins.filter(user=user_list)
-
-        if user_asins:
-            if status:
-                user_asins = user_asins.filter(is_use=status)
-            if revstatus:
-                user_asins = user_asins.filter(review_watcher=revstatus)
-            if liststatus:
-                user_asins = user_asins.filter(listing_watcher=liststatus)
-
-            for val in user_asins:
-                asins.append(val['aid'])
+        if asins:
             listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins)
 
             if buybox:
@@ -63,7 +44,7 @@ class Listing:
                     listings = listings.filter(buy_box_res__icontains=listKwd)
             listings = listings.all()
 
-            limit = int(self.GET.get('limit', 1))
+            limit = int(self.GET.get('limit', 6))
             total_count = listings.count()
             if int(limit) >= total_count:
                 limit = total_count
@@ -211,7 +192,8 @@ class Listing:
                     if newSKU:
                         userAsin_obj.update(sku=newSKU[0])
                     userAsin_obj.update(keywords=keywords,cat=cat,review_watcher=revWatcher,listing_watcher=listWatcher,
-                                        is_use=status,ownership=ownership,last_check=datetime.datetime.now())
+                                        is_use=status,ownership=ownership,last_check=datetime.datetime.now(),update_time=
+                                        datetime.datetime.now())
 
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'修改成功！'}), content_type='application/json')
 

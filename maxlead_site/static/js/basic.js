@@ -63,7 +63,7 @@ $(document).ready(function(){
           
     }); //review status
     
-    $(".actIn > button, #actOut, .actIn, .actMore").click(function(){
+    $(".actIn > button, #actOut, .actIn").click(function(){
         $("#actOut").toggle();
     }); //act details
 

@@ -31,13 +31,13 @@ class Dashboard:
 
         return asins
 
-    def _get_activity_radar(self, others_asins, param={}):
+    def _get_activity_radar(self, others_asins='', asin='', param={}):
         if param:
             actBgn = param.get('actBgn', '')
             actEnd = param.get('actEnd', '')
         activity_radar = []
-        for val in others_asins:
-            listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
+        if asin:
+            listing = Listings.objects.filter(asin=asin).order_by('-created')[:2]
             if param:
                 if actBgn:
                     listing = listing.filter(created__gte=actBgn)
@@ -49,24 +49,62 @@ class Dashboard:
                                            image_date == listing[1].image_date or not operator.eq(listing[0].description,
                                            listing[1].description) or not operator.eq(listing[0].feature, listing[1].feature):
 
-                    listing[1].changed = ''
+                    listing[0].changed = ''
                     if not listing[0].price == listing[1].price:
-                        listing[1].changed += 'price,'
+                        listing[0].changed += 'price,'
                     if not listing[0].image_date == listing[1].image_date:
-                        listing[1].changed += 'Gallery,'
+                        listing[0].changed += 'Gallery,'
                     if not listing[0].title == listing[1].title:
-                        listing[1].changed += 'title,'
+                        listing[0].changed += 'title,'
                     if not listing[0].feature == listing[1].feature or not listing[0].description == listing[
                         1].description:
-                        listing[1].changed += 'Promotion,'
+                        listing[0].changed += 'Promotion,'
 
-                    listing[1].created = listing[1].created.strftime('%Y-%m-%d')
-                    if eval(listing[1].buy_box_res):
-                        listing[1].buy_box_res = eval(listing[1].buy_box_res)[0]
+                    listing[0].created = listing[0].created.strftime('%Y-%m-%d')
+                    if eval(listing[0].buy_box_res):
+                        listing[0].buy_box_res = eval(listing[0].buy_box_res)[0]
                     else:
-                        listing[1].buy_box_res = ''
-                    activity_radar.append(listing[1])
-        return activity_radar
+                        listing[0].buy_box_res = ''
+                    listing[0].price1 = listing[1].price
+                    listing[0].title1 = listing[1].title
+                    listing[0].description1 = listing[1].description
+                    activity_radar.append(listing[0])
+            return activity_radar
+        else:
+            for val in others_asins:
+                listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
+                if param:
+                    if actBgn:
+                        listing = listing.filter(created__gte=actBgn)
+                    if actEnd:
+                        listing = listing.filter(created__lte=actEnd)
+
+                if len(listing) == 2:
+                    if not listing[0].price == listing[1].price or not listing[0].title == listing[1].title or not listing[0]. \
+                                               image_date == listing[1].image_date or not operator.eq(listing[0].description,
+                                               listing[1].description) or not operator.eq(listing[0].feature, listing[1].feature):
+
+                        listing[0].changed = ''
+                        if not listing[0].price == listing[1].price:
+                            listing[0].changed += 'price,'
+                        if not listing[0].image_date == listing[1].image_date:
+                            listing[0].changed += 'Gallery,'
+                        if not listing[0].title == listing[1].title:
+                            listing[0].changed += 'title,'
+                        if not listing[0].feature == listing[1].feature or not listing[0].description == listing[
+                            1].description:
+                            listing[0].changed += 'Promotion,'
+
+                        listing[0].created = listing[0].created.strftime('%Y-%m-%d')
+                        if eval(listing[1].buy_box_res):
+                            listing[0].buy_box_res = eval(listing[1].buy_box_res)[0]
+                        else:
+                            listing[0].buy_box_res = ''
+                        listing[0].price1 = listing[1].price
+                        listing[0].title1 = listing[1].title
+                        listing[0].description1 = listing[1].description
+                        activity_radar.append(listing[0])
+            return activity_radar
 
     def index(self):
         user = App.get_user_info(self)
