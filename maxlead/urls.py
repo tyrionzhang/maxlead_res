@@ -62,6 +62,7 @@ urlpatterns = [
     url(r'^admin/maxlead_site/export_rising/', Dashboard.export_rising),
     url(r'^admin/maxlead_site/ajax_radar/', Dashboard.ajax_radar),
     url(r'^admin/maxlead_site/export_radar/', Dashboard.export_radar),
+    url(r'^admin/maxlead_site/task_add/', Miner.add),
     url(r'^admin/', admin.site.urls),
 
 ]

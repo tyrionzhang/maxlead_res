@@ -6,50 +6,130 @@
                 <div id="addMinerTask" style="display:none;">
                     <form method = "post" action="" name="newTaskForm" />
                     <h3>New Task</h3>
-                    <label>Type:</label> <input type="radio" name="taskType" value="review" /> Review  <input type="radio" name="taskType" value="qa" /> QA<br /><br />
+                    <label>Type:</label>
+                    <input type="radio" name="taskType" value="0" /> Review
+                    <input type="radio" name="taskType" value="1" /> QA<br /><br />
                     <label>Name:</label> <input type="text" name="taskName" /><br /><br />
                     <label>Description:</label> <textarea name = "taskDesc" rows=2 cols=30></textarea><br /><br />
                     <label>ASIN List:</label> <textarea name = "taskASIN" rows=7 cols=18></textarea><br /><br />
                     <div class="actionButton">
-                        <input type="submit" value="Add" />  <input id="nmtCancel" type = "button" onclick="" value="Cancel" />
+                        <input type="button" value="Add" id="task_add"/>  <input id="nmtCancel" type = "button" onclick="" value="Cancel" />
                     </div>
                 </div>
                 <table cellspacing="0px">
-                    <tr><th>Name</th><th>Type</th><th>Description</th><th>Request Time</th><th>Finish Time</th><th>Action</th></tr>
-                    <tr><td>Task 1</td><td>QA</td><td>some description</td><td>2017-12-09 14:23</td><td>2017-12-10 01:45</td><td><span class="minerAction" id="传递taskid">Export</span></td></tr>
-                    <tr><td>Task 1</td><td>QA</td><td>some description</td><td>2017-12-09 14:23</td><td>2017-12-10 01:45</td><td><span class="minerAction" id="传递taskid">Proccessing</span></td></tr>
+                    <tr id="th-task"><th>Name</th><th>Type</th><th>Description</th><th>Request Time</th><th>Finish Time</th><th>Action</th></tr>
+                    {% for v in data %}
+                    <tr>
+                        <td>{{ v.name }}</td>
+                        <td>{{ v.type }}</td>
+                        <td>{{ v.description }}</td>
+                        <td>{{ v.created }}</td>
+                        <td>{{ v.finish_time }}</td>
+                        <td>
+                            <span class="minerAction">
+                                {% if v.file_path %}
+                                    <a href="\{{ v.file_path }}">Export</a>
+                                {% else %}
+                                    Proccessing
+                                {% endif %}
+
+                            </span>
+                        </td></tr>
+                    {% endfor %}
                 </table>
                 
             
+            <form action="" method="get" name="pageForm" id="page_form">
                 <div id="pagination">
-                    <p class="pageStatics"> 195 <!--符合当前查询条件的数量-->results in 10 <!--总页数-->pages.
-                    </p>
                     <div class="pageNum">
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in {{ total_page }} <!--总页数-->pages.
+                    </p>
                         <ul>
-                            <li><a href="">|<</a></li>
-                            <li><a href=""><</a></li>
-                            <li><a href="">1</a></li>
-                            <li><a href="">2</a></li>
-                            <li><a href="">3</a></li>
-                            <li>...</li>
-                            <li><a href="">9</a></li>
-                            <li><a href="">10</a></li>
-                            <li><a href="">></a></li>
-                            <li><a href="">>|</a></li>
-                            <li><input type="number" name="pageNo" value="" /></li>
-                            <li><input type="button" name="gotoPage" value="Go" /></li>
+                            {% if data.has_previous %}
+                            <li><a href="?page={{ data.previous_page_number }}&limit={{ limit }}">previous</a></li>
+                            {% endif %}
+                            <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
+                            {% if data.has_next %}
+                            <li><a href="?page={{ data.next_page_number }}&limit={{ limit }}">next</a></li>
+                            {% endif %}
+                            <li><input type="number" name="page" value="{{ page }}" /></li>
+
                         </ul>
-                    </div>
-                    
+
                     <div class="qtyUpdater">
-                        <select name="qtyPerPage">
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
+                        <select name="limit">
+                            <option value="6" {% if limit == 6 %}selected{% endif %}>6</option>
+                            <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
                         </select> results per page.
                     </div>
+                    <ul>
+
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                    </ul>
+
+                    </div>
                 </div>
+            </form>
             </main>
-            
+        <script>
+            function pstr(s) {
+                return s < 10 ? '0' + s: s;
+            }
+
+            $('#task_add').on('click',function () {
+                var myDate = new Date();
+                //获取当前年
+                var year=myDate.getFullYear();
+                //获取当前月
+                var month=myDate.getMonth()+1;
+                //获取当前日
+                var date=myDate.getDate();
+                var h=myDate.getHours();       //获取当前小时数(0-23)
+                var m=myDate.getMinutes();     //获取当前分钟数(0-59)
+                var s=myDate.getSeconds();
+
+                var now=year+'-'+pstr(month)+"-"+pstr(date)+" "+pstr(h)+':'+pstr(m)+":"+pstr(s);
+                var data = {
+                    'taskType':$('input[name="taskType"]:checked').val(),
+                    'taskName':$('input[name="taskName"]').val(),
+                    'taskDesc':$('textarea[name="taskDesc"]').val(),
+                    'taskASIN':$('textarea[name="taskASIN"]').val()
+                };
+                var type = $('input[name="taskType"]:checked').val() == 0?'Review':'QA';
+                $('#th-task').after('<tr id="tr_task_new">' +
+                    '<td>'+data['taskName']+'</td>' +
+                    '<td>'+type+'</td>' +
+                    '<td>'+data['taskDesc']+'</td>' +
+                    '<td>'+now+'</td>' +
+                    '<td></td>' +
+                    '<td><span class="minerAction">Proccessing</span></td></tr>');
+                $.post('/admin/maxlead_site/task_add/',data,function (re) {
+                    if(re.code==1){
+                        $('#tr_task_new').remove();
+                        $('#th-task').after('<tr id="tr_task_new">' +
+                            '<td>'+data['taskName']+'</td>' +
+                            '<td>'+type+'</td>' +
+                            '<td>'+data['taskDesc']+'</td>' +
+                            '<td>'+now+'</td>' +
+                            '<td>'+re.data['f_time']+'</td>' +
+                            '<td><span class="minerAction"><a href="/'+re.data['file_path']+'">Export</a></span></td></tr>');
+                        $('#addMinerTask').attr('style','display:none;');
+                    }else{
+                        alert(re.msg);
+                        $('#addMinerTask').attr('style','display:none;');
+                    }
+                },'json');
+            });
+
+            $('#gotoPage').on('click',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var url = '/admin/maxlead_site/miner/?page='+page+'&limit='+limit;
+                window.location.href = url;
+                return false;
+            })
+        </script>
 {% endblock %}
 
