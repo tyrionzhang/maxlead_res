@@ -40,8 +40,12 @@ class UserAsins(models.Model):
     sku = models.CharField('SKU',max_length=50,default='')
     buy_box = models.CharField('BuyBox',max_length=50,default='')
     ownership = models.CharField('Ownership',max_length=50,default='')
-    keywords = models.CharField('Keywords',max_length=255,default='')
-    cat = models.CharField('Cat1',max_length=255,default='')
+    keywords1 = models.CharField('Keywords1',max_length=255,default='')
+    keywords2 = models.CharField('Keywords2',max_length=255,default='')
+    keywords3 = models.CharField('Keywords3',max_length=255,default='')
+    cat1 = models.CharField('Cat1',max_length=255,default='')
+    cat2 = models.CharField('Cat2',max_length=255,default='')
+    cat3 = models.CharField('Cat3',max_length=255,default='')
     review_watcher = models.BooleanField('Review Watcher', default=True)
     listing_watcher = models.BooleanField('Listing Watcher', default=True)
     is_email = models.BooleanField(u'是否邮件通知',default=1)
@@ -114,11 +118,13 @@ class Listings(models.Model):
 class ListingWacher(models.Model):
     asin = models.CharField('AsinId', max_length=50)
     seller = models.CharField('Seller', max_length=50)
+    seller_link = models.CharField('Seller Link', max_length=225,null=True,default='')
     price = models.CharField('Price', max_length=50,null=True)
     shipping = models.CharField('Shipping', max_length=255, default='',null=True)
     fba = models.IntegerField('FBA', default=0)
     prime = models.IntegerField('Prime', default=0)
     winner = models.IntegerField('Winner', default=0)
+    images = models.CharField('Images', max_length=255, default='')
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:

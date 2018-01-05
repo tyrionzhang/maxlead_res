@@ -163,8 +163,6 @@ class Listing:
             newASIN = newASIN.split('|')
             if newSKU:
                 newSKU = newSKU.split('|')
-            keywords = kwdSet1+'|'+kwdSet2+'|'+kwdSet3
-            cat = cat1+'|'+cat2+'|'+cat3
 
             querysetlist = []
             if not ids:
@@ -177,9 +175,13 @@ class Listing:
                         if newSKU:
                             userAsin.sku = newSKU[i]
                         userAsin.ownership = ownership
-                        userAsin.keywords = keywords
+                        userAsin.keywords1 = kwdSet1
+                        userAsin.keywords2 = kwdSet2
+                        userAsin.keywords3 = kwdSet3
                         userAsin.user_id = user.user.id
-                        userAsin.cat = cat
+                        userAsin.cat1 = cat1
+                        userAsin.cat2 = cat2
+                        userAsin.cat3 = cat3
                         userAsin.review_watcher = revWatcher
                         userAsin.listing_watcher = listWatcher
                         userAsin.is_use = status
@@ -192,9 +194,9 @@ class Listing:
                 if userAsin_obj:
                     if newSKU:
                         userAsin_obj.update(sku=newSKU[0])
-                    userAsin_obj.update(keywords=keywords,cat=cat,review_watcher=revWatcher,listing_watcher=listWatcher,
-                                        is_use=status,ownership=ownership,last_check=datetime.datetime.now(),update_time=
-                                        datetime.datetime.now())
+                    userAsin_obj.update(keywords1=kwdSet1,keywords2=kwdSet2,keywords3=kwdSet3,cat1=cat1,cat2=cat2,cat3=cat3,
+                                        review_watcher=revWatcher,listing_watcher=listWatcher,is_use=status,ownership=ownership,
+                                        last_check=datetime.datetime.now(),update_time=datetime.datetime.now())
 
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'修改成功！'}), content_type='application/json')
 

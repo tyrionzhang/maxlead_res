@@ -4,6 +4,8 @@ import scrapy,time,os,re
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem,ListingWacherItem
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
+from selenium import webdriver
+from bots.maxlead_scrapy.maxlead_scrapy import settings
 
 
 class ListingSpider(scrapy.Spider):
@@ -11,7 +13,7 @@ class ListingSpider(scrapy.Spider):
     name = "listing_spider"
     start_urls = []
     url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head&th=1&psc=1"
-    url1 = "https://www.amazon.com/gp/offer-listing/%s/ref=dp_olp_all_mbc?ie=UTF8&condition=all&type=listWacher"
+    url1 = "https://www.amazon.com/gp/offer-listing/%s/ref=dp_olp_all_mbc?ie=UTF8&condition=new&type=listWacher"
     res = list(UserAsins.objects.filter(is_use=True).values('id','aid','review_watcher','listing_watcher','sku','ownership').annotate(count=Count('aid')))
 
     if res:
@@ -55,18 +57,42 @@ class ListingSpider(scrapy.Spider):
 
         str = response.url[-10:]
         if str == 'listWacher':
+            driver = webdriver.PhantomJS(
+                executable_path='C:\\Users\\asus\\node_modules\\phantomjs\\lib\\phantom\\bin\\phantomjs.exe')
+            driver.get(response.url)
+            # img = Image.open(StringIO(base64.b64decode(driver.get_screenshot_as_base64())))
+            dir_path = '%s/%s' % (settings.IMAGES_STORE, 'listing_watcher')
+            dir_path1 = '%s/%s' % (settings.IMAGES, 'listing_watcher')
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path)
+            now_time = time.time()
+            image_file_name = '%s.png' % now_time
+            file_path = '%s/%s' % (dir_path, image_file_name)
+            path_str = '%s/%s' % (dir_path1, image_file_name)
+            driver.get_screenshot_as_file(file_path)
+            driver.quit()
 
             for k,wa in enumerate(response.css('div.a-spacing-double-large div.olpOffer'),1):
+
                 asin_id = res_asin[5]
                 item = ListingWacherItem()
                 item['asin'] = asin_id
+                item['images'] = path_str
                 item['seller'] = wa.css('div.olpSellerColumn h3.olpSellerName a::text').extract_first()
+                seller_link= wa.css('div.olpSellerColumn h3.olpSellerName a::attr(href)').extract_first()
+                if seller_link:
+                    item['seller_link'] = 'https://www.amazon.com%s' % seller_link
                 if not item['seller']:
                     item['seller'] = wa.css('div.olpSellerColumn h3.olpSellerName img::attr(alt)').extract_first()
                 item['price'] = wa.css('div.olpPriceColumn span.olpOfferPrice::text').extract_first()
                 if item['price']:
                     item['price'] = item['price'].replace('\n','').strip()
                 item['shipping'] = wa.css('div.olpPriceColumn p.olpShippingInfo b::text').extract_first()
+                if not item['shipping']:
+                    a = wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPrice').extract()
+                    if a:
+                        item['shipping'] = wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPrice::text').extract_first()+ \
+                                           wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPriceText::text').extract_first()
                 prime = wa.css('div.olpPriceColumn span.supersaver').extract()
                 is_fba = wa.css('div.olpDeliveryColumn div.olpBadgeContainer')
                 if is_fba:

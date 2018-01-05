@@ -25,7 +25,7 @@
                                 <td>Brand: {{ res.brand }}</td>
                                 <td>SKU: {{ res.sku }}</td>
                                 <td>Inventory: unknown</td></tr>
-                            <tr><td>New Item Offers: 5</td>
+                            <tr><td>New Item Offers: {{ res.item_offer }}</td>
                                 <td><a href="https://www.amazon.com/product-reviews/{{ res.asin }}/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews" target="_blank">Reviews: {{ res.total_review }}</a></td>
                                 <td><span class="star{{ res.rvw_score }}"></span></td>
                                 <td><form action="/admin/maxlead_site/export_qa/" method="get" name="export_qa">
@@ -54,16 +54,29 @@
                 <section class="detailWatcher">
                     <h3>Listing Watcher</h3>
                     <div class="detailWatcherList">
+                        {% if not listing_watchers %}
                         <p>No one is listing against this ASIN.</p><!--没有跟列记录时的文字提示-->
-                        <table><!--默认只显示5条-->
-                            <tr><td>2017-12-01  03:35</td><td><a href="" target="_blank">Seller: Big Player</a></td><td>Price: $99.99</td><td>FBA</td><td>Prime</td><td>Free Shipping</td><td>Buy box winner</td><td><button id="截屏图片ID" type="button" class="screenshotButton">Screenshot</button></td></tr>
-                            <tr><td>2017-12-01  03:35</td><td><a href="" target="_blank">Seller: Big Player</a></td><td>Price: $99.99</td><td>FBA</td><td>Prime</td><td>Free Shipping</td><td>Buy box winner</td><td><button id="截屏图片ID" type="button"  class="screenshotButton">Screenshot</button></td></tr>
-                            <tr><td>2017-12-01  03:35</td><td><a href="" target="_blank">Seller: Big Player</a></td><td>Price: $99.99</td><td>FBA</td><td>Prime</td><td>Free Shipping</td><td>Buy box winner</td><td><button id="截屏图片ID" type="button"  class="screenshotButton">Screenshot</button></td></tr>
+                        {% else %}
+                        <table id="tb_li_wathcer"><!--默认只显示5条-->
+                            {% for val in listing_watchers %}
+                            <tr><td>{{ val.created }}</td>
+                                <td><a href="{{ val.seller_link }}" target="_blank">Seller: {{ val.seller }}</a></td>
+                                <td>Price: {% if val.price %}{{ val.price }}{% else %} {% endif %}</td>
+                                <td>{% if val.fba %}FBA{% else %}FBM{% endif %}</td>
+                                <td>{% if val.prime %}Prime{% else %} {% endif %}</td>
+                                <td>{% if val.shipping %}{{ val.shipping }}{% else %} {% endif %}</td>
+                                <td>{% if val.winner %}	Buy box winner{% else %}not winner{% endif %}</td>
+                                <td><a href="{{ val.images }}" target="_blank">Screenshot</a></td>
+                            </tr>
+                            {% endfor %}
                         </table>
-                        <button type="button" class="moreButton" onclick="">More</button>
+                        {% if li_watcher_page %}
+                        <button type="button" class="moreButton" id="li_watcher_more" data-page="">More</button>
+                        {% endif %}
                         <div >
                             <img src ="./img/test.jpg" style="display:none" id="screenshot" />
                         </div>
+                        {% endif %}
                     </div>                    
                 </section>
                 <section class="detailChart">
@@ -148,7 +161,7 @@
                 <section class="detailRadar">
                     <h3>Activity Radar</h3>
                     <div class="detailAct">
-                        
+                        {% if activity_radar %}
                         <table id="tb_detail_act"><!--默认只显示3条-->
                             <tr><th>Time</th><th>Object</th><th>Previous</th><th>New</th><th></th><tr>
                             <tr>
@@ -176,7 +189,7 @@
                             </div>
                         </div>
                         <button type="button" class="moreButton" id="act_more" data-page>More</button>
-                        
+                        {% endif %}
                     </div>                    
                 </section>
                 <div id="editASIN"  style="display:none;">
@@ -196,14 +209,17 @@
                         <div class="kwdTracking">
                             <h3>Keywords Tracking</h3>
                             <div style="float: left;">
-                                {% for v in res.user_asin.keywords %}
-                                Keyword Set {{ forloop.counter }}: <input type="text" name="kwdSet{{ forloop.counter }}" title="3 keywords/set max. separated by comma" value="{{ v }}"/><br>
-                                {% endfor %}
+                                Keyword Set 1:
+                                <input type="text" name="kwdSet1" title="3 keywords/set max. separated by comma" value="{{ res.user_asin.keywords1 }}"/><br>
+                                Keyword Set 2:
+                                <input type="text" name="kwdSet2" title="3 keywords/set max. separated by comma" value="{{ res.user_asin.keywords2 }}"/><br>
+                                Keyword Set 3:
+                                <input type="text" name="kwdSet3" title="3 keywords/set max. separated by comma" value="{{ res.user_asin.keywords3 }}"/><br>
                             </div>
                             <div style="float: right;">
-                                {% for v in res.user_asin.cat %}
-                                Category Node: <input type="number" title="category node ID, number only" name="cat{{ forloop.counter }}" value="{{ v }}"/><br />
-                                {% endfor %}
+                                Category Node: <input type="number" title="category node ID, number only" name="cat1" value="{{ res.user_asin.cat1 }}"/><br />
+                                Category Node: <input type="number" title="category node ID, number only" name="cat2" value="{{ res.user_asin.cat2 }}"/><br />
+                                Category Node: <input type="number" title="category node ID, number only" name="cat3" value="{{ res.user_asin.cat3 }}"/><br />
                             </div>
                             <input type="hidden" name="asin_id" value="{{ res.user_asin.id }}">
                             <div style="clear: both;"></div>
@@ -455,6 +471,37 @@
                 },'json');
             });
 
+            $('.detailWatcherList').on('click','.screenshotButton',function () {
+               var src = $(this).data('image');
+               $('#screenshot').attr('src',src);
+            });
+
+            $('.detailWatcherList').on('click','#li_watcher_more',function () {
+                var page = $(this).data('page')?parseInt($(this).data('page')):1;
+                var asin = '{{ res.asin }}';
+                $.get('/admin/maxlead_site/ajax_get_watcher/',{'page':page+1,'asin':asin},function (re) {
+                    if(re.code == 1){
+                        var el = '';
+                        $.each(re.data.data,function(index,value) {
+                            el += '<tr><td>'+value['created']+'</td>\n' +
+                                '<td><a href="'+value['seller_link']+'" target="_blank">Seller: '+value['seller']+'</a></td>\n' +
+                                '<td>Price: '+value['price']+'</td>\n' +
+                                '<td>'+value['fba']+'</td>\n' +
+                                '<td>'+value['prime']+'</td>\n'+
+                                '<td>'+value['shipping']+'</td>\n'+
+                                '<td>'+value['winner']+'</td>\n'+
+                                '<td><a href="'+value['images']+'" target="_blank">Screenshot</a></td></tr>';
+                        });
+                        $('#tb_li_wathcer').append(el);
+                        $('#li_watcher_more').data('page',page+1);
+                        if(!re.data.li_watcher_page){
+                            $('#li_watcher_more').remove();
+                        }
+                    }else{
+                        alert(re.msg)
+                    }
+                },'json')
+            });
         </script>
     {% endblock %}
 

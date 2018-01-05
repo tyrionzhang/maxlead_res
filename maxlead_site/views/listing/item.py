@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Max
-from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews
+from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews,ListingWacher
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
 from maxlead_site.views.dashboard.dashboard import Dashboard
@@ -30,6 +30,18 @@ class Item:
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
         review = Reviews.objects.filter(asin=item.asin,created__icontains=Reviews.objects.aggregate(Max('created'))
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
+        listing_watchers = []
+        listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
+        listing_watchers = ListingWacher.objects.filter(asin=item.asin,created__icontains=listing_watchers_max['created__max']. \
+                                                        strftime("%Y-%m-%d"))
+        item_offer = len(listing_watchers)
+        if listing_watchers:
+            listing_watchers = listing_watchers[0:3]
+        for val in listing_watchers:
+            val.created = val.created.strftime('%Y-%m-%d %H:%M:%S')
+        li_watcher_page = 1
+        if len(listing_watchers) < 3:
+            li_watcher_page = 0
 
         activity_radar = Dashboard._get_activity_radar(self, asin=asin)
         if not activity_radar:
@@ -110,10 +122,7 @@ class Item:
             item.rvw_score = int(item.rvw_score)
         if item.category_rank:
             item.category_rank = item.category_rank.split('|')
-        if item.user_asin.keywords:
-            item.user_asin.keywords = item.user_asin.keywords.split('|')
-        if item.user_asin.cat:
-            item.user_asin.cat = item.user_asin.cat.split('|')
+        item.item_offer = item_offer
 
         data = {
             'user': user,
@@ -126,14 +135,76 @@ class Item:
             'line_price_y':line_price_y,
             'line_review_y':line_review_y,
             'activity_radar':activity_radar,
+            'listing_watchers':listing_watchers,
+            'li_watcher_page':li_watcher_page,
         }
         return render(self, 'listings/listingdetail.html',data)
 
     @csrf_exempt
+    def ajax_get_watcher(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+        asin = self.GET.get('asin','')
+        page = self.GET.get('page',1)
+        offset = (int(page)-1)*3
+
+        listing_watchers = []
+        listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
+        listing_watchers = ListingWacher.objects.filter(asin=asin,
+                                                        created__icontains=listing_watchers_max['created__max']. \
+                                                        strftime("%Y-%m-%d"))
+        if listing_watchers:
+            listing_watchers = listing_watchers[offset:offset+3]
+        data = []
+        for val in listing_watchers:
+            if val.price:
+                price = val.price
+            else:
+                price = ''
+            if val.fba:
+                fba = 'FBA'
+            else:
+                fba = 'FBM'
+            if val.prime:
+                prime = 'Prime'
+            else:
+                prime = ''
+            if val.shipping:
+                shipping = val.shipping
+            else:
+                shipping = ''
+
+            if val.winner:
+                winner = 'Buy box winner'
+            else:
+                winner = 'not winner'
+            re = {
+                'created':val.created.strftime('%Y-%m-%d %H:%M:%S'),
+                'seller_link':val.seller_link,
+                'seller':val.seller,
+                'price':price,
+                'fba':fba,
+                'prime':prime,
+                'shipping':shipping,
+                'winner':winner,
+                'images':val.images,
+            }
+            data.append(re)
+        li_watcher_page = 0
+        if len(listing_watchers) >= 3:
+            li_watcher_page = 1
+        data = {
+            'li_watcher_page':li_watcher_page,
+            'data':data,
+            'page':page
+        }
+        return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
+    @csrf_exempt
     def ajax_get_review(self):
         user = App.get_user_info(self)
         if not user:
-            return HttpResponseRedirect("/admin/maxlead_site/login/")
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
         asin = self.GET.get('asin', '')
         is_vp = self.GET.get('is_vp', '')
         score = self.GET.get('score', '')
