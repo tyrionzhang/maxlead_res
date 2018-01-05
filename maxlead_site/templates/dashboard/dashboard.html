@@ -80,10 +80,10 @@
                             <input type="Submit" value="Update" class="rising_search" data-type="Others" />
                             <input type="submit" value="Export"/></form>
                         <table cellspacing=0 class="tb-dash-content">
-                            <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
+                            <tr><th>Asin</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
                             {% for val in others_li %}
                             <tr class="tr-to-listing" data-asin="{{ val.asin }}">
-                                <td>{{ val.sku }}</td>
+                                <td>{{ val.asin }}</td>
                                 <td>{{ val.total_review }}</td>
                                 <td>{{ val.s }}</td>
                                 <td>{{ val.rvw_score }}</td>

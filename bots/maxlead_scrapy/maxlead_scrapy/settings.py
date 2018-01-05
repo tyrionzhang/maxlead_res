@@ -63,7 +63,7 @@ UA = random.choice(user_agent_list)
 USER_AGENT = UA
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # SPLASH_URL = 'http://127.0.0.1:8050'
 

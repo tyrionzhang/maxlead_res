@@ -19,8 +19,8 @@ class Item:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
         asin = self.GET.get('asin', '')
         listing_max = Listings.objects.aggregate(Max('created'))
-        listing = Listings.objects.filter(asin=asin).filter(created__gte=listing_max['created__max'].strftime("%Y-%m-1"))\
-            .filter(created__lte=listing_max['created__max']).order_by('-created')
+        out_time = listing_max['created__max']-datetime.timedelta(days=30)
+        listing = Listings.objects.filter(asin=asin).filter(created__gte=out_time).filter(created__lte=listing_max['created__max']).order_by('-created')
         item = listing[0]
         UserAsins.objects.filter(id=item.user_asin.id).update(last_check=datetime.datetime.now())
         qa_max = Questions.objects.aggregate(Max('created'))
@@ -43,6 +43,9 @@ class Item:
             activity_radar[0].title1_re = activity_radar[0].title1[0:90]
             activity_radar[0].description_re = activity_radar[0].description[0:90]
             activity_radar[0].description1_re = activity_radar[0].description1[0:90]
+            activity_radar = activity_radar[0]
+        else:
+            activity_radar = []
         line_x = []
         line_price_y = []
         line_review_y = []
@@ -78,6 +81,19 @@ class Item:
                 val.review_date = val.review_date.strftime("%B %d, %Y")
 
         item.question_answer = str(question_count.count())+'/'+str(answer_count.count())
+        box_res = eval(item.buy_box_res)
+        if box_res:
+            if 'Fulfilled by Amazon' in box_res:
+                item.is_FBA = 'FBA'
+            else:
+                item.is_FBA = ''
+            item.buy_box_res = box_res[0]
+        else:
+            item.buy_box_res = 'Amazon.com'
+        if item.prime:
+            item.prime = 'Prime'
+        else:
+            item.prime = ''
         if item.image_date:
             item.image_date = item.image_date.strftime("%Y-%m-%d")
         if item.created:
@@ -109,7 +125,7 @@ class Item:
             'line_x':line_x,
             'line_price_y':line_price_y,
             'line_review_y':line_review_y,
-            'activity_radar':activity_radar[0],
+            'activity_radar':activity_radar,
         }
         return render(self, 'listings/listingdetail.html',data)
 

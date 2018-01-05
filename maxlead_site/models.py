@@ -87,9 +87,12 @@ class Listings(models.Model):
     asin = models.CharField('AsinId', max_length=50)
     sku = models.CharField('SKU', max_length=50)
     brand = models.CharField('Brand', max_length=50)
+    shipping = models.CharField('Shipping', max_length=255,default='',null=True)
+    prime = models.IntegerField('Prime', default=0)
     description = models.TextField('Description',default='')
     feature = models.TextField('Feature',default='')
     buy_box = models.CharField('Buy Box', max_length=50)
+    buy_box_link = models.CharField('Buy Box Link', max_length=255,default='')
     buy_box_res = models.CharField('Buy Box Data', max_length=255, default='')
     price = models.CharField('Price', max_length=50,null=True)
     total_review = models.IntegerField('RVW QTY', default=0)
@@ -107,6 +110,19 @@ class Listings(models.Model):
 
     class Meta:
         db_table = 'product_list'
+
+class ListingWacher(models.Model):
+    asin = models.CharField('AsinId', max_length=50)
+    seller = models.CharField('Seller', max_length=50)
+    price = models.CharField('Price', max_length=50,null=True)
+    shipping = models.CharField('Shipping', max_length=255, default='',null=True)
+    fba = models.IntegerField('FBA', default=0)
+    prime = models.IntegerField('Prime', default=0)
+    winner = models.IntegerField('Winner', default=0)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'listing_wacher'
 
 class Questions(models.Model):
     question = models.CharField('Question',max_length=225)
@@ -144,3 +160,6 @@ class Task(models.Model):
     file_path = models.CharField('File Path', max_length=225,default='')
     finish_time = models.DateTimeField('Created', null=True)
     created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'tasks'

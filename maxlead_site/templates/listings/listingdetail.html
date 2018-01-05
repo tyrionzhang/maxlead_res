@@ -37,7 +37,11 @@
                         <h4>Golden Buy Box Winner</h4>
                         <hr>
                         <table class="productGBBW">
-                            <tr><td>Price: $99.99</td><td><a href="" target="_blank">Seller: Big Player</a></td><td>FBA</td><td>Prime</td><td>Free Shipping</td></tr>
+                            <tr><td>Price: {{ res.price }}</td>
+                                <td><a href="{{ res.buy_box_link }}" target="_blank">Seller: {{ res.buy_box_res }}</a></td>
+                                <td>{{ res.is_FBA }}</td>
+                                <td>{{ res.prime }}</td>
+                                <td>{{ res.shipping }}</td></tr>
                         </table>
                         <h4>BSR</h4>
                         <hr>

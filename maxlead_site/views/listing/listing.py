@@ -20,11 +20,12 @@ class Listing:
         listKwd = self.GET.get('listKwd','')
         searchCol = self.GET.get('searchCol','title')
         buybox = self.GET.get('buybox','')
+        owner = self.GET.get('owner','')
         status = self.GET.get('status','')
         revstatus = self.GET.get('revstatus','')
         liststatus = self.GET.get('liststatus','')
 
-        asins = get_asins(user,ownership=False,status=status,revstatus=revstatus,liststatus=liststatus,type=1)
+        asins = get_asins(user,ownership=owner,status=status,revstatus=revstatus,liststatus=liststatus,type=1)
 
         if asins:
             listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins)
