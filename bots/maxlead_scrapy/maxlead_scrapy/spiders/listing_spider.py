@@ -122,7 +122,8 @@ class ListingSpider(scrapy.Spider):
             item = ListingsItem()
             for val in self.res:
                 if val['aid'] == asin_id:
-                    item['sku'] = val['sku']
+                    sku_res = UserAsins.objects.filter(aid=val['aid'])
+                    item['sku'] = sku_res[0].sku
                     user_asin = UserAsins.objects.get(id=val['id'])
                     item['user_asin'] = user_asin
                     buy_box = val['ownership']

@@ -146,6 +146,7 @@ DOWNLOADFILES_DIRS = (
 )
 
 REVIEW_TIME = 300
+SPIDER_TIME = 86400
 
 # django-suit config
 # SUIT_CONFIG = {

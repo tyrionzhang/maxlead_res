@@ -64,6 +64,17 @@ def perform_command():
     os.chdir(work_path)
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
 
+def perform_command1():
+    # 安排inc秒后再次运行自己，即周期运行
+    s_time = settings.SPIDER_TIME
+    schedule.enter(s_time, 0, perform_command1)
+
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider')
+    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider')
+    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider')
+
 def update_kewords1():
     aid_list = UserAsins.objects.filter(is_use=True).values('aid')
     positive_keywords = {}
@@ -119,7 +130,23 @@ def RunReview(request):
 
     return render(request, 'spider/home.html')
 
-RunReview = staff_member_required(RunReview)
+def Spiders(request):
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    os.system('scrapyd-deploy')
+    # enter用来安排某事件的发生时间，从现在起第n秒开始启动
+    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider')
+    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider')
+    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider')
+
+    s_time = settings.SPIDER_TIME
+    schedule.enter(s_time, 0, perform_command)
+    # # 持续运行，直到计划时间队列变成空为止
+    schedule.run()
+
+    return render(request, 'spider/home.html')
+
+# RunReview = staff_member_required(RunReview)
 
 class test(UserSecuirty):
 
