@@ -287,6 +287,11 @@ class ListingSpider(scrapy.Spider):
                             item['image_date'] = listing.image_date
                     else:
                         item['image_date'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+            with_deal = response.css('tr#priceblock_dealprice_row td::text').extract()
+            deal = response.css('div#deal_availability span::text').extract()
+            promotion = response.css('div#quickPromoBucketContent li::text').extract()
+            # if promotion:
+            #     item['promotion'] = promotion
 
 
             # for img_re in response.css('div#altImages ul.a-unordered-list li.item'):
