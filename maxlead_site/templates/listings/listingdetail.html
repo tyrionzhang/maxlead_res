@@ -74,7 +74,7 @@
                         <button type="button" class="moreButton" id="li_watcher_more" data-page="">More</button>
                         {% endif %}
                         <div >
-                            <img src ="./img/test.jpg" style="display:none" id="screenshot" />
+                            <img src ="" style="display:none" id="screenshot" />
                         </div>
                         {% endif %}
                     </div>                    
@@ -106,8 +106,18 @@
                 </section>
                 <section class="detailRanking">
                     <h3>Keywords Ranking</h3>
-                    <form name="kwdRank" method="post" action="">
-                        Category: <select name="kwdCat"><option value="all">All</option><option value="cat1">Cat1</option></select><input type="date" name="krStartDate" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="krEndDate" max="传入当前日期" min="2017-12-15" />  <input type="submit"  class="rvInfoButton" value="Update" />  <button type="button"  class="rvInfoButton" onclick="导出当前数据">Export</button>
+                    <form name="kwdRank" method="get" action="/admin/maxlead_site/export_k_rank/">
+                        Category: <select name="kwdCat">
+                        <option value="">All</option>
+                        {% for val in catgorys %}
+                        <option value="{{ val }}">{{ val }}</option>
+                        {% endfor %}
+                    </select>
+                        <input type="date" name="krStartDate" max="" min="2017-12-15" /> -
+                        <input type="date" name="krEndDate" max="" min="2017-12-15" />
+                        <input type="hidden" name="asin" value="{{ res.asin }}" />
+                        <input type="submit"  class="rvInfoButton" id="btn_search_rank" value="Update" />
+                        <button type="submit"  class="rvInfoButton" id="btn_export_rank">Export</button>
                     </form>
                     <div id="krVisual">
                     </div>
@@ -236,18 +246,21 @@
             var price = {
               x: line_x,
               y: line_price_y,
-              type: 'scatter'
+              type: 'scatter',
+              name: 'price'
             };
 
             var reviews = {
               x: line_x,
               y: line_review_y,
-              type: 'scatter'
+              type: 'scatter',
+              name: 'review'
             };
 
             var data = [price, reviews];
             Plotly.newPlot('time_shuttle', data);
 
+            get_rank();
 
             $('#btn-review-search').on('click',function () {
                 var data = {
@@ -501,6 +514,45 @@
                         alert(re.msg)
                     }
                 },'json')
+            });
+
+            function get_rank() {
+                var data = {
+                    'asin' : '{{ res.asin }}',
+                    'kwdCat' : $('select[name="kwdCat"]').val(),
+                    'krStartDate' : $('input[name="krStartDate"]').val(),
+                    'krEndDate' : $('input[name="krEndDate"]').val()
+                };
+                $.get('/admin/maxlead_site/ajax_k_rank/',data,function (re) {
+                    if(re.code == 1){
+                        var chart_data = [];
+                        $.each(re.data.chart,function(index,value) {
+                            $.each(value,function(index,val) {
+                                if(index.indexOf("time")<=-1){
+                                    var x = value['time'+index];
+                                    var y = val;
+                                    var name = index;
+                                    var line = {
+                                        x: x,
+                                        y: y,
+                                        type: 'scatter',
+                                        name: name
+                                    };
+                                    chart_data.push(line);
+                                }
+                            });
+                        });
+                        Plotly.newPlot('krVisual', chart_data);
+                    }else{
+                        alert(re.msg);
+                    }
+                    return false;
+                },'json');
+            }
+
+            $('#btn_search_rank').on('click',function () {
+                get_rank();
+                return false;
             });
         </script>
     {% endblock %}

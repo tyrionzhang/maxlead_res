@@ -11,7 +11,7 @@ class QaSpider(scrapy.Spider):
     name = "qa_spider"
     start_urls = []
     url = "https://www.amazon.com/ask/questions/asin/%s/"
-    res = list(UserAsins.objects.filter(is_use=True).values('aid','review_watcher','listing_watcher','sku').annotate(count=Count('aid')))
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
 
     if res:
         for re in res:

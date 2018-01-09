@@ -102,6 +102,7 @@ class Listing:
                     re = {
                         'id':listing[0].id,
                         'title':listing[0].title,
+                        'title1':listing[0].title[0:45]+'...',
                         'asin':listing[0].asin,
                         'sku':listing[0].sku,
                         'brand':listing[0].brand,

@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Max
-from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews,ListingWacher
+from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews,ListingWacher,CategoryRank
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
 from maxlead_site.views.dashboard.dashboard import Dashboard
@@ -19,9 +19,17 @@ class Item:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
         asin = self.GET.get('asin', '')
         listing_max = Listings.objects.aggregate(Max('created'))
-        out_time = listing_max['created__max']-datetime.timedelta(days=30)
-        listing = Listings.objects.filter(asin=asin).filter(created__gte=out_time).filter(created__lte=listing_max['created__max']).order_by('-created')
+        listing = Listings.objects.filter(asin=asin).filter(created__gte=datetime.datetime.now().strftime("%Y-%m-1")).\
+                                                    filter(created__lte=listing_max['created__max']).order_by('-created')
         item = listing[0]
+        catgorys = []
+        if item.user_asin.cat1:
+            catgorys.append(item.user_asin.cat1)
+        if item.user_asin.cat2:
+            catgorys.append(item.user_asin.cat2)
+        if item.user_asin.cat3:
+            catgorys.append(item.user_asin.cat3)
+
         UserAsins.objects.filter(id=item.user_asin.id).update(last_check=datetime.datetime.now())
         qa_max = Questions.objects.aggregate(Max('created'))
         question_count = Questions.objects.filter(asin=item.asin,created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
@@ -137,6 +145,7 @@ class Item:
             'activity_radar':activity_radar,
             'listing_watchers':listing_watchers,
             'li_watcher_page':li_watcher_page,
+            'catgorys':catgorys,
         }
         return render(self, 'listings/listingdetail.html',data)
 
@@ -294,6 +303,73 @@ class Item:
                             content_type='application/json')
 
     @csrf_exempt
+    def ajax_k_rank(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+        asin = self.GET.get('asin','')
+        krStartDate = self.GET.get('krStartDate',datetime.datetime.now().strftime("%Y-%m-1"))
+        krEndDate = self.GET.get('krEndDate',datetime.datetime.now().strftime("%Y-%m-d"))
+        kwdCat = self.GET.get('kwdCat','')
+
+        ranks = CategoryRank.objects.filter(asin=asin,user_asin=asin)
+        if kwdCat:
+            ranks = ranks.filter(cat__icontains=kwdCat)
+        if krStartDate:
+            ranks = ranks.filter(created__gte=krStartDate)
+        if krEndDate:
+            ranks = ranks.filter(created__lte=krEndDate)
+
+        line_x = []
+        cat_y = {}
+        keywords_y = {}
+        keycat_y = {}
+        for val in ranks:
+            if val.cat and not val.keywords:
+                keys = val.cat.split(',n:')[-1]
+                if keys in cat_y:
+                    cat_y[keys] += ','+str(val.rank)
+                    cat_y['time'+keys] += ',' + val.created.strftime("%d")
+                else:
+                    cat_y.update({keys:str(val.rank)})
+                    cat_y.update({'time'+keys:val.created.strftime("%d")})
+
+            if val.keywords and not val.cat:
+                if val.keywords in keywords_y:
+                    keywords_y[val.keywords] += ','+str(val.rank)
+                    keywords_y['time'+val.keywords] += ',' + val.created.strftime("%d")
+                else:
+                    keywords_y.update({val.keywords:str(val.rank)})
+                    keywords_y.update({'time'+val.keywords:val.created.strftime("%d")})
+
+            if val.keywords and  val.cat:
+                keys_c = val.cat.split(',n:')[-1]
+                if val.keywords+keys_c in keywords_y:
+                    keycat_y[val.keywords+'/'+keys_c] += ','+str(val.rank)
+                    keycat_y['time'+val.keywords+'/'+keys_c] += ',' + val.created.strftime("%d")
+                else:
+                    keycat_y.update({val.keywords+'/'+keys_c:str(val.rank)})
+                    keycat_y.update({'time'+val.keywords+'/'+keys_c:val.created.strftime("%d")})
+
+        chart = []
+        if cat_y:
+            for i in cat_y:
+                cat_y[i] = cat_y[i].split(',')
+            chart.append(cat_y)
+        if keywords_y:
+            for k in keywords_y:
+                keywords_y[k] = keywords_y[k].split(',')
+            chart.append(keywords_y)
+        if keycat_y:
+            for k in keycat_y:
+                keycat_y[k] = keycat_y[k].split(',')
+
+            chart.append(keycat_y)
+
+        return HttpResponse(json.dumps({'code': 1, 'data': {'chart': chart}}),content_type='application/json')
+
+
+    @csrf_exempt
     def export_qa(self):
         user = App.get_user_info(self)
         if not user:
@@ -437,13 +513,13 @@ class Item:
         asin = self.GET.get('asin', '')
         tsData1 = self.GET.get('tsData1', '')
         tsData2 = self.GET.get('tsData2', '')
-        tsStartDate = self.GET.get('tsStartDate', '')
-        tsEndDate = self.GET.get('tsEndDate', '')
+        tsStartDate = self.GET.get('tsStartDate', datetime.datetime.now().strftime("%Y-%m-1"))
+        tsEndDate = self.GET.get('tsEndDate', datetime.datetime.now().strftime("%Y-%m-%d"))
         listing = Listings.objects.filter(asin=asin).order_by('-created')
         if tsStartDate:
             listing = listing.filter(created__gte=tsStartDate)
         if tsEndDate:
-            listing = listing.filter(created__gte=tsEndDate)
+            listing = listing.filter(created__lte=tsEndDate)
 
         line_x = []
         line_y1 = []
@@ -548,5 +624,53 @@ class Item:
         ]
         return get_excel_file(self, data, fields, data_fields)
 
+    @csrf_exempt
+    def export_k_rank(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+        asin = self.GET.get('asin', '')
+        krStartDate = self.GET.get('krStartDate', datetime.datetime.now().strftime("%Y-%m-1"))
+        krEndDate = self.GET.get('krEndDate', datetime.datetime.now().strftime("%Y-%m-%d"))
+        kwdCat = self.GET.get('kwdCat', '')
+
+        ranks = CategoryRank.objects.filter(asin=asin, user_asin=asin)
+        if kwdCat:
+            ranks = ranks.filter(cat__icontains=kwdCat)
+        if krStartDate:
+            ranks = ranks.filter(created__gte=krStartDate)
+        if krEndDate:
+            ranks = ranks.filter(created__lte=krEndDate)
+
+        data = []
+        for v in ranks:
+            re = {
+                'asin': v.asin,
+                'cat': v.cat,
+                'keywords': v.keywords,
+                'rank': v.rank,
+                'is_ad': v.is_ad,
+                'created': v.created.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            data.append(re)
+
+        fields = [
+            'Asin',
+            'Cat',
+            'Keywords',
+            'Rank',
+            'AD',
+            'Created',
+        ]
+        data_fields = [
+            'asin',
+            'cat',
+            'keywords',
+            'rank',
+            'is_ad',
+            'created',
+        ]
+        if data:
+            return get_excel_file(self, data, fields, data_fields)
 
 

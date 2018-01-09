@@ -56,6 +56,8 @@ urlpatterns = [
     url(r'^admin/maxlead_site/export_shuttle/', Item.export_shuttle),
     url(r'^admin/maxlead_site/ajax_get_radar/', Item.ajax_get_radar),
     url(r'^admin/maxlead_site/ajax_get_watcher/', Item.ajax_get_watcher),
+    url(r'^admin/maxlead_site/ajax_k_rank/', Item.ajax_k_rank),
+    url(r'^admin/maxlead_site/export_k_rank/', Item.export_k_rank),
     url(r'^admin/maxlead_site/dashboard/', Dashboard.index),
     url(r'^admin/maxlead_site/miner/', Miner.index),
     url(r'^admin/maxlead_site/ajax_reviews/', Dashboard.ajax_get_reviews),
