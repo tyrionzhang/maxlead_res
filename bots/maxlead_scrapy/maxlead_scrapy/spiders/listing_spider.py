@@ -14,12 +14,13 @@ class ListingSpider(scrapy.Spider):
     start_urls = []
     url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head&th=1&psc=1"
     url1 = "https://www.amazon.com/gp/offer-listing/%s/ref=dp_olp_all_mbc?ie=UTF8&condition=new&type=listWacher"
-    res = list(UserAsins.objects.filter(is_use=True).values('id','aid','review_watcher','listing_watcher','sku','ownership').annotate(count=Count('aid')))
+    res = list(UserAsins.objects.filter(is_use=True).values('aid'))
 
     if res:
         for re in res:
-            asin = url % (re['aid'], int(time.time()))
-            url2 = url1 % re['aid']
+            asins = UserAsins.objects.values('aid','review_watcher','listing_watcher','sku','ownership').filter(aid=re['aid'])[0]
+            asin = url % (asins['aid'], int(time.time()))
+            url2 = url1 % asins['aid']
             start_urls.append(asin)
             start_urls.append(url2)
 

@@ -95,6 +95,8 @@ class Listings(models.Model):
     prime = models.IntegerField('Prime', default=0)
     description = models.TextField('Description',default='')
     feature = models.TextField('Feature',default='')
+    promotion = models.TextField('Promotion',default='')
+    lightning_deal = models.CharField('Lightning Deal',max_length=255,default='')
     buy_box = models.CharField('Buy Box', max_length=50)
     buy_box_link = models.CharField('Buy Box Link', max_length=255,default='')
     buy_box_res = models.CharField('Buy Box Data', max_length=255, default='')
@@ -169,3 +171,15 @@ class Task(models.Model):
 
     class Meta:
         db_table = 'tasks'
+
+class CategoryRank(models.Model):
+    user_asin = models.CharField('User Asin',max_length=50)
+    asin = models.CharField('Asin',max_length=255)
+    cat = models.CharField('Cat',max_length=255,default='')
+    keywords = models.CharField('Keywords',max_length=255,default='')
+    rank = models.IntegerField('Rank',default=0)
+    is_ad = models.IntegerField('Ad',default=0)
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'category_rank'
