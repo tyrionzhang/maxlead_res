@@ -156,12 +156,13 @@ class Item:
             return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
         asin = self.GET.get('asin','')
         page = self.GET.get('page',1)
+        listBgn = self.GET.get('listBgn','')
+        listEnd = self.GET.get('listEnd','')
         offset = (int(page)-1)*3
 
         listing_watchers = []
         listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
-        listing_watchers = ListingWacher.objects.filter(asin=asin,
-                                                        created__icontains=listing_watchers_max['created__max']. \
+        listing_watchers = ListingWacher.objects.filter(asin=asin,created__icontains=listing_watchers_max['created__max']. \
                                                         strftime("%Y-%m-%d"))
         if listing_watchers:
             listing_watchers = listing_watchers[offset:offset+3]

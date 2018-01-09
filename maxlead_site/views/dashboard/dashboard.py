@@ -7,18 +7,20 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count,Max
-from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews,MenberGroups
+from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,ListingWacher,MenberGroups
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
 
 class Dashboard:
 
 
-    def _get_asins(self,user,ownership=''):
+    def _get_asins(self,user,ownership='',listing_watcher=''):
         asins = []
         user_asins = UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(review_watcher=1, is_use=1)
         if ownership:
             user_asins = user_asins.filter(ownership=ownership)
+        if listing_watcher:
+            user_asins = user_asins.filter(listing_watcher=listing_watcher)
 
         if user.role == 0:
             user_asins = user_asins.filter(user=user.user)
@@ -319,6 +321,73 @@ class Dashboard:
             return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
 
     @csrf_exempt
+    def ajax_watcher(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+        page = self.GET.get('page',1)
+        listBgn = self.GET.get('listBgn','')
+        listEnd = self.GET.get('listEnd','')
+        offset = (int(page)-1)*6
+        asins = Dashboard._get_asins(self, user,listing_watcher=1)
+        listing_watchers = []
+        listing_watchers = ListingWacher.objects.filter(asin__in=asins)
+        if not listEnd and not listBgn:
+            listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
+            listing_watchers = listing_watchers.filter(created__icontains=listing_watchers_max['created__max'].strftime("%Y-%m-%d"))
+        if listEnd:
+            listing_watchers = listing_watchers.filter(created__lte=listEnd)
+        if listBgn:
+            listing_watchers = listing_watchers.filter(created__gte=listBgn)
+
+        if listing_watchers:
+            listing_watchers = listing_watchers[offset:offset+6]
+        data = []
+        for val in listing_watchers:
+            if val.price:
+                price = val.price
+            else:
+                price = ''
+            if val.fba:
+                fba = 'FBA'
+            else:
+                fba = 'FBM'
+            if val.prime:
+                prime = 'Prime'
+            else:
+                prime = ''
+            if val.shipping:
+                shipping = val.shipping
+            else:
+                shipping = ''
+
+            if val.winner:
+                winner = 'Buy box winner'
+            else:
+                winner = 'not winner'
+            re = {
+                'created':val.created.strftime('%Y-%m-%d %H:%M:%S'),
+                'seller_link':val.seller_link,
+                'seller':val.seller,
+                'price':price,
+                'fba':fba,
+                'prime':prime,
+                'shipping':shipping,
+                'winner':winner,
+                'images':val.images,
+            }
+            data.append(re)
+        li_watcher_page = 0
+        if len(listing_watchers) >= 3:
+            li_watcher_page = 1
+        data = {
+            'li_watcher_page':li_watcher_page,
+            'data':data,
+            'page':page
+        }
+        return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
+
+    @csrf_exempt
     def export_dash_reviews(self):
         user = App.get_user_info(self)
         if not user:
@@ -489,3 +558,85 @@ class Dashboard:
                 'created'
             ]
             return get_excel_file(self, data, fields, data_fields)
+
+    @csrf_exempt
+    def export_watcher(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+        listBgn = self.GET.get('listBgn', '')
+        listEnd = self.GET.get('listEnd', '')
+        asins = Dashboard._get_asins(self, user, listing_watcher=1)
+        listing_watchers = []
+        listing_watchers = ListingWacher.objects.filter(asin__in=asins)
+        if not listEnd and not listBgn:
+            listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
+            listing_watchers = listing_watchers.filter(
+                created__icontains=listing_watchers_max['created__max'].strftime("%Y-%m-%d"))
+        if listEnd:
+            listing_watchers = listing_watchers.filter(created__lte=listEnd)
+        if listBgn:
+            listing_watchers = listing_watchers.filter(created__gte=listBgn)
+
+        if listing_watchers:
+            listing_watchers = listing_watchers
+        data = []
+        for val in listing_watchers:
+            if val.price:
+                price = val.price
+            else:
+                price = ''
+            if val.fba:
+                fba = 'FBA'
+            else:
+                fba = 'FBM'
+            if val.prime:
+                prime = 'Prime'
+            else:
+                prime = ''
+            if val.shipping:
+                shipping = val.shipping
+            else:
+                shipping = ''
+
+            if val.winner:
+                winner = 'Buy box winner'
+            else:
+                winner = 'not winner'
+            re = {
+                'created': val.created.strftime('%Y-%m-%d %H:%M:%S'),
+                'seller_link': val.seller_link,
+                'asin': val.asin,
+                'seller': val.seller,
+                'price': price,
+                'fba': fba,
+                'prime': prime,
+                'shipping': shipping,
+                'winner': winner,
+            }
+            data.append(re)
+
+        fields = [
+            'Asin',
+            'Seller',
+            'Price',
+            'FBA',
+            'Prime',
+            'Shipping',
+            'Winner',
+            'Seller Link',
+            'Created',
+        ]
+
+        data_fields = [
+            'asin',
+            'seller',
+            'price',
+            'fba',
+            'prime',
+            'shipping',
+            'winner',
+            'seller_link',
+            'created',
+        ]
+        return get_excel_file(self, data, fields, data_fields)
