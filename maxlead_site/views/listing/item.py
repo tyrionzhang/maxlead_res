@@ -52,18 +52,16 @@ class Item:
             li_watcher_page = 0
 
         activity_radar = Dashboard._get_activity_radar(self, asin=asin)
-        if not activity_radar:
-            others_asins = Dashboard._get_asins(self, user, ownership='Others')
-            activity_radar = Dashboard._get_activity_radar(self, others_asins=others_asins)
-            if activity_radar:
-                activity_radar = activity_radar
 
         if activity_radar:
-            activity_radar[0].title_re = activity_radar[0].title[0:90]
-            activity_radar[0].title1_re = activity_radar[0].title1[0:90]
-            activity_radar[0].description_re = activity_radar[0].description[0:90]
-            activity_radar[0].description1_re = activity_radar[0].description1[0:90]
-            activity_radar = activity_radar[0]
+            for val in activity_radar:
+                val['text1'] = val['text1'][0:90]
+                val['text2'] = val['text2'][0:90]
+            # activity_radar[0].title_re = activity_radar[0].title[0:90]
+            # activity_radar[0].title1_re = activity_radar[0].title1[0:90]
+            # activity_radar[0].description_re = activity_radar[0].description[0:90]
+            # activity_radar[0].description1_re = activity_radar[0].description1[0:90]
+            # activity_radar = activity_radar[0]
         else:
             activity_radar = []
         line_x = []
@@ -274,11 +272,6 @@ class Item:
         page = int(self.GET.get('page', 1))
 
         activity_radar = Dashboard._get_activity_radar(self, asin=asin)
-        if not activity_radar:
-            others_asins = Dashboard._get_asins(self, user, ownership='Others')
-            activity_radar = Dashboard._get_activity_radar(self, others_asins=others_asins)
-            if activity_radar:
-                activity_radar = activity_radar
         is_page = 1
         if len(activity_radar) < page+1:
             is_page = 0
@@ -286,19 +279,9 @@ class Item:
                 json.dumps({'code': 1, 'data': {'data':'','page': page, 'is_page': is_page}}),content_type='application/json')
 
         if activity_radar:
-            activity_radar = {
-                'title_re':activity_radar[page].title[0:90],
-                'title1_re':activity_radar[page].title1[0:90],
-                'description_re':activity_radar[page].description[0:90],
-                'description1_re':activity_radar[page].description1[0:90],
-                'created':activity_radar[page].created,
-                'title':activity_radar[page].title,
-                'price1':activity_radar[page].price1,
-                'price':activity_radar[page].price,
-                'title1':activity_radar[page].title1,
-                'description':activity_radar[page].description,
-                'description1':activity_radar[page].description1,
-            }
+            for val in activity_radar:
+                val['text1'] = val['text1'][0:90]
+                val['text2'] = val['text2'][0:90]
 
         return HttpResponse(json.dumps({'code': 1, 'data': {'data':activity_radar,'page':page,'is_page':is_page}}),
                             content_type='application/json')

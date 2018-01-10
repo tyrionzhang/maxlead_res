@@ -39,7 +39,7 @@
                             <input type="date" name="listEnd"  max="" min="2017-12-15" />
                             <input type="submit" value="Update" id="btn_lstWatcher"/>
                             <input type="submit" value="Export" id="btn_export_watcher" /></form>
-                        <table cellspacing=0 id="tb_watcher">
+                        <table cellspacing=0 id="tb_watcher" class="tb-dash-content">
 
                         </table>
                     </div>
@@ -107,9 +107,9 @@
                             <input type="date" name="actEnd" max="" min="2017-12-15" />
                             <input type="submit" value="Update" id="radar_search"/>
                             <input type="submit" value="Export" /></form>
-                        <table cellspacing=0 id="tb_radar">
+                        <table cellspacing=0 id="tb_radar" class="tb-dash-content">
                             {% for val in activity_radar %}
-                            <tr>
+                            <tr class="tr-to-listing" data-asin="{{ val.asin }}">
                                 <td>{{ val.created }}</td>
                                 <td>{{ val.asin }}</td>
                                 <td>{{ val.changed }}</td>
@@ -136,7 +136,7 @@
                 if(re.code == 1){
                     var el = '';
                     $.each(re.data.data,function (index,val) {
-                        el += '<tr>\n' +
+                        el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
                             '<td>'+val['created']+'</td>\n' +
                             '<td>'+val['shipping']+'</td>\n' +
                             '<td>Price '+val['price']+'</td>\n' +
@@ -171,7 +171,7 @@
                 if(re.code==1){
                     var el = '';
                     $.each(re.data.data,function (index,val) {
-                        el += "<tr>" +
+                        el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">' +
                             "<td class=\"revWatDate\">"+val['review_date']+"</td>" +
                             " <td class=\"revWatSKU\">"+val['sku']+"</td>" +
                             "<td><span class=\"star"+val['score']+"\"></span></td>" +
@@ -203,7 +203,7 @@
                 if(re.code==1){
                     var el = '';
                     $.each(re.data.data,function (index,val) {
-                        el += "<tr>" +
+                        el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">' +
                             "<td class=\"revWatDate\">"+val['review_date']+"</td>" +
                             " <td class=\"revWatSKU\">"+val['sku']+"</td>" +
                             "<td><span class=\"star"+val['score']+"\"></span></td>" +

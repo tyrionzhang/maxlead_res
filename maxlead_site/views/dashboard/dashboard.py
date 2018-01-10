@@ -14,13 +14,15 @@ from maxlead_site.common.excel_world import get_excel_file
 class Dashboard:
 
 
-    def _get_asins(self,user,ownership='',listing_watcher=''):
+    def _get_asins(self,user,ownership='',listing_watcher='',review_watcher=''):
         asins = []
-        user_asins = UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(review_watcher=1, is_use=1)
+        user_asins = UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=1)
         if ownership:
             user_asins = user_asins.filter(ownership=ownership)
         if listing_watcher:
             user_asins = user_asins.filter(listing_watcher=listing_watcher)
+        if review_watcher:
+            user_asins = user_asins.filter(review_watcher=review_watcher)
 
         if user.role == 0:
             user_asins = user_asins.filter(user=user.user)
@@ -53,25 +55,66 @@ class Dashboard:
                                            or not operator.eq(listing[0].promotion, listing[1].promotion) or not operator.eq\
                                            (listing[0].lightning_deal, listing[1].lightning_deal):
 
-                    listing[0].changed = ''
                     if not listing[0].price == listing[1].price:
-                        listing[0].changed += 'price,'
-                    if not listing[0].image_date == listing[1].image_date:
-                        listing[0].changed += 'Gallery,'
-                    if not listing[0].title == listing[1].title:
-                        listing[0].changed += 'title,'
-                    if not operator.eq(listing[0].promotion, listing[1].promotion):
-                        listing[0].changed += 'Promotion,'
+                        activity_radar.append({
+                            'name':'price',
+                            'text1':listing[0].price,
+                            'text2':listing[1].price,
+                            'created':listing[0].created.strftime('%Y-%m-%d'),
+                        })
 
-                    listing[0].created = listing[0].created.strftime('%Y-%m-%d')
-                    if eval(listing[0].buy_box_res):
-                        listing[0].buy_box_res = eval(listing[0].buy_box_res)[0]
-                    else:
-                        listing[0].buy_box_res = ''
-                    listing[0].price1 = listing[1].price
-                    listing[0].title1 = listing[1].title
-                    listing[0].description1 = listing[1].description
-                    activity_radar.append(listing[0])
+                    if not listing[0].image_date == listing[1].image_date:
+                        activity_radar.append({
+                            'name': 'image_date',
+                            'text1': listing[0].image_date,
+                            'text2': listing[1].image_date,
+                            'created': listing[0].created.strftime('%Y-%m-%d'),
+                        })
+                    if not listing[0].title == listing[1].title:
+                        activity_radar.append({
+                            'name': 'title',
+                            'text1': listing[0].title,
+                            'text2': listing[1].title,
+                            'created': listing[0].created.strftime('%Y-%m-%d'),
+                        })
+                    if not operator.eq(listing[0].promotion, listing[1].promotion):
+                        activity_radar.append({
+                            'name': 'promotion',
+                            'text1': listing[0].promotion,
+                            'text2': listing[1].promotion,
+                            'created': listing[0].created.strftime('%Y-%m-%d'),
+                        })
+                    if not operator.eq(listing[0].description, listing[1].description):
+                        activity_radar.append({
+                            'name': 'description',
+                            'text1': listing[0].description,
+                            'text2': listing[1].description,
+                            'created': listing[0].created.strftime('%Y-%m-%d'),
+                        })
+                    if not operator.eq(listing[0].lightning_deal, listing[1].lightning_deal):
+                        activity_radar.append({
+                            'name': 'lightning_deal',
+                            'text1': listing[0].lightning_deal,
+                            'text2': listing[1].lightning_deal,
+                            'created': listing[0].created.strftime('%Y-%m-%d'),
+                        })
+                    if not operator.eq(listing[0].feature, listing[1].feature):
+                        activity_radar.append({
+                            'name': 'feature',
+                            'text1': listing[0].feature,
+                            'text2': listing[1].feature,
+                            'created': listing[0].created.strftime('%Y-%m-%d'),
+                        })
+
+                    # listing[0].created = listing[0].created.strftime('%Y-%m-%d')
+                    # if eval(listing[0].buy_box_res):
+                    #     listing[0].buy_box_res = eval(listing[0].buy_box_res)[0]
+                    # else:
+                    #     listing[0].buy_box_res = ''
+                    # listing[0].price1 = listing[1].price
+                    # listing[0].title1 = listing[1].title
+                    # listing[0].description1 = listing[1].description
+                    # activity_radar.append(listing[0])
             return activity_radar
         else:
             for val in others_asins:
@@ -114,7 +157,7 @@ class Dashboard:
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-        asins = Dashboard._get_asins(self,user)
+        asins = Dashboard._get_asins(self,user,listing_watcher=1)
         ours_asins = Dashboard._get_asins(self,user,ownership='Ours')
         others_asins = Dashboard._get_asins(self,user,ownership='Others')
         ours_li = []
@@ -370,6 +413,7 @@ class Dashboard:
                 'created':val.created.strftime('%Y-%m-%d %H:%M:%S'),
                 'seller_link':val.seller_link,
                 'seller':val.seller,
+                'asin':val.asin,
                 'price':price,
                 'fba':fba,
                 'prime':prime,

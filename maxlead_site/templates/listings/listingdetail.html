@@ -174,22 +174,14 @@
                         {% if activity_radar %}
                         <table id="tb_detail_act"><!--默认只显示3条-->
                             <tr><th>Time</th><th>Object</th><th>Previous</th><th>New</th><th></th><tr>
+                            {% for val in activity_radar %}
                             <tr>
-                                <td>{{ activity_radar.created }}</td>
-                                <td>Title</td><td>{{ activity_radar.title_re }}</td>
-                                <td>{{ activity_radar.title1_re }}</td>
-                                <td><span class="actMore" data-text1="{{ activity_radar.title }}" data-text2="{{ activity_radar.title1 }}">Show More</span></td></tr>
+                                <td>{{ val.created }}</td>
+                                <td>{{ val.name }}</td><td>{{ val.text1 }}</td>
+                                <td>{{ val.text2}}</td>
+                                <td><span class="actMore" data-text1="{{ val.text1 }}" data-text2="{{ val.text2 }}">Show More</span></td></tr>
                             <tr>
-                                <td>{{ activity_radar.created }}</td>
-                                <td>Price</td>
-                                <td>{{ activity_radar.price }}</td>
-                                <td>{{ activity_radar.price1 }}</td>
-                                <td><span class="actMore" data-text1="{{ activity_radar.price }}" data-text2="{{ activity_radar.price1 }}">Show More</span></td></tr>
-                            <tr><td>{{ activity_radar.created }}</td>
-                                <td>Description</td>
-                                <td>{{ activity_radar.description_re }}</td>
-                                <td>{{ activity_radar.description1_re }}</td>
-                                <td><span class="actMore" data-text1="{{ activity_radar.description }}" data-text2="{{ activity_radar.description1 }}">Show More</span></td></tr>
+                            {% endfor %}
                         </table>
                         <div id="actOut" style="display:none;">
                             <div class="actIn">
@@ -198,7 +190,6 @@
                             <button class="moreButton">Close</button>
                             </div>
                         </div>
-                        <button type="button" class="moreButton" id="act_more" data-page>More</button>
                         {% endif %}
                     </div>                    
                 </section>
@@ -453,22 +444,15 @@
                 $.get('/admin/maxlead_site/ajax_get_radar/',{'asin':asin,'page':parseInt(page)},function (re) {
                     if(re.code == 1){
                         if (re.data.data){
-                            var el = '<tr>\n' +
-                                '<td>'+re.data.data['created']+'</td>\n' +
-                                '<td>Title</td><td>'+re.data.data['title_re']+'</td>\n' +
-                                '<td>'+re.data.data['title1_re']+'</td>\n' +
-                                '<td><span class="actMore" data-text1="'+re.data.data['title']+'" data-text2="'+re.data.data['title1']+'">Show More</span></td></tr>\n' +
-                                '<tr>\n' +
-                                '<td>'+re.data.data['created']+'</td>\n' +
-                                '<td>Price</td>\n' +
-                                '<td>'+re.data.data['price']+'</td>\n' +
-                                '<td>'+re.data.data['price1']+'</td>\n' +
-                                '<td><span class="actMore" data-text1="'+re.data.data['price']+'" data-text2="'+re.data.data['price1']+'">Show More</span></td></tr>\n' +
-                                '<tr><td>'+re.data.data['created']+'</td>\n' +
-                                '<td>Description</td>\n' +
-                                '<td>'+re.data.data['description_re']+'</td>\n' +
-                                '<td>'+re.data.data['description1_re']+'</td>\n' +
-                                '<td><span class="actMore" data-text1="'+re.data.data['description']+'" data-text2="'+re.data.data['description1']+'">Show More</span></td></tr>';
+                            el = '';
+                            $.each(re.data.data,function(index,value){
+                                el += '<tr>\n' +
+                                '<td>'+value['created']+'</td>\n' +
+                                '<td>'+value['name']+'</td><td>'+value['text1']+'</td>\n' +
+                                '<td>'+value['text2']+'</td>\n' +
+                                '<td><span class="actMore" data-text1="'+value['text1']+'" data-text2="'+value['text2']+'">Show More</span></td></tr>\n' +
+                                '<tr>\n';
+                            });
                             $('#tb_detail_act').append(el);
                             $('#act_more').data('page', parseInt(page)+1);
                         }

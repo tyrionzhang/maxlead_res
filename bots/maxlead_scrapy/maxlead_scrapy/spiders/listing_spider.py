@@ -306,8 +306,10 @@ class ListingSpider(scrapy.Spider):
             if promotion:
                 promotions = ''
                 for v in promotion:
-                    promotions += v
-                item['promotion'] = promotions
+                    if v.replace('\n','').strip():
+                        promotions += v
+                if promotions:
+                    item['promotion'] = promotions
             # if promotion:
             #     item['promotion'] = promotion
 
