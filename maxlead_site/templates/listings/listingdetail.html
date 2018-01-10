@@ -19,7 +19,7 @@
                                 <td style="display: none;"><input type="hidden" name="id" value="{{ res.user_asin.id }}"></td>
                                 <td>Stauts: <span class="{% if res.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}"></span> </td>
                                 <td>Review Watcher: <span class="{% if res.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}"></span></td>
-                                <td>Listing Watcher: <span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}"></span></td>
+                                <td>Listing Watcher: <span class="{% if res.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}"></span></td>
                                 <td><button type="button" id="editASINButton">Edit</button></td></tr>
                             <tr><td>ASIN: {{ res.asin }}</td>
                                 <td>Brand: {{ res.brand }}</td>
