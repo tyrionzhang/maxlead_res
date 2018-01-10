@@ -39,24 +39,35 @@ class Miner:
         total_page = len(tasks)/int(limit)
         if int(limit) >= total_count:
             limit = total_count
-        paginator = Paginator(tasks, limit)
-        try:
-            tasks_data = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            tasks_data = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            tasks_data = paginator.page(paginator.num_pages)
-        data = {
-            'data': tasks_data,
-            'total_count': total_count,
-            'total_page': total_page,
-            'limit': limit,
-            'page': page,
-            'user': user,
-            'avator': user.user.username[0],
-        }
+        if tasks:
+            paginator = Paginator(tasks, limit)
+            try:
+                tasks_data = paginator.page(page)
+            except PageNotAnInteger:
+                # If page is not an integer, deliver first page.
+                tasks_data = paginator.page(1)
+            except EmptyPage:
+                # If page is out of range (e.g. 9999), deliver last page of results.
+                tasks_data = paginator.page(paginator.num_pages)
+            data = {
+                'data': tasks_data,
+                'total_count': total_count,
+                'total_page': total_page,
+                'limit': limit,
+                'page': page,
+                'user': user,
+                'avator': user.user.username[0],
+            }
+        else:
+            data = {
+                'data': '',
+                'total_count': total_count,
+                'total_page': total_page,
+                'limit': limit,
+                'page': page,
+                'user': user,
+                'avator': user.user.username[0],
+            }
         return render(self, 'miner/miner.html', data)
 
 

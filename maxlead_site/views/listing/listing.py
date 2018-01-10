@@ -88,7 +88,7 @@ class Listing:
                     if len(listing) == 2:
                         price2 = float(listing[0].price[1:]) - float(listing[1].price[1:])
                         total_review2 = int(listing[0].total_review) - int(listing[1].total_review)
-                        rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
+                        rvw_score2 = round(float(listing[0].rvw_score) - float(listing[1].rvw_score),2)
                     else:
                         price2 = ''
                         total_review2 = ''
