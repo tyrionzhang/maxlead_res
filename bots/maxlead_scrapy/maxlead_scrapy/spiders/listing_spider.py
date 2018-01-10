@@ -124,13 +124,13 @@ class ListingSpider(scrapy.Spider):
                 if val['aid'] == asin_id:
                     sku_res = UserAsins.objects.filter(aid=val['aid'])
                     item['sku'] = sku_res[0].sku
-                    user_asin = UserAsins.objects.get(id=val['id'])
+                    user_asin = UserAsins.objects.get(id=sku_res[0].id)
                     item['user_asin'] = user_asin
-                    buy_box = val['ownership']
+                    buy_box = sku_res[0].ownership
 
             item['title'] = response.css('div#titleSection span#productTitle::text').extract_first().replace('\n','').strip()
             item['asin'] = asin_id
-            item['brand'] = response.css('div#titleSection a#brand::text').extract_first()
+            item['brand'] = response.css('a#brand::text').extract_first()
             if not item['brand']:
                 item['brand'] = response.css('div#bylineInfo_feature_div a#bylineInfo::text').extract_first()
             item['brand'] = item['brand'].replace('\n','').strip()
@@ -180,11 +180,11 @@ class ListingSpider(scrapy.Spider):
             review = response.css('span#acrCustomerReviewText::text').extract_first()
             item['total_review'] = 0
             if review:
-                item['total_review'] = review.split(' ')[0]
+                item['total_review'] = review.split(' ')[0].replace(',','')
             qa = response.css('a#askATFLink span::text').extract_first()
             item['total_qa'] = 0
             if qa:
-                item['total_qa'] = qa.replace('\n','').strip().split(' ')[0]
+                item['total_qa'] = qa.replace('\n','').strip().split(' ')[0].replace(',','')
             score = response.css('span#acrPopover::attr("title")').extract_first()
             item['rvw_score'] = 0
             if score:
@@ -272,8 +272,8 @@ class ListingSpider(scrapy.Spider):
             img_el = response.css('div#altImages ul.a-unordered-list li.item')
             res = img_el[0].css('span.a-button-text img::attr("src")').extract_first()
             if res:
-                name_res = os.path.basename(res).split('._SS40_')
-                filename = name_res[0] + name_res[1]
+                name_res = os.path.basename(res).split('._')
+                filename = name_res[0] + name_res[1].split('_')[-1]
                 if not os.path.splitext(filename)[1] == '.png':
                     res = os.path.dirname(res) + '/' + filename
                     listing = Listings.objects.filter(asin=asin_id)
@@ -288,9 +288,26 @@ class ListingSpider(scrapy.Spider):
                             item['image_date'] = listing.image_date
                     else:
                         item['image_date'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-            with_deal = response.css('tr#priceblock_dealprice_row td::text').extract()
+            with_deal1 = response.css('tr#priceblock_dealprice_row td.a-span12 span::text').extract_first()
+            with_deal2 = response.css('tr#priceblock_dealprice_row a#creturns-policy-anchor-text::text').extract_first()
+            item['lightning_deal'] = ''
+            if with_deal1:
+                item['lightning_deal'] += with_deal1
+                if with_deal2:
+                    item['lightning_deal'] += '&'+with_deal2.replace('\n', '').strip()
             deal = response.css('div#deal_availability span::text').extract()
+            if deal:
+                deals = ''
+                for v in deal:
+                    deals += v
+                item['lightning_deal'] += deals
+
             promotion = response.css('div#quickPromoBucketContent li::text').extract()
+            if promotion:
+                promotions = ''
+                for v in promotion:
+                    promotions += v
+                item['promotion'] = promotions
             # if promotion:
             #     item['promotion'] = promotion
 

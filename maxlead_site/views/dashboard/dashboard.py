@@ -49,7 +49,9 @@ class Dashboard:
             if len(listing) == 2:
                 if not listing[0].price == listing[1].price or not listing[0].title == listing[1].title or not listing[0]. \
                                            image_date == listing[1].image_date or not operator.eq(listing[0].description,
-                                           listing[1].description) or not operator.eq(listing[0].feature, listing[1].feature):
+                                           listing[1].description) or not operator.eq(listing[0].feature, listing[1].feature) \
+                                           or not operator.eq(listing[0].promotion, listing[1].promotion) or not operator.eq\
+                                           (listing[0].lightning_deal, listing[1].lightning_deal):
 
                     listing[0].changed = ''
                     if not listing[0].price == listing[1].price:
@@ -58,8 +60,7 @@ class Dashboard:
                         listing[0].changed += 'Gallery,'
                     if not listing[0].title == listing[1].title:
                         listing[0].changed += 'title,'
-                    if not listing[0].feature == listing[1].feature or not listing[0].description == listing[
-                        1].description:
+                    if not operator.eq(listing[0].promotion, listing[1].promotion):
                         listing[0].changed += 'Promotion,'
 
                     listing[0].created = listing[0].created.strftime('%Y-%m-%d')
