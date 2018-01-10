@@ -86,7 +86,7 @@ class Reviews(models.Model):
         db_table = 'reviews'
 
 class Listings(models.Model):
-    user_asin = models.ForeignKey(UserAsins,default=4)
+    user_asin = models.ForeignKey(UserAsins,default=1)
     title = models.CharField('Title', max_length=255)
     asin = models.CharField('AsinId', max_length=50)
     sku = models.CharField('SKU', max_length=50)
