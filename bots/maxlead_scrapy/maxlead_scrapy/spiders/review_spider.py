@@ -37,8 +37,11 @@ class ReviewSpider(scrapy.Spider):
             if item['avg_score']:
                 item['avg_score'] = item['avg_score'][0: 3]
             item['total_review'] = response.css('div.averageStarRatingIconAndCount span.totalReviewCount::text').extract_first()
+
             if not item['total_review']:
                 item['total_review'] = response.css('span.totalReviewCount::text').extract_first()
+            if item['total_review']:
+                item['total_review'] = item['total_review'].replace(',','')
             yield item
         for review in response.css('div#cm_cr-review_list div.review'):
             item = ReviewsItem()
@@ -61,7 +64,6 @@ class ReviewSpider(scrapy.Spider):
             review_date = time.strptime(review.css('span.review-date::text').extract_first()[3:40],"%B %d, %Y")
             item['review_date'] = time.strftime("%Y-%m-%d", review_date)
             yield item
-        time.sleep(1)
 
         next_page = response.css('li.a-last a::attr("href")').extract_first()
         if next_page is not None:

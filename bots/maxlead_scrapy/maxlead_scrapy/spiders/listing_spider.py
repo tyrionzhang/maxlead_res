@@ -325,5 +325,4 @@ class ListingSpider(scrapy.Spider):
             #             res = os.path.dirname(res)+'/'+filename
             #             item['image_urls'].append(res)
             yield item
-            time.sleep(1)
 
