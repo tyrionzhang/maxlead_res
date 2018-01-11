@@ -25,7 +25,9 @@ SECRET_KEY = '2(hp2_0t2&yo^bg@i7ih*wwl22p+mq#uk6y--j4f5&=^+(c3pi'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '192.168.3.46'
+]
 
 
 # Application definition
@@ -138,14 +140,14 @@ STATICFILES_DIRS = (
     os.path.join(os.path.dirname(__file__), '../maxlead_site/static/').replace('\\','/'),
 )
 
-SPIDER_URL = 'D:/maxlead/bots/maxlead_scrapy'
+SPIDER_URL = 'D:/myproject/maxlead_res/bots/maxlead_scrapy'
 
 DOWNLOAD_URL = 'download/'
 DOWNLOADFILES_DIRS = (
     os.path.join(os.path.dirname(__file__), '/download/').replace('\\','/'),
 )
 
-REVIEW_TIME = 300
+REVIEW_TIME = 604800
 SPIDER_TIME = 86400
 
 # django-suit config

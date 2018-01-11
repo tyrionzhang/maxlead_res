@@ -58,8 +58,7 @@ class ListingSpider(scrapy.Spider):
 
         str = response.url[-10:]
         if str == 'listWacher':
-            driver = webdriver.PhantomJS(
-                executable_path='C:\\Users\\asus\\node_modules\\phantomjs\\lib\\phantom\\bin\\phantomjs.exe')
+            driver = webdriver.PhantomJS(executable_path=settings.PHANTOMJS_PATH)
             driver.get(response.url)
             # img = Image.open(StringIO(base64.b64decode(driver.get_screenshot_as_base64())))
             dir_path = '%s/%s' % (settings.IMAGES_STORE, 'listing_watcher')

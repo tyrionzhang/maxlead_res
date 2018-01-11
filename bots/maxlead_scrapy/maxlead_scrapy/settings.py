@@ -11,7 +11,7 @@
 import sys, os, django
 import random
 
-sys.path.append('D:\maxlead')
+sys.path.append('D:\myproject\maxlead_res')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 
@@ -31,8 +31,9 @@ ITEM_PIPELINES = {
     # 'maxlead_scrapy.pipelines.MyImagesPipeline': 1,
 }
 
-IMAGES_STORE = 'D:\maxlead\download\images'
+IMAGES_STORE = 'D:\myproject\maxlead_res\download\images'
 IMAGES = '\download\images'
+PHANTOMJS_PATH = 'D:\\appList\\python35\\Scripts\\phantomjs.exe'
 
 IMAGES_EXPIRES = 90
 
