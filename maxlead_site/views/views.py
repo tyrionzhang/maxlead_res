@@ -33,10 +33,10 @@ def update_kewords():
             posi_text = ''
             nega_text = ''
             for posi in review_contents:
-                if posi:
+                if posi['content']:
                     posi_text += posi['content']+'\n'
             for nega in nega_review_contents:
-                if nega:
+                if nega['content']:
                     nega_text += nega['content']+'\n'
             posi_obj = NPExtractor(posi_text)
             nega_obj = NPExtractor(nega_text)
@@ -93,10 +93,10 @@ def update_kewords1():
             posi_text = ''
             nega_text = ''
             for posi in review_contents:
-                if posi:
+                if posi['content']:
                     posi_text += posi['content']+'\n'
             for nega in nega_review_contents:
-                if nega:
+                if nega['content']:
                     nega_text += nega['content']+'\n'
             posi_obj = NPExtractor(posi_text)
             nega_obj = NPExtractor(nega_text)
