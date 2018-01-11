@@ -328,7 +328,7 @@ class Item:
 
             if val.keywords and  val.cat:
                 keys_c = val.cat.split(',n:')[-1]
-                if val.keywords+keys_c in keywords_y:
+                if val.keywords+'/'+keys_c in keycat_y:
                     keycat_y[val.keywords+'/'+keys_c] += ','+str(val.rank)
                     keycat_y['time'+val.keywords+'/'+keys_c] += ',' + val.created.strftime("%d")
                 else:
