@@ -144,7 +144,7 @@ def Spiders(request):
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider')
 
     s_time = settings.SPIDER_TIME
-    schedule.enter(s_time, 0, perform_command)
+    schedule.enter(s_time, 0, perform_command1)
     # # 持续运行，直到计划时间队列变成空为止
     schedule.run()
 
