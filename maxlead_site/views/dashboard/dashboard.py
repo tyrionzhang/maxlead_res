@@ -166,7 +166,7 @@ class Dashboard:
             listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
 
             if len(listing) == 2:
-                rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
+                rvw_score2 = round(float(listing[0].rvw_score) - float(listing[1].rvw_score),2)
             else:
                 rvw_score2 = ''
             re = {
@@ -304,7 +304,7 @@ class Dashboard:
             listing = listing.order_by('-created')[:2]
 
             if len(listing) == 2:
-                rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
+                rvw_score2 = round(float(listing[0].rvw_score) - float(listing[1].rvw_score),2)
             else:
                 rvw_score2 = ''
             re = {
