@@ -20,6 +20,7 @@ class ReviewSpider(scrapy.Spider):
             start_urls.append(asin)
 
     def parse(self, response):
+        time.sleep(1)
         str = response.url[-7:]
         res_asin = response.url.split('/')
         if str == 'maxlead':

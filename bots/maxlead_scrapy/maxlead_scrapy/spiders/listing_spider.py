@@ -54,6 +54,7 @@ class ListingSpider(scrapy.Spider):
 
 
     def parse(self, response):
+        time.sleep(1)
         res_asin = response.url.split('/')
 
         str = response.url[-10:]

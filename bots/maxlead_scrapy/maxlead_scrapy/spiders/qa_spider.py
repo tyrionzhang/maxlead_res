@@ -19,6 +19,7 @@ class QaSpider(scrapy.Spider):
             start_urls.append(asin)
 
     def parse(self, response):
+        time.sleep(1)
         res_asin = response.url.split('/')
         for qa_a in response.css('div.askInlineWidget div.askTeaserQuestions>.a-spacing-base'):
             qa_url = qa_a.css('.a-spacing-base .a-link-normal::attr("href")').extract_first()
