@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import scrapy
+import scrapy,time
 from maxlead_site.models import UserAsins
 from django.db.models import Count
 from bots.maxlead_scrapy.maxlead_scrapy.items import AnswersItem
@@ -31,7 +31,7 @@ class QaSpider(scrapy.Spider):
             qa_url = qa_url + '?qa_id=%s' % qa_data.id
             qa_page = response.urljoin(qa_url)
             yield scrapy.Request(qa_page, callback=self.get_answer)
-
+        time.sleep(1)
 
         next_page = response.css('div#askPaginationBar li.a-last a::attr("href")').extract_first()
         if next_page is not None:

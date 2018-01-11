@@ -24,6 +24,9 @@ DOWNLOAD_HANDLERS = {'s3': None}
 DOWNLOAD_DELAY = 2
 DOWNLOAD_TIMEOUT = 100
 
+RETRY_ENABLED = True
+RETRY_TIMES = 3
+
 CONCURRENT_REQUESTS_PER_IP=1
 
 ITEM_PIPELINES = {
@@ -104,6 +107,7 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware':543,
    # 'maxlead_scrapy.middlewares.MyCustomDownloaderMiddleware': 543,
    #  'scrapy_splash.SplashCookiesMiddleware': 723,
    #  'scrapy_splash.SplashMiddleware': 725,

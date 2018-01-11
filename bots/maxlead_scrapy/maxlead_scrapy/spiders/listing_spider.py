@@ -127,7 +127,10 @@ class ListingSpider(scrapy.Spider):
                     item['user_asin'] = user_asin
                     buy_box = sku_res[0].ownership
 
-            item['title'] = response.css('div#titleSection span#productTitle::text').extract_first().replace('\n','').strip()
+            item['title'] = response.css('span#productTitle::text').extract_first()
+            if not item['title']:
+                item['title'] = response.css('div#titleSection span#productTitle::text').extract_first()
+            item['title'] = item['title'].replace('\n','').strip()
             item['asin'] = asin_id
             item['brand'] = response.css('a#brand::text').extract_first()
             if not item['brand']:
@@ -322,4 +325,5 @@ class ListingSpider(scrapy.Spider):
             #             res = os.path.dirname(res)+'/'+filename
             #             item['image_urls'].append(res)
             yield item
+            time.sleep(1)
 
