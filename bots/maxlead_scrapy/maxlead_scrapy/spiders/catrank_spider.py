@@ -77,6 +77,7 @@ class CatrankSpider(scrapy.Spider):
                     break
                 else:
                     yield item
+        time.sleep(1)
 
         if not self.check:
             next_page = response.css('a#pagnNextLink ::attr("href")').extract_first()

@@ -24,6 +24,9 @@ DOWNLOAD_HANDLERS = {'s3': None}
 DOWNLOAD_DELAY = 2
 DOWNLOAD_TIMEOUT = 100
 
+RETRY_ENABLED = True
+RETRY_TIMES = 3
+
 CONCURRENT_REQUESTS_PER_IP=1
 
 ITEM_PIPELINES = {
@@ -33,6 +36,7 @@ ITEM_PIPELINES = {
 
 IMAGES_STORE = 'D:\maxlead\download\images'
 IMAGES = '\download\images'
+PHANTOMJS_PATH = 'C:\\Users\\asus\\node_modules\\phantomjs\\lib\\phantom\\bin\\phantomjs.exe'
 
 IMAGES_EXPIRES = 90
 
@@ -103,6 +107,7 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware':543,
    # 'maxlead_scrapy.middlewares.MyCustomDownloaderMiddleware': 543,
    #  'scrapy_splash.SplashCookiesMiddleware': 723,
    #  'scrapy_splash.SplashMiddleware': 725,
@@ -110,6 +115,7 @@ DOWNLOADER_MIDDLEWARES = {
    #  'maxlead_scrapy.middlewares.middleware.JavaScriptMiddleware': 543, #键为中间件类的路径，值为中间件的顺序
     # 'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware':543,
     # 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None, #禁止内置的中间件
+
     'scrapyjs.SplashMiddleware':725
 }
 
