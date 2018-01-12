@@ -12,7 +12,7 @@ class ReviewSpider(scrapy.Spider):
     name = "review_spider"
     start_urls = []
     asin_id = ''
-    urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews"
+    urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&th=1&psc=1"
     res = UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid'))
     if res:
         for re in list(res):
@@ -20,7 +20,6 @@ class ReviewSpider(scrapy.Spider):
             start_urls.append(asin)
 
     def parse(self, response):
-        time.sleep(1)
         str = response.url[-7:]
         res_asin = response.url.split('/')
         if str == 'maxlead':

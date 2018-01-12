@@ -47,7 +47,6 @@ class CatrankSpider(scrapy.Spider):
                         start_urls.append(url_c)
 
     def parse(self, response):
-        time.sleep(1)
         url = urllib.parse.unquote(response.url)
         res_asin = url.split('asin=')
         field_keywords = url.split('field-keywords=')

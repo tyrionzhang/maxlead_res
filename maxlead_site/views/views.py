@@ -1,10 +1,8 @@
 import os,sched
 from datetime import *
 import time,re
-from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from maxlead_site.models import UserAsins,AsinReviews,Reviews
-from maxlead_site.views import commons
 from maxlead import settings
 from maxlead_site.common.user_secuirty import UserSecuirty
 from maxlead_site.common.npextractor import NPExtractor
@@ -74,8 +72,11 @@ def perform_command1():
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider')
+    time.sleep(2)
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider')
+    time.sleep(2)
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider')
+    time.sleep(2)
 
 def update_kewords1():
     aid_list = UserAsins.objects.filter(is_use=True).values('aid')
@@ -140,9 +141,11 @@ def Spiders(request):
     os.system('scrapyd-deploy')
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider')
+    time.sleep(2)
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider')
+    time.sleep(2)
     os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider')
-
+    time.sleep(2)
     s_time = settings.SPIDER_TIME
     schedule.enter(s_time, 0, perform_command1)
     # # 持续运行，直到计划时间队列变成空为止

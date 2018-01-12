@@ -13,7 +13,7 @@ class ListingSpider(scrapy.Spider):
     name = "listing_spider"
     start_urls = []
     url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head&th=1&psc=1"
-    url1 = "https://www.amazon.com/gp/offer-listing/%s/ref=dp_olp_all_mbc?ie=UTF8&condition=new&type=listWacher"
+    url1 = "https://www.amazon.com/gp/offer-listing/%s/ref=dp_olp_all_mbc?ie=UTF8&condition=new&th=1&psc=1&type=listWacher"
     res = list(UserAsins.objects.filter(is_use=True).values('aid'))
 
     if res:
@@ -54,7 +54,6 @@ class ListingSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        time.sleep(1)
         res_asin = response.url.split('/')
 
         str = response.url[-10:]

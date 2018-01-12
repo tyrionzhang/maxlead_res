@@ -3,6 +3,6 @@
 from scrapy import cmdline
 
 
-name = 'catrank_spider'
+name = 'review_spider'
 cmd = 'scrapy crawl {0}'.format(name)
 cmdline.execute(cmd.split())

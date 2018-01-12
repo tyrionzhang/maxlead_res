@@ -10,7 +10,7 @@ class QaSpider(scrapy.Spider):
 
     name = "qa_spider"
     start_urls = []
-    url = "https://www.amazon.com/ask/questions/asin/%s/"
+    url = "https://www.amazon.com/ask/questions/asin/%s/?th=1&psc=1"
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
 
     if res:
@@ -19,7 +19,6 @@ class QaSpider(scrapy.Spider):
             start_urls.append(asin)
 
     def parse(self, response):
-        time.sleep(1)
         res_asin = response.url.split('/')
         for qa_a in response.css('div.askInlineWidget div.askTeaserQuestions>.a-spacing-base'):
             qa_url = qa_a.css('.a-spacing-base .a-link-normal::attr("href")').extract_first()

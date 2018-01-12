@@ -49,6 +49,7 @@ class UserAgent(UserAgentMiddleware):
         self.user_agent = user_agent
 
     def process_request(self, request, spider):
+        time.sleep(2)
         ua = random.choice(self.user_agent_list)
         if ua:
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
