@@ -14,7 +14,7 @@ class CatrankSpider(scrapy.Spider):
     start_urls = []
     url = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias=aps&field-keywords=%s&asin=%s"
     url1 = 'https://www.amazon.com/gp/search/ref=sr_hi_1?fst=p90x:1&rh=n:%s,k:%s&keywords=%s&ie=UTF8&qid=%s&asin=%s'
-    res = list(UserAsins.objects.filter(is_use=True).values('aid'))
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     check = False
 
     if res:
