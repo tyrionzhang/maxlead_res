@@ -10,13 +10,20 @@ class QaSpider(scrapy.Spider):
 
     name = "qa_spider"
     start_urls = []
-    url = "https://www.amazon.com/ask/questions/asin/%s/?th=1&psc=1"
-    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
 
-    if res:
-        for re in res:
-            asin = url % (re['aid'])
-            start_urls.append(asin)
+    def __init__(self, asin=None, *args, **kwargs):
+        urls = "https://www.amazon.com/ask/questions/asin/%s/?th=1&psc=1"
+        super(QaSpider, self).__init__(*args, **kwargs)
+        if asin:
+            urls1 = urls % asin
+            self.start_urls.append(urls1)
+        else:
+            res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+            if res:
+                for re in list(res):
+                    asin = urls % re['aid']
+                    self.start_urls.append(asin)
+
 
     def parse(self, response):
         res_asin = response.url.split('/')

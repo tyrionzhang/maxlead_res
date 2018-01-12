@@ -12,12 +12,19 @@ class ReviewSpider(scrapy.Spider):
     name = "review_spider"
     start_urls = []
     asin_id = ''
-    urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&th=1&psc=1"
-    res = UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid'))
-    if res:
-        for re in list(res):
-            asin = urls % re['aid']
-            start_urls.append(asin)
+
+    def __init__(self, asin=None, *args, **kwargs):
+        urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&th=1&psc=1"
+        super(ReviewSpider, self).__init__(*args, **kwargs)
+        if asin:
+            urls1 = urls % asin
+            self.start_urls.append(urls1)
+        else:
+            res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+            if res:
+                for re in list(res):
+                    asin = urls % re['aid']
+                    self.start_urls.append(asin)
 
     def parse(self, response):
         str = response.url[-7:]

@@ -1,6 +1,7 @@
 import os,sched
 from datetime import *
 import time,re
+from django.db.models import Count
 from django.shortcuts import render
 from maxlead_site.models import UserAsins,AsinReviews,Reviews
 from maxlead import settings
@@ -62,7 +63,12 @@ def perform_command():
 
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
-    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+    if res:
+        for val in res:
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % \
+                      val['aid']
+            os.system(cmd_str)
 
 def perform_command1():
     # 安排inc秒后再次运行自己，即周期运行
@@ -71,12 +77,21 @@ def perform_command1():
 
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
-    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider')
-    time.sleep(2)
-    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider')
-    time.sleep(2)
-    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider')
-    time.sleep(2)
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+    if res:
+        for val in res:
+            cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % \
+                       val['aid']
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
+                       val['aid']
+            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % \
+                       val['aid']
+            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % \
+                       val['aid']
+            os.system(cmd_str1)
+            os.system(cmd_str2)
+            os.system(cmd_str3)
+            os.system(cmd_str4)
 
 def update_kewords1():
     aid_list = UserAsins.objects.filter(is_use=True).values('aid')
@@ -123,7 +138,11 @@ def RunReview(request):
     os.chdir(work_path)
     os.system('scrapyd-deploy')
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动
-    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider')
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+    if res:
+        for val in res:
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['aid']
+            os.system(cmd_str)
     schedule.enter(300, 0, update_kewords1)
 
     review_time = settings.REVIEW_TIME
@@ -140,12 +159,22 @@ def Spiders(request):
     os.chdir(work_path)
     os.system('scrapyd-deploy')
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动
-    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider')
-    time.sleep(2)
-    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider')
-    time.sleep(2)
-    os.system('curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider')
-    time.sleep(2)
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+    if res:
+        for val in res:
+            cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % \
+                      val['aid']
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
+                      val['aid']
+            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % \
+                      val['aid']
+            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % \
+                       val['aid']
+            os.system(cmd_str1)
+            os.system(cmd_str2)
+            os.system(cmd_str3)
+            os.system(cmd_str4)
+
     s_time = settings.SPIDER_TIME
     schedule.enter(s_time, 0, perform_command1)
     # # 持续运行，直到计划时间队列变成空为止

@@ -12,15 +12,26 @@ from bots.maxlead_scrapy.maxlead_scrapy import settings
 class CatrankSpider(scrapy.Spider):
     name = "catrank_spider"
     start_urls = []
-    url = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias=aps&field-keywords=%s&asin=%s"
-    url1 = 'https://www.amazon.com/gp/search/ref=sr_hi_1?fst=p90x:1&rh=n:%s,k:%s&keywords=%s&ie=UTF8&qid=%s&asin=%s'
-    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     check = False
 
-    if res:
-        for re in res:
-            asins = UserAsins.objects.values('id', 'aid', 'cat1', 'cat2', 'cat3', 'keywords1', 'keywords2', 'keywords3').\
-                                                filter(aid=re['aid'])[0]
+    def __init__(self, asin=None, *args, **kwargs):
+        super(CatrankSpider, self).__init__(*args, **kwargs)
+        if asin:
+            asins = []
+            asins.append({'aid':asin})
+            self.start_urls = self._get_urls(asins)
+        else:
+            res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+            if res:
+                self.start_urls = self._get_urls(res)
+
+    def _get_urls(self, asins):
+        start_urls = []
+        url = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias=aps&field-keywords=%s&asin=%s"
+        url1 = 'https://www.amazon.com/gp/search/ref=sr_hi_1?fst=p90x:1&rh=n:%s,k:%s&keywords=%s&ie=UTF8&qid=%s&asin=%s'
+        for re in list(asins):
+            asins = UserAsins.objects.values('id', 'aid', 'cat1', 'cat2', 'cat3', 'keywords1', 'keywords2', 'keywords3'). \
+                filter(aid=re['aid'])[0]
             if asins['keywords1']:
                 keywords1 = asins['keywords1'].split(',')
                 for val in keywords1:
@@ -45,6 +56,7 @@ class CatrankSpider(scrapy.Spider):
                     if asins['cat3']:
                         url_c = url1 % (asins['cat3'], val, val, int(time.time()), asins['aid'])
                         start_urls.append(url_c)
+        return start_urls
 
     def parse(self, response):
         url = urllib.parse.unquote(response.url)
