@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json,datetime
+import json,datetime,os
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -7,10 +7,41 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 from maxlead_site.models import Listings,UserAsins
 from maxlead_site.views.app import App
+from maxlead_site.views import views
 from maxlead_site.common.excel_world import get_excel_file
 from maxlead_site.common.common import get_asins
+from maxlead import settings
 
 class Listing:
+
+    def decorator_run_spiders(func):
+        def dec(*args):
+            result = func(*args)
+            for val in args[1]:
+                res = views.update_kewords(aid=val)
+            os.chdir(settings.ROOT_PATH)
+            return result
+        return dec
+
+    @decorator_run_spiders
+    def run_spiders(self,asins):
+
+        work_path = settings.SPIDER_URL
+        os.chdir(work_path)
+        for val in asins:
+            os.system('scrapyd-deploy')
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
+            cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % val
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
+            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val
+            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % val
+            os.system(cmd_str)
+            os.system(cmd_str1)
+            os.system(cmd_str2)
+            os.system(cmd_str3)
+            os.system(cmd_str4)
+        return True
+
 
     @csrf_exempt
     def index(self):
@@ -28,7 +59,7 @@ class Listing:
         asins = get_asins(user,ownership=owner,status=status,revstatus=revstatus,liststatus=liststatus,type=1)
 
         if asins:
-            listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins)
+            listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins).order_by('-created')
 
             if buybox:
                 listings = listings.filter(buy_box=buybox)
@@ -167,6 +198,7 @@ class Listing:
 
             querysetlist = []
             if not ids:
+                spider_asin = []
                 for i,asin in enumerate(newASIN,0):
                     userAsin = UserAsins()
                     check = UserAsins.objects.filter(aid=asin,user_id=user.user.id).all()
@@ -188,7 +220,9 @@ class Listing:
                         userAsin.is_use = status
 
                         querysetlist.append(userAsin)
+                        spider_asin.append(asin)
                 UserAsins.objects.bulk_create(querysetlist)
+                Listing.run_spiders(self,spider_asin)
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'添加成功！'}), content_type='application/json')
             else:
                 userAsin_obj = UserAsins.objects.filter(id__in=eval(ids)).all()

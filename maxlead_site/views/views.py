@@ -13,13 +13,50 @@ from django.http import HttpResponseRedirect
 # 第二个参数以某种人为的方式衡量时间
 schedule = sched.scheduler(time.time, time.sleep)
 
-def update_kewords():
+def update_kewords(aid = ''):
     review_time = settings.REVIEW_TIME+300
     schedule.enter(review_time, 0, update_kewords)
 
-    aid_list = UserAsins.objects.filter(is_use=True).values('aid')
+    aid_list = UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid'))
     positive_keywords = {}
     negative_keywords = {}
+    if aid:
+        review_contents = Reviews.objects.filter(asin=aid).filter(created=date.today()).filter(
+            score__gte=3).values('content')
+        nega_review_contents = Reviews.objects.filter(asin=aid).filter(created=date.today()).exclude(
+            score__gte=3).values('content')
+        asin_reviews = AsinReviews.objects.filter(aid=aid).filter(created=date.today()).all()
+        if asin_reviews:
+            if review_contents:
+                review_contents = list(review_contents)
+            posi_text = ''
+            nega_text = ''
+            for posi in review_contents:
+                if posi['content']:
+                    posi_text += posi['content'] + '\n'
+            for nega in nega_review_contents:
+                if nega['content']:
+                    nega_text += nega['content'] + '\n'
+            posi_obj = NPExtractor(posi_text)
+            nega_obj = NPExtractor(nega_text)
+            posi_line = posi_obj.extract()
+            nega_line = nega_obj.extract()
+            if posi_obj:
+                for val in set(posi_line):
+                    i = posi_text.count(val)
+                    if i >= 2:
+                        positive_keywords.update({i: val})
+            if nega_line:
+                for val in set(nega_line):
+                    n = nega_text.count(val)
+                    if n >= 2:
+                        negative_keywords.update({n: val})
+            if positive_keywords:
+                asin_reviews.update(positive_keywords=str(positive_keywords))
+            if negative_keywords:
+                asin_reviews.update(negative_keywords=str(negative_keywords))
+        return True
+
     for aid in list(aid_list):
         review_contents = Reviews.objects.filter(asin=aid['aid']).filter(created=date.today()).filter(
             score__gte=3).values('content')
@@ -94,7 +131,7 @@ def perform_command1():
             os.system(cmd_str4)
 
 def update_kewords1():
-    aid_list = UserAsins.objects.filter(is_use=True).values('aid')
+    aid_list = UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid'))
     positive_keywords = {}
     negative_keywords = {}
     for aid in list(aid_list):
@@ -151,6 +188,7 @@ def RunReview(request):
     schedule.enter(review_key, 0, update_kewords)
     # # 持续运行，直到计划时间队列变成空为止
     schedule.run()
+    os.chdir(settings.ROOT_PATH)
 
     return render(request, 'spider/home.html')
 
@@ -179,6 +217,7 @@ def Spiders(request):
     schedule.enter(s_time, 0, perform_command1)
     # # 持续运行，直到计划时间队列变成空为止
     schedule.run()
+    os.chdir(settings.ROOT_PATH)
 
     return render(request, 'spider/home.html')
 

@@ -37,6 +37,7 @@ class QaSpider(scrapy.Spider):
             qa_data.save()
             qa_url = qa_url + '?qa_id=%s' % qa_data.id
             qa_page = response.urljoin(qa_url)
+            time.sleep(2)
             yield scrapy.Request(qa_page, callback=self.get_answer)
 
         next_page = response.css('div#askPaginationBar li.a-last a::attr("href")').extract_first()
