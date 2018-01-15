@@ -48,9 +48,11 @@ class QaSpider(scrapy.Spider):
     def get_answer(self,response):
         qa_sp = response.url.split('?')[-1]
         qa_id = qa_sp.split('=')[-1]
-        asked = response.css('div.a-spacing-base div.a-text-left::text').extract_first().replace('\n','').strip()
-        qa_obj = Questions.objects.filter(id=qa_id)
-        qa_obj.update(asked=asked)
+        asked = response.css('div.a-spacing-base div.a-text-left::text').extract_first()
+        if asked:
+            asked = asked.replace('\n','').strip()
+            qa_obj = Questions.objects.filter(id=qa_id)
+            qa_obj.update(asked=asked)
         for asw in response.css('div.askAnswersAndComments>.a-section'):
             item = AnswersItem()
             item['person'] = asw.css('span.a-color-tertiary::text').extract_first()
