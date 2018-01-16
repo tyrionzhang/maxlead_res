@@ -4,7 +4,7 @@ import xlsxwriter as xlsw
 from io import *
 import json,time
 from django.contrib import admin
-from maxlead_site.models import UserAsins,AsinReviews,Reviews,UserProfile,MenberGroups
+from maxlead_site.models import UserAsins,AsinReviews,Reviews,UserProfile
 
 # Register your models here.
 
@@ -104,13 +104,6 @@ class UserAsinsAdmin(admin.ModelAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('id','state')
     fields = ('user','state','group')
-    filter_horizontal = ('group',)
-
-@admin.register(MenberGroups)
-class MenberGroupsAdmin(admin.ModelAdmin):
-    list_display = ('id','name','created')
-    fields = ('name',)
-    fk_fields = ('name',)
 
 @admin.register(Reviews)
 class ReviewsAdmin(admin.ModelAdmin):

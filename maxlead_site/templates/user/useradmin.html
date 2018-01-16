@@ -31,7 +31,13 @@
                     <tr><td colspan="8"><hr></td></tr>
                     {% for val in users %}
                     <tr><td><input type="checkbox" name="selectUser" value="{{ val.id }}" class="checkUser" /></td><td>
-                        <a href="/admin/maxlead_site/user_detail?id={{ val.id }}">{{ val.user.username }}</a></td><td>{{ val.user.email }}</td><td>{{ val.role }}</td><td>{{ val.group_str }}</td><td>{% if val.state == 2 %}Locked{% else %}Active{% endif %}</td><td>{{ val.user.date_joined }}</td><td>{{ val.user.last_login }}</td></tr>
+                        <a href="/admin/maxlead_site/user_detail?id={{ val.id }}">{{ val.user.username }}</a></td>
+                        <td>{{ val.user.email }}</td>
+                        <td>{{ val.role }}</td>
+                        <td>{{ val.group.user.username }}</td>
+                        <td>{% if val.state == 2 %}Locked{% else %}Active{% endif %}</td>
+                        <td>{{ val.user.date_joined }}</td>
+                        <td>{{ val.user.last_login }}</td></tr>
                     {% endfor %}
                 </table>
             <form action="" method="get" name="pageForm">

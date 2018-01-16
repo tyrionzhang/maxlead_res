@@ -2,24 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
-# Create your models here.
-
-class MenberGroups(models.Model):
-    name = models.CharField('Name', max_length=50)
-    user = models.ForeignKey(User,default=1)
-    created = models.DateTimeField('Create Date', auto_now_add=True)
-
-    class Meta:
-        db_table = 'menber_groups'
-
-    def __str__(self):
-        return self.name
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
+    group = models.ForeignKey('self',default=1)
     state = models.IntegerField('State',default=0)
     role = models.IntegerField('Role',default=0)
-    group = models.ManyToManyField(MenberGroups,related_name='MenberGroups')
     er_count = models.IntegerField(default=0)
     em_count = models.IntegerField(default=0)
     er_time = models.IntegerField(default=0)

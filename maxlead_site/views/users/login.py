@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-from maxlead_site.models import UserProfile,MenberGroups
+from maxlead_site.models import UserProfile
 from maxlead import settings
 from maxlead_site.common.prpcrypt import Prpcrypt
 from maxlead_site.views import commons
@@ -139,9 +139,8 @@ class Logins:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
         if self.method == 'POST':
             user_id = self.POST.get('id', '')
-            group = self.POST.get('group', '')
-            if group and isinstance(group, str):
-                group = [int(group)]
+            group = self.POST.get('group', 1)
+
             user_file = user
 
             update_fields = ['username', 'email']
@@ -160,20 +159,19 @@ class Logins:
                     user.id
                     user.save()
 
-                update_fields1 = ['state', 'role']
+                update_fields1 = ['state', 'role', 'group']
                 user_file = UserProfile()
                 user_file.id = user.userprofile.id
                 user_file.user_id = user.id
                 user_file.state = self.POST.get('state', '')
                 user_file.role = self.POST.get('role', '')
+                if user_file.role == '1':
+                    group = user_file.id
+                if not group:
+                    group = 1
+                user_file.group = UserProfile.objects.filter(id=int(group))[0]
+
                 user_file.save(update_fields=update_fields1)
-                if group:
-                    for val in group:
-                        if user_id:
-                            user_file.group.remove(val)
-                        user_file.group.add(val)
-                else:
-                    user_file.group.clear()
 
                 return HttpResponseRedirect("/admin/maxlead_site/user_list/")
             else:
@@ -188,14 +186,11 @@ class Logins:
                     user.save(update_fields=update_fields)
                     user_file = UserProfile()
                     user_file.id = user.id
-                    for val in group:
-                        user_file.group.remove(val)
-                        user_file.group.add(val)
 
                 return HttpResponseRedirect("/admin/maxlead_site/user_detail/")
         else:
             if user.role == 2:
-                menber_group = MenberGroups.objects.all()
+                menber_group = UserProfile.objects.filter(role=1).all()
                 return render(self, 'user/add.html', {'user': user,'avator': user.user.username[0],'member_groups':menber_group})
             else:
                 return HttpResponseRedirect("/admin/maxlead_site/index/")
@@ -223,26 +218,17 @@ class Logins:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
 
         id = self.GET.get('id')
-        member_group = list(MenberGroups.objects.all())
-        group_ids = []
+        member_group = list(UserProfile.objects.filter(role=1))
 
         if not id:
             user_info = user
-            groups = user_info.group.all()
-            if groups:
-                for v in groups:
-                    group_ids.append(v.id)
-            return render(self, 'user/userinfo.html', {'user': user,'avator': user.user.username[0],'user_info': user_info,'member_groups':member_group,'group_ids':group_ids})
+            return render(self, 'user/userinfo.html', {'user': user,'avator': user.user.username[0],'user_info': user_info,'member_groups':member_group,})
 
         if not user.role == 2:
             return HttpResponseRedirect("/admin/maxlead_site/index/")
 
         user_info = UserProfile.objects.get(id=id)
-        groups = user_info.group.all()
-        if groups:
-            for v in groups:
-                group_ids.append(v.id)
-        return render(self, 'user/userinfo.html', {'user': user,'avator': user.user.username[0],'user_info': user_info,'member_groups':member_group,'group_ids':group_ids})
+        return render(self, 'user/userinfo.html', {'user': user,'avator': user.user.username[0],'user_info': user_info,'member_groups':member_group,})
 
     def user_list(self):
         user = App.get_user_info(self)
@@ -253,10 +239,9 @@ class Logins:
         role_list = ['member', 'Leader', 'Admin']
         user_list = UserProfile.objects.filter(state__gt=0 )
         if user.role == 1:
-            groups = MenberGroups.objects.filter(user_id=user.user.id).all()
-            user_list = user_list.filter(group=groups)
+            user_list = user_list.filter(group=user.user)
 
-        menber_group = MenberGroups.objects.all()
+        menber_group = UserProfile.objects.filter(role=1).all()
         role = self.GET.get('role','')
         if role:
             user_list = user_list.filter(role=role)
@@ -289,8 +274,6 @@ class Logins:
 
         for val in users:
             val.group_str = ''
-            for i in list(val.group.all()):
-                val.group_str+=i.name + " "
             val.role = role_list[val.role]
             val.user.date_joined = val.user.date_joined.strftime("%Y-%m-%d %H:%M:%S")
             if val.user.last_login:

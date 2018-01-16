@@ -11,7 +11,7 @@
                     <label>Group:</label> <select name="group">
                         <option value="">None</option>
                         {% for val in member_groups %}
-                        <option value="{{ val.id }}">{{ val.name }}</option>
+                        <option value="{{ val.id }}">{{ val.user.username }}</option>
                         {% endfor %}
                         </select><br /><br />
                     {% endif %}

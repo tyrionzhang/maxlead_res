@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count,Max
-from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,ListingWacher,MenberGroups
+from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,ListingWacher
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
 
@@ -27,8 +27,7 @@ class Dashboard:
         if user.role == 0:
             user_asins = user_asins.filter(user=user.user)
         elif user.role == 1:
-            groups = MenberGroups.objects.filter(user=user.user)
-            user_list = User.objects.filter(group=groups)
+            user_list = User.objects.filter(group=user.user)
             user_asins = user_asins.filter(user=user_list)
         for val in user_asins:
             asins.append(val['aid'])

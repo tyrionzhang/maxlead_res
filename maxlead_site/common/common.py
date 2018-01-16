@@ -2,7 +2,7 @@
 
 from django.db.models import Count
 from django.contrib.auth.models import User
-from maxlead_site.models import UserAsins,MenberGroups
+from maxlead_site.models import UserAsins
 
 def get_asins(user, ownership='', status='', revstatus='', liststatus='',type=0):
     asins = []
@@ -16,8 +16,7 @@ def get_asins(user, ownership='', status='', revstatus='', liststatus='',type=0)
     if user.role == 0:
         user_asins = user_asins.filter(user=user.user)
     elif user.role == 1:
-        groups = MenberGroups.objects.filter(user=user.user)
-        user_list = User.objects.filter(group=groups)
+        user_list = User.objects.filter(group=user.user)
         user_asins = user_asins.filter(user=user_list)
 
     if user_asins:
