@@ -38,7 +38,7 @@ class Logins:
                 auth.login(self, user)
                 self.session.set_expiry(172800) # 登陆状态生命
                 commons.loger(description='用户登陆正常',user=user,name='用户登陆')
-                return HttpResponseRedirect("/admin/maxlead_site/index/",{'user': user,'avator':user.username[0]})
+                return HttpResponse(json.dumps({'code': 1, 'msg': u'用户登陆正常!'}),content_type='application/json')
             else:
                 if user_file[0].em_count >= 5:
                     return HttpResponse(json.dumps({'code': 0, 'msg': u'密码错误超过5次，账号已被锁定'}),

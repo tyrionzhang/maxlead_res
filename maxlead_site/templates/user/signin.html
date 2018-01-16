@@ -9,7 +9,7 @@
                     <label>Password: </label>
                     <input type="password" name="password" value="">
                     <br><br>
-                    <input class="submitButton" type="submit" value="Sign in" />   
+                    <input class="submitButton" type="submit" value="Sign in" id="btn-login"/>
                 </form> 
                 <p id="ifmp">I forget my password</p>
                 <div id="pwdReset" style="display:none;">
@@ -31,6 +31,22 @@
                   $("form[name='reset_form']").submit(function(e){
                     e.preventDefault();
                   });
+                });
+
+                $('#btn-login').on('click',function () {
+                    var data = {
+                      'username':$('input[name="username"]').val(),
+                      'password':$('input[name="password"]').val()
+                    };
+                    $.post('/admin/maxlead_site/login/',data,function (re) {
+                       if(re.code==0){
+                           alert(re.msg);
+                       }
+                       if(re.code==1){
+                           window.location.href='/admin/maxlead_site/dashboard/';
+                       }
+                    },'json');
+                    return false;
                 });
 
                 $('#reset_pass').on('click',function () {
