@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import scrapy,time,os,re
-from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem,ListingWacherItem
+from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
-from selenium import webdriver
-from bots.maxlead_scrapy.maxlead_scrapy import settings
 
 
 class ListingSpider(scrapy.Spider):
@@ -26,35 +24,6 @@ class ListingSpider(scrapy.Spider):
                     asins = UserAsins.objects.values('aid','review_watcher','listing_watcher','sku','ownership').filter(aid=re['aid'])[0]
                     urls1 = url % (asins['aid'], int(time.time()))
                     self.start_urls.append(urls1)
-
-    def click_cart(self,response):
-        asin = response.url
-        el = ''
-        if response.css('#add-to-cart-button'):
-            el = 'add-to-cart-button'
-        if response.css('#hlb-view-cart-announce'):
-            el = 'hlb-view-cart-announce'
-
-        script = '''
-            function main(splash)
-                splash:autoload("http://libs.baidu.com/jquery/1.7.2/jquery.min.js")
-
-                splash:go("%s")
-
-                splash:runjs("$('#%s').click()")
-
-                return splash:html()
-
-            end
-        ''' % (asin, el)
-
-        yield scrapy.Request(asin,self.parse,meta={
-            'splash':{
-                'args':{'lua_source':script},
-                'endpoint':'execute',
-            }
-        })
-
 
     def parse(self, response):
         res_asin = response.url.split('/')
@@ -267,17 +236,29 @@ class ListingSpider(scrapy.Spider):
                     promotions += v
             if promotions:
                 item['promotion'] = promotions
-        # if promotion:
-        #     item['promotion'] = promotion
-
-
-        # for img_re in response.css('div#altImages ul.a-unordered-list li.item'):
-        #     res = img_re.css('span.a-button-text img::attr("src")').extract_first()
-        #     if res:
-        #         name_res = os.path.basename(res).split('._SS40_')
-        #         filename = name_res[0]+name_res[1]
-        #         if not os.path.splitext(filename)[1] == '.png':
-        #             res = os.path.dirname(res)+'/'+filename
-        #             item['image_urls'].append(res)
+        # url = response.css('from#addToCart::attr(action)')
+        # url = response.urljoin(url)
+        # formdata = {
+        #     'session-id':response.css('input#session-id::attr(value)').extract_first(),
+        #     'ASIN':response.css('input#ASIN::attr(value)').extract_first(),
+        #     'offerListingID':response.css('input#offerListingID::attr(value)').extract_first(),
+        #     'isMerchantExclusive':response.css('input#isMerchantExclusive::attr(value)').extract_first(),
+        #     'merchantID':response.css('input#merchantID::attr(value)').extract_first(),
+        #     'isAddon':response.css('input#isAddon::attr(value)').extract_first(),
+        #     'nodeID':response.css('input#nodeID::attr(value)').extract_first(),
+        #     'sellingCustomerID':response.css('input#sellingCustomerID::attr(value)').extract_first(),
+        #     'qid':response.css('input#qid::attr(value)').extract_first(),
+        #     'sr':response.css('input#sr::attr(value)').extract_first(),
+        #     'storeID':response.css('input#storeID::attr(value)').extract_first(),
+        #     'tagActionCode':response.css('input#tagActionCode::attr(value)').extract_first(),
+        #     'viewID':response.css('input#viewID::attr(value)').extract_first(),
+        #     'rebateId':response.css('input#rebateId::attr(value)').extract_first(),
+        #     'rsid':response.css('input#rsid::attr(value)').extract_first(),
+        #     'sourceCustomerOrgListID':response.css('input#sourceCustomerOrgListID::attr(value)').extract_first(),
+        #     'sourceCustomerOrgListItemID':response.css('input#sourceCustomerOrgListItemID::attr(value)').extract_first(),
+        #     'unifiedLocationAddress':response.css('input#unifiedLocationAddress::attr(value)').extract_first(),
+        #     'quantity':'1',
+        # }
         yield item
+
 
