@@ -447,7 +447,8 @@ class Dashboard:
             reviews = reviews.filter(review_date__gte=revBgn)
         if revEnd:
             reviews = reviews.filter(review_date__lte=revEnd)
-
+        if not revBgn and not revEnd:
+            reviews = reviews[0:6]
         data = []
         for val in reviews:
             re = {
@@ -503,6 +504,9 @@ class Dashboard:
         type = self.GET.get('type', 'Ours')
 
         asins = Dashboard._get_asins(self, user, ownership=type)
+
+        if (not ourBgn and not ourEnd) or (not othBgn and not othEnd):
+            asins = asins[0:6]
 
         res = []
         for val in asins:
@@ -560,6 +564,8 @@ class Dashboard:
 
         asins = Dashboard._get_asins(self, user, ownership='Others')
         res = Dashboard._get_activity_radar(self, asins,param=self.GET)
+        if not self.GET.get('actBgn','') and not self.GET.get('actEnd',''):
+            res = res[0:6]
         data = []
         if res:
             for val in res:
@@ -624,6 +630,8 @@ class Dashboard:
 
         if listing_watchers:
             listing_watchers = listing_watchers
+        if not listBgn and not listEnd:
+            listing_watchers = listing_watchers[0:6]
         data = []
         for val in listing_watchers:
             if val.price:
