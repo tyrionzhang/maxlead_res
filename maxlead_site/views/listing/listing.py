@@ -113,8 +113,11 @@ class Listing:
                     else:
                         buy_box_res = ''
                     category_rank = listing[0].category_rank
+                    category_rank_re = ''
                     if category_rank:
                         category_rank = category_rank.split('|')[0]
+                        if len(category_rank)>=2:
+                            category_rank_re = category_rank.split('in')[1]
 
                     if len(listing) == 2:
                         if listing[0].price and listing[1].price:
@@ -146,7 +149,7 @@ class Listing:
                         'total_review2':total_review2,
                         'rvw_score2':rvw_score2,
                         'rvw_score':float(listing[0].rvw_score),
-                        'category_rank':category_rank.split('in')[1],
+                        'category_rank':category_rank_re,
                         'category_rank2':category_rank.split('in')[0],
                         'buy_box':listing[0].buy_box,
                         'buy_box_res':buy_box_res,
