@@ -59,7 +59,7 @@ class Listing:
         asins = get_asins(user,ownership=owner,status=status,revstatus=revstatus,liststatus=liststatus,type=1)
 
         if asins:
-            listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins).order_by('-created')
+            listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins)
 
             if buybox:
                 listings = listings.filter(buy_box=buybox)
