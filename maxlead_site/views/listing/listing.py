@@ -116,8 +116,10 @@ class Listing:
                     category_rank_re = ''
                     if category_rank:
                         category_rank = category_rank.split('|')[0]
-                        if len(category_rank)>=2:
+                        if len(category_rank.split('in'))>=2:
                             category_rank_re = category_rank.split('in')[1]
+                        else:
+                            category_rank_re = category_rank.split('in')[0]
 
                     if len(listing) == 2:
                         if listing[0].price and listing[1].price:
