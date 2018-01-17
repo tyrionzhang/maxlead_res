@@ -55,8 +55,10 @@ class Item:
 
         if activity_radar:
             for val in activity_radar:
-                val['text1'] = val['text1'][0:90]
-                val['text2'] = val['text2'][0:90]
+                if val['text1']:
+                    val['text1'] = val['text1'][0:90]
+                if val['text2']:
+                    val['text2'] = val['text2'][0:90]
             # activity_radar[0].title_re = activity_radar[0].title[0:90]
             # activity_radar[0].title1_re = activity_radar[0].title1[0:90]
             # activity_radar[0].description_re = activity_radar[0].description[0:90]

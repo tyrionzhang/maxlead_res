@@ -45,6 +45,7 @@ class MaxleadScrapyPipeline(object):
                 #     item['image_urls'].append(os.path.split(image_url)[0] + '/' + img_names)
                 us = image_url.split('/')[3:]
                 image_file_name = '_'.join(us)
+                image_file_name = image_file_name.replace('%2', '')
                 file_path = '%s/%s' % (dir_path, image_file_name)
                 path_str = '%s/%s' % (dir_path1, image_file_name)
                 images_str += path_str

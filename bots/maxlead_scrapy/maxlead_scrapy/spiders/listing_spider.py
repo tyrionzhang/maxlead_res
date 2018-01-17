@@ -190,7 +190,8 @@ class ListingSpider(scrapy.Spider):
                         'table#productDetails_detailBullets_sections1 tr:nth-child(6) td span span::text').extract():
 
                 rank_span = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(6) td span span')
-                item['category_rank'] = rank_span[0].split(' (')[0]
+                a = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(6) td span span::text').extract()
+                item['category_rank'] = a[0].split(' (')[0]
                 for n, rank_a in enumerate(rank_span, 0):
                     if not n == 0:
                         a = rank_a.css('a::text').extract()
@@ -198,7 +199,7 @@ class ListingSpider(scrapy.Spider):
                             if s == len(a):
                                 item['category_rank'] += val
                             elif s == 1:
-                                item['category_rank'] += '|' + rank_el2[2] + val + ' > '
+                                item['category_rank'] += '|' + a[2] + val + ' > '
                             else:
                                 item['category_rank'] += val + ' > '
 
@@ -217,6 +218,7 @@ class ListingSpider(scrapy.Spider):
                     listing = listing.latest('created')
                     us = res.split('/')[3:]
                     image_file_name = '_'.join(us)
+                    image_file_name = image_file_name.replace('%2','')
                     if not os.path.basename(listing.image_names) == image_file_name:
                         item['image_date'] = time.strftime('%Y-%m-%d',time.localtime(time.time()))
                     else:
