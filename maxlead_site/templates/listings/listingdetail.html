@@ -231,18 +231,19 @@
                 <a class="goBack" href="" onclick="window.history.go(-1); return false;">&lt;&lt;&lt;Go Back</a>
             </main>
         <script>
-            var line_x = {{ line_x }};
+            var line_x1 = {{ line_x1 }};
+            var line_x2 = {{ line_x2 }};
             var line_price_y = {{ line_price_y }};
             var line_review_y = {{ line_review_y }};
             var price = {
-              x: line_x,
+              x: line_x1,
               y: line_price_y,
               type: 'scatter',
               name: 'price'
             };
 
             var reviews = {
-              x: line_x,
+              x: line_x2,
               y: line_review_y,
               type: 'scatter',
               name: 'review'
@@ -412,15 +413,17 @@
                 $.get('/admin/maxlead_site/shuttle_chart/',data,function (re) {
                     if(re.code == 1){
                         var line1 = {
-                          x: re.data['line_x'],
+                          x: re.data['line_x1'],
                           y: re.data['line_y1'],
-                          type: 'scatter'
+                          type: 'scatter',
+                          name:re.data['name1']
                         };
 
                         var line2 = {
-                          x: re.data['line_x'],
+                          x: re.data['line_x2'],
                           y: re.data['line_y2'],
-                          type: 'scatter'
+                          type: 'scatter',
+                          name:re.data['name2']
                         };
 
                         var data = [line1, line2];

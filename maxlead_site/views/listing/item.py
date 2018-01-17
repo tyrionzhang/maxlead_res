@@ -66,15 +66,17 @@ class Item:
             # activity_radar = activity_radar[0]
         else:
             activity_radar = []
-        line_x = []
+        line_x1 = []
+        line_x2 = []
         line_price_y = []
         line_review_y = []
         for v in listing:
             if v.price:
                 line_price_y.append(float(v.price[1:]))
+                line_x1.append(int(v.created.strftime("%d")))
             if v.total_review:
                 line_review_y.append(int(v.total_review))
-            line_x.append(int(v.created.strftime("%d")))
+                line_x2.append(int(v.created.strftime("%d")))
 
         positive_words = []
         for ar in asinreview:
@@ -139,7 +141,8 @@ class Item:
             'asinreview':positive_words,
             'review':review_data,
             'review_page':review_page,
-            'line_x':line_x,
+            'line_x1':line_x1,
+            'line_x2':line_x2,
             'line_price_y':line_price_y,
             'line_review_y':line_review_y,
             'activity_radar':activity_radar,
@@ -507,34 +510,63 @@ class Item:
         if tsEndDate:
             listing = listing.filter(created__lte=tsEndDate)
 
-        line_x = []
+        line_x1 = []
+        line_x2 = []
         line_y1 = []
         line_y2 = []
+        name1 = ''
+        name2 = ''
         for v in listing:
+            if tsData1 == 'bsr' or tsData2 == 'bsr':
+                ranks = CategoryRank.objects.filter(asin=v.asin,created__icontains=v.created.strftime("%Y-%m-%d"))
+                if ranks:
+                    if tsData1 == 'bsr':
+                        name1 = 'BSR'
+                        line_x1.append(int(v.created.strftime("%d")))
+                        line_y1.append(ranks[0].rank)
+                    if tsData2 == 'bsr':
+                        name2 = 'BSR'
+                        line_x2.append(int(v.created.strftime("%d")))
+                        line_y2.append(ranks[0].rank)
             if v.price:
                 if tsData1 == 'price':
+                    name1 = 'price'
+                    line_x1.append(int(v.created.strftime("%d")))
                     line_y1.append(float(v.price[1:]))
                 if tsData2 == 'price':
+                    name2 = ''
+                    line_x2.append(int(v.created.strftime("%d")))
                     line_y2.append(float(v.price[1:]))
             if v.total_review:
                 if tsData1 == 'reviews':
+                    name1 = 'reviews'
+                    line_x1.append(int(v.created.strftime("%d")))
                     line_y1.append(int(v.total_review))
                 if tsData2 == 'reviews':
+                    name2 = 'reviews'
+                    line_x2.append(int(v.created.strftime("%d")))
                     line_y2.append(int(v.total_review))
             if v.rvw_score:
                 if tsData1 == 'score':
+                    name1 = 'score'
+                    line_x1.append(int(v.created.strftime("%d")))
                     line_y1.append(float(v.rvw_score))
                 if tsData2 == 'score':
+                    name2 = 'score'
+                    line_x2.append(int(v.created.strftime("%d")))
                     line_y2.append(float(v.rvw_score))
             if v.total_qa:
                 if tsData1 == 'qa':
+                    name1 = 'qa'
+                    line_x1.append(int(v.created.strftime("%d")))
                     line_y1.append(int(v.total_qa))
                 if tsData2 == 'qa':
+                    name2 = 'qa'
+                    line_x2.append(int(v.created.strftime("%d")))
                     line_y2.append(int(v.total_qa))
-            line_x.append(int(v.created.strftime("%d")))
 
-        return HttpResponse(json.dumps({'code': 1, 'data': {'line_x':line_x,'line_y1':line_y1,'line_y2':line_y2}}),
-                            content_type='application/json')
+        return HttpResponse(json.dumps({'code': 1, 'data': {'line_x1':line_x1,'line_x2':line_x2,'line_y1':line_y1,'line_y2':line_y2,'name1':name1,
+                                                            'name2':name2}}),content_type='application/json')
 
     @csrf_exempt
     def export_shuttle(self):
