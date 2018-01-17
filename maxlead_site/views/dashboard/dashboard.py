@@ -393,7 +393,7 @@ class Dashboard:
         listEnd = self.GET.get('listEnd','')
         viewRange = self.GET.get('viewRange', '')
         offset = (int(page)-1)*6
-        asins = Dashboard._get_asins(self, user,listing_watcher=1,user_id=viewRange)
+        asins = Dashboard._get_asins(self, user,ownership='Ours',listing_watcher=1,user_id=viewRange)
         listing_watchers = []
         listing_watchers = ListingWacher.objects.filter(asin__in=asins)
         if not listEnd and not listBgn:
@@ -429,11 +429,13 @@ class Dashboard:
                 winner = 'Buy box winner'
             else:
                 winner = 'not winner'
+            asin = UserAsins.objects.filter(aid=val.asin)[0]
             re = {
                 'created':val.created.strftime('%Y-%m-%d %H:%M:%S'),
                 'seller_link':val.seller_link,
                 'seller':val.seller,
                 'asin':val.asin,
+                'sku':asin.sku,
                 'price':price,
                 'fba':fba,
                 'prime':prime,

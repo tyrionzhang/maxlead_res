@@ -97,6 +97,7 @@
                     'taskDesc':$('textarea[name="taskDesc"]').val(),
                     'taskASIN':$('textarea[name="taskASIN"]').val()
                 };
+                $(this).attr('disabled',true);
                 var type = $('input[name="taskType"]:checked').val() == 0?'Review':'QA';
                 $('#th-task').after('<tr id="tr_task_new">' +
                     '<td>'+data['taskName']+'</td>' +
@@ -120,6 +121,7 @@
                         alert(re.msg);
                         $('#addMinerTask').attr('style','display:none;');
                     }
+                    window.location.reload();
                 },'json');
             });
 
