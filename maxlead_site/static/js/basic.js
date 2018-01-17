@@ -28,7 +28,7 @@ $(document).ready(function(){
       });
     //select all listing
 
-    $("#addASINButton, #editASINButton, #editASINCancel").click(function(){
+    $("#addASINButton, #editASINCancel").click(function(){
       $("#editASIN").toggle();
     }); //add edit ASIN    
 

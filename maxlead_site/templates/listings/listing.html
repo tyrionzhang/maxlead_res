@@ -57,7 +57,7 @@
                 </form>
                 <div id="editASIN"  style="display:none;">
                     <h3>Basic Info</h3>
-                        <input type="hidden" name="ids" value="" />
+                        <input type="hidden" name="ids" value="" id="editASIN_id"/>
                         <div class="basicInfo">*ASIN<br><textarea name="newASIN" rows=5 cols=18 title="one ASIN per line"></textarea><!--如果是通过编辑进来，增加readonly属性--></div>
                         <div class="basicInfo">SKU<br><textarea name="newSKU" rows="5" cols="18" title="one SKU per line, should be in the same sequence as ASIN"></textarea></div>
                         <div class="basicInfo">
@@ -110,6 +110,7 @@
             </main>
         <script>
             $("#btn-asin-add").on('click',function () {
+                $(this).disable();
                 var data = {
                     'ids':$('input[name="ids"]').val(),
                     'newASIN':$("textarea[name='newASIN']").val(),
@@ -132,30 +133,64 @@
                         window.location.reload();
                     }
                 },'json')
-            })
+            });
+        $('#addASINButton').on('click',function () {
+            $('#editASIN_id').remove();
+            $('textarea[name="newASIN"]').val('');
+            $('textarea[name="newASIN"]').removeAttr('readonly');
+            $('textarea[name="newSKU"]').val('');
+            $('input[name="status"]').removeAttr('checked');
+            $('input[name="ownership"]').removeAttr('checked');
+            $('input[name="revWatcher"]').removeAttr('checked');
+            $('input[name="listWatcher"]').removeAttr('checked');
+            $('input[name="kwdSet1"]').val('');
+            $('input[name="kwdSet2"]').val('');
+            $('input[name="kwdSet3"]').val('');
+            $('input[name="cat1"]').val('');
+            $('input[name="cat2"]').val('');
+            $('input[name="cat3"]').val('');
+            $('#btn-asin-add').val('Add');
+        });
         $('#editASINButton').on('click',function () {
             var asins = [];
-
+            $("#editASIN").append('<input type="hidden" name="ids" value="" id="editASIN_id">');
             $('input[name="selectListing"]:checked').each(function () {
                 asins.push(parseInt($(this).val()))
             });
             if(asins == false){
                 alert('请选择listings！');
-                return false;
-            }
-            var data = {
-                'ids' : JSON.stringify(asins)
-            };
-            $('#btn-asin-add').val('Edit');
-            $.post('/admin/maxlead_site/get_asin_edits/',data,function (re) {
-                if(re.code==1){
-                    $('textarea[name="newASIN"]').val(re.aid_str).attr('readonly','readonly');
-                    $('textarea[name="newSKU"]').val(re.sku_str).attr('readonly','readonly');
-                    $('input[name="ids"]').val(data['ids']);
-                }
-            },'json');
+            }else{
+                $("#editASIN").toggle();
+                var data = {
+                    'ids' : JSON.stringify(asins)
+                };
+                $('#btn-asin-add').val('Edit');
+                $.post('/admin/maxlead_site/get_asin_edits/',data,function (re) {
+                    if(re.code==1){
+                        $('textarea[name="newASIN"]').val(re.aid_str).attr('readonly','readonly');
+                        $('textarea[name="newSKU"]').val(re.sku_str);
+                        $('input[name="ids"]').val(data['ids']);
+                        if (re.data) {
+                            var rew = re.data['review_watcher']?1:0;
+                            var listw = re.data['listing_watcher']?1:0;
+                            var isuse = re.data['is_use']?1:0;
+                            $("input[name='ownership'][value='"+re.data['ownership']+"']").attr("checked",true);
+                            $("input[name='revWatcher'][value='"+rew+"']").attr("checked",true);
+                            $("input[name='listWatcher'][value='"+listw+"']").attr("checked",true);
+                            $("input[name='status'][value='"+isuse+"']").attr("checked",true);
+                            $('input[name="kwdSet1"]').val(re.data['keywords1']);
+                            $('input[name="kwdSet2"]').val(re.data['keywords2']);
+                            $('input[name="kwdSet3"]').val(re.data['keywords3']);
+                            $('input[name="cat1"]').val(re.data['cat1']);
+                            $('input[name="cat2"]').val(re.data['cat2']);
+                            $('input[name="cat3"]').val(re.data['cat3']);
+                        }
+                    }
+                },'json');
 
-        })
+            }
+
+        });
 
         $('#status_on').on('click',function () {
             var asins = [];

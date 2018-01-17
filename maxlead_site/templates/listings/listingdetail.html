@@ -151,7 +151,9 @@
                                 <option value="5">5Star</option>
                                 <option value="positive">All Positive</option>
                                 <option value="critical">All Critical</option></select><br>
-                            <input type="search" name="rvKwd" />  <input type="date" name="start_date" max="传入当前日期" min="2017-12-15" /> - <input type="date" name="end_date" max="传入当前日期" min="2017-12-15" />
+                            <input type="search" name="rvKwd" />
+                            <input type="date" name="start_date"/> -
+                            <input type="date" name="end_date" />
                             <input type="button" value="Search" class="rvInfoButton" id="btn-review-search" data-asin="{{ res.asin }}"/>
                             <input type="hidden" name="review_asin" value="{{ res.asin }}">
                             <button class="rvInfoButton" type="submit">Export</button>
@@ -261,7 +263,8 @@
                     'score':$('select[name="score"]').val(),
                     'rvKwd':$('input[name="rvKwd"]').val(),
                     'start_date':$('input[name="start_date"]').val(),
-                    'end_date':$('input[name="end_date"]').val()
+                    'end_date':$('input[name="end_date"]').val(),
+                    'rvSort':$('select[name="rvSort"]').val()
                 };
                 $.get('/admin/maxlead_site/review_search/',data,function (re) {
                     if(re.code == 1){

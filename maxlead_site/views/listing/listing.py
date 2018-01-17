@@ -262,9 +262,11 @@ class Listing:
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'添加成功！'}), content_type='application/json')
             else:
                 userAsin_obj = UserAsins.objects.filter(id__in=eval(ids)).all()
+                if newSKU:
+                    for i, val in enumerate(newASIN, 0):
+                        userAsin = UserAsins.objects.filter(aid=val).all()
+                        userAsin.update(sku=newSKU[i])
                 if userAsin_obj:
-                    if newSKU:
-                        userAsin_obj.update(sku=newSKU[0])
                     userAsin_obj.update(keywords1=kwdSet1,keywords2=kwdSet2,keywords3=kwdSet3,cat1=cat1,cat2=cat2,cat3=cat3,
                                         review_watcher=revWatcher,listing_watcher=listWatcher,is_use=status,ownership=ownership,
                                         last_check=datetime.datetime.now(),update_time=datetime.datetime.now())
@@ -277,14 +279,33 @@ class Listing:
         if not user:
             return HttpResponse(json.dumps({'code': 1, 'msg': u'用户未登录！'}), content_type='application/json')
         ids = self.POST.get('ids')
-        asins = UserAsins.objects.values('aid','sku').filter(id__in=eval(ids)).all()
+        asins = UserAsins.objects.values('aid','sku','ownership','keywords1','keywords2','keywords3','cat1','cat2','cat3',
+                                         'review_watcher','listing_watcher','is_use').filter(id__in=eval(ids)).all()
         aid_str = ''
         sku_str = ''
-        for val in asins:
-            aid_str += val['aid']+'|'
-            sku_str += val['sku']+'|'
+        data = ''
+        for i,val in enumerate(asins,1):
+            if i == len(asins):
+                aid_str += val['aid']
+                sku_str += val['sku']
+            else:
+                aid_str += val['aid'] + '|'
+                sku_str += val['sku'] + '|'
+            if len(asins) == 1:
+                data = {
+                    'ownership':val['ownership'],
+                    'keywords1':val['keywords1'],
+                    'keywords2':val['keywords2'],
+                    'keywords3':val['keywords3'],
+                    'cat1':val['cat1'],
+                    'cat2':val['cat2'],
+                    'cat3':val['cat3'],
+                    'review_watcher':val['review_watcher'],
+                    'listing_watcher':val['listing_watcher'],
+                    'is_use':val['is_use'],
+                }
 
-        return HttpResponse(json.dumps({'code':1,'aid_str': aid_str, 'sku_str': sku_str}), content_type='application/json')
+        return HttpResponse(json.dumps({'code':1,'aid_str': aid_str, 'sku_str': sku_str,'data':data}), content_type='application/json')
 
     @csrf_exempt
     def ajax_get_asins1(self):

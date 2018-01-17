@@ -224,6 +224,7 @@ class Item:
         rvKwd = self.GET.get('rvKwd', '')
         end_date = self.GET.get('end_date', '')
         start_date = self.GET.get('start_date', '')
+        rvSort = self.GET.get('rvSort', '')
 
         review = Reviews.objects.filter(asin=asin, created__icontains=Reviews.objects.aggregate(Max('created'))
         ['created__max'].strftime("%Y-%m-%d")).all()
@@ -242,6 +243,13 @@ class Item:
             review = review.filter(created__lte=end_date)
         if start_date:
             review = review.filter(created__gte=start_date)
+        if rvSort:
+            if rvSort == 'newest':
+                review = review.order_by('id')
+            elif rvSort == 'top':
+                review = review.order_by('-score')
+            else:
+                review = review.order_by('-id')
 
         review_limit = self.GET.get('review_limit', 5)
 
