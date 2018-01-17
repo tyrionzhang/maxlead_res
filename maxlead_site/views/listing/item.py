@@ -33,7 +33,7 @@ class Item:
         UserAsins.objects.filter(id=item.user_asin.id).update(last_check=datetime.datetime.now())
         qa_max = Questions.objects.aggregate(Max('created'))
         question_count = Questions.objects.filter(asin=item.asin,created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
-        answer_count = Answers.objects.filter(question__in=question_count)
+        answer_count = item.answered
         asinreview = AsinReviews.objects.filter(aid=item.asin,created__icontains=AsinReviews.objects.aggregate(Max('created'))
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
         review = Reviews.objects.filter(asin=item.asin,created__icontains=Reviews.objects.aggregate(Max('created'))
@@ -102,7 +102,7 @@ class Item:
             if val.review_date:
                 val.review_date = val.review_date.strftime("%B %d, %Y")
 
-        item.question_answer = str(question_count.count())+'/'+str(answer_count.count())
+        item.question_answer = str(answer_count)+'/'+str(question_count.count())
         box_res = eval(item.buy_box_res)
         if box_res:
             if 'Fulfilled by Amazon' in box_res:

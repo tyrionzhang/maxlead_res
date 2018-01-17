@@ -76,6 +76,7 @@ class Reviews(models.Model):
 class Listings(models.Model):
     user_asin = models.ForeignKey(UserAsins,default=1)
     title = models.CharField('Title', max_length=255)
+    answered= models.CharField('Answered ',max_length=50,default='')
     asin = models.CharField('AsinId', max_length=50)
     sku = models.CharField('SKU', max_length=50)
     brand = models.CharField('Brand', max_length=50)

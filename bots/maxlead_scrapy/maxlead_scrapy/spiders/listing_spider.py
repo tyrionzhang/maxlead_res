@@ -42,6 +42,10 @@ class ListingSpider(scrapy.Spider):
             item['title'] = response.css('div#titleSection span#productTitle::text').extract_first()
         item['title'] = item['title'].replace('\n','').strip()
         item['asin'] = asin_id
+        item['answered'] = ''
+        qac = response.css('a.askATFLink span::text').extract_first()
+        if qac:
+            item['answered'] = qac.replace('\n','').strip().split(' answered')[0]
         item['brand'] = response.css('a#brand::text').extract_first()
         if not item['brand']:
             item['brand'] = response.css('div#bylineInfo_feature_div a#bylineInfo::text').extract_first()
