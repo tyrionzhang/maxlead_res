@@ -63,7 +63,7 @@ class ReviewSpider(scrapy.Spider):
             for img_re in review.css('div.review-image-container img.review-image-tile::attr("data-src")').extract():
                 item['image_urls'].append(img_re)
 
-            vp = review.xpath('//span[contains(@data-hook, "avp-badge")]/text()').extract_first()
+            vp = review.css('div.review-format-strip .a-link-normal span::text').extract_first()
             if vp is not None and vp == 'Verified Purchase':
                 item['is_vp'] = 1
             else:
