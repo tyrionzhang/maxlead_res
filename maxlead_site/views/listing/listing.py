@@ -15,33 +15,27 @@ from maxlead import settings
 
 class Listing:
 
-    def decorator_run_spiders(func):
-        def dec(*args):
-            result = func(*args)
-            for val in args[1]:
-                res = views.update_kewords(aid=val)
-            os.chdir(settings.ROOT_PATH)
-            return result
-        return dec
-
-    @decorator_run_spiders
-    def run_spiders(self,asins):
-
+    @csrf_exempt
+    def add_run_spiders(self):
+        newASIN = self.POST.get('asins')
+        asins = newASIN.split('|')
         work_path = settings.SPIDER_URL
         os.chdir(work_path)
         for val in asins:
-            os.system('scrapyd-deploy')
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
-            cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % val
-            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
-            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val
-            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % val
-            os.system(cmd_str)
-            os.system(cmd_str1)
-            os.system(cmd_str2)
-            os.system(cmd_str3)
-            os.system(cmd_str4)
-        return True
+            checks = UserAsins.objects.filter(aid=val)
+            if len(checks) == 1:
+                os.system('scrapyd-deploy')
+                cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
+                cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % val
+                cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
+                cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val
+                cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % val
+                os.system(cmd_str)
+                os.system(cmd_str1)
+                os.system(cmd_str2)
+                os.system(cmd_str3)
+                os.system(cmd_str4)
+        return HttpResponse(json.dumps({'code': 1, }), content_type='application/json')
 
 
     @csrf_exempt
@@ -234,7 +228,6 @@ class Listing:
 
             querysetlist = []
             if not ids:
-                spider_asin = []
                 for i,asin in enumerate(newASIN,0):
                     userAsin = UserAsins()
                     check = UserAsins.objects.filter(aid=asin,user_id=user.user.id).all()
@@ -256,9 +249,7 @@ class Listing:
                         userAsin.is_use = status
 
                         querysetlist.append(userAsin)
-                        spider_asin.append(asin)
                 UserAsins.objects.bulk_create(querysetlist)
-                Listing.run_spiders(self,spider_asin)
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'添加成功！'}), content_type='application/json')
             else:
                 userAsin_obj = UserAsins.objects.filter(id__in=eval(ids)).all()

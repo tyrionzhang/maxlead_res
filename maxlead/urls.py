@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^admin/maxlead_site/add_asin/', Listing.save_user_asin),
     url(r'^admin/maxlead_site/get_asin_edits/', Listing.ajax_get_asins),
     url(r'^admin/maxlead_site/ajax_edit/', Listing.ajax_get_asins1),
+    url(r'^admin/maxlead_site/add_run_spiders/', Listing.add_run_spiders),
     url(r'^admin/maxlead_site/listing_export/', Listing.ajax_export),
     url(r'^admin/maxlead_site/listing_item/', Item.item),
     url(r'^admin/maxlead_site/review_search/', Item.ajax_get_review),

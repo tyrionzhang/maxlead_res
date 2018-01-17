@@ -110,7 +110,8 @@
             </main>
         <script>
             $("#btn-asin-add").on('click',function () {
-                $(this).disable();
+                $(this).attr('disabled',"true");
+                var newASIN = $("textarea[name='newASIN']").val();
                 var data = {
                     'ids':$('input[name="ids"]').val(),
                     'newASIN':$("textarea[name='newASIN']").val(),
@@ -130,7 +131,13 @@
                     if(re.code==1){
                         alert(re.msg);
                         $('#editASIN').attr('style','display:none;');
-                        window.location.reload();
+                        $.post('/admin/maxlead_site/add_run_spiders/',{'asins':newASIN},
+                            function (re) {
+                            if(re.code == 1){
+                                window.location.reload();
+                            }
+                        },'json');
+
                     }
                 },'json')
             });
