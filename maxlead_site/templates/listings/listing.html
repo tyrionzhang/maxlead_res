@@ -10,11 +10,10 @@
                     <input type="radio" name="searchCol" value="ASIN" {% if searchCol == 'ASIN' %}checked{% endif %}/>ASIN
                     <input type="radio" name="searchCol" value="title" {% if searchCol == 'title' %}checked{% endif %} />Title
                     <input type="radio" name="searchCol" value="brand" {% if searchCol == 'brand' %}checked{% endif %}/>Brand
-                    <input type="radio" name="searchCol" value="seller" {% if searchCol == 'seller' %}checked{% endif %}/>Seller
                          Ownership: <select name="owner">
                         <option value="">All</option>
-                        <option value="Ours">Ours</option>
-                        <option value="Others">Others</option></select>
+                        <option value="Ours" {% if owner == "Ours" %}selected{% endif %}>Ours</option>
+                        <option value="Others" {% if owner == "Others" %}selected{% endif %}>Others</option></select>
                         Buybox: <select name="buybox">
                         <option value="">All</option>
                         <option value="Ours" {% if buybox == "Ours" %}selected{% endif %}>Ours</option>
