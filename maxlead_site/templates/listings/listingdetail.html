@@ -60,7 +60,7 @@
                         <table id="tb_li_wathcer"><!--默认只显示5条-->
                             {% for val in listing_watchers %}
                             <tr><td>{{ val.created }}</td>
-                                <td><a href="{{ val.seller_link }}" target="_blank">Seller: {{ val.seller }}</a></td>
+                                <td>{% if val.seller_link %}<a href="{{ val.seller_link }}" target="_blank">Seller: {{ val.seller }}{% else %}Seller: {{ val.seller }}{% endif %}</a></td>
                                 <td>Price: {% if val.price %}{{ val.price }}{% else %} {% endif %}</td>
                                 <td>{% if val.fba %}FBA{% else %}FBM{% endif %}</td>
                                 <td>{% if val.prime %}Prime{% else %} {% endif %}</td>
