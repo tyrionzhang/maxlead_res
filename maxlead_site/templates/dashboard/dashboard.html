@@ -131,8 +131,10 @@
         function get_watcher(page,type) {
             var listBgn = $('input[name="listBgn"]').val();
             var listEnd = $('input[name="listEnd"]').val();
+            var viewRange = $('select[name="viewRange"]').val();
             var page = page;
-            $.get('/admin/maxlead_site/ajax_watcher/',{'listBgn':listBgn,'listEnd':listEnd,'page':page},function (re) {
+            $.get('/admin/maxlead_site/ajax_watcher/',{'listBgn':listBgn,'listEnd':listEnd,'page':page,'viewRange':viewRange},
+                                                                                                        function (re) {
                 if(re.code == 1){
                     var el = '';
                     $.each(re.data.data,function (index,val) {
@@ -165,7 +167,8 @@
         $('#btn_reviews_search').on('click',function () {
             var data = {
                 'revBgn' : $('input[name="revBgn"]').val(),
-                'revEnd' : $('input[name="revEnd"]').val()
+                'revEnd' : $('input[name="revEnd"]').val(),
+                'viewRange' : $('select[name="viewRange"]').val()
             };
             $.get('/admin/maxlead_site/ajax_reviews/',data,function (re) {
                 if(re.code==1){
@@ -197,6 +200,7 @@
             var data = {
                 'revBgn' : $('input[name="revBgn"]').val(),
                 'revEnd' : $('input[name="revEnd"]').val(),
+                'viewRange' : $('select[name="viewRange"]').val(),
                 'page' : page
             };
             $.get('/admin/maxlead_site/ajax_reviews/',data,function (re) {
@@ -230,17 +234,20 @@
         $('.rising_search').on('click',function () {
             var type = $(this).data('type');
             var tb = $(this).parent().next();
+            var viewRange = $('select[name="viewRange"]').val();
             if(type == 'Ours'){
                 var data = {
                     'ourBgn' : $('input[name="ourBgn"]').val(),
                     'ourEnd' : $('input[name="ourEnd"]').val(),
-                    'type' : 'Ours'
+                    'type' : 'Ours',
+                    'viewRange' : viewRange
                 };
             }else {
                 var data = {
                     'othBgn' : $('input[name="othBgn"]').val(),
                     'othEnd' : $('input[name="othEnd"]').val(),
-                    'type' : 'Others'
+                    'type' : 'Others',
+                    'viewRange' : viewRange
                 };
             }
 
@@ -280,6 +287,7 @@
             var type = name1=='othBgn'?'Others':'Ours';
             var data = {
                 'page':parseInt(page)+1,
+                'viewRange' : $('select[name="viewRange"]').val(),
                 'type':type
             };
             data[name1] = input1.val();
@@ -309,6 +317,7 @@
         $('#radar_search').on('click',function () {
             var data = {
                 'actBgn':$('input[name="actBgn"]').val(),
+                'viewRange' : $('select[name="viewRange"]').val(),
                 'actEnd':$('input[name="actEnd"]').val()
             };
             $.get('/admin/maxlead_site/ajax_radar/',data,function (re) {
@@ -340,6 +349,7 @@
             var data = {
                 'actBgn':$('input[name="actBgn"]').val(),
                 'actEnd':$('input[name="actEnd"]').val(),
+                'viewRange' : $('select[name="viewRange"]').val(),
                 'page':parseInt(page)+1
             };
 

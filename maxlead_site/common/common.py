@@ -4,7 +4,7 @@ from django.db.models import Count
 from django.contrib.auth.models import User
 from maxlead_site.models import UserAsins
 
-def get_asins(user, ownership='', status='', revstatus='', liststatus='',type=0):
+def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0, user_id=''):
     asins = []
     if type:
         user_asins = UserAsins.objects.values('aid').annotate(count=Count('aid'))
@@ -18,6 +18,8 @@ def get_asins(user, ownership='', status='', revstatus='', liststatus='',type=0)
     elif user.role == 1:
         user_list = User.objects.filter(group=user.user)
         user_asins = user_asins.filter(user=user_list)
+    if user_id:
+        user_asins = user_asins.filter(user_id=user_id)
 
     if user_asins:
         if status:

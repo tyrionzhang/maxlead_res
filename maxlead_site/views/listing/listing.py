@@ -5,7 +5,8 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
-from maxlead_site.models import Listings,UserAsins
+from django.db.models import Q
+from maxlead_site.models import Listings,UserAsins,UserProfile
 from maxlead_site.views.app import App
 from maxlead_site.views import views
 from maxlead_site.common.excel_world import get_excel_file
@@ -55,9 +56,32 @@ class Listing:
         status = self.GET.get('status','')
         revstatus = self.GET.get('revstatus','')
         liststatus = self.GET.get('liststatus','')
+        viewRange = self.GET.get('viewRange', user.user.id)
 
-        asins = get_asins(user,ownership=owner,status=status,revstatus=revstatus,liststatus=liststatus,type=1)
+        if viewRange:
+            viewRange = int(viewRange)
 
+        user_list = UserProfile.objects.filter(state=1)
+        if user.role == 0:
+            user_list = user_list.filter(id=user.id)
+        if user.role == 1:
+            user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+
+        asins = get_asins(user,ownership=owner,status=status,revstatus=revstatus,liststatus=liststatus,type=1,user_id=viewRange)
+
+        data = {
+            'data': False,
+            'user': user,
+            'avator': user.user.username[0],
+            'searchCol': searchCol,
+            'buybox': buybox,
+            'listKwd': listKwd,
+            'status': status,
+            'revstatus': revstatus,
+            'liststatus': liststatus,
+            'viewRange': viewRange,
+            'user_list': user_list
+        }
         if asins:
             listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins)
 
@@ -91,7 +115,9 @@ class Listing:
                     'status': status,
                     'revstatus': revstatus,
                     'liststatus': liststatus,
-                    'limit': limit
+                    'limit': limit,
+                    'viewRange': viewRange,
+                    'user_list': user_list
                 })
             paginator = Paginator(listings, limit)
             page = self.GET.get('page')
@@ -176,9 +202,11 @@ class Listing:
                 'revstatus': revstatus,
                 'liststatus': liststatus,
                 'limit': limit,
+                'viewRange':viewRange,
+                'user_list':user_list
             }
 
-            return render(self, 'listings/listing.html', data)
+        return render(self, 'listings/listing.html', data)
 
     @csrf_exempt
     def save_user_asin(self):

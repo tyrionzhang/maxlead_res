@@ -2,19 +2,18 @@
 import json,datetime,operator
 from django.shortcuts import render,HttpResponse
 from django.forms.models import model_to_dict
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count,Max
-from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,ListingWacher
+from maxlead_site.models import Listings,UserAsins,Reviews,ListingWacher,UserProfile
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
 
 class Dashboard:
 
 
-    def _get_asins(self,user,ownership='',listing_watcher='',review_watcher=''):
+    def _get_asins(self,user,ownership='',listing_watcher='',review_watcher='',user_id=''):
         asins = []
         user_asins = UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=1)
         if ownership:
@@ -27,8 +26,14 @@ class Dashboard:
         if user.role == 0:
             user_asins = user_asins.filter(user=user.user)
         elif user.role == 1:
-            user_list = User.objects.filter(group=user.user)
-            user_asins = user_asins.filter(user=user_list)
+            user_file = UserProfile.objects.filter(group=user)
+            uids = []
+            for val in user_file:
+                uids.append(val.user_id)
+            user_asins = user_asins.filter(user_id=uids)
+        if user_id:
+            user_asins = user_asins.filter(user_id=user_id)
+
         for val in user_asins:
             asins.append(val['aid'])
 
@@ -155,10 +160,20 @@ class Dashboard:
         user = App.get_user_info(self)
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
+        viewRange = self.GET.get('viewRange',user.user.id)
 
-        asins = Dashboard._get_asins(self,user,listing_watcher=1)
-        ours_asins = Dashboard._get_asins(self,user,ownership='Ours')
-        others_asins = Dashboard._get_asins(self,user,ownership='Others')
+        if viewRange:
+            viewRange = int(viewRange)
+
+        user_list = UserProfile.objects.filter(state=1)
+        if user.role == 0:
+            user_list = user_list.filter(id=user.id)
+        if user.role == 1:
+            user_list = user_list.filter(Q(group=user)|Q(id=user.id))
+
+        asins = Dashboard._get_asins(self,user,listing_watcher=1,user_id=viewRange)
+        ours_asins = Dashboard._get_asins(self,user,ownership='Ours',user_id=viewRange)
+        others_asins = Dashboard._get_asins(self,user,ownership='Others',user_id=viewRange)
         ours_li = []
         others_li = []
         for val in ours_asins[0:6]:
@@ -232,6 +247,8 @@ class Dashboard:
             'o_rising_page': o_rising_page,
             'radar_page': radar_page,
             'activity_radar': activity_radar,
+            'user_list': user_list,
+            'viewRange': viewRange,
         }
         return render(self, 'dashboard/dashboard.html', data)
 
@@ -243,9 +260,10 @@ class Dashboard:
         revBgn = self.GET.get('revBgn', '')
         revEnd = self.GET.get('revEnd', '')
         page = self.GET.get('page', 1)
+        viewRange = self.GET.get('viewRange', '')
         offset = (int(page)-1)*6
 
-        asins = Dashboard._get_asins(self,user)
+        asins = Dashboard._get_asins(self,user,user_id=viewRange)
         reviews = Reviews.objects.filter(created__icontains=Reviews.objects.aggregate(Max('created'))['created__max'],
                                          score__lte=3, asin__in=asins).order_by('-review_date')
         if revBgn:
@@ -284,10 +302,11 @@ class Dashboard:
         othBgn = self.GET.get('othBgn', '')
         othEnd = self.GET.get('othEnd', '')
         type = self.GET.get('type', 'Ours')
+        viewRange = self.GET.get('viewRange', '')
         page = self.GET.get('page', 1)
         offset = (int(page) - 1) * 6
 
-        asins = Dashboard._get_asins(self, user, ownership=type)
+        asins = Dashboard._get_asins(self, user, ownership=type,user_id=viewRange)
 
         res = []
         for val in asins[offset:offset+6]:
@@ -332,9 +351,10 @@ class Dashboard:
             return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
 
         page = self.GET.get('page', 1)
+        viewRange = self.GET.get('viewRange', '')
         offset = (int(page) - 1) * 6
-        asins = Dashboard._get_asins(self, user, ownership='Others')
-        res = Dashboard._get_activity_radar(self,asins,page = page, param=self.GET)
+        asins = Dashboard._get_asins(self, user, ownership='Others',user_id=viewRange)
+        res = Dashboard._get_activity_radar(self,asins, param=self.GET)
         is_page = 1
         if len(res)<6:
             is_page = 0
@@ -371,8 +391,9 @@ class Dashboard:
         page = self.GET.get('page',1)
         listBgn = self.GET.get('listBgn','')
         listEnd = self.GET.get('listEnd','')
+        viewRange = self.GET.get('viewRange', '')
         offset = (int(page)-1)*6
-        asins = Dashboard._get_asins(self, user,listing_watcher=1)
+        asins = Dashboard._get_asins(self, user,listing_watcher=1,user_id=viewRange)
         listing_watchers = []
         listing_watchers = ListingWacher.objects.filter(asin__in=asins)
         if not listEnd and not listBgn:
@@ -439,8 +460,9 @@ class Dashboard:
 
         revBgn = self.GET.get('revBgn', '')
         revEnd = self.GET.get('revEnd', '')
+        viewRange = self.GET.get('viewRange', '')
 
-        asins = Dashboard._get_asins(self,user)
+        asins = Dashboard._get_asins(self,user,user_id=viewRange)
         reviews = Reviews.objects.filter(created__icontains=Reviews.objects.aggregate(Max('created'))['created__max'],
                                          score__lte=3, asin__in=asins).order_by('-review_date')
         if revBgn:
@@ -502,8 +524,9 @@ class Dashboard:
         othBgn = self.GET.get('othBgn', '')
         othEnd = self.GET.get('othEnd', '')
         type = self.GET.get('type', 'Ours')
+        viewRange = self.GET.get('viewRange', '')
 
-        asins = Dashboard._get_asins(self, user, ownership=type)
+        asins = Dashboard._get_asins(self, user, ownership=type,user_id=viewRange)
 
         if (not ourBgn and not ourEnd) or (not othBgn and not othEnd):
             asins = asins[0:6]
@@ -562,7 +585,8 @@ class Dashboard:
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-        asins = Dashboard._get_asins(self, user, ownership='Others')
+        viewRange = self.GET.get('viewRange', '')
+        asins = Dashboard._get_asins(self, user, ownership='Others',user_id=viewRange)
         res = Dashboard._get_activity_radar(self, asins,param=self.GET)
         if not self.GET.get('actBgn','') and not self.GET.get('actEnd',''):
             res = res[0:6]
@@ -616,7 +640,8 @@ class Dashboard:
             return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
         listBgn = self.GET.get('listBgn', '')
         listEnd = self.GET.get('listEnd', '')
-        asins = Dashboard._get_asins(self, user, listing_watcher=1)
+        viewRange = self.GET.get('viewRange', '')
+        asins = Dashboard._get_asins(self, user, listing_watcher=1,user_id=viewRange)
         listing_watchers = []
         listing_watchers = ListingWacher.objects.filter(asin__in=asins)
         if not listEnd and not listBgn:

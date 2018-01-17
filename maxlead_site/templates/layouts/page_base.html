@@ -37,12 +37,18 @@
                     <li class="subMenu"><a href="/admin/maxlead_site/listings/">Listing</a></li>
                     <a href="/admin/maxlead_site/miner/"><li>Miner</li></a>
                 </ul>
-                <p>Show me</p>  <!--只dashboard，listing列表及miner页面显示此部分 &&  只对role为Leader或Admin的用户显示Show me及下拉选项-->
-                <select name="viewRange" id="viewRange">
-                    <option selected value="Mine">Mine</option> <!--第一项为Mine，是当前用户自己的数据；第二项为All，role为Admin显示全站所有用户的，为Leader则显示本组所有用户的；第三项开始显示用户列表，按首字母升序排列-->
-                    <option value="all">All</option>
-                    <option value="...">Member 1</option>
-                </select>
+                <p>Show me</p>
+                <form action="" method="get" name="show-me" id="show_me">
+                     <!--只dashboard，listing列表及miner页面显示此部分 &&  只对role为Leader或Admin的用户显示Show me及下拉选项-->
+                    <select name="viewRange" id="viewRange">
+                        <option value="">All</option>
+                        {% for val in user_list %}
+                        <option value="{{ val.user.id }}" {% if val.user.id == viewRange %}selected{% endif %}>
+                            {%  if val.id == user.id %}Mine{% else %}{{ val.user.username }}{% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
             </nav>
 {% endif %}
             {%  block container%}
@@ -53,6 +59,11 @@
                 <p>&copy;2017 Staff X</p>
             </footer>
         </div>
+        <script>
+            $('#viewRange').on('change', function () {
+                $('#show_me').submit();
+            })
+        </script>
     </body>
 </html>
 <!-- footer.php END -->
