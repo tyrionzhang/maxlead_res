@@ -201,19 +201,19 @@ class Dashboard:
 
         for val in others_asins[0:6]:
             listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
-
-            if len(listing) == 2:
-                rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
-            else:
-                rvw_score2 = ''
-            re = {
-                'asin':listing[0].asin,
-                'sku':listing[0].user_asin.sku,
-                'total_review':listing[0].total_review,
-                'rvw_score':float(listing[0].rvw_score),
-                'rvw_score2':rvw_score2
-            }
-            others_li.append(re)
+            if listing:
+                if len(listing) == 2:
+                    rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
+                else:
+                    rvw_score2 = ''
+                re = {
+                    'asin':listing[0].asin,
+                    'sku':listing[0].user_asin.sku,
+                    'total_review':listing[0].total_review,
+                    'rvw_score':float(listing[0].rvw_score),
+                    'rvw_score2':rvw_score2
+                }
+                others_li.append(re)
 
         o_rising_page = 0
         th_rising_page = 0
@@ -234,7 +234,8 @@ class Dashboard:
         for val in reviews:
             if val.review_date:
                 val.review_date = val.review_date.strftime("%Y-%m-%d")
-            val.sku = UserAsins.objects.get(aid=val.asin).sku
+            sku = UserAsins.objects.filter(aid=val.asin)
+            val.sku = sku[0].sku
 
         data = {
             'user': user,
