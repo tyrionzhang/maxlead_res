@@ -67,6 +67,8 @@ def get_review_keywords(reviews):
                 n = nega_text.count(val)
                 if n >= 2:
                     negative_keywords.append({'words': val, 'count': n})
-        if positive_keywords:
-            pass
-        return {'negative_keywords':negative_keywords, 'positive_keywords':positive_keywords}
+        if negative_keywords:
+            for v in negative_keywords:
+                for i,val in enumerate(negative_keywords,0):
+                    pass
+    return {'negative_keywords':negative_keywords, 'positive_keywords':positive_keywords}
