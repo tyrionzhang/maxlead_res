@@ -81,11 +81,18 @@ class Miner:
         name = self.POST.get('taskName','')
         description = self.POST.get('taskDesc','')
         asins = self.POST.get('taskASIN','')
-        now_time = datetime.datetime.now()
 
         if asins:
             data = []
             asins = asins.split('|')
+            tasks = Task.objects.filter(type=type, created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
+            if tasks:
+                file_path = ''
+                for val in tasks:
+                    if len(eval(val.asins)) == len(asins) and set(eval(val.asins)).issubset(set(asins)):
+                        file_path = val.file_path
+                if file_path:
+                    return HttpResponse(json.dumps({'code': 1, 'data': {'file_path': file_path, 'f_time': 'finish'}}), content_type='application/json')
             if type == 0:
                 reviews = Reviews.objects.filter(asin__in=asins,created__icontains=Reviews.objects.aggregate(Max('created'))
                                                                             ['created__max']).all()
@@ -173,7 +180,6 @@ class Miner:
                 task.type = int(type)
                 task.description = description
                 task.asins = asins
-                task.created = now_time
                 task.save()
 
                 file_path = get_excel_file1(self, data, fields, data_fields)

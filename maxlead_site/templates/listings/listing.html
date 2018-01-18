@@ -87,7 +87,7 @@
                             <li><a href="?page={{ list_data.next_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}">next</a></li>
                             {% endif %}
                             <li><input type="number" name="page" value="{{ page }}" /></li>
-
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
                         </ul>
 
                     <div class="qtyUpdater">
@@ -98,10 +98,6 @@
                             <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
                         </select> results per page.
                     </div>
-                    <ul>
-
-                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
-                    </ul>
 
                     </div>
                 </div>
