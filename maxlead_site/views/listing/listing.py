@@ -35,6 +35,7 @@ class Listing:
                 os.system(cmd_str2)
                 os.system(cmd_str3)
                 os.system(cmd_str4)
+        os.chdir(settings.ROOT_PATH)
         return HttpResponse(json.dumps({'code': 1, }), content_type='application/json')
 
 
