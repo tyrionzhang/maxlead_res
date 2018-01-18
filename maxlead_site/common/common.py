@@ -2,7 +2,8 @@
 
 from django.db.models import Count
 from django.contrib.auth.models import User
-from maxlead_site.models import UserAsins
+from maxlead_site.models import UserAsins,UserProfile
+from maxlead_site.common.npextractor import NPExtractor
 
 def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0, user_id=''):
     asins = []
@@ -16,8 +17,11 @@ def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0
     if user.role == 0:
         user_asins = user_asins.filter(user=user.user)
     elif user.role == 1:
-        user_list = User.objects.filter(group=user.user)
-        user_asins = user_asins.filter(user=user_list)
+        user_file = UserProfile.objects.filter(group=user)
+        uids = []
+        for val in user_file:
+            uids.append(val.user_id)
+        user_asins = user_asins.filter(user_id__in=uids)
     if user_id:
         user_asins = user_asins.filter(user_id=user_id)
 
@@ -34,3 +38,35 @@ def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0
         return asins
     else:
         return False
+
+def get_review_keywords(reviews):
+    positive_keywords = []
+    negative_keywords = []
+    if reviews:
+        posi_text = ''
+        nega_text = ''
+        for val in reviews:
+            if val.score >= 3:
+                if val.content:
+                    posi_text += val.content + '\n'
+            if val.score < 3:
+                if val.content:
+                    nega_text += val.content + '\n'
+
+        posi_obj = NPExtractor(posi_text)
+        nega_obj = NPExtractor(nega_text)
+        posi_line = posi_obj.extract()
+        nega_line = nega_obj.extract()
+        if posi_obj:
+            for val in set(posi_line):
+                i = posi_text.count(val)
+                if i >= 2:
+                    positive_keywords.append({'words': val,'count':i})
+        if nega_line:
+            for val in set(nega_line):
+                n = nega_text.count(val)
+                if n >= 2:
+                    negative_keywords.append({'words': val, 'count': n})
+        if positive_keywords:
+            pass
+        return {'negative_keywords':negative_keywords, 'positive_keywords':positive_keywords}

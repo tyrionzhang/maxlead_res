@@ -128,7 +128,7 @@
                         <h4>Keywords</h4>
                         <ul>
                             {% for v in asinreview %}
-                            <li><a title="显示该关键词出现的次数" onclick="显示当前筛选条件下包含该关键词的review">{{ v.words }} {{ v.count }}</a></li>
+                            <li><a title="{{ v.count }}" onclick="显示当前筛选条件下包含该关键词的review">{{ v.words }} {{ v.count }}</a></li>
                             {% endfor %}
 
                         </ul>

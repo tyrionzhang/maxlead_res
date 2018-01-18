@@ -30,7 +30,7 @@ class Dashboard:
             uids = []
             for val in user_file:
                 uids.append(val.user_id)
-            user_asins = user_asins.filter(user_id=uids)
+            user_asins = user_asins.filter(user_id__in=uids)
         if user_id:
             user_asins = user_asins.filter(user_id=user_id)
 

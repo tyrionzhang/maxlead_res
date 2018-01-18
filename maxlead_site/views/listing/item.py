@@ -9,6 +9,7 @@ from django.db.models import Max
 from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews,ListingWacher,CategoryRank
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
+from maxlead_site.common.common import get_review_keywords
 from maxlead_site.views.dashboard.dashboard import Dashboard
 
 class Item:
@@ -34,10 +35,9 @@ class Item:
         qa_max = Questions.objects.aggregate(Max('created'))
         question_count = Questions.objects.filter(asin=item.asin,created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
         answer_count = item.answered
-        asinreview = AsinReviews.objects.filter(aid=item.asin,created__icontains=AsinReviews.objects.aggregate(Max('created'))
-                                                                            ['created__max'].strftime("%Y-%m-%d")).all()
         review = Reviews.objects.filter(asin=item.asin,created__icontains=Reviews.objects.aggregate(Max('created'))
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
+        asinreviews = get_review_keywords(review)
         listing_watchers = []
         listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
         listing_watchers = ListingWacher.objects.filter(asin=item.asin,created__icontains=listing_watchers_max['created__max']. \
@@ -78,12 +78,7 @@ class Item:
                 line_review_y.append(int(v.total_review))
                 line_x2.append(int(v.created.strftime("%d")))
 
-        positive_words = []
-        for ar in asinreview:
-            if ar.positive_keywords:
-                ar.positive_keywords= eval(ar.positive_keywords)
-                for a in ar.positive_keywords:
-                    positive_words.append({'count':a,'words':ar.positive_keywords[a]})
+        positive_words = asinreviews['positive_keywords']
 
         review_limit = self.GET.get('review_limit', 5)
 

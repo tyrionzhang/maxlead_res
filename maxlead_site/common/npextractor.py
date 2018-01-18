@@ -39,8 +39,7 @@ cfg["NN+NN"] = "NNI"
 cfg["NNI+NN"] = "NNI"
 cfg["JJ+JJ"] = "JJ"
 cfg["JJ+NN"] = "NNI"
-cfg["RB+NN"] = "NNI"
-cfg["VBG+NN"] = "NNI"
+
 
 #############################################################################
 
@@ -95,7 +94,7 @@ class NPExtractor(object):
 
         matches = []
         for t in tags:
-            if t[1] == "NNP" or t[1] == "NNI":
+            if t[1] == "NNP" or t[1] == "NNI" or t[1] == "JJ":
                 # if t[1] == "NNP" or t[1] == "NNI" or t[1] == "NN":
                 matches.append(t[0])
         return matches
