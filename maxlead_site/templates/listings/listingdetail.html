@@ -126,9 +126,9 @@
                     <h3>Reviews</h3>
                     <div class="rvKeywords">
                         <h4>Keywords</h4>
-                        <ul>
+                        <ul id="ul_words">
                             {% for v in asinreview %}
-                            <li><a title="{{ v.count }}" onclick="显示当前筛选条件下包含该关键词的review">{{ v.words }} {{ v.count }}</a></li>
+                            <li><a title="{{ v.count }}" class="a_review_keywords" data-words="{{ v.words }}" data-asin="{{ res.asin }}" style="cursor:pointer">{{ v.words }} {{ v.count }}</a></li>
                             {% endfor %}
 
                         </ul>
@@ -156,6 +156,7 @@
                             <input type="date" name="end_date" />
                             <input type="button" value="Search" class="rvInfoButton" id="btn-review-search" data-asin="{{ res.asin }}"/>
                             <input type="hidden" name="review_asin" value="{{ res.asin }}">
+                            <input type="hidden" name="words" value="">
                             <button class="rvInfoButton" type="submit">Export</button>
                         </form>
                         <table id="table-review-list"><!--默认只显示3条-->
@@ -257,6 +258,7 @@
             get_rank();
 
             $('#btn-review-search').on('click',function () {
+                $('input[name="words"]').val('');
                 var data = {
                     'asin': $(this).data('asin'),
                     'is_vp':$('select[name="is_vp"]').val(),
@@ -269,6 +271,7 @@
                 $.get('/admin/maxlead_site/review_search/',data,function (re) {
                     if(re.code == 1){
                         var el = '';
+                        var el_k = '';
                         $.each(re.data.data,function(index,value){
                           el += '<tr>'+
                               '<td><span class="star'+value['score']+'"></span>'+
@@ -277,22 +280,31 @@
                               '<td class="rvInfoRV">'+value['content']+'</td>' +
                               '</tr>';
                         });
+                        $.each(re.data.positive_words,function(index,value){
+                          el_k += '<li><a title="'+value['count']+'" class="a_review_keywords" data-words="'+value['words']+'" data-asin="{{ res.asin }}" style="cursor:pointer">'+value['words']+' '+value['count']+'</a></li>';
+                        });
                         $('#table-review-list').html(el);
+                        $('#ul_words').html(el_k);
+                        if (re.data.is_page && $('#btn-review-more').length <= 0){
+                            $('.rvInfo').append('<button type="button" class="moreButton" id="btn-review-more" data-page="'+re.data.review_page+'">More</button>');
+                        }
                     }
                 },'json');
                 return false;
             });
 
-            $('#btn-review-more').on('click',function () {
+            $('.rvInfo').on('click', '#btn-review-more', function () {
                 var page = parseInt($(this).data('page'))+1;
                 var data = {
                     'asin': $('#btn-review-search').data('asin'),
                     'review_page': page,
                     'is_vp':$('select[name="is_vp"]').val(),
                     'score':$('select[name="score"]').val(),
+                    'rvSort':$('select[name="rvSort"]').val(),
                     'rvKwd':$('input[name="rvKwd"]').val(),
                     'start_date':$('input[name="start_date"]').val(),
-                    'end_date':$('input[name="end_date"]').val()
+                    'end_date':$('input[name="end_date"]').val(),
+                    'words':$('input[name="words"]').val()
                 };
                 $.get('/admin/maxlead_site/review_search/',data,function (re) {
                     if(re.code == 1){
@@ -311,7 +323,7 @@
                         $('#btn-review-more').data('page', page);
 
                         if(!re.data.is_page){
-                            $('#act_more').remove();
+                            $('#btn-review-more').remove();
                             return false;
                         }
                     }
@@ -542,6 +554,39 @@
 
             $('#btn_search_rank').on('click',function () {
                 get_rank();
+                return false;
+            });
+
+            $('#ul_words').on('click', '.a_review_keywords', function () {
+                var words = $(this).data('words');
+                $('input[name="words"]').val(words);
+                var data = {
+                    'asin': $(this).data('asin'),
+                    'is_vp':$('select[name="is_vp"]').val(),
+                    'score':$('select[name="score"]').val(),
+                    'rvKwd':$('input[name="rvKwd"]').val(),
+                    'start_date':$('input[name="start_date"]').val(),
+                    'end_date':$('input[name="end_date"]').val(),
+                    'rvSort':$('select[name="rvSort"]').val(),
+                    'words':words
+                };
+                $.get('/admin/maxlead_site/review_search/',data,function (re) {
+                    if(re.code == 1){
+                        var el = '';
+                        $.each(re.data.data,function(index,value){
+                          el += '<tr>'+
+                              '<td><span class="star'+value['score']+'"></span>'+
+                              value['is_vp']+'</td>' +
+                              '<td>'+value['name']+'<!--reviewer名字--><br />'+value['review_date']+'<!--review日期--></td>'+
+                              '<td class="rvInfoRV">'+value['content']+'</td>' +
+                              '</tr>';
+                        });
+                        $('#table-review-list').html(el);
+                        if (re.data.is_page && !$('#btn-review-more')){
+                            $('.rvInfo').append('<button type="button" class="moreButton" id="btn-review-more" data-page="'+re.data.review_page+'">More</button>');
+                        }
+                    }
+                },'json');
                 return false;
             });
         </script>

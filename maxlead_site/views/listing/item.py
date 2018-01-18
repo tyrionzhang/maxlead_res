@@ -220,6 +220,7 @@ class Item:
         end_date = self.GET.get('end_date', '')
         start_date = self.GET.get('start_date', '')
         rvSort = self.GET.get('rvSort', '')
+        words = self.GET.get('words', '')
 
         review = Reviews.objects.filter(asin=asin, created__icontains=Reviews.objects.aggregate(Max('created'))
         ['created__max'].strftime("%Y-%m-%d")).all()
@@ -234,6 +235,8 @@ class Item:
             review = review.filter(score__lt=3)
         if rvKwd:
             review = review.filter(content__icontains=rvKwd)
+        if words:
+            review = review.filter(content__icontains=words)
         if end_date:
             review = review.filter(created__lte=end_date)
         if start_date:
@@ -246,7 +249,9 @@ class Item:
             else:
                 review = review.order_by('-id')
 
-        review_limit = self.GET.get('review_limit', 5)
+        asinreviews = get_review_keywords(review)
+        positive_words = asinreviews['positive_keywords']
+        review_limit = self.GET.get('review_limit', 6)
 
         # paginator = Paginator(review, review_limit)
         review_page = self.GET.get('review_page',1)
@@ -268,7 +273,8 @@ class Item:
                     val.is_vp = ''
             data.append(model_to_dict(val))
 
-        return HttpResponse(json.dumps({'code': 1, 'data': {'data':data,'review_page':review_page,'is_page':is_page}}), content_type='application/json')
+        return HttpResponse(json.dumps({'code': 1, 'data': {'data':data,'review_page':review_page,'is_page':is_page,
+                                                            'positive_words':positive_words}}), content_type='application/json')
 
     @csrf_exempt
     def ajax_get_radar(self):
@@ -420,6 +426,7 @@ class Item:
         rvKwd = self.GET.get('rvKwd', '')
         end_date = self.GET.get('end_date', '')
         start_date = self.GET.get('start_date', '')
+        words = self.GET.get('words', '')
 
         review = Reviews.objects.filter(asin=asin, created__icontains=Reviews.objects.aggregate(Max('created'))
         ['created__max'].strftime("%Y-%m-%d")).all()
@@ -434,6 +441,8 @@ class Item:
             review = review.filter(score__lt=3)
         if rvKwd:
             review = review.filter(content__icontains=rvKwd)
+        if words:
+            review = review.filter(content__icontains=words)
         if end_date:
             review = review.filter(created__lte=end_date)
         if start_date:
