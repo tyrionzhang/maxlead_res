@@ -106,6 +106,7 @@ def perform_command():
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % \
                       val['aid']
             os.system(cmd_str)
+        os.chdir(settings.ROOT_PATH)
 
 def perform_command1():
     # 安排inc秒后再次运行自己，即周期运行
@@ -129,6 +130,7 @@ def perform_command1():
             os.system(cmd_str2)
             os.system(cmd_str3)
             os.system(cmd_str4)
+        os.chdir(settings.ROOT_PATH)
 
 def update_kewords1():
     aid_list = UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid'))
@@ -180,6 +182,7 @@ def RunReview(request):
         for val in res:
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['aid']
             os.system(cmd_str)
+    os.chdir(settings.ROOT_PATH)
     schedule.enter(300, 0, update_kewords1)
 
     review_time = settings.REVIEW_TIME
@@ -188,7 +191,6 @@ def RunReview(request):
     schedule.enter(review_key, 0, update_kewords)
     # # 持续运行，直到计划时间队列变成空为止
     schedule.run()
-    os.chdir(settings.ROOT_PATH)
 
     return render(request, 'spider/home.html')
 
@@ -214,10 +216,10 @@ def Spiders(request):
             os.system(cmd_str4)
 
     s_time = settings.SPIDER_TIME
+    os.chdir(settings.ROOT_PATH)
     schedule.enter(s_time, 0, perform_command1)
     # # 持续运行，直到计划时间队列变成空为止
     schedule.run()
-    os.chdir(settings.ROOT_PATH)
 
     return render(request, 'spider/home.html')
 
