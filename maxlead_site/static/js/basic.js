@@ -10,7 +10,7 @@ $(document).ready(function(){
 
     $("#addNewMiner, #nmtCancel").click(function(){
       $("#addMinerTask").toggle();
-      $("#addMinerTask").removeAttr('disabled');
+      $("#task_add").removeAttr('disabled');
     }); //add new Miner task
     
     $("#selectAllUser").click(function(){
