@@ -12,7 +12,7 @@
                     <label>Group:</label> <select name="group">
                         <option value="">None</option>
                         {% for val in member_groups %}
-                        <option value="{{ val.id }}" {% if val.id == user_info.id %}selected{% endif %}>{{ val.user.username }}</option>
+                        <option value="{{ val.id }}" {% if val.id == user_info.group_id %}selected{% endif %}>{{ val.user.username }}</option>
                         {% endfor %}
                         </select><br /><br />
                     {% endif %}
