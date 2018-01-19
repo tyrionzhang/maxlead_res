@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.db.models import Count
-from django.contrib.auth.models import User
 from maxlead_site.models import UserAsins,UserProfile
 from maxlead_site.common.npextractor import NPExtractor
 

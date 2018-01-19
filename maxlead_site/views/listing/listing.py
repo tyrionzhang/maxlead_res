@@ -190,7 +190,7 @@ class Listing:
                 'avator': user.user.username[0],
                 'list_data': list_data,
                 'total_count': total_count,
-                'total_page': int(total_count/limit),
+                'total_page': round(total_count/limit),
                 'page': page,
                 'searchCol': searchCol,
                 'buybox': buybox,

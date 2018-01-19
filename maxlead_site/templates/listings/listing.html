@@ -76,7 +76,7 @@
         <form action="" method="get" name="pageForm" id="page_form">
                 <div id="pagination">
                     <div class="pageNum">
-                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in {{ total_page }} <!--总页数-->pages.
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in {{ list_data.paginator.num_pages }} <!--总页数-->pages.
                     </p>
                         <ul>
                             {% if list_data.has_previous %}
@@ -92,7 +92,6 @@
 
                     <div class="qtyUpdater">
                         <select name="limit">
-                            <option value="6" {% if limit == 6 %}selected{% endif %}>6</option>
                             <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
                             <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
                             <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>

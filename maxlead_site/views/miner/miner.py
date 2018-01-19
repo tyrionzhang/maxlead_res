@@ -6,8 +6,9 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Count,Max
-from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews,Task
+from django.db.models import Max
+from django.db.models import Q
+from maxlead_site.models import Questions,Answers,Reviews,UserProfile,Task
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file,get_excel_file1
 
@@ -18,7 +19,20 @@ class Miner:
         user = App.get_user_info(self)
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
-        tasks = Task.objects.filter(user=user.user)
+        viewRange = int(self.GET.get('viewRange', user.user.id))
+        user_list = UserProfile.objects.filter(state=1)
+        if user.role == 0:
+            user_list = user_list.filter(id=user.id)
+        if user.role == 1:
+            user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+        users = []
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
+        tasks = Task.objects.filter(user_id__in=users)
+        if viewRange:
+            tasks = tasks.filter(user_id=viewRange)
+
         if tasks:
             data = []
             for v in tasks:
@@ -32,11 +46,11 @@ class Miner:
                 else:
                     v.type = 'QA'
 
-        limit = self.GET.get('limit', 5)
+        limit = self.GET.get('limit', 6)
         page = self.GET.get('page', 1)
 
         total_count = len(tasks)
-        total_page = len(tasks)/int(limit)
+        total_page = round(len(tasks)/int(limit))
         if int(limit) >= total_count:
             limit = total_count
         if tasks:
@@ -56,7 +70,9 @@ class Miner:
                 'limit': limit,
                 'page': page,
                 'user': user,
+                'viewRange': viewRange,
                 'avator': user.user.username[0],
+                'user_list': user_list
             }
         else:
             data = {
@@ -66,7 +82,9 @@ class Miner:
                 'limit': limit,
                 'page': page,
                 'user': user,
+                'viewRange': viewRange,
                 'avator': user.user.username[0],
+                'user_list': user_list
             }
         return render(self, 'miner/miner.html', data)
 
