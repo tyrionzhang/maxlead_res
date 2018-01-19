@@ -1,10 +1,11 @@
 {% extends "layouts/page_base.html" %}
     {% block container %}
         <style>
-        .dashContent {
-            height: 280px;
-            overflow: scroll;
+        .dashContent-scroll {
+            height: 231px;
+            overflow-y: scroll;
         }
+         ::-webkit-scrollbar {display:none}
         </style>
             <main class="dashboard">
                 <div>
@@ -15,22 +16,23 @@
                             <input type="date" name="revEnd" max="" min="2017-12-15" />
                             <input type="submit" value="Update" id="btn_reviews_search"/>
                             <input type="submit" value="Export"/></form>
-                        <table cellspacing=0 id="tb-reviews" class="tb-dash-content">
-                            {% for val in reviews %}
-                            <tr class="tr-to-listing" data-asin="{{ val.asin }}">
-                                <td class="revWatDate">{{ val.review_date }}</td>
-                                <td class="revWatSKU">{{ val.sku }}</td>
-                                <td><span class="star{{ val.score }}"></span></td>
-                                <td class="revWatTitle">{{ val.title }}</td>
-                            </tr>
-                            {% endfor %}
-                            {% if is_page %}
-                            <tr id="tr-more-review">
-                                <td colspan="4"><input type="button" name="rvbtn" id="btn-review-more" value="more" data-page=""></td>
-                            </tr>
-                            {% endif %}
-                        </table>
-
+                        <div class="dashContent dashContent-scroll" style="width: 100%">
+                            <table cellspacing=0 id="tb-reviews" class="tb-dash-content">
+                                {% for val in reviews %}
+                                <tr class="tr-to-listing" data-asin="{{ val.asin }}">
+                                    <td class="revWatDate">{{ val.review_date }}</td>
+                                    <td class="revWatSKU">{{ val.sku }}</td>
+                                    <td><span class="star{{ val.score }}"></span></td>
+                                    <td class="revWatTitle">{{ val.title }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% if is_page %}
+                                <tr id="tr-more-review">
+                                    <td colspan="4"><input type="button" name="rvbtn" id="btn-review-more" value="more" data-page=""></td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
                     </div>
                     <div class = "dashContent">
                         <h3>Listing Watcher</h3>
@@ -39,9 +41,11 @@
                             <input type="date" name="listEnd"  max="" min="2017-12-15" />
                             <input type="submit" value="Update" id="btn_lstWatcher"/>
                             <input type="submit" value="Export" id="btn_export_watcher" /></form>
-                        <table cellspacing=0 id="tb_watcher" class="tb-dash-content">
+                        <div class="dashContent dashContent-scroll" style="width: 100%">
+                            <table cellspacing=0 id="tb_watcher" class="tb-dash-content">
 
-                        </table>
+                            </table>
+                        </div>
                     </div>
                     
                 </div>
@@ -56,22 +60,24 @@
                             <input type="hidden" name="type"  value="Ours"/>
                             <input type="submit" value="Update" class="rising_search" data-type="Ours"/>
                             <input type="submit" value="Export" /></form>
-                        <table cellspacing=0 class="tb-dash-content">
-                            <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
-                            {% for val in ours_li %}
-                            <tr class="tr-to-listing" data-asin="{{ val.asin }}">
-                                <td>{{ val.sku }}</td>
-                                <td>{{ val.total_review }}</td>
-                                <td>{{ val.s }}</td>
-                                <td>{{ val.rvw_score }}</td>
-                                <td>{{ val.rvw_score2 }}</td></tr>
-                            {% endfor %}
-                            {% if o_rising_page %}
-                            <tr class="tr-more-rising">
-                                <td colspan="4"><input type="button" name="rvbtn" class="btn-rising-more" value="more" data-page=""></td>
-                            </tr>
-                            {% endif %}
-                        </table>
+                        <div class="dashContent dashContent-scroll" style="width: 100%">
+                            <table cellspacing=0 class="tb-dash-content">
+                                <tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
+                                {% for val in ours_li %}
+                                <tr class="tr-to-listing" data-asin="{{ val.asin }}">
+                                    <td>{{ val.sku }}</td>
+                                    <td>{{ val.total_review }}</td>
+                                    <td>{{ val.s }}</td>
+                                    <td>{{ val.rvw_score }}</td>
+                                    <td>{{ val.rvw_score2 }}</td></tr>
+                                {% endfor %}
+                                {% if o_rising_page %}
+                                <tr class="tr-more-rising">
+                                    <td colspan="5"><input type="button" name="rvbtn" class="btn-rising-more" value="more" data-page=""></td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
                     </div>
                     <div class = "dashContent">
                         <h4>Others</h4>
@@ -81,22 +87,24 @@
                             <input type="hidden" name="type"  value="Others"/>
                             <input type="Submit" value="Update" class="rising_search" data-type="Others" />
                             <input type="submit" value="Export"/></form>
-                        <table cellspacing=0 class="tb-dash-content">
-                            <tr><th>Asin</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
-                            {% for val in others_li %}
-                            <tr class="tr-to-listing" data-asin="{{ val.asin }}">
-                                <td>{{ val.asin }}</td>
-                                <td>{{ val.total_review }}</td>
-                                <td>{{ val.s }}</td>
-                                <td>{{ val.rvw_score }}</td>
-                                <td>{{ val.rvw_score2 }}</td></tr>
-                            {% endfor %}
-                            {% if th_rising_page %}
-                            <tr class="tr-more-rising">
-                                <td colspan="4"><input type="button" name="rvbtn" class="btn-rising-more" value="more" data-page=""></td>
-                            </tr>
-                            {% endif %}
-                        </table>
+                        <div class="dashContent dashContent-scroll" style="width: 100%">
+                            <table cellspacing=0 class="tb-dash-content">
+                                <tr><th>Asin</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>
+                                {% for val in others_li %}
+                                <tr class="tr-to-listing" data-asin="{{ val.asin }}">
+                                    <td>{{ val.asin }}</td>
+                                    <td>{{ val.total_review }}</td>
+                                    <td>{{ val.s }}</td>
+                                    <td>{{ val.rvw_score }}</td>
+                                    <td>{{ val.rvw_score2 }}</td></tr>
+                                {% endfor %}
+                                {% if th_rising_page %}
+                                <tr class="tr-more-rising">
+                                    <td colspan="5"><input type="button" name="rvbtn" class="btn-rising-more" value="more" data-page=""></td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -107,20 +115,22 @@
                             <input type="date" name="actEnd" max="" min="2017-12-15" />
                             <input type="submit" value="Update" id="radar_search"/>
                             <input type="submit" value="Export" /></form>
-                        <table cellspacing=0 id="tb_radar" class="tb-dash-content">
-                            {% for val in activity_radar %}
-                            <tr class="tr-to-listing" data-asin="{{ val.asin }}">
-                                <td>{{ val.created }}</td>
-                                <td>{{ val.asin }}</td>
-                                <td>{{ val.changed }}</td>
-                                <td>{{ val.buy_box_res }}</td></tr>
-                            {% endfor %}
-                            {% if radar_page %}
-                            <tr id="tr-more-radar">
-                                <td colspan="4"><input type="button" name="rvbtn" id="btn-radar-more" value="more" data-page=""></td>
-                            </tr>
-                            {% endif %}
-                        </table>
+                        <div class="dashContent dashContent-scroll" style="width: 100%">
+                            <table cellspacing=0 id="tb_radar" class="tb-dash-content">
+                                {% for val in activity_radar %}
+                                <tr class="tr-to-listing" data-asin="{{ val.asin }}">
+                                    <td>{{ val.created }}</td>
+                                    <td>{{ val.asin }}</td>
+                                    <td>{{ val.changed }}</td>
+                                    <td>{{ val.buy_box_res }}</td></tr>
+                                {% endfor %}
+                                {% if radar_page %}
+                                <tr id="tr-more-radar">
+                                    <td colspan="4"><input type="button" name="rvbtn" id="btn-radar-more" value="more" data-page=""></td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
                     </div>
                 </div>
             </main>
