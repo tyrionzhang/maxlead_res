@@ -125,13 +125,14 @@
                     if(re.code==1){
                         alert(re.msg);
                         $('#editASIN').attr('style','display:none;');
-                        $.post('/admin/maxlead_site/add_run_spiders/',{'asins':newASIN},
-                            function (re) {
-                            if(re.code == 1){
-                                window.location.reload();
-                            }
-                        },'json');
-
+                        if(re.type == 'add'){
+                            $.post('/admin/maxlead_site/add_run_spiders/',{'asins':newASIN},
+                                function (re) {
+                                if(re.code == 1){
+                                    window.location.reload();
+                                }
+                            },'json');
+                        }
                     }
                 },'json')
             });
