@@ -19,7 +19,9 @@ class Miner:
         user = App.get_user_info(self)
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
-        viewRange = int(self.GET.get('viewRange', user.user.id))
+        viewRange = self.GET.get('viewRange', user.user.id)
+        if viewRange:
+            viewRange = int(viewRange)
         user_list = UserProfile.objects.filter(state=1)
         if user.role == 0:
             user_list = user_list.filter(id=user.id)
