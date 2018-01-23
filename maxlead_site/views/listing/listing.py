@@ -8,7 +8,6 @@ from django.db.models import Count
 from django.db.models import Q
 from maxlead_site.models import Listings,UserAsins,UserProfile
 from maxlead_site.views.app import App
-from maxlead_site.views import views
 from maxlead_site.common.excel_world import get_excel_file
 from maxlead_site.common.common import get_asins
 from maxlead import settings
@@ -41,7 +40,6 @@ class Listing:
 
     @csrf_exempt
     def index(self):
-        os.chdir(settings.ROOT_PATH)
         user = App.get_user_info(self)
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
