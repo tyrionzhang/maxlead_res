@@ -396,6 +396,8 @@ class Dashboard:
         asins = Dashboard._get_asins(self, user,listing_watcher=1,user_id=viewRange)
         listing_watchers = []
         listing_watchers = ListingWacher.objects.filter(asin__in=asins)
+        if not listing_watchers:
+            return HttpResponse(json.dumps({'code': 1, 'data': []}), content_type='application/json')
         if not listEnd and not listBgn:
             listing_watchers_max = listing_watchers.aggregate(Max('created'))
             listing_watchers = listing_watchers.filter(created__icontains=listing_watchers_max['created__max'].strftime("%Y-%m-%d"))

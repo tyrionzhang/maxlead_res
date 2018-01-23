@@ -447,9 +447,8 @@ class Item:
             review = review.filter(created__lte=end_date)
         if start_date:
             review = review.filter(created__gte=start_date)
-
-        asinreview = AsinReviews.objects.filter(aid=asin,created__icontains=AsinReviews.objects.filter(aid=asin).aggregate(Max('created'))
-                                                ['created__max'].strftime("%Y-%m-%d")).all()
+        a_max = AsinReviews.objects.filter(aid=asin).aggregate(Max('created'))
+        asinreview = AsinReviews.objects.filter(aid=asin,created__icontains=a_max['created__max'].strftime("%Y-%m-%d")).all()
 
         data = []
         for val in review:
