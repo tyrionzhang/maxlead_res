@@ -41,6 +41,7 @@ class Listing:
 
     @csrf_exempt
     def index(self):
+        os.chdir(settings.ROOT_PATH)
         user = App.get_user_info(self)
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
