@@ -166,6 +166,8 @@ class Dashboard:
         asins = Dashboard._get_asins(self, user, ownership=ownership, user_id=user_id)
         for val in asins:
             listing_max = Listings.objects.filter(asin=val).aggregate(Max('created'))
+            if not listing_max and not listing_max['created__max']:
+                continue
             start_time = listing_max['created__max'].strftime("%Y-%m-%d")
             if param:
                 if ourBgn:
