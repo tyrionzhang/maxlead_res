@@ -255,7 +255,7 @@ class Logins:
         if keywords:
             user_list = user_list.filter(Q(user__username__icontains=keywords) | Q(user__email__icontains=keywords))
 
-        limit = self.GET.get('limit',6)
+        limit = self.GET.get('limit',20)
         total_count = user_list.count()
         if int(limit) >= total_count:
             limit = total_count

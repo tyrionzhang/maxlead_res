@@ -96,7 +96,7 @@ class Listing:
                     listings = listings.filter(buy_box_res__icontains=listKwd)
             listings = listings.all()
 
-            limit = int(self.GET.get('limit', 6))
+            limit = int(self.GET.get('limit', 20))
             total_count = listings.count()
             if int(limit) >= total_count:
                 limit = total_count
@@ -134,7 +134,7 @@ class Listing:
                     if buy_box_res:
                         buy_box_res = buy_box_res[0]
                     else:
-                        buy_box_res = ''
+                        buy_box_res = ' Amazon.com'
                     category_rank = listing[0].category_rank
                     category_rank_re = ''
                     if category_rank:
@@ -166,7 +166,7 @@ class Listing:
                         'title':listing[0].title,
                         'title1':listing[0].title[0:45]+'...',
                         'asin':listing[0].asin,
-                        'sku':listing[0].sku,
+                        'sku':listing[0].user_asin.sku,
                         'brand':listing[0].brand,
                         'price':listing[0].price,
                         'price2':price2,
@@ -254,7 +254,7 @@ class Listing:
 
                         querysetlist.append(userAsin)
                 UserAsins.objects.bulk_create(querysetlist)
-                return HttpResponse(json.dumps({'code': 1, 'msg': u'添加成功！'}), content_type='application/json')
+                return HttpResponse(json.dumps({'code': 1, 'msg': u'添加成功！','type':'add'}), content_type='application/json')
             else:
                 userAsin_obj = UserAsins.objects.filter(id__in=eval(ids)).all()
                 if newSKU:
@@ -266,7 +266,7 @@ class Listing:
                                         review_watcher=revWatcher,listing_watcher=listWatcher,is_use=status,ownership=ownership,
                                         last_check=datetime.datetime.now(),update_time=datetime.datetime.now())
 
-                return HttpResponse(json.dumps({'code': 1, 'msg': u'修改成功！'}), content_type='application/json')
+                return HttpResponse(json.dumps({'code': 1, 'msg': u'修改成功！','type':'edit'}), content_type='application/json')
 
     @csrf_exempt
     def ajax_get_asins(self):

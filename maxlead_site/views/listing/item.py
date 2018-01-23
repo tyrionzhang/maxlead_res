@@ -19,7 +19,7 @@ class Item:
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
         asin = self.GET.get('asin', '')
-        listing_max = Listings.objects.aggregate(Max('created'))
+        listing_max = Listings.objects.filter(asin=asin).aggregate(Max('created'))
         listing = Listings.objects.filter(asin=asin).filter(created__gte=datetime.datetime.now().strftime("%Y-%m-1")).\
                                                     filter(created__lte=listing_max['created__max']).order_by('-created')
         item = listing[0]
@@ -32,14 +32,14 @@ class Item:
             catgorys.append(item.user_asin.cat3)
 
         UserAsins.objects.filter(id=item.user_asin.id).update(last_check=datetime.datetime.now())
-        qa_max = Questions.objects.aggregate(Max('created'))
+        qa_max = Questions.objects.filter(asin=item.asin).aggregate(Max('created'))
         question_count = Questions.objects.filter(asin=item.asin,created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
         answer_count = item.answered
-        review = Reviews.objects.filter(asin=item.asin,created__icontains=Reviews.objects.aggregate(Max('created'))
+        review = Reviews.objects.filter(asin=item.asin,created__icontains=Reviews.objects.filter(asin=item.asin).aggregate(Max('created'))
                                                                             ['created__max'].strftime("%Y-%m-%d")).all()
         asinreviews = get_review_keywords(review)
         listing_watchers = []
-        listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
+        listing_watchers_max = ListingWacher.objects.filter(asin=item.asin).aggregate(Max('created'))
         listing_watchers = ListingWacher.objects.filter(asin=item.asin,created__icontains=listing_watchers_max['created__max']. \
                                                         strftime("%Y-%m-%d"))
         item_offer = len(listing_watchers)
@@ -159,7 +159,7 @@ class Item:
         offset = (int(page)-1)*3
 
         listing_watchers = []
-        listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
+        listing_watchers_max = ListingWacher.objects.filter(asin=asin).aggregate(Max('created'))
         listing_watchers = ListingWacher.objects.filter(asin=asin,created__icontains=listing_watchers_max['created__max']. \
                                                         strftime("%Y-%m-%d"))
         if listing_watchers:
@@ -222,7 +222,7 @@ class Item:
         rvSort = self.GET.get('rvSort', '')
         words = self.GET.get('words', '')
 
-        review = Reviews.objects.filter(asin=asin, created__icontains=Reviews.objects.aggregate(Max('created'))
+        review = Reviews.objects.filter(asin=asin, created__icontains=Reviews.objects.filter(asin=asin).aggregate(Max('created'))
         ['created__max'].strftime("%Y-%m-%d")).all()
 
         if is_vp:
@@ -375,7 +375,7 @@ class Item:
 
         asin = self.GET.get('qa_asin', '')
 
-        qa_max = Questions.objects.aggregate(Max('created'))
+        qa_max = Questions.objects.filter(asin=asin).aggregate(Max('created'))
         question = Questions.objects.filter(asin=asin, created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
         answer = Answers.objects.filter(question__in=question)
         data = []
@@ -428,7 +428,7 @@ class Item:
         start_date = self.GET.get('start_date', '')
         words = self.GET.get('words', '')
 
-        review = Reviews.objects.filter(asin=asin, created__icontains=Reviews.objects.aggregate(Max('created'))
+        review = Reviews.objects.filter(asin=asin, created__icontains=Reviews.objects.filter(asin=asin).aggregate(Max('created'))
         ['created__max'].strftime("%Y-%m-%d")).all()
 
         if is_vp:
@@ -448,7 +448,7 @@ class Item:
         if start_date:
             review = review.filter(created__gte=start_date)
 
-        asinreview = AsinReviews.objects.filter(aid=asin,created__icontains=AsinReviews.objects.aggregate(Max('created'))
+        asinreview = AsinReviews.objects.filter(aid=asin,created__icontains=AsinReviews.objects.filter(aid=asin).aggregate(Max('created'))
                                                 ['created__max'].strftime("%Y-%m-%d")).all()
 
         data = []

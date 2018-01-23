@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import scrapy,time
-from maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
+import scrapy,time,os
+from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
 from maxlead_site.models import UserAsins
 from scrapy import log
+from django.db.models import Count
 
 
 class ReviewSpider(scrapy.Spider):
@@ -11,12 +12,19 @@ class ReviewSpider(scrapy.Spider):
     name = "review_spider"
     start_urls = []
     asin_id = ''
-    urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews"
-    res = UserAsins.objects.filter(is_use=True).values('aid')
-    if res:
-        for re in list(res):
-            asin = urls % re['aid']
-            start_urls.append(asin)
+
+    def __init__(self, asin=None, *args, **kwargs):
+        urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&th=1&psc=1"
+        super(ReviewSpider, self).__init__(*args, **kwargs)
+        if asin:
+            urls1 = urls % asin
+            self.start_urls.append(urls1)
+        else:
+            res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+            if res:
+                for re in list(res):
+                    asin = urls % re['aid']
+                    self.start_urls.append(asin)
 
     def parse(self, response):
         str = response.url[-7:]
@@ -30,8 +38,17 @@ class ReviewSpider(scrapy.Spider):
         if check:
             item = AsinReviewsItem()
             item['aid'] = asin_id
-            item['avg_score'] = response.css('div.averageStarRatingNumerical span.arp-rating-out-of-text::text').extract_first()[0:3]
+            item['avg_score'] = response.css('div.averageStarRatingNumerical span.arp-rating-out-of-text::text').extract_first()
+            if not item['avg_score']:
+                item['avg_score'] = response.css('i.averageStarRating span::text').extract_first()
+            if item['avg_score']:
+                item['avg_score'] = item['avg_score'][0: 3]
             item['total_review'] = response.css('div.averageStarRatingIconAndCount span.totalReviewCount::text').extract_first()
+
+            if not item['total_review']:
+                item['total_review'] = response.css('span.totalReviewCount::text').extract_first()
+            if item['total_review']:
+                item['total_review'] = item['total_review'].replace(',','')
             yield item
         for review in response.css('div#cm_cr-review_list div.review'):
             item = ReviewsItem()
@@ -42,7 +59,11 @@ class ReviewSpider(scrapy.Spider):
             item['review_link'] = "https://www.amazon.com" + review.css('a.review-title::attr("href")').extract_first()
             item['score'] = review.css('i.review-rating span::text').extract_first()[0:1]
             item['variation'] = review.css('div.review-format-strip a.a-color-secondary::text').extract_first()
-            vp = review.xpath('//span[contains(@data-hook, "avp-badge")]/text()').extract_first()
+            item['image_urls'] = []
+            for img_re in review.css('div.review-image-container img.review-image-tile::attr("data-src")').extract():
+                item['image_urls'].append(img_re)
+
+            vp = review.css('div.review-format-strip .a-link-normal span::text').extract_first()
             if vp is not None and vp == 'Verified Purchase':
                 item['is_vp'] = 1
             else:

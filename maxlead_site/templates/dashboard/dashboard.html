@@ -67,7 +67,7 @@
                                 <tr class="tr-to-listing" data-asin="{{ val.asin }}">
                                     <td>{{ val.sku }}</td>
                                     <td>{{ val.total_review }}</td>
-                                    <td>{{ val.s }}</td>
+                                    <td>{{ val.total_review2 }}</td>
                                     <td>{{ val.rvw_score }}</td>
                                     <td>{{ val.rvw_score2 }}</td></tr>
                                 {% endfor %}
@@ -94,7 +94,7 @@
                                 <tr class="tr-to-listing" data-asin="{{ val.asin }}">
                                     <td>{{ val.asin }}</td>
                                     <td>{{ val.total_review }}</td>
-                                    <td>{{ val.s }}</td>
+                                    <td>{{ val.total_review2 }}</td>
                                     <td>{{ val.rvw_score }}</td>
                                     <td>{{ val.rvw_score2 }}</td></tr>
                                 {% endfor %}
@@ -243,7 +243,7 @@
 
         $('.rising_search').on('click',function () {
             var type = $(this).data('type');
-            var tb = $(this).parent().next();
+            var tb = $(this).parent().next().find('table');
             var viewRange = $('select[name="viewRange"]').val();
             if(type == 'Ours'){
                 var data = {
@@ -263,15 +263,28 @@
 
             $.get('/admin/maxlead_site/ajax_rising/',data,function (re) {
                 if(re.code==1){
-                    var el = '<tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>';
-                    $.each(re.data.data,function (index,val) {
-                        el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
-                            '<td>'+val['sku']+'</td>\n' +
-                            '<td>'+val['total_review']+'</td>\n' +
-                            '<td></td>\n' +
-                            '<td>'+val['rvw_score']+'</td>\n' +
-                            '<td>'+val['rvw_score2']+'</td></tr>';
-                    });
+                    if(re.data['type'] == 'Ours'){
+                        var el = '<tr><th>SKU</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>';
+                        $.each(re.data.data,function (index,val) {
+                            el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
+                                '<td>'+val['sku']+'</td>\n' +
+                                '<td>'+val['total_review']+'</td>\n' +
+                                '<td>'+val['total_review2']+'</td>\n' +
+                                '<td>'+val['rvw_score']+'</td>\n' +
+                                '<td>'+val['rvw_score2']+'</td></tr>';
+                        });
+                    }else{
+                        var el = '<tr><th>Asin</th><th>Reviews</th><th>Growth</th><th>Score</th><th>Score Change</th></tr>';
+                        $.each(re.data.data,function (index,val) {
+                            el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
+                                '<td>'+val['asin']+'</td>\n' +
+                                '<td>'+val['total_review']+'</td>\n' +
+                                '<td>'+val['total_review2']+'</td>\n' +
+                                '<td>'+val['rvw_score']+'</td>\n' +
+                                '<td>'+val['rvw_score2']+'</td></tr>';
+                        });
+                    }
+
                     tb.html(el);
                     if(re.data.is_page){
                         tb.append('<tr class="tr-more-rising">' +
@@ -305,14 +318,25 @@
             $.get('/admin/maxlead_site/ajax_rising/',data,function (re) {
                 if(re.code==1){
                     var el = '';
-                    $.each(re.data.data,function (index,val) {
-                        el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
-                            '<td>'+val['sku']+'</td>\n' +
-                            '<td>'+val['total_review']+'</td>\n' +
-                            '<td></td>\n' +
-                            '<td>'+val['rvw_score']+'</td>\n' +
-                            '<td>'+val['rvw_score2']+'</td></tr>';
-                    });
+                    if(re.data['type'] == 'Ours'){
+                        $.each(re.data.data,function (index,val) {
+                            el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
+                                '<td>'+val['sku']+'</td>\n' +
+                                '<td>'+val['total_review']+'</td>\n' +
+                                '<td>'+val['total_review2']+'</td>\n' +
+                                '<td>'+val['rvw_score']+'</td>\n' +
+                                '<td>'+val['rvw_score2']+'</td></tr>';
+                        });
+                    }else{
+                        $.each(re.data.data,function (index,val) {
+                            el += '<tr class="tr-to-listing" data-asin="'+val['asin']+'">\n' +
+                                '<td>'+val['asin']+'</td>\n' +
+                                '<td>'+val['total_review']+'</td>\n' +
+                                '<td>'+val['total_review2']+'</td>\n' +
+                                '<td>'+val['rvw_score']+'</td>\n' +
+                                '<td>'+val['rvw_score2']+'</td></tr>';
+                        });
+                    }
                     more.parent().parent().before(el);
                     if(!re.data.is_page){
                         dash_el.find('.tr-more-rising').remove();

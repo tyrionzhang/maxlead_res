@@ -156,6 +156,58 @@ class Dashboard:
                         activity_radar.append(listing[0])
             return activity_radar
 
+    def _get_rising(self,user,ownership,user_id,param = ''):
+        if param:
+            ourBgn = param.get('ourBgn', '')
+            ourEnd = param.get('ourEnd', '')
+            othBgn = param.get('othBgn', '')
+            othEnd = param.get('othEnd', '')
+        data = []
+        asins = Dashboard._get_asins(self, user, ownership=ownership, user_id=user_id)
+        for val in asins:
+            listing_max = Listings.objects.filter(asin=val).aggregate(Max('created'))
+            start_time = listing_max['created__max'].strftime("%Y-%m-%d")
+            if param:
+                if ourBgn:
+                    start_time = ourBgn
+                if othBgn:
+                    start_time = othBgn
+            listing = Listings.objects.filter(asin=val,created__icontains=start_time)
+            if listing:
+                end_time = (listing[0].created + datetime.timedelta(days=-7)).strftime("%Y-%m-%d")
+                if param:
+                    if ourEnd:
+                        end_time = ourEnd
+                    if othEnd:
+                        end_time = othEnd
+                listing1 = Listings.objects.filter(asin=val,created__icontains=end_time)
+
+                if listing1:
+                    rvw_score2 = round(float(listing[0].rvw_score) - float(listing1[0].rvw_score),2)
+                    total_review2 = listing[0].total_review - listing1[0].total_review
+                else:
+                    rvw_score2 = 0
+                    total_review2 = 0
+                re = {
+                    'asin':listing[0].asin,
+                    'created':listing[0].created.strftime("%Y-%m-%d"),
+                    'sku':listing[0].user_asin.sku,
+                    'brand':listing[0].brand,
+                    'total_review':listing[0].total_review,
+                    'total_review2':total_review2,
+                    'rvw_score':float(listing[0].rvw_score),
+                    'rvw_score2':rvw_score2
+                }
+                data.append(re)
+        if data:
+            for v in range(len(data)):
+                for i in range(len(data) - 1 - v):
+                    if (i + 1) < len(data) and data[i+1]['total_review2'] > data[i]['total_review2']:
+                        temp = data[i + 1]
+                        data[i + 1] = data[i]
+                        data[i] = temp
+        return data
+
     def index(self):
         user = App.get_user_info(self)
         if not user:
@@ -172,55 +224,22 @@ class Dashboard:
             user_list = user_list.filter(Q(group=user)|Q(id=user.id))
 
         asins = Dashboard._get_asins(self,user,listing_watcher=1,user_id=viewRange)
-        ours_asins = Dashboard._get_asins(self,user,ownership='Ours',user_id=viewRange)
-        others_asins = Dashboard._get_asins(self,user,ownership='Others',user_id=viewRange)
-        ours_li = []
-        others_li = []
-        for val in ours_asins[0:6]:
-            listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
+        ours_li = Dashboard._get_rising(self,user,'Ours',viewRange)[0:8]
+        others_li = Dashboard._get_rising(self,user,'Others',viewRange)[0:8]
+        others_asins = Dashboard._get_asins(self, user, ownership='Others', user_id=viewRange)
 
-            if len(listing) == 2:
-                rvw_score2 = round(float(listing[0].rvw_score) - float(listing[1].rvw_score),2)
-            else:
-                rvw_score2 = ''
-            re = {
-                'asin':listing[0].asin,
-                'sku':listing[0].user_asin.sku,
-                'total_review':listing[0].total_review,
-                'rvw_score':float(listing[0].rvw_score),
-                'rvw_score2':rvw_score2
-            }
-            ours_li.append(re)
-
-        activity_radar = Dashboard._get_activity_radar(self,others_asins)
+        activity_radar = Dashboard._get_activity_radar(self, others_asins = others_asins)
         if activity_radar:
             activity_radar = activity_radar[0:6]
         radar_page = 0
-        if len(activity_radar)>=6:
+        if len(activity_radar) >= 6:
             radar_page = 1
-
-        for val in others_asins[0:6]:
-            listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
-
-            if listing:
-                if len(listing) == 2:
-                    rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
-                else:
-                    rvw_score2 = ''
-                re = {
-                    'asin':listing[0].asin,
-                    'sku':listing[0].user_asin.sku,
-                    'total_review':listing[0].total_review,
-                    'rvw_score':float(listing[0].rvw_score),
-                    'rvw_score2':rvw_score2
-                }
-                others_li.append(re)
 
         o_rising_page = 0
         th_rising_page = 0
-        if len(ours_asins) > 6:
+        if len(ours_li) >= 8:
             o_rising_page = 1
-        if len(others_asins) > 6:
+        if len(others_li) >= 8:
             th_rising_page = 1
 
         reviews = Reviews.objects.filter(created__icontains=Reviews.objects.aggregate(Max('created'))['created__max'],
@@ -274,75 +293,48 @@ class Dashboard:
             reviews = reviews.filter(review_date__lte=revEnd)
         if reviews:
             reviews = reviews[offset:offset+6]
+        if not reviews:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '没有数据！'}), content_type='application/json')
 
-            data = []
-            for val in reviews:
-                if val.review_date:
-                    val.review_date = val.review_date.strftime("%Y-%m-%d")
-                a = model_to_dict(val)
-                a['sku'] = UserAsins.objects.get(aid=val.asin).sku
-                data.append(a)
-            is_page = 1
-            if len(reviews) < 6:
-                is_page = 0
+        data = []
+        for val in reviews:
+            if val.review_date:
+                val.review_date = val.review_date.strftime("%Y-%m-%d")
+            a = model_to_dict(val)
+            a['sku'] = UserAsins.objects.get(aid=val.asin).sku
+            data.append(a)
+        is_page = 1
+        if len(reviews) < 6:
+            is_page = 0
 
-            re = {
-                'data':data,
-                'review_page':page,
-                'is_page':is_page
-            }
+        re = {
+            'data':data,
+            'review_page':page,
+            'is_page':is_page
+        }
 
-            return HttpResponse(json.dumps({'code': 1, 'data': re}), content_type='application/json')
+        return HttpResponse(json.dumps({'code': 1, 'data': re}), content_type='application/json')
 
     @csrf_exempt
     def ajax_rising(self):
         user = App.get_user_info(self)
         if not user:
             return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
-        ourBgn = self.GET.get('ourBgn', '')
-        ourEnd = self.GET.get('ourEnd', '')
-        othBgn = self.GET.get('othBgn', '')
-        othEnd = self.GET.get('othEnd', '')
+
         type = self.GET.get('type', 'Ours')
         viewRange = self.GET.get('viewRange', '')
         page = self.GET.get('page', 1)
-        offset = (int(page) - 1) * 6
-
-        asins = Dashboard._get_asins(self, user, ownership=type,user_id=viewRange)
-
-        res = []
-        for val in asins[offset:offset+6]:
-            listing = Listings.objects.filter(asin=val)
-            if ourBgn:
-                listing = listing.filter(created__gte=ourBgn)
-            if ourEnd:
-                listing = listing.filter(created__lte=ourEnd)
-            if othBgn:
-                listing = listing.filter(created__gte=othBgn)
-            if othEnd:
-                listing = listing.filter(created__lte=othEnd)
-            listing = listing.order_by('-created')[:2]
-
-            if len(listing) == 2:
-                rvw_score2 = round(float(listing[0].rvw_score) - float(listing[1].rvw_score),2)
-            else:
-                rvw_score2 = ''
-            re = {
-                'asin': listing[0].asin,
-                'sku': listing[0].user_asin.sku,
-                'total_review': listing[0].total_review,
-                'rvw_score': float(listing[0].rvw_score),
-                'rvw_score2': rvw_score2
-            }
-            res.append(re)
+        offset = (int(page) - 1) * 8
+        res = Dashboard._get_rising(self,user,type,viewRange,param=self.GET)[offset:offset+8]
         is_page = 1
-        if len(res) < 6:
+        if len(res) < 8:
             is_page = 0
 
         data = {
             'data':res,
             'is_page':is_page,
-            'page':page
+            'page':page,
+            'type':type
         }
         return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
 
@@ -395,11 +387,11 @@ class Dashboard:
         listEnd = self.GET.get('listEnd','')
         viewRange = self.GET.get('viewRange', '')
         offset = (int(page)-1)*6
-        asins = Dashboard._get_asins(self, user,ownership='Ours',listing_watcher=1,user_id=viewRange)
+        asins = Dashboard._get_asins(self, user,listing_watcher=1,user_id=viewRange)
         listing_watchers = []
         listing_watchers = ListingWacher.objects.filter(asin__in=asins)
         if not listEnd and not listBgn:
-            listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
+            listing_watchers_max = listing_watchers.aggregate(Max('created'))
             listing_watchers = listing_watchers.filter(created__icontains=listing_watchers_max['created__max'].strftime("%Y-%m-%d"))
         if listEnd:
             listing_watchers = listing_watchers.filter(created__lte=listEnd)
@@ -523,50 +515,16 @@ class Dashboard:
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-        ourBgn = self.GET.get('ourBgn', '')
-        ourEnd = self.GET.get('ourEnd', '')
-        othBgn = self.GET.get('othBgn', '')
-        othEnd = self.GET.get('othEnd', '')
         type = self.GET.get('type', 'Ours')
         viewRange = self.GET.get('viewRange', '')
 
-        asins = Dashboard._get_asins(self, user, ownership=type,user_id=viewRange)
-
-        if (not ourBgn and not ourEnd) or (not othBgn and not othEnd):
-            asins = asins[0:6]
-
-        res = []
-        for val in asins:
-            listing = Listings.objects.filter(asin=val)
-            if ourBgn:
-                listing = listing.filter(created__gte=ourBgn)
-            if ourEnd:
-                listing = listing.filter(created__lte=ourEnd)
-            if othBgn:
-                listing = listing.filter(created__gte=othBgn)
-            if othEnd:
-                listing = listing.filter(created__lte=othEnd)
-            listing = listing.order_by('-created')[:2]
-
-            if len(listing) == 2:
-                rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
-            else:
-                rvw_score2 = ''
-            re = {
-                'asin': listing[0].asin,
-                'sku': listing[0].user_asin.sku,
-                'brand': listing[0].brand,
-                'total_review': listing[0].total_review,
-                'rvw_score': float(listing[0].rvw_score),
-                'rvw_score2': rvw_score2,
-                'created': listing[0].created.strftime('%Y-%m-%d')
-            }
-            res.append(re)
+        res = Dashboard._get_rising(self, user, type, viewRange, param=self.GET)
 
         fields = [
             'SKU',
             'Asin',
             'Reviews',
+            'Brand',
             'Growth',
             'Score',
             'Score Change',
@@ -577,6 +535,7 @@ class Dashboard:
             'asin',
             'total_review',
             'brand',
+            'total_review2',
             'rvw_score',
             'rvw_score2',
             'created'
