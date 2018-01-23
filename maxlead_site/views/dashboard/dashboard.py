@@ -190,7 +190,9 @@ class Dashboard:
                     total_review2 = 0
                 re = {
                     'asin':listing[0].asin,
+                    'created':listing[0].created.strftime("%Y-%m-%d"),
                     'sku':listing[0].user_asin.sku,
+                    'brand':listing[0].brand,
                     'total_review':listing[0].total_review,
                     'total_review2':total_review2,
                     'rvw_score':float(listing[0].rvw_score),
@@ -513,51 +515,16 @@ class Dashboard:
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-        ourBgn = self.GET.get('ourBgn', '')
-        ourEnd = self.GET.get('ourEnd', '')
-        othBgn = self.GET.get('othBgn', '')
-        othEnd = self.GET.get('othEnd', '')
         type = self.GET.get('type', 'Ours')
         viewRange = self.GET.get('viewRange', '')
 
-        asins = Dashboard._get_asins(self, user, ownership=type,user_id=viewRange)
-
-        if (not ourBgn and not ourEnd) or (not othBgn and not othEnd):
-            asins = asins[0:6]
-
-        res = []
-        for val in asins:
-            listing_max = Listings.objects.filter(asin=val).aggregate(Max('created'))
-            listing = Listings.objects.filter(asin=val)
-            if ourBgn:
-                listing = listing.filter(created__gte=ourBgn)
-            if ourEnd:
-                listing = listing.filter(created__lte=ourEnd)
-            if othBgn:
-                listing = listing.filter(created__gte=othBgn)
-            if othEnd:
-                listing = listing.filter(created__lte=othEnd)
-            listing = listing.order_by('-created')[:2]
-
-            if len(listing) == 2:
-                rvw_score2 = float(listing[0].rvw_score) - float(listing[1].rvw_score)
-            else:
-                rvw_score2 = ''
-            re = {
-                'asin': listing[0].asin,
-                'sku': listing[0].user_asin.sku,
-                'brand': listing[0].brand,
-                'total_review': listing[0].total_review,
-                'rvw_score': float(listing[0].rvw_score),
-                'rvw_score2': rvw_score2,
-                'created': listing[0].created.strftime('%Y-%m-%d')
-            }
-            res.append(re)
+        res = Dashboard._get_rising(self, user, type, viewRange, param=self.GET)
 
         fields = [
             'SKU',
             'Asin',
             'Reviews',
+            'Brand',
             'Growth',
             'Score',
             'Score Change',
@@ -568,6 +535,7 @@ class Dashboard:
             'asin',
             'total_review',
             'brand',
+            'total_review2',
             'rvw_score',
             'rvw_score2',
             'created'

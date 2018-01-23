@@ -48,7 +48,7 @@ class Miner:
                 else:
                     v.type = 'QA'
 
-        limit = self.GET.get('limit', 6)
+        limit = self.GET.get('limit', 20)
         page = self.GET.get('page', 1)
 
         total_count = len(tasks)

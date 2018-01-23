@@ -96,7 +96,7 @@ class Listing:
                     listings = listings.filter(buy_box_res__icontains=listKwd)
             listings = listings.all()
 
-            limit = int(self.GET.get('limit', 6))
+            limit = int(self.GET.get('limit', 20))
             total_count = listings.count()
             if int(limit) >= total_count:
                 limit = total_count
@@ -134,7 +134,7 @@ class Listing:
                     if buy_box_res:
                         buy_box_res = buy_box_res[0]
                     else:
-                        buy_box_res = ''
+                        buy_box_res = ' Amazon.com'
                     category_rank = listing[0].category_rank
                     category_rank_re = ''
                     if category_rank:
