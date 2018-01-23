@@ -122,13 +122,13 @@ class Dashboard:
             return activity_radar
         else:
             for val in others_asins:
-                listing = Listings.objects.filter(asin=val).order_by('-created')[:2]
+                listing = Listings.objects.filter(asin=val).order_by('-created')
                 if param:
                     if actBgn:
                         listing = listing.filter(created__gte=actBgn)
                     if actEnd:
                         listing = listing.filter(created__lte=actEnd)
-
+                listing = listing[:2]
                 if len(listing) == 2:
                     if not listing[0].price == listing[1].price or not listing[0].title == listing[1].title or not listing[0]. \
                                                image_date == listing[1].image_date or not operator.eq(listing[0].description,
