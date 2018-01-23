@@ -35,9 +35,6 @@ class Item:
         qa_max = Questions.objects.filter(asin=item.asin).aggregate(Max('created'))
         question_count = Questions.objects.filter(asin=item.asin,created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
         answer_count = item.answered
-        review = Reviews.objects.filter(asin=item.asin,created__icontains=Reviews.objects.filter(asin=item.asin).aggregate(Max('created'))
-                                                                            ['created__max'].strftime("%Y-%m-%d")).all()
-        asinreviews = get_review_keywords(review)
         listing_watchers = []
         listing_watchers_max = ListingWacher.objects.filter(asin=item.asin).aggregate(Max('created'))
         listing_watchers = ListingWacher.objects.filter(asin=item.asin,created__icontains=listing_watchers_max['created__max']. \
@@ -78,24 +75,35 @@ class Item:
                 line_review_y.append(int(v.total_review))
                 line_x2.append(int(v.created.strftime("%d")))
 
-        positive_words = asinreviews['positive_keywords']
+        review_max = Reviews.objects.filter(asin=item.asin).aggregate(Max('created'))
+        if review_max and review_max['created__max']:
+            review = Reviews.objects.filter(asin=item.asin,
+                                            created__icontains=review_max['created__max'].strftime("%Y-%m-%d")).all()
+            asinreviews = get_review_keywords(review)
 
-        review_limit = self.GET.get('review_limit', 5)
+            positive_words = asinreviews['positive_keywords']
 
-        paginator = Paginator(review, review_limit)
-        review_page = self.GET.get('review_page',1)
-        try:
-            review_data = paginator.page(review_page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            review_data = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            review_data = paginator.page(paginator.num_pages)
+            review_limit = self.GET.get('review_limit', 5)
 
-        for val in review_data:
-            if val.review_date:
-                val.review_date = val.review_date.strftime("%B %d, %Y")
+            paginator = Paginator(review, review_limit)
+            review_page = self.GET.get('review_page',1)
+            try:
+                review_data = paginator.page(review_page)
+            except PageNotAnInteger:
+                # If page is not an integer, deliver first page.
+                review_data = paginator.page(1)
+            except EmptyPage:
+                # If page is out of range (e.g. 9999), deliver last page of results.
+                review_data = paginator.page(paginator.num_pages)
+
+            for val in review_data:
+                if val.review_date:
+                    val.review_date = val.review_date.strftime("%B %d, %Y")
+        else:
+            review_data = []
+            positive_words = []
+            review_page = 1
+
 
         item.question_answer = str(answer_count)+'/'+str(question_count.count())
         box_res = eval(item.buy_box_res)
