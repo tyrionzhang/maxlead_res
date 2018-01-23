@@ -243,10 +243,11 @@ class Dashboard:
             o_rising_page = 1
         if len(others_li) >= 8:
             th_rising_page = 1
-
-        reviews = Reviews.objects.filter(created__icontains=Reviews.objects.aggregate(Max('created'))['created__max'],
-                                        score__lte=3,asin__in=asins).order_by('-review_date')
-
+        review_max = Reviews.objects.filter(asin__in=asins).aggregate(Max('created'))
+        if review_max and review_max['created__max']:
+            reviews = Reviews.objects.filter(created__icontains=review_max['created__max'],score__lte=3,asin__in=asins).order_by('-review_date')
+        else:
+            reviews = []
         is_page = 0
         if len(reviews) > 6:
             is_page = 1
@@ -287,8 +288,11 @@ class Dashboard:
         offset = (int(page)-1)*6
 
         asins = Dashboard._get_asins(self,user,user_id=viewRange)
-        reviews = Reviews.objects.filter(created__icontains=Reviews.objects.aggregate(Max('created'))['created__max'],
-                                         score__lte=3, asin__in=asins).order_by('-review_date')
+        review_max = Reviews.objects.filter(asin__in=asins).aggregate(Max('created'))
+        if not review_max or not review_max['created__max']:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '没有数据！'}), content_type='application/json')
+        reviews = Reviews.objects.filter(created__icontains=review_max['created__max'],score__lte=3, asin__in=asins).order_by('-review_date')
+
         if revBgn:
             reviews = reviews.filter(review_date__gte=revBgn)
         if revEnd:
@@ -461,55 +465,56 @@ class Dashboard:
         viewRange = self.GET.get('viewRange', '')
 
         asins = Dashboard._get_asins(self,user,user_id=viewRange)
-        reviews = Reviews.objects.filter(created__icontains=Reviews.objects.aggregate(Max('created'))['created__max'],
-                                         score__lte=3, asin__in=asins).order_by('-review_date')
-        if revBgn:
-            reviews = reviews.filter(review_date__gte=revBgn)
-        if revEnd:
-            reviews = reviews.filter(review_date__lte=revEnd)
-        if not revBgn and not revEnd:
-            reviews = reviews[0:6]
-        data = []
-        for val in reviews:
-            re = {
-                'title': val.title,
-                'variation': val.variation,
-                'asin': val.asin,
-                'name': val.name,
-                'score': val.score,
-                'is_vp': val.is_vp,
-                'review_date': val.review_date.strftime("%Y-%m-%d"),
-                'content': val.content,
-                'review_link': val.review_link,
-                'created': val.created.strftime("%Y-%m-%d"),
-            }
-            data.append(re)
+        review_max = Reviews.objects.filter(asin__in=asins).aggregate(Max('created'))
+        if review_max and review_max['created__max']:
+            reviews = Reviews.objects.filter(created__icontains=review_max['created__max'],score__lte=3, asin__in=asins).order_by('-review_date')
+            if revBgn:
+                reviews = reviews.filter(review_date__gte=revBgn)
+            if revEnd:
+                reviews = reviews.filter(review_date__lte=revEnd)
+            if not revBgn and not revEnd:
+                reviews = reviews[0:6]
+            data = []
+            for val in reviews:
+                re = {
+                    'title': val.title,
+                    'variation': val.variation,
+                    'asin': val.asin,
+                    'name': val.name,
+                    'score': val.score,
+                    'is_vp': val.is_vp,
+                    'review_date': val.review_date.strftime("%Y-%m-%d"),
+                    'content': val.content,
+                    'review_link': val.review_link,
+                    'created': val.created.strftime("%Y-%m-%d"),
+                }
+                data.append(re)
 
-        fields = [
-            'Title',
-            'Variation',
-            'Asin',
-            'Name',
-            'Score',
-            'VP',
-            'Review Date',
-            'Content',
-            'Review Link',
-            'Created'
-        ]
-        data_fields = [
-            'title',
-            'variation',
-            'asin',
-            'name',
-            'score',
-            'is_vp',
-            'review_date',
-            'content',
-            'review_link',
-            'created'
-        ]
-        return get_excel_file(self, data, fields, data_fields)
+            fields = [
+                'Title',
+                'Variation',
+                'Asin',
+                'Name',
+                'Score',
+                'VP',
+                'Review Date',
+                'Content',
+                'Review Link',
+                'Created'
+            ]
+            data_fields = [
+                'title',
+                'variation',
+                'asin',
+                'name',
+                'score',
+                'is_vp',
+                'review_date',
+                'content',
+                'review_link',
+                'created'
+            ]
+            return get_excel_file(self, data, fields, data_fields)
 
     @csrf_exempt
     def export_rising(self):
