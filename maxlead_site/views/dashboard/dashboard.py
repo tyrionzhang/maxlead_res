@@ -300,7 +300,7 @@ class Dashboard:
         if reviews:
             reviews = reviews[offset:offset+6]
         if not reviews:
-            return HttpResponse(json.dumps({'code': 0, 'msg': '没有数据！'}), content_type='application/json')
+            return HttpResponse(json.dumps({'code': 1, 'data': []}), content_type='application/json')
 
         data = []
         for val in reviews:
