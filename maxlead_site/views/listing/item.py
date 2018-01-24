@@ -397,6 +397,8 @@ class Item:
         if not qa_max or not qa_max['created__max']:
             qa_max = Questions.objects.aggregate(Max('created'))
         question = Questions.objects.filter(asin=asin, created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
+        if not question:
+            return HttpResponseRedirect("")
         answer = Answers.objects.filter(question__in=question)
         data = []
         for val in answer:
