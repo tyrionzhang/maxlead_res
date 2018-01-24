@@ -225,7 +225,7 @@ class Dashboard:
         if user.role == 1:
             user_list = user_list.filter(Q(group=user)|Q(id=user.id))
 
-        asins = Dashboard._get_asins(self,user,listing_watcher=1,user_id=viewRange)
+        review_asins = Dashboard._get_asins(self,user,review_watcher=1,user_id=viewRange)
         ours_li = Dashboard._get_rising(self,user,'Ours',viewRange)[0:8]
         others_li = Dashboard._get_rising(self,user,'Others',viewRange)[0:8]
         others_asins = Dashboard._get_asins(self, user, ownership='Others', user_id=viewRange)
@@ -243,9 +243,9 @@ class Dashboard:
             o_rising_page = 1
         if len(others_li) >= 8:
             th_rising_page = 1
-        review_max = Reviews.objects.filter(asin__in=asins).aggregate(Max('created'))
+        review_max = Reviews.objects.filter(asin__in=review_asins).aggregate(Max('created'))
         if review_max and review_max['created__max']:
-            reviews = Reviews.objects.filter(created__icontains=review_max['created__max'],score__lte=3,asin__in=asins).order_by('-review_date')
+            reviews = Reviews.objects.filter(created__icontains=review_max['created__max'],score__lte=3,asin__in=review_asins).order_by('-review_date')
         else:
             reviews = []
         is_page = 0
