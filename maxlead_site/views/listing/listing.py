@@ -84,7 +84,7 @@ class Listing:
                 listings = listings.filter(buy_box=buybox)
             if listKwd and searchCol:
                 if searchCol == 'SKU':
-                    listings = listings.filter(sku__icontains=listKwd)
+                    listings = listings.filter(user_asin__sku__icontains=listKwd)
                 if searchCol == 'ASIN':
                     listings = listings.filter(asin__icontains=listKwd)
                 if searchCol == 'title':
