@@ -33,7 +33,7 @@ class Item:
 
         UserAsins.objects.filter(id=item.user_asin.id).update(last_check=datetime.datetime.now())
         qa_max = Questions.objects.filter(asin=item.asin).aggregate(Max('created'))
-        if not qa_max:
+        if not qa_max or qa_max['created__max']:
             qa_max = Questions.objects.aggregate(Max('created'))
         question_count = Questions.objects.filter(asin=item.asin,created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
         answer_count = item.answered
