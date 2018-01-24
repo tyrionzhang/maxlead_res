@@ -92,9 +92,9 @@
 
                     <div class="qtyUpdater">
                         <select name="limit">
-                            <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
-                            <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
-                            <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
+                            <option value="20" {% if limit_re == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if limit_re == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if limit_re == 100 %}selected{% endif %}>100</option>
                         </select> results per page.
                     </div>
 
@@ -342,10 +342,21 @@
             var param = "&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}";
             var page = $('input[name="page"]').val();
             var limit = $('select[name="limit"]').val();
-            var url = '/admin/maxlead_site/listings/?page='+page+param+'&limit='+limit;
+            var viewRange = $('select[name="viewRange"]').val();
+            var url = '/admin/maxlead_site/listings/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
             window.location.href = url;
             return false;
-        })
+        });
+
+        $('select[name="limit"]').on('change',function () {
+            var param = "&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}";
+            var page = $('input[name="page"]').val();
+            var limit = $('select[name="limit"]').val();
+            var viewRange = $('select[name="viewRange"]').val();
+            var url = '/admin/maxlead_site/listings/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
+            window.location.href = url;
+            return false;
+            });
         </script>
     {% endblock %}
 

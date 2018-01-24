@@ -58,9 +58,9 @@
 
                     <div class="qtyUpdater">
                         <select name="limit">
-                            <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
-                            <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
-                            <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
+                            <option value="20" {% if re_limit == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if re_limit == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if re_limit == 100 %}selected{% endif %}>100</option>
                         </select> results per page.
                     </div>
 
@@ -130,10 +130,21 @@
             $('#gotoPage').on('click',function () {
                 var page = $('input[name="page"]').val();
                 var limit = $('select[name="limit"]').val();
-                var url = '/admin/maxlead_site/miner/?page='+page+'&limit='+limit;
+                var viewRange = $('select[name="viewRange"]').val();
+                var url = '/admin/maxlead_site/miner/?page='+page+'&limit='+limit+'&viewRange='+viewRange;
                 window.location.href = url;
                 return false;
             });
+
+            $('select[name="limit"]').on('change',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var viewRange = $('select[name="viewRange"]').val();
+                var url = '/admin/maxlead_site/miner/?page='+page+'&limit='+limit+'&viewRange='+viewRange;
+                window.location.href = url;
+                return false;
+            });
+
             function get_export_fun() {
                 $.get('/admin/maxlead_site/ajax_get_miner_data/',{},function (re) {
                     if(re.code == 1){
