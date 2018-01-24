@@ -287,15 +287,21 @@
                               '<td class="rvInfoRV">'+value['content']+'</td>' +
                               '</tr>';
                         });
-                        $.each(re.data.positive_words,function(index,value){
-                          el_k += '<li><a title="'+value['count']+'" class="a_review_keywords" data-words="'+value['words']+'" data-asin="{{ res.asin }}" style="cursor:pointer">'+value['words']+' '+value['count']+'</a></li>';
-                        });
-                        $.each(re.data.negative_keywords,function(index,value){
-                          el_k1 += '<li><a title="'+value['count']+'" class="a_review_keywords" data-words="'+value['words']+'" data-asin="{{ res.asin }}" style="cursor:pointer">'+value['words']+' '+value['count']+'</a></li>';
-                        });
+                        if(re.data.positive_words.length > 0){
+                            $.each(re.data.positive_words,function(index,value){
+                              el_k += '<li><a title="'+value['count']+'" class="a_review_keywords" data-words="'+value['words']+'" data-asin="{{ res.asin }}" style="cursor:pointer">'+value['words']+' '+value['count']+'</a></li>';
+                            });
+                            $('#ul_words').html(el_k);
+                        }
+
+                        if(re.data.negative_keywords.length > 0){
+                            $.each(re.data.negative_keywords,function(index,value){
+                              el_k1 += '<li><a title="'+value['count']+'" class="a_review_keywords" data-words="'+value['words']+'" data-asin="{{ res.asin }}" style="cursor:pointer">'+value['words']+' '+value['count']+'</a></li>';
+                            });
+                            $('#ul_words').html(el_k1);
+                        }
                         $('#table-review-list').html(el);
-                        $('#ul_words').html(el_k);
-                        $('#ul_words').html(el_k1);
+
                         if (re.data.is_page && $('#btn-review-more').length <= 0){
                             $('.rvInfo').append('<button type="button" class="moreButton" id="btn-review-more" data-page="'+re.data.review_page+'">More</button>');
                         }
