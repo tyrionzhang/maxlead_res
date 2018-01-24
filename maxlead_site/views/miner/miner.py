@@ -158,39 +158,51 @@ class Miner:
             else:
                 qa_max = Questions.objects.aggregate(Max('created'))
                 questions = Questions.objects.filter(asin__in=asins, created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
-                answers = Answers.objects.filter(question__in=questions)
-                if answers:
-                    for v in answers:
+                for val in questions:
+                    answers = Answers.objects.filter(question_id=val.id)
+                    if answers:
+                        for v in answers:
+                            re = {
+                                'question':v.question.question,
+                                'asin':v.question.asin,
+                                'asked':v.question.asked,
+                                'votes':v.question.votes,
+                                'answer':v.answer,
+                                'person':v.person,
+                                'created':v.created.strftime('%Y-%m-%d %H:%M:%S'),
+                            }
+                            data.append(re)
+                    else:
                         re = {
-                            'question':v.question.question,
-                            'asin':v.question.asin,
-                            'asked':v.question.asked,
-                            'votes':v.question.votes,
-                            'answer':v.answer,
-                            'person':v.person,
-                            'created':v.created.strftime('%Y-%m-%d %H:%M:%S'),
+                            'question': val.question,
+                            'asin': val.asin,
+                            'asked': val.asked,
+                            'votes': val.votes,
+                            'answer': '',
+                            'person': '',
+                            'created': val.created.strftime('%Y-%m-%d %H:%M:%S'),
                         }
                         data.append(re)
 
-                        fields = [
-                            'Question',
-                            'Asin',
-                            'Asked',
-                            'Votes',
-                            'Answer',
-                            'Person',
-                            'Created'
-                        ]
+                fields = [
+                    'Question',
+                    'Asin',
+                    'Asked',
+                    'Votes',
+                    'Answer',
+                    'Person',
+                    'Created'
+                ]
 
-                        data_fields = [
-                            'question',
-                            'asin',
-                            'asked',
-                            'votes',
-                            'answer',
-                            'person',
-                            'created'
-                        ]
+                data_fields = [
+                    'question',
+                    'asin',
+                    'asked',
+                    'votes',
+                    'answer',
+                    'person',
+                    'created'
+                ]
 
             task = Task()
             task.id
