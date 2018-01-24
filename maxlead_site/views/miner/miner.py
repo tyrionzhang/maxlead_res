@@ -298,7 +298,7 @@ class Miner:
                 else:
                     reviews_a = AsinReviews.objects.filter(aid=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
                     reviews = Reviews.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
-                    if reviews_a and len(reviews)>=reviews_a[0]['total_review']:
+                    if reviews_a and len(reviews)>=reviews_a[0].total_review:
                         for v in reviews:
                             re = {
                                 'title': v.title,

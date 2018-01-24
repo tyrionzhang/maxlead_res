@@ -147,8 +147,10 @@
 
             function get_export_fun() {
                 $.get('/admin/maxlead_site/ajax_get_miner_data/',{},function (re) {
-                    if(re.code == 1){
-                        console.log($("#tr_task_"+re.data['id']));
+                    if(re.code == 1 && re.data.length>0){
+                        var elstr = "#tr_task_"+re.data['id'];
+                        console.log(elstr);
+                        console.log($(elstr));
                         $("#tr_task_"+re.data['id']).find('td').eq(4).html(re.data['f_time']);
                         $("#tr_task_"+re.data['id']).find('td').eq(5).find('a').attr('href',re.data['file_path']);
                         $("#tr_task_"+re.data['id']).find('td').eq(5).find('a').html('Export');
