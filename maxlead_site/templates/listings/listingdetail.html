@@ -130,6 +130,9 @@
                             {% for v in asinreview %}
                             <li><a title="{{ v.count }}" class="a_review_keywords" data-words="{{ v.words }}" data-asin="{{ res.asin }}" style="cursor:pointer">{{ v.words }} {{ v.count }}</a></li>
                             {% endfor %}
+                            {% for v in negative_keywords %}
+                            <li><a title="{{ v.count }}" class="a_review_keywords" data-words="{{ v.words }}" data-asin="{{ res.asin }}" style="cursor:pointer">{{ v.words }} {{ v.count }}</a></li>
+                            {% endfor %}
 
                         </ul>
                     </div>
@@ -275,6 +278,7 @@
                     if(re.code == 1){
                         var el = '';
                         var el_k = '';
+                        var el_k1 = '';
                         $.each(re.data.data,function(index,value){
                           el += '<tr>'+
                               '<td><span class="star'+value['score']+'"></span>'+
@@ -286,8 +290,12 @@
                         $.each(re.data.positive_words,function(index,value){
                           el_k += '<li><a title="'+value['count']+'" class="a_review_keywords" data-words="'+value['words']+'" data-asin="{{ res.asin }}" style="cursor:pointer">'+value['words']+' '+value['count']+'</a></li>';
                         });
+                        $.each(re.data.negative_keywords,function(index,value){
+                          el_k1 += '<li><a title="'+value['count']+'" class="a_review_keywords" data-words="'+value['words']+'" data-asin="{{ res.asin }}" style="cursor:pointer">'+value['words']+' '+value['count']+'</a></li>';
+                        });
                         $('#table-review-list').html(el);
                         $('#ul_words').html(el_k);
+                        $('#ul_words').html(el_k1);
                         if (re.data.is_page && $('#btn-review-more').length <= 0){
                             $('.rvInfo').append('<button type="button" class="moreButton" id="btn-review-more" data-page="'+re.data.review_page+'">More</button>');
                         }

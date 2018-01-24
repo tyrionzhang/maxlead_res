@@ -88,6 +88,7 @@ class Item:
             asinreviews = get_review_keywords(review)
 
             positive_words = asinreviews['positive_keywords']
+            negative_keywords = asinreviews['negative_keywords']
 
             review_limit = self.GET.get('review_limit', 5)
 
@@ -108,6 +109,7 @@ class Item:
         else:
             review_data = []
             positive_words = []
+            negative_keywords = []
             review_page = 1
 
 
@@ -148,6 +150,7 @@ class Item:
             'avator': user.user.username[0],
             'res':item,
             'asinreview':positive_words,
+            'negative_keywords':negative_keywords,
             'review':review_data,
             'review_page':review_page,
             'line_x1':line_x1,
@@ -269,6 +272,7 @@ class Item:
 
         asinreviews = get_review_keywords(review)
         positive_words = asinreviews['positive_keywords']
+        negative_keywords = asinreviews['negative_keywords']
         review_limit = self.GET.get('review_limit', 6)
 
         # paginator = Paginator(review, review_limit)
@@ -292,7 +296,8 @@ class Item:
             data.append(model_to_dict(val))
 
         return HttpResponse(json.dumps({'code': 1, 'data': {'data':data,'review_page':review_page,'is_page':is_page,
-                                                            'positive_words':positive_words}}), content_type='application/json')
+                                                            'positive_words':positive_words,'negative_keywords':negative_keywords}}),
+                                                            content_type='application/json')
 
     @csrf_exempt
     def ajax_get_radar(self):
@@ -399,20 +404,35 @@ class Item:
         question = Questions.objects.filter(asin=asin, created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
         if not question:
             return HttpResponseRedirect("")
-        answer = Answers.objects.filter(question__in=question)
-        data = []
-        for val in answer:
-            re = {
-                'question':val.question.question,
-                'asin':val.question.asin,
-                'asked':val.question.asked,
-                'votes':val.question.votes,
-                'answer':val.answer,
-                'person':val.person,
-                'created':val.created.strftime("%Y-%m-%d %H:%M:%S")
-            }
 
-            data.append(re)
+        data = []
+        for q in question:
+            answer = Answers.objects.filter(question_id=q.id)
+            if answer:
+                for val in answer:
+                    re = {
+                        'question':val.question.question,
+                        'asin':val.question.asin,
+                        'asked':val.question.asked,
+                        'votes':val.question.votes,
+                        'answer':val.answer,
+                        'person':val.person,
+                        'created':val.created.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+
+                    data.append(re)
+            else:
+                re = {
+                    'question': q.question,
+                    'asin': q.asin,
+                    'asked': q.asked,
+                    'votes': q.votes,
+                    'answer': '',
+                    'person': '',
+                    'created': q.created.strftime("%Y-%m-%d %H:%M:%S")
+                }
+
+                data.append(re)
 
         fields = [
             'Question',
@@ -475,7 +495,15 @@ class Item:
         if not a_max or not a_max['created__max']:
             a_max = AsinReviews.objects.aggregate(Max('created'))
         asinreview = AsinReviews.objects.filter(aid=asin,created__icontains=a_max['created__max'].strftime("%Y-%m-%d")).all()
-
+        asinreviews = get_review_keywords(review)
+        positive_keywords = ''
+        negative_keywords = ''
+        if asinreviews['positive_keywords']:
+            for val in asinreviews['positive_keywords']:
+                positive_keywords += val['words']+','
+        if asinreviews['negative_keywords']:
+            for val in asinreviews['negative_keywords']:
+                negative_keywords += val['words']+','
         data = []
         for val in review:
             re = {
@@ -488,8 +516,8 @@ class Item:
                 'is_vp':val.is_vp,
                 'review_date':val.review_date.strftime("%Y-%m-%d"),
                 'content':val.content,
-                'positive_keywords':asinreview[0].positive_keywords,
-                'negative_keywords':asinreview[0].negative_keywords,
+                'positive_keywords':positive_keywords,
+                'negative_keywords':negative_keywords,
                 'total_review':asinreview[0].total_review,
                 'review_link':val.review_link,
                 'created':val.created.strftime("%Y-%m-%d"),
