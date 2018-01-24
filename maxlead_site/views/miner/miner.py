@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-import json,datetime
+import json,datetime,os
 from django.shortcuts import render,HttpResponse
-from django.forms.models import model_to_dict
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Max
 from django.db.models import Q
-from maxlead_site.models import Questions,Answers,Reviews,UserProfile,Task
+from maxlead_site.models import Questions,Answers,Reviews,UserProfile,Task,AsinReviews
 from maxlead_site.views.app import App
-from maxlead_site.common.excel_world import get_excel_file,get_excel_file1
+from maxlead_site.common.excel_world import get_excel_file1
+from maxlead import settings
 
 class Miner:
 
@@ -192,16 +191,19 @@ class Miner:
                             'person',
                             'created'
                         ]
-            if data:
-                task = Task()
-                task.id
-                task.name = name
-                task.user = user.user
-                task.type = int(type)
-                task.description = description
-                task.asins = asins
-                task.save()
 
+            task = Task()
+            task.id
+            task.name = name
+            task.user = user.user
+            task.type = int(type)
+            task.description = description
+            task.asins = asins
+            if not data:
+                task.is_new = 1
+            task.save()
+
+            if data:
                 file_path = get_excel_file1(self, data, fields, data_fields)
                 id = task.id
                 f_time = datetime.datetime.now()
@@ -209,7 +211,121 @@ class Miner:
                 return HttpResponse(json.dumps({'code': 1, 'data': {'id': id, 'file_path': file_path, 'f_time':\
                                                     f_time.strftime('%Y-%m-%d %H:%M:%S')}}),content_type='application/json')
             else:
-                return HttpResponse(json.dumps({'code': 0, 'msg': '没有数据！'}), content_type='application/json')
+                for aid  in asins:
+                    work_path = settings.SPIDER_URL
+                    os.chdir(work_path)
+                    os.system('scrapyd-deploy')
+                    if type == 0:
+                        cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % aid
+                    else:
+                        cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % aid
+                    os.system(cmd_str)
+                    os.chdir(settings.ROOT_PATH)
+                return HttpResponse(json.dumps({'code': 0, 'msg': '暂时没有数据！'}), content_type='application/json')
 
         else:
             return HttpResponse(json.dumps({'code': 0, 'data': '任务添加失败！'}),content_type='application/json')
+
+    def ajax_get_miner_data(self):
+        tasks = Task.objects.filter(is_new=1,file_path='')
+        res = []
+        for val in tasks:
+            data = []
+            for aid in eval(val.asins):
+                if val.type == 1:
+                    qa = Questions.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
+                    if qa and len(qa) >= qa[0].count:
+                        for q in qa:
+                            answers = Answers.objects.filter(question_id=q.id)
+                            if answers:
+                                for v in answers:
+                                    re = {
+                                        'question': v.question.question,
+                                        'asin': v.question.asin,
+                                        'asked': v.question.asked,
+                                        'votes': v.question.votes,
+                                        'answer': v.answer,
+                                        'person': v.person,
+                                        'created': v.created.strftime('%Y-%m-%d %H:%M:%S'),
+                                    }
+                                    data.append(re)
+                            else:
+                                re = {
+                                    'question': q.question,
+                                    'asin': q.asin,
+                                    'asked': q.asked,
+                                    'votes': q.votes,
+                                    'answer': '',
+                                    'person': '',
+                                    'created': q.created.strftime('%Y-%m-%d %H:%M:%S'),
+                                }
+                                data.append(re)
+
+                            fields = [
+                                'Question',
+                                'Asin',
+                                'Asked',
+                                'Votes',
+                                'Answer',
+                                'Person',
+                                'Created'
+                            ]
+
+                            data_fields = [
+                                'question',
+                                'asin',
+                                'asked',
+                                'votes',
+                                'answer',
+                                'person',
+                                'created'
+                            ]
+                else:
+                    reviews_a = AsinReviews.objects.filter(aid=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
+                    reviews = Reviews.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
+                    if reviews_a and len(reviews)>=reviews_a[0]['total_review']:
+                        for v in reviews:
+                            re = {
+                                'title': v.title,
+                                'name': v.name,
+                                'asin': v.asin,
+                                'variation': v.variation,
+                                'content': v.content,
+                                'review_link': v.review_link,
+                                'score': v.score,
+                                'is_vp': v.is_vp,
+                                'review_date': v.review_date.strftime('%Y-%m-%d'),
+                                'created': v.created.strftime('%Y-%m-%d'),
+                            }
+                            data.append(re)
+                        fields = [
+                            'Title',
+                            'Name',
+                            'Asin',
+                            'Variation',
+                            'Content',
+                            'Review Link',
+                            'Score',
+                            'Vp',
+                            'Review Date',
+                            'Created'
+                        ]
+
+                        data_fields = [
+                            'title',
+                            'name',
+                            'asin',
+                            'variation',
+                            'content',
+                            'review_link',
+                            'score',
+                            'is_vp',
+                            'review_date',
+                            'created'
+                        ]
+            if data:
+                file_path = get_excel_file1(self, data, fields, data_fields)
+                f_time = datetime.datetime.now()
+                Task.objects.filter(id=val.id).update(file_path=file_path, finish_time=f_time)
+                res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
+        return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')

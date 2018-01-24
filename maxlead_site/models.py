@@ -126,6 +126,7 @@ class Questions(models.Model):
     asin = models.CharField('AsinId',max_length=50,default='')
     asked = models.CharField('Asked',max_length=225,default='')
     votes = models.IntegerField('Votes',default=0,null=True)
+    count = models.IntegerField('Count',default=0,null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
@@ -154,6 +155,7 @@ class Task(models.Model):
     type = models.IntegerField('Type',default=1)
     description = models.CharField('Description', max_length=225)
     asins = models.CharField('Asins', max_length=225)
+    is_new = models.IntegerField('New',default=0)
     file_path = models.CharField('File Path', max_length=225,default='')
     finish_time = models.DateTimeField('Created', null=True)
     created = models.DateTimeField('Created', auto_now_add=True)

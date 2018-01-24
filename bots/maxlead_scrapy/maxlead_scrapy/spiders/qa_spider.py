@@ -31,9 +31,13 @@ class QaSpider(scrapy.Spider):
             qa_url = qa_a.css('.a-spacing-base .a-link-normal::attr("href")').extract_first()
             question = qa_a.css('.a-spacing-base .a-link-normal::text').extract_first().replace('\n','').strip()
             votes = int(qa_a.css('ul.voteAjax span.count::text').extract_first())
+            count_el = response.css('div.askPaginationHeaderMessage span::text').extract_first()
             asin_id = res_asin[6]
             qa_data = Questions(question=question, asin=asin_id, votes=votes)
             qa_data.id
+            if count_el:
+                count = count_el.split('of ')
+                qa_data.count = count[1].split(' ')[0]
             qa_data.save()
             qa_url = qa_url + '?qa_id=%s' % qa_data.id
             qa_page = response.urljoin(qa_url)

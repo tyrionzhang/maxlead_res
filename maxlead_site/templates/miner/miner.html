@@ -19,7 +19,7 @@
                 <table cellspacing="0px">
                     <tr id="th-task"><th>Name</th><th>Type</th><th>Description</th><th>Request Time</th><th>Finish Time</th><th>Action</th></tr>
                     {% for v in data %}
-                    <tr>
+                    <tr id="tr_task_{{ v.id }}">
                         <td>{{ v.name }}</td>
                         <td>{{ v.type }}</td>
                         <td>{{ v.description }}</td>
@@ -133,7 +133,21 @@
                 var url = '/admin/maxlead_site/miner/?page='+page+'&limit='+limit;
                 window.location.href = url;
                 return false;
-            })
+            });
+            function get_export_fun() {
+                $.get('/admin/maxlead_site/ajax_get_miner_data/',{},function (re) {
+                    if(re.code == 1){
+                        console.log($("#tr_task_"+re.data['id']).find('td').eq(4));
+                        $("#tr_task_"+re.data['id']).find('td').eq(4).html(re.data['f_time']);
+                        $("#tr_task_"+re.data['id']).find('td').eq(5).find('a').attr('href',re.data['file_path']);
+                        $("#tr_task_"+re.data['id']).find('td').eq(5).find('a').html('Export');
+                    }
+                },'json');
+            }
+
+            window.setInterval(function(){
+                get_export_fun();
+            }, 5000);
         </script>
 {% endblock %}
 
