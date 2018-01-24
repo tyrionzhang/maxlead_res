@@ -251,9 +251,9 @@ class Item:
         if score and not score == 'positive' and not score == 'critical':
             review = review.filter(score=score)
         if score == 'positive':
-            review = review.filter(score__gte=3)
+            review = review.filter(score__gt=3)
         if score == 'critical':
-            review = review.filter(score__lt=3)
+            review = review.filter(score__lte=3)
         if rvKwd:
             review = review.filter(content__icontains=rvKwd)
         if words:
@@ -480,17 +480,17 @@ class Item:
         if score and not score == 'positive' and not score == 'critical':
             review = review.filter(score=score)
         if score == 'positive':
-            review = review.filter(score__gte=3)
+            review = review.filter(score__gt=3)
         if score == 'critical':
-            review = review.filter(score__lt=3)
+            review = review.filter(score__lte=3)
         if rvKwd:
             review = review.filter(content__icontains=rvKwd)
         if words:
             review = review.filter(content__icontains=words)
         if end_date:
-            review = review.filter(created__lte=end_date)
+            review = review.filter(review_date__lte=end_date)
         if start_date:
-            review = review.filter(created__gte=start_date)
+            review = review.filter(review_date__gte=start_date)
         a_max = AsinReviews.objects.filter(aid=asin).aggregate(Max('created'))
         if not a_max or not a_max['created__max']:
             a_max = AsinReviews.objects.aggregate(Max('created'))
