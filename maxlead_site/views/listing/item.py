@@ -583,16 +583,19 @@ class Item:
         name2 = ''
         for v in listing:
             if tsData1 == 'bsr' or tsData2 == 'bsr':
-                ranks = CategoryRank.objects.filter(asin=v.asin,created__icontains=v.created.strftime("%Y-%m-%d"))
-                if ranks:
-                    if tsData1 == 'bsr':
-                        name1 = 'BSR'
-                        line_x1.append(int(v.created.strftime("%d")))
-                        line_y1.append(ranks[0].rank)
-                    if tsData2 == 'bsr':
-                        name2 = 'BSR'
-                        line_x2.append(int(v.created.strftime("%d")))
-                        line_y2.append(ranks[0].rank)
+                cate_rank = 0
+                if v.category_rank:
+                    cate_rank = v.category_rank.split(' in')
+                    cate_rank = cate_rank[0].split('#')[1]
+                    cate_rank = cate_rank.replace(',','')
+                if tsData1 == 'bsr':
+                    name1 = 'BSR'
+                    line_x1.append(int(v.created.strftime("%d")))
+                    line_y1.append(cate_rank)
+                if tsData2 == 'bsr':
+                    name2 = 'BSR'
+                    line_x2.append(int(v.created.strftime("%d")))
+                    line_y2.append(cate_rank)
             if v.price:
                 if tsData1 == 'price':
                     name1 = 'price'
