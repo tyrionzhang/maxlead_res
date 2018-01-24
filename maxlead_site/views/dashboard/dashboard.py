@@ -307,7 +307,7 @@ class Dashboard:
             if val.review_date:
                 val.review_date = val.review_date.strftime("%Y-%m-%d")
             a = model_to_dict(val)
-            a['sku'] = UserAsins.objects.get(aid=val.asin).sku
+            a['sku'] = UserAsins.objects.filter(aid=val.asin)[0].sku
             data.append(a)
         is_page = 1
         if len(reviews) < 6:
