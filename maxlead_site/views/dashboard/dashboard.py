@@ -287,7 +287,7 @@ class Dashboard:
         viewRange = self.GET.get('viewRange', '')
         offset = (int(page)-1)*6
 
-        asins = Dashboard._get_asins(self,user,user_id=viewRange)
+        asins = Dashboard._get_asins(self,user,review_watcher=1,user_id=viewRange)
         review_max = Reviews.objects.filter(asin__in=asins).aggregate(Max('created'))
         if not review_max or not review_max['created__max']:
             return HttpResponse(json.dumps({'code': 0, 'msg': '没有数据！'}), content_type='application/json')
