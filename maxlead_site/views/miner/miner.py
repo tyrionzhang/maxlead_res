@@ -49,6 +49,7 @@ class Miner:
 
         limit = self.GET.get('limit', 20)
         page = self.GET.get('page', 1)
+        re_limit = limit
 
         total_count = len(tasks)
         total_page = round(len(tasks)/int(limit))
@@ -68,7 +69,8 @@ class Miner:
                 'data': tasks_data,
                 'total_count': total_count,
                 'total_page': total_page,
-                'limit': limit,
+                're_limit': int(re_limit),
+                'limit': int(limit),
                 'page': page,
                 'user': user,
                 'viewRange': viewRange,
@@ -80,7 +82,8 @@ class Miner:
                 'data': '',
                 'total_count': total_count,
                 'total_page': total_page,
-                'limit': limit,
+                're_limit': int(re_limit),
+                'limit': int(limit),
                 'page': page,
                 'user': user,
                 'viewRange': viewRange,

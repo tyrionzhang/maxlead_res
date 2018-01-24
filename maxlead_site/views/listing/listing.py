@@ -96,6 +96,7 @@ class Listing:
             listings = listings.all()
 
             limit = int(self.GET.get('limit', 20))
+            limit_re = limit
             total_count = listings.count()
             if int(limit) >= total_count:
                 limit = total_count
@@ -112,6 +113,7 @@ class Listing:
                     'revstatus': revstatus,
                     'liststatus': liststatus,
                     'limit': limit,
+                    'limit_re': limit_re,
                     'viewRange': viewRange,
                     'user_list': user_list
                 })
@@ -199,6 +201,7 @@ class Listing:
                 'owner': owner,
                 'liststatus': liststatus,
                 'limit': limit,
+                'limit_re': limit_re,
                 'viewRange':viewRange,
                 'user_list':user_list
             }
