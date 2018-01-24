@@ -256,16 +256,16 @@ class Item:
         if words:
             review = review.filter(content__icontains=words)
         if end_date:
-            review = review.filter(created__lte=end_date)
+            review = review.filter(review_date__lte=end_date)
         if start_date:
-            review = review.filter(created__gte=start_date)
+            review = review.filter(review_date__gte=start_date)
         if rvSort:
             if rvSort == 'newest':
-                review = review.order_by('id')
+                review = review.order_by('-review_date')
             elif rvSort == 'top':
                 review = review.order_by('-score')
             else:
-                review = review.order_by('-id')
+                review = review.order_by('review_date')
 
         asinreviews = get_review_keywords(review)
         positive_words = asinreviews['positive_keywords']

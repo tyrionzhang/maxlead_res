@@ -23,7 +23,7 @@
                                 <td><button type="button" id="editASINButton">Edit</button></td></tr>
                             <tr><td>ASIN: {{ res.asin }}</td>
                                 <td>Brand: {{ res.brand }}</td>
-                                <td>SKU: {{ res.sku }}</td>
+                                <td>SKU: {{ res.user_asin.sku }}</td>
                                 <td>Inventory: unknown</td></tr>
                             <tr><td>New Item Offers: {{ res.item_offer }}</td>
                                 <td><a href="https://www.amazon.com/product-reviews/{{ res.asin }}/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews" target="_blank">Reviews: {{ res.total_review }}</a></td>
@@ -200,7 +200,7 @@
                     <h3>Basic Info</h3>
                     <form name="editASIN" method="post" action="">
                         <div class="basicInfo">*ASIN<br><textarea readonly="readonly" name="newASIN" rows=1 cols=18 title="You cannot edit ASIN.">{{ res.asin }}</textarea></div>
-                        <div class="basicInfo">SKU<br><textarea name="newSKU" rows="1" cols="18" title="only one SKU per ASIN">{{ res.sku }}</textarea></div>
+                        <div class="basicInfo">SKU<br><textarea name="newSKU" rows="1" cols="18" title="only one SKU per ASIN">{{ res.user_asin.sku }}</textarea></div>
                         <div class="basicInfo">
                             *Ownership: <input type="radio" name="ownership" value="Ours" {% if res.user_asin.ownership == 'Ours' %}checked{% endif %}/>Ours
                             <input type="radio" name="ownership" value="Others" {% if res.user_asin.ownership == 'Others' %}checked{% endif %}/>Others<br />
@@ -234,6 +234,9 @@
                 <a class="goBack" href="" onclick="window.history.go(-1); return false;">&lt;&lt;&lt;Go Back</a>
             </main>
         <script>
+            $("#editASINButton").click(function(){
+                $("#editASIN").toggle();
+            });
             var line_x1 = {{ line_x1 }};
             var line_x2 = {{ line_x2 }};
             var line_price_y = {{ line_price_y }};
