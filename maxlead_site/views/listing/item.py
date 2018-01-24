@@ -261,11 +261,11 @@ class Item:
             review = review.filter(created__gte=start_date)
         if rvSort:
             if rvSort == 'newest':
-                review = review.order_by('id')
+                review = review.order_by('-review_date')
             elif rvSort == 'top':
                 review = review.order_by('-score')
             else:
-                review = review.order_by('-id')
+                review = review.order_by('review_date')
 
         asinreviews = get_review_keywords(review)
         positive_words = asinreviews['positive_keywords']
