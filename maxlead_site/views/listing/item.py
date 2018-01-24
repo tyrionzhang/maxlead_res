@@ -256,9 +256,9 @@ class Item:
         if words:
             review = review.filter(content__icontains=words)
         if end_date:
-            review = review.filter(created__lte=end_date)
+            review = review.filter(review_date__lte=end_date)
         if start_date:
-            review = review.filter(created__gte=start_date)
+            review = review.filter(review_date__gte=start_date)
         if rvSort:
             if rvSort == 'newest':
                 review = review.order_by('-review_date')
