@@ -399,15 +399,15 @@ class Dashboard:
         if not listing_watchers:
             return HttpResponse(json.dumps({'code': 1, 'data': []}), content_type='application/json')
         if not listEnd and not listBgn:
-            listing_watchers_max = listing_watchers.aggregate(Max('created'))
-            listing_watchers = listing_watchers.filter(created__icontains=listing_watchers_max['created__max'].strftime("%Y-%m-%d"))
+            times = datetime.datetime.now() - datetime.timedelta(days=7)
+            listing_watchers = listing_watchers.filter(created__gte=times.strftime("%Y-%m-%d"))
         if listEnd:
             listing_watchers = listing_watchers.filter(created__lte=listEnd)
         if listBgn:
             listing_watchers = listing_watchers.filter(created__gte=listBgn)
 
         if listing_watchers:
-            listing_watchers = listing_watchers[offset:offset+6]
+            listing_watchers = listing_watchers.order_by('-created')[offset:offset+6]
         data = []
         for val in listing_watchers:
             if val.price:
