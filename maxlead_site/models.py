@@ -4,8 +4,8 @@ from django.db.models.signals import post_save
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    group = models.ForeignKey('self',default=1)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    group = models.ForeignKey('self',default=1,on_delete=models.CASCADE)
     state = models.IntegerField('State',default=0)
     role = models.IntegerField('Role',default=0)
     er_count = models.IntegerField(default=0)
@@ -23,7 +23,7 @@ post_save.connect(create_user_profile, sender=User)
 
 
 class UserAsins(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     aid = models.CharField('AsinId',max_length=50)
     sku = models.CharField('SKU',max_length=50,default='')
     buy_box = models.CharField('BuyBox',max_length=50,default='')
@@ -74,7 +74,7 @@ class Reviews(models.Model):
         db_table = 'reviews'
 
 class Listings(models.Model):
-    user_asin = models.ForeignKey(UserAsins,default=1)
+    user_asin = models.ForeignKey(UserAsins,default=1,on_delete=models.CASCADE)
     title = models.CharField('Title', max_length=255)
     answered= models.CharField('Answered ',max_length=50,default='')
     asin = models.CharField('AsinId', max_length=50)
@@ -132,7 +132,7 @@ class Questions(models.Model):
     class Meta:
         db_table = 'questions'
 class Answers(models.Model):
-    question = models.ForeignKey(Questions)
+    question = models.ForeignKey(Questions,on_delete=models.CASCADE)
     person = models.CharField('Person',max_length=225)
     answer = models.TextField('Answer',null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
@@ -143,7 +143,7 @@ class Answers(models.Model):
 class Log(models.Model):
     name = models.CharField('Name',max_length=225)
     description = models.CharField('Description',max_length=225)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     created = models.DateTimeField('Create Date',auto_now_add=True)
 
     class Meta:
@@ -151,7 +151,7 @@ class Log(models.Model):
 
 class Task(models.Model):
     name = models.CharField('Name', max_length=225)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     type = models.IntegerField('Type',default=1)
     description = models.CharField('Description', max_length=225)
     asins = models.CharField('Asins', max_length=225)
