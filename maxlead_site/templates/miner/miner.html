@@ -119,6 +119,7 @@
                             '<td>'+now+'</td>' +
                             '<td>'+re.data['f_time']+'</td>' +
                             '<td><span class="minerAction"><a href="/'+re.data['file_path']+'">Export</a></span></td></tr>');
+                        window.location.reload();
                     }else{
                         alert(re.msg);
                         $('#addMinerTask').attr('style','display:none;');
@@ -148,17 +149,16 @@
             function get_export_fun() {
                 $.get('/admin/maxlead_site/ajax_get_miner_data/',{},function (re) {
                     if(re.code == 1 && re.data.length>0){
-                        var elstr = "#tr_task_"+re.data['id'];
-                        console.log(elstr);
-                        console.log($(elstr));
-                        $("#tr_task_"+re.data['id']).find('td').eq(4).html(re.data['f_time']);
-                        $("#tr_task_"+re.data['id']).find('td').eq(5).find('a').attr('href',re.data['file_path']);
-                        $("#tr_task_"+re.data['id']).find('td').eq(5).find('a').html('Export');
+                        $.each(re.data,function(index,value){
+                            var elstr = "#tr_task_"+value['id'];
+                            var a = "<a href='/"+value['file_path']+"'>Export</a>";
+                            $(elstr).find('td').eq(4).html(value['f_time']);
+                            $(elstr).find('td').eq(5).find('span').html(a);
+                        });
                     }
                 },'json');
             }
-
-            window.setInterval(function(){
+            window.setInterval(function() {
                 get_export_fun();
             }, 5000);
         </script>
