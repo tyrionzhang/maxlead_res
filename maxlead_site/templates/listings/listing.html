@@ -80,11 +80,11 @@
                     </p>
                         <ul>
                             {% if list_data.has_previous %}
-                            <li><a href="?page={{ list_data.previous_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}">previous</a></li>
+                            <li><a href="?page={{ list_data.previous_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}&viewRange={{ viewRange }}">previous</a></li>
                             {% endif %}
                             <li>Page {{ list_data.number }} of {{ list_data.paginator.num_pages }}.</li>
                             {% if list_data.has_next %}
-                            <li><a href="?page={{ list_data.next_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}">next</a></li>
+                            <li><a href="?page={{ list_data.next_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}&viewRange={{ viewRange }}">next</a></li>
                             {% endif %}
                             <li><input type="number" name="page" value="{{ page }}" /></li>
                             <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>

@@ -46,11 +46,11 @@
                     </p>
                         <ul>
                             {% if data.has_previous %}
-                            <li><a href="?page={{ data.previous_page_number }}&limit={{ limit }}">previous</a></li>
+                            <li><a href="?page={{ data.previous_page_number }}&limit={{ limit }}&viewRange={{ viewRange }}">previous</a></li>
                             {% endif %}
                             <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
                             {% if data.has_next %}
-                            <li><a href="?page={{ data.next_page_number }}&limit={{ limit }}">next</a></li>
+                            <li><a href="?page={{ data.next_page_number }}&limit={{ limit }}&viewRange={{ viewRange }}">next</a></li>
                             {% endif %}
                             <li><input type="number" name="page" value="{{ page }}" /></li>
                             <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
