@@ -42,47 +42,47 @@ class WatcherSpider(scrapy.Spider):
         path_str = '%s/%s' % (dir_path1, image_file_name)
         driver.get_screenshot_as_file(file_path)
         driver.quit()
+        if len(response.css('div.a-spacing-double-large div.olpOffer'))>1:
+            for k,wa in enumerate(response.css('div.a-spacing-double-large div.olpOffer'),1):
 
-        for k,wa in enumerate(response.css('div.a-spacing-double-large div.olpOffer'),1):
+                asin_id = res_asin[5]
+                item = ListingWacherItem()
+                item['asin'] = asin_id
+                item['images'] = path_str
+                item['seller'] = wa.css('div.olpSellerColumn h3.olpSellerName a::text').extract_first()
+                seller_link= wa.css('div.olpSellerColumn h3.olpSellerName a::attr(href)').extract_first()
+                if seller_link:
+                    item['seller_link'] = 'https://www.amazon.com%s' % seller_link
+                if not item['seller']:
+                    item['seller'] = wa.css('div.olpSellerColumn h3.olpSellerName img::attr(alt)').extract_first()
+                item['price'] = wa.css('div.olpPriceColumn span.olpOfferPrice::text').extract_first()
+                if item['price']:
+                    item['price'] = item['price'].replace('\n','').strip()
+                item['shipping'] = wa.css('div.olpPriceColumn p.olpShippingInfo b::text').extract_first()
+                if not item['shipping']:
+                    a = wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPrice').extract()
+                    if a:
+                        item['shipping'] = wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPrice::text').extract_first()+ \
+                                           wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPriceText::text').extract_first()
+                prime = wa.css('div.olpPriceColumn span.supersaver').extract()
+                is_fba = wa.css('div.olpDeliveryColumn div.olpBadgeContainer')
+                if is_fba:
+                    is_fba = is_fba.css('a.olpFbaPopoverTrigger::text').extract_first().replace('\n','').strip()
+                    if is_fba == 'Fulfillment by Amazon':
+                        item['fba'] = 1
+                else:
+                    item['fba'] = 0
+                if prime:
+                    item['prime'] = 1
+                else:
+                    item['prime'] = 0
+                if k == 1:
+                    item['winner'] = 1
+                else:
+                    item['winner'] = 0
+                yield item
 
-            asin_id = res_asin[5]
-            item = ListingWacherItem()
-            item['asin'] = asin_id
-            item['images'] = path_str
-            item['seller'] = wa.css('div.olpSellerColumn h3.olpSellerName a::text').extract_first()
-            seller_link= wa.css('div.olpSellerColumn h3.olpSellerName a::attr(href)').extract_first()
-            if seller_link:
-                item['seller_link'] = 'https://www.amazon.com%s' % seller_link
-            if not item['seller']:
-                item['seller'] = wa.css('div.olpSellerColumn h3.olpSellerName img::attr(alt)').extract_first()
-            item['price'] = wa.css('div.olpPriceColumn span.olpOfferPrice::text').extract_first()
-            if item['price']:
-                item['price'] = item['price'].replace('\n','').strip()
-            item['shipping'] = wa.css('div.olpPriceColumn p.olpShippingInfo b::text').extract_first()
-            if not item['shipping']:
-                a = wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPrice').extract()
-                if a:
-                    item['shipping'] = wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPrice::text').extract_first()+ \
-                                       wa.css('div.olpPriceColumn p.olpShippingInfo span.olpShippingPriceText::text').extract_first()
-            prime = wa.css('div.olpPriceColumn span.supersaver').extract()
-            is_fba = wa.css('div.olpDeliveryColumn div.olpBadgeContainer')
-            if is_fba:
-                is_fba = is_fba.css('a.olpFbaPopoverTrigger::text').extract_first().replace('\n','').strip()
-                if is_fba == 'Fulfillment by Amazon':
-                    item['fba'] = 1
-            else:
-                item['fba'] = 0
-            if prime:
-                item['prime'] = 1
-            else:
-                item['prime'] = 0
-            if k == 1:
-                item['winner'] = 1
-            else:
-                item['winner'] = 0
-            yield item
-
-        next_page = response.css('li.a-last a::attr("href")').extract_first()
-        if next_page is not None:
-            next_page = response.urljoin(next_page)
-            yield scrapy.Request(next_page, callback=self.parse)
+            next_page = response.css('li.a-last a::attr("href")').extract_first()
+            if next_page is not None:
+                next_page = response.urljoin(next_page)
+                yield scrapy.Request(next_page, callback=self.parse)
