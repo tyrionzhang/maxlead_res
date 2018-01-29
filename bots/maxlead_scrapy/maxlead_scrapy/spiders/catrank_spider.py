@@ -3,11 +3,8 @@
 import scrapy,time,os,re
 import urllib
 from bots.maxlead_scrapy.maxlead_scrapy.items import CategoryRankItem
-from maxlead_site.models import UserAsins,Listings
+from maxlead_site.models import UserAsins
 from django.db.models import Count
-from selenium import webdriver
-from bots.maxlead_scrapy.maxlead_scrapy import settings
-
 
 class CatrankSpider(scrapy.Spider):
     name = "catrank_spider"
