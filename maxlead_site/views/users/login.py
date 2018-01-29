@@ -20,7 +20,7 @@ class Logins:
 
     @csrf_exempt
     def userLogin(self):
-        if self.user.is_authenticated():
+        if self.user.is_authenticated:
             return HttpResponseRedirect("/admin/maxlead_site/index/",{'user': self.user,'avator':self.user.username[0]})
         if self.method == 'POST':
             username = self.POST.get('username', '')
