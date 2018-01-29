@@ -103,7 +103,7 @@ class UserAsinsAdmin(admin.ModelAdmin):
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('id','state')
-    fields = ('user','state','group')
+    fields = ('user','state','group','role')
 
 @admin.register(Reviews)
 class ReviewsAdmin(admin.ModelAdmin):
