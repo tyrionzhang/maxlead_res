@@ -43,7 +43,8 @@ class Item:
         listing_watchers_max = ListingWacher.objects.filter(asin=item.asin).aggregate(Max('created'))
         if not listing_watchers_max or not listing_watchers_max['created__max']:
             listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
-        listing_watchers = ListingWacher.objects.filter(asin=item.asin,created__icontains=listing_watchers_max['created__max']. \
+        if not listing_watchers_max or not listing_watchers_max['created__max']:
+            listing_watchers = ListingWacher.objects.filter(asin=item.asin,created__icontains=listing_watchers_max['created__max']. \
                                                         strftime("%Y-%m-%d"))
         item_offer = len(listing_watchers)
         if listing_watchers:
