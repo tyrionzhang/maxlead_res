@@ -102,7 +102,7 @@
                         <input  class="rvInfoButton" type="button" value="Update" id="btn-shuttle-update"/>
                         <button type="submit"  class="rvInfoButton">Export</button>
                     </form>
-                    <div id="time_shuttle" style="width:95%;height:250px;"></div>
+                    <div id="time_shuttle" style="width:95%;height:450px;"></div>
                 </section>
                 <section class="detailRanking">
                     <h3>Keywords Ranking</h3>
@@ -119,7 +119,7 @@
                         <input type="submit"  class="rvInfoButton" id="btn_search_rank" value="Update" />
                         <button type="submit"  class="rvInfoButton" id="btn_export_rank">Export</button>
                     </form>
-                    <div id="krVisual">
+                    <div id="krVisual" style="width:95%;height:450px;">
                     </div>
                 </section>
                 <section class="detailReview">
@@ -248,18 +248,32 @@
               x: line_x1,
               y: line_price_y,
               type: 'scatter',
-              name: 'price'
+              name: 'price',
+              yaxis: 'y1'
             };
 
             var reviews = {
               x: line_x2,
               y: line_review_y,
               type: 'scatter',
-              name: 'review'
+              name: 'review',
+              yaxis: 'y2'
+            };
+
+            var layout = {
+               yaxis:{
+                   title: "y-price"
+               },
+               yaxis2:{
+                   title: "y-review",
+                   side: 'right',
+                   overlaying: 'y1'
+               }
             };
 
             var data = [price, reviews];
-            Plotly.newPlot('time_shuttle', data);
+
+            Plotly.newPlot('time_shuttle', data,layout);
 
             get_rank();
 
@@ -448,18 +462,31 @@
                           x: re.data['line_x1'],
                           y: re.data['line_y1'],
                           type: 'scatter',
-                          name:re.data['name1']
+                          name:re.data['name1'],
+                          yaxis: 'y1'
                         };
 
                         var line2 = {
                           x: re.data['line_x2'],
                           y: re.data['line_y2'],
                           type: 'scatter',
-                          name:re.data['name2']
+                          name:re.data['name2'],
+                          yaxis: 'y2'
+                        };
+
+                        var layout = {
+                           yaxis:{
+                               title: "y-"+re.data['name1']
+                           },
+                           yaxis2:{
+                               title: "y-"+re.data['name2'],
+                               side: 'right',
+                               overlaying: 'y1'
+                           }
                         };
 
                         var data = [line1, line2];
-                        Plotly.newPlot('time_shuttle', data);
+                        Plotly.newPlot('time_shuttle', data,layout);
                     }
                 },'json')
 
