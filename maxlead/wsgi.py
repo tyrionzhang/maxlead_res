@@ -11,6 +11,9 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+p = os.popen('scrapyd')
+print(p)
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "maxlead.settings")
 
 application = get_wsgi_application()
