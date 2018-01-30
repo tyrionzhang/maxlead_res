@@ -156,6 +156,7 @@
         });
         $('#editASINButton').on('click',function () {
             var asins = [];
+            $('#editASIN_id').remove();
             $("#editASIN").append('<input type="hidden" name="ids" value="" id="editASIN_id">');
             $('input[name="selectListing"]:checked').each(function () {
                 asins.push(parseInt($(this).val()))
