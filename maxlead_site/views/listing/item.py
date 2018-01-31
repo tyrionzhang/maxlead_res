@@ -603,7 +603,7 @@ class Item:
                     line_x1.append(int(v.created.strftime("%d")))
                     line_y1.append(float(v.price[1:]))
                 if tsData2 == 'price':
-                    name2 = ''
+                    name2 = 'price'
                     line_x2.append(int(v.created.strftime("%d")))
                     line_y2.append(float(v.price[1:]))
             if v.total_review:
