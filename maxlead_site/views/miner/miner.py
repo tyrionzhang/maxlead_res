@@ -249,7 +249,7 @@ class Miner:
             for aid in eval(val.asins):
                 if val.type == 1:
                     qa = Questions.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
-                    if qa and len(qa) >= qa[0].count:
+                    if qa and qa[0].is_done:
                         for q in qa:
                             answers = Answers.objects.filter(question_id=q.id)
                             if answers:
@@ -298,7 +298,7 @@ class Miner:
                 else:
                     reviews_a = AsinReviews.objects.filter(aid=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
                     reviews = Reviews.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
-                    if reviews_a and len(reviews)>=reviews_a[0].total_review:
+                    if reviews_a and reviews_a[0].is_done:
                         for v in reviews:
                             re = {
                                 'title': v.title,

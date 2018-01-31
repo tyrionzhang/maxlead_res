@@ -50,6 +50,7 @@ class AsinReviews(models.Model):
     negative_keywords = models.TextField('Negative Keywords',null=True)
     avg_score = models.DecimalField('Avg Score', max_digits=2, decimal_places=1)
     total_review = models.IntegerField('Total Reviews', default=0)
+    is_done = models.IntegerField('Done', default=0,null=True)
     created = models.DateField('Create Date',auto_now_add=True)
 
     class Meta:
@@ -127,6 +128,7 @@ class Questions(models.Model):
     asked = models.CharField('Asked',max_length=225,default='')
     votes = models.IntegerField('Votes',default=0,null=True)
     count = models.IntegerField('Count',default=0,null=True)
+    is_done = models.IntegerField('Done',default=0,null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:

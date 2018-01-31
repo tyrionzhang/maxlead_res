@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import scrapy,time
+import scrapy,time,datetime
 from maxlead_site.models import UserAsins
 from django.db.models import Count
 from bots.maxlead_scrapy.maxlead_scrapy.items import AnswersItem
@@ -48,6 +48,10 @@ class QaSpider(scrapy.Spider):
         if next_page is not None:
             next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse)
+        else:
+            re = Questions.objects.filter(asin=res_asin[6],created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
+            if re:
+                re.update(is_done=1)
 
     def get_answer(self,response):
         qa_sp = response.url.split('?')[-1]

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import scrapy,time,os
+import scrapy,time,datetime
 from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
-from maxlead_site.models import UserAsins
+from maxlead_site.models import UserAsins,AsinReviews
 from scrapy import log
 from django.db.models import Count
 
@@ -78,6 +78,10 @@ class ReviewSpider(scrapy.Spider):
             next_page = next_page + '&mytype=maxlead'
             next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse)
+        else:
+            re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
+            if re:
+                re.update(is_done=1)
 
     def parse_details(self, response):
         item = response.meta.get('item', None)
