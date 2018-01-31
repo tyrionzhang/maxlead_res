@@ -248,6 +248,8 @@ class Miner:
             data = []
             for aid in eval(val.asins):
                 if val.type == 1:
+                    re = Questions.objects.filter(asin='B073SRJD46', created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
+                    re.update(is_done=1)
                     qa = Questions.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
                     if qa and qa[0].is_done:
                         for q in qa:
