@@ -105,6 +105,9 @@
         </form>
             </main>
         <script>
+        var viewRange = $('select[name="viewRange"]').val();
+        var viewrange_el = '<input type="hidden" name="viewRange" value="'+viewRange+'">';
+        $('form[name="listSearchForm"]').append(viewrange_el);
             $("#btn-asin-add").on('click',function () {
                 $(this).attr('disabled',"true");
                 var newASIN = $("textarea[name='newASIN']").val();
