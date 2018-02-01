@@ -190,7 +190,7 @@ class Logins:
                 return HttpResponseRedirect("/admin/maxlead_site/user_detail/")
         else:
             if user.role == 2:
-                menber_group = UserProfile.objects.filter(role=1).all()
+                menber_group = UserProfile.objects.filter(role=1,state=1).all()
                 return render(self, 'user/add.html', {'user': user,'avator': user.user.username[0],'member_groups':menber_group})
             else:
                 return HttpResponseRedirect("/admin/maxlead_site/index/")
@@ -218,7 +218,7 @@ class Logins:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
 
         id = self.GET.get('id')
-        member_group = list(UserProfile.objects.filter(role=1))
+        member_group = list(UserProfile.objects.filter(role=1,state=1))
 
         if not id:
             user_info = user
@@ -241,7 +241,7 @@ class Logins:
         if user.role == 1:
             user_list = user_list.filter(group=user.user)
 
-        menber_group = UserProfile.objects.filter(role=1).all()
+        member_group = UserProfile.objects.filter(role=1,state=1).all()
         role = self.GET.get('role','')
         if role:
             user_list = user_list.filter(role=role)
@@ -290,7 +290,7 @@ class Logins:
         data = {
             'data':True,
             'users': users,
-            'groups':list(menber_group),
+            'groups':list(member_group),
             'total_count':total_count,
             'total_page':int(total_count/limit),
             'user': user,
@@ -298,6 +298,7 @@ class Logins:
             'urls': urls,
             'page': page,
             'role': role,
+            'group': int(group),
             'keywords': keywords,
             'state': status,
         }

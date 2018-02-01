@@ -14,7 +14,9 @@
                           </select>
                     Group: <select name="group">
                         <option value="">All</option>
-
+                        {% for val in groups %}
+                        <option value="{{ val.id }}" {% if val.id == group %}selected{% endif %}>{{ val.user.username }}</option>
+                        {% endfor %}
                         </select>
                     Status: <select name="status">
                         <option value="">All</option>
