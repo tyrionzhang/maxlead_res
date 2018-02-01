@@ -4,7 +4,7 @@ from django.db.models import Count
 from maxlead_site.models import UserAsins,UserProfile
 from maxlead_site.common.npextractor import NPExtractor
 
-def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0, user_id=''):
+def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0, user_id='',is_listings=False):
     asins = []
     if type:
         user_asins = UserAsins.objects.values('aid').annotate(count=Count('aid'))
@@ -31,6 +31,9 @@ def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0
             user_asins = user_asins.filter(review_watcher=revstatus)
         if liststatus:
             user_asins = user_asins.filter(listing_watcher=liststatus)
+        if is_listings:
+            return user_asins
+
         for val in user_asins:
             asins.append(val['aid'])
 

@@ -43,9 +43,9 @@
                     {% for val in res %}
                     <tr>
                         <td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td>
-                        <td><img src="{{ val.image_thumbs }}" class="listMgmPic"/></td>
+                        <td>{% if val.id %}<img src="{{ val.image_thumbs }}" class="listMgmPic"/>{% endif %}</td>
                         <td>
-                            <a title="{{ val.title }}" href="/admin/maxlead_site/listing_item/?asin={{ val.asin }}"><SPAn class="listingTitle">{{ val.title1 }}</span><span class="listingASIN">{{ val.asin }}</SPAN><span class="listingSKU">{{ val.sku }}</span></a></td><td>{{ val.brand }}</td><td>{{ val.price }}<BR> {{ val.price2 }}</td><td>{{ val.total_review }}<BR> {{ val.total_review2 }}</td><td>{{ val.rvw_score }}<br> {{ val.rvw_score2 }}</td><td>{{ val.category_rank }}<br>{{ val.category_rank2 }}</td><td>{{ val.buy_box_res }}</td><td><span class="{% if val.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}" ></span></td><td><span class="{% if val.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}" ></span><!--开启状态为statusON,关闭为statusOFF--></td><td><span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}" ></span></td><td><span class="lastCheck">{{ val.last_check }}</span></td></tr>
+                            <a title="{{ val.title }}" {% if val.id %}href="/admin/maxlead_site/listing_item/?asin={{ val.asin }}"{% endif %}><SPAn class="listingTitle">{{ val.title1 }}</span><span class="listingASIN">{{ val.asin }}</SPAN><span class="listingSKU">{{ val.sku }}</span></a></td><td>{{ val.brand }}</td><td>{{ val.price }}<BR> {{ val.price2 }}</td><td>{{ val.total_review }}<BR> {{ val.total_review2 }}</td><td>{{ val.rvw_score }}<br> {{ val.rvw_score2 }}</td><td>{{ val.category_rank }}<br>{{ val.category_rank2 }}</td><td>{{ val.buy_box_res }}</td><td><span class="{% if val.user_asin.is_use == 1 %}asinON{% else %}asinOFF{% endif %}" ></span></td><td><span class="{% if val.user_asin.review_watcher == 1 %}rvON{% else %}rvOFF{% endif %}" ></span><!--开启状态为statusON,关闭为statusOFF--></td><td><span class="{% if val.user_asin.listing_watcher == 1 %}listON{% else %}listOFF{% endif %}" ></span></td><td><span class="lastCheck">{{ val.last_check }}</span></td></tr>
                     {% endfor %}
                 </table>
                 <hr>
@@ -243,7 +243,7 @@
                     window.location.reload()
                 }
             },'json');
-        })
+        });
 
     function span_click(data) {
 

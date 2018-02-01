@@ -78,8 +78,11 @@ class Listing:
             'user_list': user_list
         }
         if asins:
+            li_asin = []
             listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins)
-
+            for val in listings:
+                li_asin.append(val['asin'])
+            li_re = list(set(asins).difference(set(li_asin)))
             if buybox:
                 listings = listings.filter(buy_box=buybox)
             if listKwd and searchCol:
@@ -97,7 +100,7 @@ class Listing:
 
             limit = int(self.GET.get('limit', 20))
             limit_re = limit
-            total_count = listings.count()
+            total_count = len(listings)
             if int(limit) >= total_count:
                 limit = total_count
             if not listings:
@@ -128,6 +131,32 @@ class Listing:
                 # If page is out of range (e.g. 9999), deliver last page of results.
                 list_data = paginator.page(paginator.num_pages)
             res = []
+            if li_re:
+                for val in li_re:
+                    li = UserAsins.objects.filter(aid=val)
+                    if li:
+                        re = {
+                            'id': '',
+                            'title': '-',
+                            'title1': '',
+                            'asin': val,
+                            'sku': li[0].sku,
+                            'brand': '-',
+                            'price': '-',
+                            'price2': '',
+                            'total_review': '-',
+                            'total_review2': '',
+                            'rvw_score2': '',
+                            'rvw_score': '-',
+                            'category_rank': '-',
+                            'category_rank2': '',
+                            'buy_box': '-',
+                            'buy_box_res': '-',
+                            'user_asin': li[0],
+                            'image_thumbs': '-',
+                            'last_check': '-',
+                        }
+                        res.append(re)
             if list_data:
                 for v in list_data:
                     listing = Listings.objects.filter(asin=v['asin']).order_by('-created')[:2]
