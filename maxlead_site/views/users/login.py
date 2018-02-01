@@ -248,6 +248,8 @@ class Logins:
         group = self.GET.get('group','')
         if group:
             user_list = user_list.filter(group=group)
+        if not group:
+            group = 0
         status = self.GET.get('status','')
         if status:
             user_list = user_list.filter(state=status)
