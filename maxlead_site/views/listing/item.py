@@ -80,49 +80,6 @@ class Item:
             # activity_radar = activity_radar[0]
         else:
             activity_radar = []
-        line_x1 = []
-        line_x2 = []
-        line_price_y = []
-        line_review_y = []
-        for v in listing:
-            if v.price:
-                line_price_y.append(float(v.price[1:]))
-                line_x1.append(int(v.created.strftime("%d")))
-            if v.total_review:
-                line_review_y.append(int(v.total_review))
-                line_x2.append(int(v.created.strftime("%d")))
-
-        review_max = Reviews.objects.filter(asin=item.asin).aggregate(Max('created'))
-        if review_max and review_max['created__max']:
-            review = Reviews.objects.filter(asin=item.asin,
-                                            created__icontains=review_max['created__max'].strftime("%Y-%m-%d")).all()
-            asinreviews = get_review_keywords(review)
-
-            positive_words = asinreviews['positive_keywords']
-            negative_keywords = asinreviews['negative_keywords']
-
-            review_limit = self.GET.get('review_limit', 5)
-
-            paginator = Paginator(review, review_limit)
-            review_page = self.GET.get('review_page',1)
-            try:
-                review_data = paginator.page(review_page)
-            except PageNotAnInteger:
-                # If page is not an integer, deliver first page.
-                review_data = paginator.page(1)
-            except EmptyPage:
-                # If page is out of range (e.g. 9999), deliver last page of results.
-                review_data = paginator.page(paginator.num_pages)
-
-            for val in review_data:
-                if val.review_date:
-                    val.review_date = val.review_date.strftime("%B %d, %Y")
-        else:
-            review_data = []
-            positive_words = []
-            negative_keywords = []
-            review_page = 1
-
 
         item.question_answer = str(answer_count)+'/'+str(question_count.count())
         box_res = eval(item.buy_box_res)
@@ -160,18 +117,11 @@ class Item:
             'user': user,
             'avator': user.user.username[0],
             'res':item,
-            'asinreview':positive_words,
-            'negative_keywords':negative_keywords,
-            'review':review_data,
-            'review_page':review_page,
-            'line_x1':line_x1,
-            'line_x2':line_x2,
-            'line_price_y':line_price_y,
-            'line_review_y':line_review_y,
             'activity_radar':activity_radar,
             'listing_watchers':listing_watchers,
             'li_watcher_page':li_watcher_page,
             'catgorys':catgorys,
+            'asin':asin,
         }
         return render(self, 'listings/listingdetail.html',data)
 

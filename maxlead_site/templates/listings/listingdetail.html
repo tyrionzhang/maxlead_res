@@ -163,15 +163,8 @@
                             <button class="rvInfoButton" type="submit">Export</button>
                         </form>
                         <table id="table-review-list"><!--默认只显示3条-->
-                            {% for val in review %}
-                            <tr>
-                                <td><span class="star{{ val.score }}"><!--给class传入相应的1-5star，显示图片--></span>{% if val.is_vp == 1 %}Verified Purchase{% endif %}<!--如果是非VP则不显示--></td>
-                                <td>{{ val.name }}<!--reviewer名字--><br />{{ val.review_date }}<!--review日期--></td>
-                                <td class="rvInfoRV">{{ val.content }}</td>
-                            </tr>
-                            {% endfor %}
+
                         </table>
-                        <button type="button" class="moreButton" id="btn-review-more" data-page="{{ review_page }}">More</button>
                     </div>
                 </section>
                 <section class="detailRadar">
@@ -240,47 +233,17 @@
             $("#editASINButton").click(function(){
                 $("#editASIN").toggle();
             });
-            var line_x1 = {{ line_x1 }};
-            var line_x2 = {{ line_x2 }};
-            var line_price_y = {{ line_price_y }};
-            var line_review_y = {{ line_review_y }};
-            var price = {
-              x: line_x1,
-              y: line_price_y,
-              type: 'scatter',
-              name: 'price',
-              yaxis: 'y1'
-            };
 
-            var reviews = {
-              x: line_x2,
-              y: line_review_y,
-              type: 'scatter',
-              name: 'review',
-              yaxis: 'y2'
-            };
-
-            var layout = {
-               yaxis:{
-                   title: "y-price"
-               },
-               yaxis2:{
-                   title: "y-review",
-                   side: 'right',
-                   overlaying: 'y1'
-               }
-            };
-
-            var data = [price, reviews];
-
-            Plotly.newPlot('time_shuttle', data,layout);
+            shuttle_chart();
 
             get_rank();
 
-            $('#btn-review-search').on('click',function () {
+            get_review('{{ asin }}');
+
+            function get_review(asin) {
                 $('input[name="words"]').val('');
                 var data = {
-                    'asin': $(this).data('asin'),
+                    'asin': asin,
                     'is_vp':$('select[name="is_vp"]').val(),
                     'score':$('select[name="score"]').val(),
                     'rvKwd':$('input[name="rvKwd"]').val(),
@@ -315,13 +278,19 @@
                             $('#ul_words').html(el_k1);
                         }
                         $('#table-review-list').html(el);
-
+                        console.log(re.data);
                         if (re.data.is_page && $('#btn-review-more').length <= 0){
+                            console.log(11);
                             $('.rvInfo').append('<button type="button" class="moreButton" id="btn-review-more" data-page="'+re.data.review_page+'">More</button>');
                         }
                     }
                 },'json');
                 return false;
+            }
+
+            $('#btn-review-search').on('click',function () {
+                var asin = $(this).data('asin');
+                get_review(asin);
             });
 
             $('.rvInfo').on('click', '#btn-review-more', function () {
@@ -447,8 +416,8 @@
                     }
                 },'json')
             });
-
-            $('#btn-shuttle-update').on('click',function () {
+            
+            function shuttle_chart() {
                 var data = {
                     'asin':$('input[name="review_asin"]').val(),
                     'tsData1':$('select[name="tsData1"]').val(),
@@ -489,7 +458,10 @@
                         Plotly.newPlot('time_shuttle', data,layout);
                     }
                 },'json')
+            }
 
+            $('#btn-shuttle-update').on('click',function () {
+                shuttle_chart()
             });
 
             $('.detailAct').on('click','.actMore',function () {
