@@ -93,7 +93,7 @@ class Listing:
                     listings = listings.filter(brand__icontains=listKwd)
                 if searchCol == 'seller':
                     listings = listings.filter(buy_box_res__icontains=listKwd)
-            listings = listings.all()
+            listings = listings.all().annotate().order_by('-user_asin__last_check')
 
             limit = int(self.GET.get('limit', 20))
             limit_re = limit
