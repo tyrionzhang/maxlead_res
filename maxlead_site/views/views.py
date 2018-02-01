@@ -104,7 +104,9 @@ def perform_command():
     os.chdir(work_path)
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     if res:
-        for val in res:
+        for i,val in enumerate(res,1):
+            if i%6 == 0:
+                time.sleep(1800)
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % \
                       val['aid']
             os.system(cmd_str)
@@ -119,7 +121,9 @@ def perform_command1():
     os.chdir(work_path)
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     if res:
-        for val in res:
+        for i,val in enumerate(res,1):
+            if i%6 == 0:
+                time.sleep(1800)
             cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % \
                        val['aid']
             cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
