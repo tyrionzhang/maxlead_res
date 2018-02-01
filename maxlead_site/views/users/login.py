@@ -144,6 +144,7 @@ class Logins:
             user_file = user
 
             update_fields = ['username', 'email']
+            update_fields1 = ['state', 'role', 'group']
             if user_file.role == 2:
                 user = User()
                 user.username = self.POST.get('username', '')
@@ -159,7 +160,6 @@ class Logins:
                     user.id
                     user.save()
 
-                update_fields1 = ['state', 'role', 'group']
                 user_file = UserProfile()
                 user_file.id = user.userprofile.id
                 user_file.user_id = user.id

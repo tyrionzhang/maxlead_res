@@ -2,7 +2,9 @@
 from django.http import HttpResponse
 import xlsxwriter as xlsw
 from io import *
-import os,time
+import os,time,xlrd,csv
+from django.contrib.auth.models import User
+from maxlead_site.models import UserProfile
 from maxlead import settings
 
 def get_excel_file(self, data,fields,data_fields=[]):
@@ -105,3 +107,106 @@ def get_excel_file1(self, data,fields,data_fields=[]):
         workbook.close()
 
         return path_name1
+
+def read_excel_file(res):
+    fname = res
+    if not os.path.isfile(fname):
+        return {'code':0,'msg':'File is not found!'}
+    data = xlrd.open_workbook(fname)  # 打开fname文件
+    data.sheet_names()  # 获取xls文件中所有sheet的名称
+    table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+    nrows = table.nrows  # 获取table工作表总行数
+    update_fields = ['username', 'email']
+    update_fields1 = ['state', 'role', 'group']
+    msg = ''
+    for i in range(nrows):
+        try:
+            if i + 1 < nrows:
+                user = User()
+                user.username = table.cell_value(i + 1, 0, )  # 获取第i行中第j列的值
+                user.set_password('123456')
+                update_fields.append('password')
+                user.email = table.cell_value(i + 1, 1, )
+                user.id
+                user.save()
+                if table.cell_value(i + 1, 4, ):
+                    group_obj = UserProfile.objects.filter(user__username=table.cell_value(i + 1, 4, ))
+                else:
+                    group_obj = UserProfile.objects.filter(id=1)
+                roles = table.cell_value(i + 1, 3, )
+                status = table.cell_value(i + 1, 2, )
+
+                user_file = UserProfile()
+                user_file.id = user.userprofile.id
+                user_file.user_id = user.id
+
+                if roles == 'member':
+                    user_file.role = 0
+                elif roles == 'leader':
+                    user_file.role = 1
+                else:
+                    user_file.role = 2
+                if status == 'active':
+                    user_file.state = 1
+                else:
+                    user_file.state = 0
+                if group_obj:
+                    user_file.group = group_obj[0]
+                else:
+                    user_file.group = UserProfile.objects.filter(id=1)[0]
+
+                user_file.save(update_fields=update_fields1)
+        except:
+            msg += '第%s行添加有误。<br>' % i
+            continue
+    return {'code': 1, 'msg': msg}
+
+def read_csv_file(res):
+    fname = res
+    if not os.path.isfile(fname):
+        return {'code':0,'msg':'File is not found!'}
+    csv_files = csv.reader(open(res,'r'))
+    msg = 'Work Is Done!<br>'
+    update_fields = ['username', 'email']
+    update_fields1 = ['state', 'role', 'group']
+    for i,val in enumerate(csv_files,0):
+        try:
+            if i > 0:
+                user = User()
+                user.username = val[0]  # 获取第i行中第j列的值
+                user.set_password('123456')
+                update_fields.append('password')
+                user.email = val[1]
+                user.id
+                user.save()
+                if val[4]:
+                    group_obj = UserProfile.objects.filter(user__username=val[4])
+                else:
+                    group_obj = UserProfile.objects.filter(id=1)
+                roles = val[3]
+                status = val[2]
+
+                user_file = UserProfile()
+                user_file.id = user.userprofile.id
+                user_file.user_id = user.id
+
+                if roles == 'member':
+                    user_file.role = 0
+                elif roles == 'leader':
+                    user_file.role = 1
+                else:
+                    user_file.role = 2
+                if status == 'active':
+                    user_file.state = 1
+                else:
+                    user_file.state = 0
+                if group_obj:
+                    user_file.group = group_obj[0]
+                else:
+                    user_file.group = UserProfile.objects.filter(id=1)[0]
+
+                user_file.save(update_fields=update_fields1)
+        except:
+            msg += '第%s行添加有误。<br>' % i
+            continue
+    return {'code': 1, 'msg': msg}

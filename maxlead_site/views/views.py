@@ -7,7 +7,9 @@ from maxlead_site.models import UserAsins,AsinReviews,Reviews
 from maxlead import settings
 from maxlead_site.common.user_secuirty import UserSecuirty
 from maxlead_site.common.npextractor import NPExtractor
+from maxlead_site.common.excel_world import read_csv_file
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
@@ -241,3 +243,7 @@ class test(UserSecuirty):
 def test1(request):
     update_kewords()
     return render(request, 'spider/home.html')
+
+def export_users(request):
+    re = read_csv_file('E:/asus/Documents/staffx.csv')
+    return HttpResponse(re['msg'])
