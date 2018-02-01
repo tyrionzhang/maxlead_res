@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import json,datetime
+import json,datetime,calendar
+from dateutil.relativedelta import relativedelta
 from django.shortcuts import render,HttpResponse
 from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect
@@ -22,8 +23,14 @@ class Item:
         listing_max = Listings.objects.filter(asin=asin).aggregate(Max('created'))
         if not listing_max or not listing_max['created__max']:
             listing_max = Listings.objects.aggregate(Max('created'))
-        listing = Listings.objects.filter(asin=asin).filter(created__gte=datetime.datetime.now().strftime("%Y-%m-1")).\
-                                                    filter(created__lte=listing_max['created__max']).order_by('-created')
+        start_time = datetime.datetime.now().strftime("%Y-%m-1")
+        end_time = listing_max['created__max'].strftime("%Y-%m-%d")
+        if int(datetime.datetime.now().strftime("%d")) <= 5:
+            mid_time = datetime.datetime.now() - relativedelta(months=+1)
+            mid_days = calendar.monthrange(mid_time.year, mid_time.month)
+            start_time = mid_time.strftime("%Y-%m-1")
+            end_time = mid_time.strftime("%Y-%m-" + str(mid_days[1]))
+        listing = Listings.objects.filter(asin=asin).filter(created__gte=start_time).filter(created__lte=end_time).order_by('-created')
         item = listing[0]
         catgorys = []
         if item.user_asin.cat1:
