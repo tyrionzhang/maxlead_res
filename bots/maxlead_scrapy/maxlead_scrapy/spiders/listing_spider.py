@@ -80,8 +80,9 @@ class ListingSpider(scrapy.Spider):
             buyBoxs = re.sub("\n", ",",
                           response.css("div#availability-brief").xpath("string(span[2])").extract_first(default="").strip())
             if buyBoxs:
-                a = buyBoxs.split('sold by')[1]
-                buyBoxs = a.split('and')
+                a = buyBoxs.split('sold by')
+                if len(a)>2:
+                    buyBoxs = a[1].split('and')
         if buyBoxs:
             for v in buyBoxs:
                 item['buy_box_res'].append(v)
