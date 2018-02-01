@@ -200,7 +200,9 @@ def read_csv_file(res):
                     user_file.state = 1
                 else:
                     user_file.state = 0
-                if group_obj:
+                if roles == 'leader':
+                    user_file.group_id = user.userprofile.id
+                elif group_obj:
                     user_file.group = group_obj[0]
                 else:
                     user_file.group = UserProfile.objects.filter(id=1)[0]
