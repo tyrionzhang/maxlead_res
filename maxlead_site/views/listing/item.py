@@ -31,7 +31,10 @@ class Item:
             start_time = mid_time.strftime("%Y-%m-1")
             end_time = mid_time.strftime("%Y-%m-" + str(mid_days[1]))
         listing = Listings.objects.filter(asin=asin).filter(created__gte=start_time).filter(created__lte=end_time).order_by('-created')
-        item = listing[0]
+        if not listing:
+            item = Listings.objects.filter(asin=asin).filter(created__icontains=listing_max['created__max'].strftime("%Y-%m-%d"))[0]
+        else:
+            item = listing[0]
         catgorys = []
         if item.user_asin.cat1:
             catgorys.append(item.user_asin.cat1)
