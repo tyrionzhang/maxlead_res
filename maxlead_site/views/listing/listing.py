@@ -81,7 +81,7 @@ class Listing:
         if asins:
             li_asin = []
             listings = Listings.objects.values('asin').annotate(count=Count('asin')).filter(asin__in=asins)
-            if page == 1:
+            if int(page) == 1:
                 for val in listings:
                     li_asin.append(val['asin'])
                 li_re = list(set(asins).difference(set(li_asin)))
@@ -132,7 +132,7 @@ class Listing:
                 # If page is out of range (e.g. 9999), deliver last page of results.
                 list_data = paginator.page(paginator.num_pages)
             res = []
-            if page == 1:
+            if int(page) == 1:
                 if li_re:
                     for val in li_re:
                         li = UserAsins.objects.filter(aid=val)
