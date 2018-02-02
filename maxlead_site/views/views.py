@@ -256,7 +256,27 @@ def get_asin_spiders():
         os.chdir(settings.ROOT_PATH)
 
 def Spiders2(request):
+    user = UserProfile.objects.get(user_id=1)
+    asins = get_asins(user, status=1, is_done=1)
+    if asins:
+        work_path = settings.SPIDER_URL
+        os.chdir(work_path)
+        os.system('scrapyd-deploy')
+        for i, val in enumerate(asins, 1):
+            if i % 6 == 0:
+                time.sleep(1800)
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
+            cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % val
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
+            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val
+            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % val
+            os.system(cmd_str)
+            os.system(cmd_str1)
+            os.system(cmd_str2)
+            os.system(cmd_str3)
+            os.system(cmd_str4)
     schedule.enter(3600, 0, get_asin_spiders)
+    os.chdir(settings.ROOT_PATH)
     # # 持续运行，直到计划时间队列变成空为止
     schedule.run()
 
