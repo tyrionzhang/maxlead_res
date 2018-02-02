@@ -252,29 +252,9 @@ class ListingSpider(scrapy.Spider):
                     promotions += v
             if promotions:
                 item['promotion'] = promotions
-        # url = response.css('from#addToCart::attr(action)')
-        # url = response.urljoin(url)
-        # formdata = {
-        #     'session-id':response.css('input#session-id::attr(value)').extract_first(),
-        #     'ASIN':response.css('input#ASIN::attr(value)').extract_first(),
-        #     'offerListingID':response.css('input#offerListingID::attr(value)').extract_first(),
-        #     'isMerchantExclusive':response.css('input#isMerchantExclusive::attr(value)').extract_first(),
-        #     'merchantID':response.css('input#merchantID::attr(value)').extract_first(),
-        #     'isAddon':response.css('input#isAddon::attr(value)').extract_first(),
-        #     'nodeID':response.css('input#nodeID::attr(value)').extract_first(),
-        #     'sellingCustomerID':response.css('input#sellingCustomerID::attr(value)').extract_first(),
-        #     'qid':response.css('input#qid::attr(value)').extract_first(),
-        #     'sr':response.css('input#sr::attr(value)').extract_first(),
-        #     'storeID':response.css('input#storeID::attr(value)').extract_first(),
-        #     'tagActionCode':response.css('input#tagActionCode::attr(value)').extract_first(),
-        #     'viewID':response.css('input#viewID::attr(value)').extract_first(),
-        #     'rebateId':response.css('input#rebateId::attr(value)').extract_first(),
-        #     'rsid':response.css('input#rsid::attr(value)').extract_first(),
-        #     'sourceCustomerOrgListID':response.css('input#sourceCustomerOrgListID::attr(value)').extract_first(),
-        #     'sourceCustomerOrgListItemID':response.css('input#sourceCustomerOrgListItemID::attr(value)').extract_first(),
-        #     'unifiedLocationAddress':response.css('input#unifiedLocationAddress::attr(value)').extract_first(),
-        #     'quantity':'1',
-        # }
         yield item
+        res = UserAsins.objects.filter(aid=asin_id)
+        if res:
+            res.update(is_done=1)
 
 

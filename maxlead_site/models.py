@@ -38,6 +38,7 @@ class UserAsins(models.Model):
     listing_watcher = models.BooleanField('Listing Watcher', default=True)
     is_email = models.BooleanField(u'是否邮件通知',default=1)
     is_use = models.BooleanField('Status', default=True)
+    is_done = models.IntegerField('Is Done', default=0, null=True)
     last_check = models.DateTimeField('Last Check', null=True)
     update_time = models.DateTimeField('Update Time', null=True)
 
