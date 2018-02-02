@@ -231,7 +231,7 @@ def Spiders(request):
 
     return render(request, 'spider/home.html')
 
-def get_asin_spiders(request):
+def get_asin_spiders():
     schedule.enter(3600, 0, get_asin_spiders)
 
     user = UserProfile.objects.get(user_id=1)
