@@ -85,6 +85,7 @@ class Listing:
                 for val in listings:
                     li_asin.append(val['asin'])
                 li_re = list(set(asins).difference(set(li_asin)))
+                print(li_re)
             if buybox:
                 listings = listings.filter(buy_box=buybox)
             if listKwd and searchCol:
@@ -133,6 +134,7 @@ class Listing:
                 list_data = paginator.page(paginator.num_pages)
             res = []
             if int(page) == 1:
+                print(li_re)
                 if li_re:
                     for val in li_re:
                         li = UserAsins.objects.filter(aid=val)
