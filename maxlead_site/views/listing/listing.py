@@ -51,7 +51,7 @@ class Listing:
         revstatus = self.GET.get('revstatus','')
         liststatus = self.GET.get('liststatus','')
         viewRange = self.GET.get('viewRange', user.user.id)
-        page = self.GET.get('page')
+        page = self.GET.get('page',1)
 
         if viewRange:
             viewRange = int(viewRange)
