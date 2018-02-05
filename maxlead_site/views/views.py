@@ -1,6 +1,6 @@
 import os,sched
 from datetime import *
-import time,re
+import time,re,socket
 from django.db.models import Count
 from django.shortcuts import render
 from maxlead_site.models import UserAsins,AsinReviews,Reviews,UserProfile,Listings
@@ -296,7 +296,10 @@ def test1(request):
             regip = request.META['REMOTE_ADDR']
         except:
             regip = ""
-        return HttpResponse(regip)
+    print(regip)
+    host_name = socket.gethostname()
+    regip += "<br>%s" % host_name
+    return HttpResponse(regip)
 
 def export_users(request):
     re = read_csv_file('/home/techsupp/www/staffx.csv')
