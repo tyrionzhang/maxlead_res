@@ -106,8 +106,6 @@ def perform_command():
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     if res:
         for i,val in enumerate(res,1):
-            if i%10 == 0:
-                time.sleep(3600)
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % \
                       val['aid']
             os.system(cmd_str)
@@ -123,8 +121,6 @@ def perform_command1():
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     if res:
         for i,val in enumerate(res,1):
-            if i%10 == 0:
-                time.sleep(3600)
             cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % \
                        val['aid']
             cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
@@ -187,8 +183,6 @@ def RunReview(request):
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     if res:
         for i,val in enumerate(res,1):
-            if i%10 == 0:
-                time.sleep(3600)
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['aid']
             os.system(cmd_str)
     os.chdir(settings.ROOT_PATH)
@@ -208,8 +202,6 @@ def Spiders(request):
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     if res:
         for i,val in enumerate(res,1):
-            if i%10 == 0:
-                time.sleep(3600)
             cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % \
                       val['aid']
             cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
@@ -241,8 +233,6 @@ def get_asin_spiders():
         os.chdir(work_path)
         os.system('scrapyd-deploy')
         for i, val in enumerate(asins, 1):
-            if i % 7 == 0:
-                time.sleep(1800)
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
             cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % val
             cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
@@ -258,13 +248,12 @@ def get_asin_spiders():
 def Spiders2(request):
     user = UserProfile.objects.get(user_id=1)
     asins = get_asins(user, status=1, is_done=1)
+    print(datetime.now())
     if asins:
         work_path = settings.SPIDER_URL
         os.chdir(work_path)
         os.system('scrapyd-deploy')
         for i, val in enumerate(asins, 1):
-            if i % 7 == 0:
-                time.sleep(1800)
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
             cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % val
             cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
@@ -299,9 +288,16 @@ class test(UserSecuirty):
     # user_info = staff_member_required(user_info)
 
 def test1(request):
-    update_kewords()
-    return render(request, 'spider/home.html')
+    try:
+        real_ip = request.META['HTTP_X_FORWARDED_FOR']
+        regip = real_ip.split(",")[0]
+    except:
+        try:
+            regip = request.META['REMOTE_ADDR']
+        except:
+            regip = ""
+        return HttpResponse(regip)
 
 def export_users(request):
-    re = read_csv_file('E:/asus/Documents/staffx.csv')
+    re = read_csv_file('/home/techsupp/www/staffx.csv')
     return HttpResponse(re['msg'])
