@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import scrapy,time,os,re
+import random
+import string
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
@@ -13,16 +15,17 @@ class ListingSpider(scrapy.Spider):
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
 
     def __init__(self, asin=None, *args, **kwargs):
-        url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=shower+head&th=1&psc=1"
+        url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=%s&th=1&psc=1"
+        ran_str = ''.join(random.sample(string.ascii_letters + string.digits, 8))
         super(ListingSpider, self).__init__(*args, **kwargs)
         if asin:
-            urls1 = url % (asin, int(time.time()))
+            urls1 = url % (asin, int(time.time()), ran_str)
             self.start_urls.append(urls1)
         else:
             if self.res:
                 for re in self.res:
                     asins = UserAsins.objects.values('aid','review_watcher','listing_watcher','sku','ownership').filter(aid=re['aid'])[0]
-                    urls1 = url % (asins['aid'], int(time.time()))
+                    urls1 = url % (asins['aid'], int(time.time()), ran_str)
                     self.start_urls.append(urls1)
 
     def parse(self, response):
@@ -138,75 +141,25 @@ class ListingSpider(scrapy.Spider):
 
                 item['category_rank'] = item['category_rank'] + rank_list_item
         else:
-            rank_el = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(3) td span span::text').extract()
-            rank_el1 = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(9) td span span::text').extract()
-            rank_el2 = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(7) td span span::text').extract()
-            if rank_el and not item['category_rank']:
-                if response.css('table#productDetails_detailBullets_sections1 tr:nth-child(3) th::text').extract_first() \
-                        .replace('\n', '').strip() == 'Best Sellers Rank':
-                    item['category_rank'] = rank_el[0].split(' (')[0]
-                    rank_span = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(3) td span span')
-                    for n,rank_a in enumerate(rank_span,0):
-                        if not n==0:
-                            a = rank_a.css('a::text').extract()
-                            for s,val in enumerate(a,1):
-                                if s == len(a):
-                                    item['category_rank'] += val
-                                elif s == 1:
-                                    item['category_rank'] += '|' + rank_el[2] + val + ' > '
-                                else:
-                                    item['category_rank'] += val + ' > '
-            elif rank_el1 and not item['category_rank']:
-                if response.css('table#productDetails_detailBullets_sections1 tr:nth-child(9) th::text').extract_first() \
-                        .replace('\n', '').strip() == 'Best Sellers Rank':
-                    item['category_rank'] = rank_el1[0].split(' (')[0]
-                    rank_span = response.css(
-                        'table#productDetails_detailBullets_sections1 tr:nth-child(9) td span span')
-                    for n, rank_a in enumerate(rank_span, 0):
-                        if not n == 0:
-                            a = rank_a.css('a::text').extract()
-                            for s, val in enumerate(a, 1):
-                                if s == len(a):
-                                    item['category_rank'] += val
-                                elif s == 1:
-                                    item['category_rank'] += '|' + rank_el1[2] + val + ' > '
-                                else:
-                                    item['category_rank'] += val + ' > '
-            elif rank_el2 and not item['category_rank']:
-                if response.css('table#productDetails_detailBullets_sections1 tr:nth-child(7) th::text').extract_first()\
-                                                                .replace('\n', '').strip() == 'Best Sellers Rank':
-                    rank_el = response.css(
-                        'table#productDetails_detailBullets_sections1 tr:nth-child(7) td span span::text').extract()
-                    if rank_el:
-                        item['category_rank'] = rank_el[0].split(' (')[0]
-                        rank_span = response.css(
-                            'table#productDetails_detailBullets_sections1 tr:nth-child(7) td span span')
-                        for n, rank_a in enumerate(rank_span, 0):
-                            if not n == 0:
-                                a = rank_a.css('a::text').extract()
-                                for s, val in enumerate(a, 1):
-                                    if s == len(a):
-                                        item['category_rank'] += val
-                                    elif s == 1:
-                                        item['category_rank'] += '|' + rank_el[2] + val + ' > '
-                                    else:
-                                        item['category_rank'] += val + ' > '
-            elif not item['category_rank'] and response.css(
-                        'table#productDetails_detailBullets_sections1 tr:nth-child(6) td span span::text').extract():
-
-                rank_span = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(6) td span span')
-                a = response.css('table#productDetails_detailBullets_sections1 tr:nth-child(6) td span span::text').extract()
-                item['category_rank'] = a[0].split(' (')[0]
-                for n, rank_a in enumerate(rank_span, 0):
-                    if not n == 0:
-                        a = rank_a.css('a::text').extract()
-                        for s, val in enumerate(a, 1):
-                            if s == len(a):
-                                item['category_rank'] += val
-                            elif s == 1:
-                                item['category_rank'] += '|' + a[2] + val + ' > '
-                            else:
-                                item['category_rank'] += val + ' > '
+            th_el = response.css('table#productDetails_detailBullets_sections1 tr')
+            if th_el:
+                for val in th_el:
+                    th_str = val.css('th::text').extract_first()
+                    if th_str and th_str.replace('\n', '').strip() == 'Best Sellers Rank':
+                        rank_el = val.css('td span span::text').extract()
+                        if rank_el:
+                            item['category_rank'] = rank_el[0].split(' (')[0]
+                            rank_span = val.css('td span span')
+                            for n, rank_a in enumerate(rank_span, 0):
+                                if not n == 0:
+                                    a = rank_a.css('a::text').extract()
+                                    for s, val in enumerate(a, 1):
+                                        if s == len(a):
+                                            item['category_rank'] += val
+                                        elif s == 1:
+                                            item['category_rank'] += '|' + rank_el[2] + val + ' > '
+                                        else:
+                                            item['category_rank'] += val + ' > '
 
         item['inventory'] = 0
         item['image_urls'] = []
