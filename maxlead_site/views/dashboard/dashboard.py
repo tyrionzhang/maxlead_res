@@ -70,8 +70,8 @@ class Dashboard:
                     if not listing[0].image_date == listing[1].image_date:
                         activity_radar.append({
                             'name': 'image_date',
-                            'text1': listing[0].image_date,
-                            'text2': listing[1].image_date,
+                            'text1': listing[0].image_date.strftime('%Y-%m-%d %H:%M:%S'),
+                            'text2': listing[1].image_date.strftime('%Y-%m-%d %H:%M:%S'),
                             'created': listing[0].created.strftime('%Y-%m-%d'),
                         })
                     if not listing[0].title == listing[1].title:

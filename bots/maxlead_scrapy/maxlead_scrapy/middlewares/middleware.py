@@ -49,8 +49,20 @@ class UserAgent(UserAgentMiddleware):
         self.user_agent = user_agent
 
     def process_request(self, request, spider):
-        time.sleep(120)
+        headers = {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Referer": "https://www.baidu.com",
+            "Connection": "keep - alive"
+        }
         ua = random.choice(self.user_agent_list)
+        time.sleep(3 + random.randint(0,9))
         if ua:
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
             request.headers.setdefault('User-Agent', ua)
+            request.headers.setdefault('Accept', headers['Accept'])
+            request.headers.setdefault('Referer', headers['Referer'])
+            request.headers.setdefault('Connection', headers['Connection'])
+            request.headers.setdefault('Accept-Language', headers['Accept-Language'])
+            request.headers.setdefault('Accept-Encoding', headers['Accept-Encoding'])
