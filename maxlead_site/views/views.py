@@ -296,6 +296,7 @@ def test1(request):
             regip = request.META['REMOTE_ADDR']
         except:
             regip = ""
+    regip += '<br>%s' % os.fstat()
     print(regip)
     return HttpResponse(regip)
 
