@@ -246,7 +246,7 @@ class Listing:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
         if self.method == 'POST':
             ids = self.POST.get('ids','')
-            newASIN = self.POST.get('newASIN')
+            newASIN = self.POST.get('newASIN','')
             newSKU = self.POST.get('newSKU','')
             ownership = self.POST.get('ownership')
             revWatcher = self.POST.get('revWatcher')
@@ -258,6 +258,8 @@ class Listing:
             cat1 = self.POST.get('cat1','')
             cat2 = self.POST.get('cat2','')
             cat3 = self.POST.get('cat3','')
+            if not newASIN:
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'ASIN不能为空！'}),content_type='application/json')
 
             newASIN = newASIN.split('|')
             if newSKU:

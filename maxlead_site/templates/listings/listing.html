@@ -139,6 +139,9 @@
                             },'json');
                         }
                         window.location.reload();
+                    }else{
+                        alert(re.msg);
+                        $('#btn-asin-add').removeAttr('disabled');
                     }
                 },'json')
             });
