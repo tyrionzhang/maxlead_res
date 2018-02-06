@@ -75,8 +75,8 @@ class ListingSpider(scrapy.Spider):
         item['description'] = des_res
 
         item['buy_box_res'] = []
-        buyBoxs = response.css('div#merchant-info a::text').extract()
-        buyBox_link = response.css('div#merchant-info a::attr(href)').extract()
+        buyBoxs = response.css('#merchant-info a::text').extract()
+        buyBox_link = response.css('#merchant-info a::attr(href)').extract()
         if buyBox_link:
             item['buy_box_link'] = 'https://www.amazon.com%s' % buyBox_link[0]
         if not buyBoxs:
