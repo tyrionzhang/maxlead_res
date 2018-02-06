@@ -17,16 +17,15 @@ class ListingSpider(scrapy.Spider):
     def __init__(self, asin=None, *args, **kwargs):
         sr = random.randint(1,16)
         url = "https://www.amazon.com/dp/%s/ref=sr_1_%s?s=home-garden&ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1"
-        ran_str = ''.join(random.sample(string.ascii_letters + string.digits, 8))
         super(ListingSpider, self).__init__(*args, **kwargs)
         if asin:
-            urls1 = url % (asin, sr, int(time.time()), sr, ran_str)
+            urls1 = url % (asin, sr, int(time.time()), sr, asin)
             self.start_urls.append(urls1)
         else:
             if self.res:
                 for re in self.res:
                     asins = UserAsins.objects.values('aid','review_watcher','listing_watcher','sku','ownership').filter(aid=re['aid'])[0]
-                    urls1 = url % (asins['aid'], int(time.time()), ran_str)
+                    urls1 = url % (asins['aid'], sr, int(time.time()), sr, asins['aid'])
                     self.start_urls.append(urls1)
 
     def parse(self, response):
