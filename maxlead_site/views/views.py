@@ -297,8 +297,6 @@ def test1(request):
         except:
             regip = ""
     print(regip)
-    host_name = socket.gethostname()
-    regip += "<br>%s" % host_name
     return HttpResponse(regip)
 
 def export_users(request):
