@@ -81,7 +81,11 @@ class Item:
         else:
             activity_radar = []
 
-        item.question_answer = str(answer_count)+'/'+str(question_count.count())
+        if question_count and question_count[0].count:
+            qa_count = question_count[0].count
+        else:
+            qa_count = question_count.count()
+        item.question_answer = str(answer_count)+'/'+str(qa_count)
         box_res = eval(item.buy_box_res)
         if box_res:
             if 'Fulfilled by Amazon' in box_res:
