@@ -15,11 +15,12 @@ class ListingSpider(scrapy.Spider):
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
 
     def __init__(self, asin=None, *args, **kwargs):
-        url = "https://www.amazon.com/dp/%s/ref=sr_1_16?s=home-garden&ie=UTF8&qid=%d&sr=1-16&keywords=%s&th=1&psc=1"
+        sr = random.randint(1,16)
+        url = "https://www.amazon.com/dp/%s/ref=sr_1_%s?s=home-garden&ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1"
         ran_str = ''.join(random.sample(string.ascii_letters + string.digits, 8))
         super(ListingSpider, self).__init__(*args, **kwargs)
         if asin:
-            urls1 = url % (asin, int(time.time()), ran_str)
+            urls1 = url % (asin, sr, int(time.time()), sr, ran_str)
             self.start_urls.append(urls1)
         else:
             if self.res:
