@@ -16,7 +16,7 @@ class ListingSpider(scrapy.Spider):
 
     def __init__(self, asin=None, *args, **kwargs):
         sr = random.randint(1,16)
-        url = "https://www.amazon.com/TMS-Adjustable-Utility-Ladder-Contractor/dp/%s/ref=sr_1_%s?ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1"
+        url = "https://www.amazon.com/dp/%s/ref=sr_1_%s?ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1"
         super(ListingSpider, self).__init__(*args, **kwargs)
         if asin:
             urls1 = url % (asin, sr, int(time.time()), sr, asin)
