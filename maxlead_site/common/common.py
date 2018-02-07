@@ -29,7 +29,7 @@ def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0
 
     if user_asins:
         if status:
-            user_asins = user_asins.filter(is_use=status)
+            user_asins = user_asins.filter(is_use=True)
         if revstatus:
             user_asins = user_asins.filter(review_watcher=revstatus)
         if liststatus:

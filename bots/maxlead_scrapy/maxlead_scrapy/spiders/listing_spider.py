@@ -12,21 +12,23 @@ class ListingSpider(scrapy.Spider):
 
     name = "listing_spider"
     start_urls = []
-    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+    res = []
 
     def __init__(self, asin=None, *args, **kwargs):
         sr = random.randint(1,16)
         url = "https://www.amazon.com/dp/%s/ref=sr_1_%s?ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1"
         super(ListingSpider, self).__init__(*args, **kwargs)
-        if asin:
+        if asin == '99':
+            self.res = list(UserAsins.objects.filter(is_use=True, is_done=0).values('aid').annotate(count=Count('aid')))
+        elif asin == '88':
+            self.res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+        else:
             urls1 = url % (asin, sr, int(time.time()), sr, asin)
             self.start_urls.append(urls1)
-        else:
-            if self.res:
-                for re in self.res:
-                    asins = UserAsins.objects.values('aid','review_watcher','listing_watcher','sku','ownership').filter(aid=re['aid'])[0]
-                    urls1 = url % (asins['aid'], sr, int(time.time()), sr, asins['aid'])
-                    self.start_urls.append(urls1)
+        if self.res:
+            for re in self.res:
+                urls1 = url % (re['aid'], sr, int(time.time()), sr, re['aid'])
+                self.start_urls.append(urls1)
 
     def parse(self, response):
         res_asin = response.url.split('/')
@@ -206,7 +208,7 @@ class ListingSpider(scrapy.Spider):
             if promotions:
                 item['promotion'] = promotions
         yield item
-        time.sleep(120)
+        time.sleep(300)
         res = UserAsins.objects.filter(aid=asin_id)
         if res:
             res.update(is_done=1)
