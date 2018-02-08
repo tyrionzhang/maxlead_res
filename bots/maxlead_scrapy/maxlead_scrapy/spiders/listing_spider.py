@@ -37,6 +37,7 @@ class ListingSpider(scrapy.Spider):
         item['title'] = response.css('span#productTitle::text').extract_first()
         if not item['title']:
             item['title'] = response.css('div#titleSection span#productTitle::text').extract_first()
+        print('Title is:%s' % item['title'])
         if item['title']:
             for val in self.res:
                 if val['aid'] == asin_id:
