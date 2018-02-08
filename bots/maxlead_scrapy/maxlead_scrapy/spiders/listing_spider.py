@@ -169,7 +169,11 @@ class ListingSpider(scrapy.Spider):
             item['inventory'] = 0
             item['image_urls'] = []
             img_el = response.css('div#altImages ul.a-unordered-list li.item')
-            res = img_el[0].css('span.a-button-text img::attr("src")').extract_first()
+            if not img_el:
+                img_el = response.css('ol.a-carousel li.a-carousel-card')
+                res = img_el[0].css('span.a-declarative img::attr("src")').extract_first()
+            else:
+                res = img_el[0].css('span.a-button-text img::attr("src")').extract_first()
             if res:
                 name_res = os.path.basename(res).split('._')
                 filename = name_res[0] + name_res[1].split('_')[-1]
