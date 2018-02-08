@@ -103,12 +103,13 @@ def perform_command():
 
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
+    os.popen('scrapyd-deploy')
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     if res:
         for i,val in enumerate(res,1):
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % \
                       val['aid']
-            os.system(cmd_str)
+            os.popen(cmd_str)
         os.chdir(settings.ROOT_PATH)
 
 def perform_command1():
@@ -118,10 +119,11 @@ def perform_command1():
 
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
+    os.popen('scrapyd-deploy')
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
     if res:
         cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 88
-        os.system(cmd_str1)
+        os.popen(cmd_str1)
         for i,val in enumerate(res,1):
             cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
                        val['aid']
@@ -129,9 +131,9 @@ def perform_command1():
                        val['aid']
             cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % \
                        val['aid']
-            os.system(cmd_str2)
-            os.system(cmd_str3)
-            os.system(cmd_str4)
+            os.popen(cmd_str2)
+            os.popen(cmd_str3)
+            os.popen(cmd_str4)
         os.chdir(settings.ROOT_PATH)
 
 def update_kewords1():
@@ -175,15 +177,8 @@ def update_kewords1():
                 asin_reviews.update(negative_keywords=str(negative_keywords))
 
 def RunReview(request):
-    work_path = settings.SPIDER_URL
-    os.chdir(work_path)
-    os.system('scrapyd-deploy')
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动
-    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
-    if res:
-        for i,val in enumerate(res,1):
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['aid']
-            os.system(cmd_str)
+
     os.chdir(settings.ROOT_PATH)
 
     review_time = settings.REVIEW_TIME
@@ -194,24 +189,7 @@ def RunReview(request):
     return render(request, 'spider/home.html')
 
 def Spiders(request):
-    work_path = settings.SPIDER_URL
-    os.chdir(work_path)
-    os.system('scrapyd-deploy')
     # enter用来安排某事件的发生时间，从现在起第n秒开始启动
-    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
-    if res:
-        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 88
-        os.system(cmd_str1)
-        for i,val in enumerate(res,1):
-            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
-                      val['aid']
-            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % \
-                      val['aid']
-            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % \
-                       val['aid']
-            os.system(cmd_str2)
-            os.system(cmd_str3)
-            os.system(cmd_str4)
 
     s_time = settings.SPIDER_TIME
     os.chdir(settings.ROOT_PATH)
@@ -223,45 +201,27 @@ def Spiders(request):
 
 def get_asin_spiders():
     schedule.enter(3600, 0, get_asin_spiders)
-
+    print(datetime.now())
     user = UserProfile.objects.get(user_id=1)
     asins = get_asins(user, status=1, type=1, is_done=1)
     if asins:
         work_path = settings.SPIDER_URL
         os.chdir(work_path)
-        os.system('scrapyd-deploy')
+        os.popen('scrapyd-deploy')
         cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 99
-        os.system(cmd_str1)
+        os.popen(cmd_str1)
         for i, val in enumerate(asins, 1):
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
             cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
             cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val
             cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % val
-            os.system(cmd_str)
-            os.system(cmd_str2)
-            os.system(cmd_str3)
-            os.system(cmd_str4)
+            os.popen(cmd_str)
+            os.popen(cmd_str2)
+            os.popen(cmd_str3)
+            os.popen(cmd_str4)
         os.chdir(settings.ROOT_PATH)
 
 def Spiders2(request):
-    user = UserProfile.objects.get(user_id=1)
-    asins = get_asins(user, status=1, type=1, is_done=1)
-    print(datetime.now())
-    if asins:
-        work_path = settings.SPIDER_URL
-        os.chdir(work_path)
-        os.system('scrapyd-deploy')
-        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 99
-        os.system(cmd_str1)
-        for i, val in enumerate(asins, 1):
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
-            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
-            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val
-            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % val
-            os.system(cmd_str)
-            os.system(cmd_str2)
-            os.system(cmd_str3)
-            os.system(cmd_str4)
     schedule.enter(3600, 0, get_asin_spiders)
     os.chdir(settings.ROOT_PATH)
     # # 持续运行，直到计划时间队列变成空为止
