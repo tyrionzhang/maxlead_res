@@ -1,12 +1,11 @@
 import os,sched
 from datetime import *
-import time,re,socket
+import time,re
 from django.db.models import Count
 from django.shortcuts import render
-from maxlead_site.models import UserAsins,AsinReviews,Reviews,UserProfile,Listings
+from maxlead_site.models import UserAsins,UserProfile
 from maxlead import settings
 from maxlead_site.common.user_secuirty import UserSecuirty
-from maxlead_site.common.npextractor import NPExtractor
 from maxlead_site.common.excel_world import read_csv_file
 from maxlead_site.common.common import get_asins
 from django.http import HttpResponseRedirect
@@ -15,86 +14,6 @@ from django.http import HttpResponse
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
 schedule = sched.scheduler(time.time, time.sleep)
-
-def update_kewords(aid = ''):
-    review_time = settings.REVIEW_TIME+300
-    schedule.enter(review_time, 0, update_kewords)
-
-    aid_list = UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid'))
-    positive_keywords = {}
-    negative_keywords = {}
-    if aid:
-        review_contents = Reviews.objects.filter(asin=aid).filter(created=date.today()).filter(
-            score__gte=3).values('content')
-        nega_review_contents = Reviews.objects.filter(asin=aid).filter(created=date.today()).exclude(
-            score__gte=3).values('content')
-        asin_reviews = AsinReviews.objects.filter(aid=aid).filter(created=date.today()).all()
-        if asin_reviews:
-            if review_contents:
-                review_contents = list(review_contents)
-            posi_text = ''
-            nega_text = ''
-            for posi in review_contents:
-                if posi['content']:
-                    posi_text += posi['content'] + '\n'
-            for nega in nega_review_contents:
-                if nega['content']:
-                    nega_text += nega['content'] + '\n'
-            posi_obj = NPExtractor(posi_text)
-            nega_obj = NPExtractor(nega_text)
-            posi_line = posi_obj.extract()
-            nega_line = nega_obj.extract()
-            if posi_obj:
-                for val in set(posi_line):
-                    i = posi_text.count(val)
-                    if i >= 2:
-                        positive_keywords.update({i: val})
-            if nega_line:
-                for val in set(nega_line):
-                    n = nega_text.count(val)
-                    if n >= 2:
-                        negative_keywords.update({n: val})
-            if positive_keywords:
-                asin_reviews.update(positive_keywords=str(positive_keywords))
-            if negative_keywords:
-                asin_reviews.update(negative_keywords=str(negative_keywords))
-        return True
-
-    for aid in list(aid_list):
-        review_contents = Reviews.objects.filter(asin=aid['aid']).filter(created=date.today()).filter(
-            score__gte=3).values('content')
-        nega_review_contents = Reviews.objects.filter(asin=aid['aid']).filter(created=date.today()).exclude(
-            score__gte=3).values('content')
-        asin_reviews = AsinReviews.objects.filter(aid=aid['aid']).filter(created=date.today()).all()
-        if asin_reviews:
-            if review_contents:
-                review_contents = list(review_contents)
-            posi_text = ''
-            nega_text = ''
-            for posi in review_contents:
-                if posi['content']:
-                    posi_text += posi['content']+'\n'
-            for nega in nega_review_contents:
-                if nega['content']:
-                    nega_text += nega['content']+'\n'
-            posi_obj = NPExtractor(posi_text)
-            nega_obj = NPExtractor(nega_text)
-            posi_line = posi_obj.extract()
-            nega_line = nega_obj.extract()
-            if posi_obj:
-                for val in set(posi_line):
-                    i = posi_text.count(val)
-                    if i >= 2:
-                        positive_keywords.update({i:val})
-            if nega_line:
-                for val in set(nega_line):
-                    n = nega_text.count(val)
-                    if n >= 2:
-                        negative_keywords.update({n:val})
-            if positive_keywords:
-                asin_reviews.update(positive_keywords=str(positive_keywords))
-            if negative_keywords:
-                asin_reviews.update(negative_keywords=str(negative_keywords))
 
 def perform_command():
     # 安排inc秒后再次运行自己，即周期运行
@@ -111,6 +30,7 @@ def perform_command():
                       val['aid']
             os.popen(cmd_str)
         os.chdir(settings.ROOT_PATH)
+    return True
 
 def perform_command1():
     # 安排inc秒后再次运行自己，即周期运行
@@ -135,69 +55,7 @@ def perform_command1():
             os.popen(cmd_str3)
             os.popen(cmd_str4)
         os.chdir(settings.ROOT_PATH)
-
-def update_kewords1():
-    aid_list = UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid'))
-    positive_keywords = {}
-    negative_keywords = {}
-    for aid in list(aid_list):
-        review_contents = Reviews.objects.filter(asin=aid['aid']).filter(created=date.today()).filter(
-            score__gte=3).values('content')
-        nega_review_contents = Reviews.objects.filter(asin=aid['aid']).filter(created=date.today()).exclude(
-            score__gte=3).values('content')
-        asin_reviews = AsinReviews.objects.filter(aid=aid['aid']).filter(created=date.today()).all()
-        if asin_reviews:
-            if review_contents:
-                review_contents = list(review_contents)
-            posi_text = ''
-            nega_text = ''
-            for posi in review_contents:
-                if posi['content']:
-                    posi_text += posi['content']+'\n'
-            for nega in nega_review_contents:
-                if nega['content']:
-                    nega_text += nega['content']+'\n'
-            posi_obj = NPExtractor(posi_text)
-            nega_obj = NPExtractor(nega_text)
-            posi_line = posi_obj.extract()
-            nega_line = nega_obj.extract()
-            if posi_obj:
-                for val in set(posi_line):
-                    i = posi_text.count(val)
-                    if i >= 2:
-                        positive_keywords.update({i:val})
-            if nega_line:
-                for val in set(nega_line):
-                    n = nega_text.count(val)
-                    if n >= 2:
-                        negative_keywords.update({n:val})
-            if positive_keywords:
-                asin_reviews.update(positive_keywords=str(positive_keywords))
-            if negative_keywords:
-                asin_reviews.update(negative_keywords=str(negative_keywords))
-
-def RunReview(request):
-    # enter用来安排某事件的发生时间，从现在起第n秒开始启动
-
-    os.chdir(settings.ROOT_PATH)
-
-    review_time = settings.REVIEW_TIME
-    schedule.enter(review_time, 0, perform_command)
-    # # 持续运行，直到计划时间队列变成空为止
-    schedule.run()
-
-    return render(request, 'spider/home.html')
-
-def Spiders(request):
-    # enter用来安排某事件的发生时间，从现在起第n秒开始启动
-
-    s_time = settings.SPIDER_TIME
-    os.chdir(settings.ROOT_PATH)
-    schedule.enter(s_time, 0, perform_command1)
-    # # 持续运行，直到计划时间队列变成空为止
-    schedule.run()
-
-    return render(request, 'spider/home.html')
+    return True
 
 def get_asin_spiders():
     schedule.enter(3600, 0, get_asin_spiders)
@@ -227,7 +85,7 @@ def Spiders2(request):
     review_time = settings.REVIEW_TIME
     schedule.enter(review_time, 0, perform_command)
     schedule.enter(s_time, 0, perform_command1)
-    schedule.enter(60, 0, get_asin_spiders)
+    schedule.enter(3600, 0, get_asin_spiders)
     # # 持续运行，直到计划时间队列变成空为止
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()

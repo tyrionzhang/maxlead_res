@@ -96,8 +96,8 @@ class UserAsinsAdmin(admin.ModelAdmin):
     # 设置哪些字段可以点击进入编辑界面
     # list_display_links = ('id', 'text')
     # 筛选器
-    # list_filter = ('trouble', 'go_time', 'act_man__user_name', 'machine_room_id__machine_room_name')  # 过滤器
-    search_fields = ('aid', 'name')  # 搜索字段
+    list_filter = ('user','is_done')  # 过滤器
+    search_fields = ('aid','sku')  # 搜索字段
     # date_hierarchy = 'go_time'  # 详细时间分层筛选　
 
 @admin.register(UserProfile)
