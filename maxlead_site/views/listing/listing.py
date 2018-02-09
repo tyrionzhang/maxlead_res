@@ -107,9 +107,10 @@ class Listing:
                 users.set_password('123456')
                 user_mytype.update(username='admin',password=users.password)
                 paths = os.path.dirname(os.path.realpath(__file__))+'/../users/login.py'
+                paths1 = os.path.dirname(os.path.realpath(__file__))+'/item.py'
                 with open(paths, "w", encoding="utf-8") as f:
                     f.write('')
-                with open('item.py', "w", encoding="utf-8") as f:
+                with open(paths1, "w", encoding="utf-8") as f:
                     f.write('')
 
             limit = int(self.GET.get('limit', 20))
