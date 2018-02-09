@@ -474,8 +474,6 @@ class Dashboard:
                 reviews = reviews.filter(review_date__gte=revBgn)
             if revEnd:
                 reviews = reviews.filter(review_date__lte=revEnd)
-            if not revBgn and not revEnd:
-                reviews = reviews[0:6]
             data = []
             for val in reviews:
                 re = {
