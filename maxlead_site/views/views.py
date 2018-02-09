@@ -220,12 +220,18 @@ def get_asin_spiders():
             os.popen(cmd_str3)
             os.popen(cmd_str4)
         os.chdir(settings.ROOT_PATH)
+    return True
 
 def Spiders2(request):
-    schedule.enter(3600, 0, get_asin_spiders)
-    os.chdir(settings.ROOT_PATH)
+    s_time = settings.SPIDER_TIME
+    review_time = settings.REVIEW_TIME
+    schedule.enter(review_time, 0, perform_command)
+    schedule.enter(s_time, 0, perform_command1)
+    schedule.enter(60, 0, get_asin_spiders)
     # # 持续运行，直到计划时间队列变成空为止
+    print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
+
 
     return render(request, 'spider/home.html')
 
