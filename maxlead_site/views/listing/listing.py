@@ -360,6 +360,23 @@ class Listing:
                             content_type='application/json')
 
     @csrf_exempt
+    def del_asins(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'用户未登录！'}), content_type='application/json')
+        asins = self.GET.get('asins','')
+        if asins:
+            asins = eval(asins)
+            del_obj = UserAsins.objects.filter(id__in=asins)
+            if not del_obj:
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'Asin不存在！'}), content_type='application/json')
+            res = del_obj.delete()
+            if res:
+                return HttpResponse(json.dumps({'code': 1, 'msg': u'删除成功！'}), content_type='application/json')
+            else:
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'删除失败！'}), content_type='application/json')
+
+    @csrf_exempt
     def ajax_export(self):
         user = App.get_user_info(self)
         if not user:
