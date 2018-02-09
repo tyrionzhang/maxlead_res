@@ -14,6 +14,7 @@
                         <form name="revWatcher" method="get" action="/admin/maxlead_site/expload_dash_reviews/" class="dashForm">
                             <input type="date" name="revBgn"  max="" min="2017-12-15" /> -
                             <input type="date" name="revEnd" max="" min="2017-12-15" />
+                            <input type="hidden" name="viewRange" value="{{ viewRange }}"/>
                             <input type="submit" value="Update" id="btn_reviews_search"/>
                             <input type="submit" value="Export"/></form>
                         <div class="dashContent dashContent-scroll" style="width: 100%">
@@ -39,6 +40,7 @@
                         <form name="lstWatcher" method="get" action="/admin/maxlead_site/export_watcher/" class="dashForm">
                             <input type="date" name="listBgn"  max="" min="2017-12-15" /> -
                             <input type="date" name="listEnd"  max="" min="2017-12-15" />
+                            <input type="hidden" name="viewRange" value="{{ viewRange }}"/>
                             <input type="submit" value="Update" id="btn_lstWatcher"/>
                             <input type="submit" value="Export" id="btn_export_watcher" /></form>
                         <div class="dashContent dashContent-scroll" style="width: 100%">
@@ -59,6 +61,7 @@
                             <input type="date" name="ourEnd"  max="传入当前日期" min="2017-12-15"  value=""/>
                             <input type="hidden" name="type"  value="Ours"/>
                             <input type="submit" value="Update" class="rising_search" data-type="Ours"/>
+                            <input type="hidden" name="viewRange" value="{{ viewRange }}"/>
                             <input type="submit" value="Export" /></form>
                         <div class="dashContent dashContent-scroll" style="width: 100%">
                             <table cellspacing=0 class="tb-dash-content">
@@ -85,6 +88,7 @@
                             <input type="date" name="othBgn" max="传入当前日期" min="2017-12-15"  value=""/> -
                             <input type="date" name="othEnd" max="传入当前日期" min="2017-12-15" value=""/>
                             <input type="hidden" name="type"  value="Others"/>
+                            <input type="hidden" name="viewRange" value="{{ viewRange }}"/>
                             <input type="Submit" value="Update" class="rising_search" data-type="Others" />
                             <input type="submit" value="Export"/></form>
                         <div class="dashContent dashContent-scroll" style="width: 100%">
@@ -113,6 +117,7 @@
                         <form name="atyRadar" method="get" action="/admin/maxlead_site/export_radar/" class="dashForm">
                             <input type="date" name="actBgn" max="" min="2017-12-15" /> -
                             <input type="date" name="actEnd" max="" min="2017-12-15" />
+                            <input type="hidden" name="viewRange" value="{{ viewRange }}"/>
                             <input type="submit" value="Update" id="radar_search"/>
                             <input type="submit" value="Export" /></form>
                         <div class="dashContent dashContent-scroll" style="width: 100%">

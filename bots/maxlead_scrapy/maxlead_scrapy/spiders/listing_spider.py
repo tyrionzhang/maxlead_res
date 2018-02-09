@@ -2,7 +2,6 @@
 
 import scrapy,time,os,re
 import random
-import string
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
@@ -26,9 +25,10 @@ class ListingSpider(scrapy.Spider):
             urls1 = url % (asin, sr, int(time.time()), sr, asin)
             self.start_urls.append(urls1)
         if self.res:
-            for re in self.res:
-                urls1 = url % (re['aid'], sr, int(time.time()), sr, re['aid'])
-                self.start_urls.append(urls1)
+            for v in self.res:
+                if not re.search(r'-',v['aid']):
+                    urls1 = url % (v['aid'], sr, int(time.time()), sr, v['aid'])
+                    self.start_urls.append(urls1)
 
     def parse(self, response):
         res_asin = response.url.split('/')
