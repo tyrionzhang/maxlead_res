@@ -85,7 +85,7 @@ def Spiders2(request):
     review_time = settings.REVIEW_TIME
     schedule.enter(review_time, 0, perform_command)
     schedule.enter(s_time, 0, perform_command1)
-    schedule.enter(3600, 0, get_asin_spiders)
+    # schedule.enter(3600, 0, get_asin_spiders)
     # # 持续运行，直到计划时间队列变成空为止
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
