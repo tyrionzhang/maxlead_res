@@ -215,7 +215,7 @@ class ListingSpider(scrapy.Spider):
                 if promotions:
                     item['promotion'] = promotions
             yield item
-            time.sleep(300)
+            time.sleep(120)
             res = UserAsins.objects.filter(aid=asin_id)
             if res:
                 res.update(is_done=1)
