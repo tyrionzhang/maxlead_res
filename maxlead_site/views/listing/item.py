@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-import json,datetime,calendar
+import json,datetime,calendar,time
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render,HttpResponse
 from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Max
 from maxlead_site.models import Listings,UserAsins,Questions,Answers,Reviews,AsinReviews,ListingWacher,CategoryRank
 from maxlead_site.views.app import App
@@ -126,6 +125,7 @@ class Item:
             'li_watcher_page':li_watcher_page,
             'catgorys':catgorys,
             'asin':asin,
+            'time_pid':int(time.time()),
         }
         return render(self, 'listings/listingdetail.html',data)
 

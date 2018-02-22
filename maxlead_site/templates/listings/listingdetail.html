@@ -1,6 +1,6 @@
 {% extends "layouts/page_base.html" %}
     {% block container %}
-        <script src="../../../static/js/plotly-latest.min.js"></script>
+        <script src="../../../static/js/plotly-latest.min.js?pid={{ time_pid }}"></script>
             <main class="listingDetail">
                 <section class="detailInfo">
                     <div class="detailGallery">
@@ -278,9 +278,7 @@
                             $('#ul_words').html(el_k1);
                         }
                         $('#table-review-list').html(el);
-                        console.log(re.data);
                         if (re.data.is_page && $('#btn-review-more').length <= 0){
-                            console.log(11);
                             $('.rvInfo').append('<button type="button" class="moreButton" id="btn-review-more" data-page="'+re.data.review_page+'">More</button>');
                         }
                     }
