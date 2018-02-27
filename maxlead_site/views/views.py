@@ -126,3 +126,8 @@ def test1(request):
 def export_users(request):
     re = read_csv_file('/home/techsupp/www/staffx.csv')
     return HttpResponse(re['msg'])
+
+def letsencrpyt(request,token_value):
+    with open('/home/techsupp/www/.well-known/acme-challenge/{}'.format(token_value)) as f:
+        answer = f.readline().strip()
+    return answer
