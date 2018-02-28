@@ -342,6 +342,6 @@ class Miner:
             if data:
                 file_path = get_excel_file1(self, data, fields, data_fields)
                 f_time = datetime.datetime.now()
-                Task.objects.filter(id=val.id).update(file_path=file_path, finish_time=f_time)
+                Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
                 res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
         return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')
