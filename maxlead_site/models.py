@@ -124,7 +124,7 @@ class ListingWacher(models.Model):
         db_table = 'listing_wacher'
 
 class Questions(models.Model):
-    question = models.CharField('Question',max_length=225)
+    question = models.TextField('Question',null=True)
     asin = models.CharField('AsinId',max_length=50,default='')
     asked = models.CharField('Asked',max_length=225,default='')
     votes = models.IntegerField('Votes',default=0,null=True)
