@@ -247,6 +247,7 @@ class Miner:
         for val in tasks:
             data = []
             for aid in eval(val.asins):
+                aid = aid.replace('\n','')
                 if val.type == 1:
                     qa = Questions.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
                     if qa and qa[0].is_done:
