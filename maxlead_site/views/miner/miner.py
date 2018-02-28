@@ -30,7 +30,7 @@ class Miner:
         if user_list:
             for val in user_list:
                 users.append(val.user_id)
-        tasks = Task.objects.filter(user_id__in=users).order_by('-finish_time')
+        tasks = Task.objects.filter(user_id__in=users).order_by('-created','-finish_time')
         if viewRange:
             tasks = tasks.filter(user_id=viewRange)
 
