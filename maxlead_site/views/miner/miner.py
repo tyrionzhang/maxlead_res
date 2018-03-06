@@ -236,7 +236,6 @@ class Miner:
                         cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % aid
                     os.system(cmd_str)
                     os.chdir(settings.ROOT_PATH)
-                return HttpResponse(json.dumps({'code': 0, 'msg': '暂时没有数据！'}), content_type='application/json')
 
         else:
             return HttpResponse(json.dumps({'code': 0, 'data': '任务添加失败！'}),content_type='application/json')
@@ -339,9 +338,9 @@ class Miner:
                             'review_date',
                             'created'
                         ]
-            if data:
-                file_path = get_excel_file1(self, data, fields, data_fields)
-                f_time = datetime.datetime.now()
-                Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
-                res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
+                if data:
+                    file_path = get_excel_file1(self, data, fields, data_fields)
+                    f_time = datetime.datetime.now()
+                    Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
+                    res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
         return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')
