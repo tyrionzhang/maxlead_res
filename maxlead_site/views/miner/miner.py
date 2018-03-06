@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Max
 from django.db.models import Q
-from maxlead_site.models import Questions,Answers,Reviews,UserProfile,Task,AsinReviews
+from maxlead_site.models import Questions,Answers,Reviews,UserProfile,Task,AsinReviews,UserAsins
 from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file1
 from maxlead import settings
@@ -115,97 +115,103 @@ class Miner:
                         file_path = val.file_path
                 if file_path:
                     return HttpResponse(json.dumps({'code': 1, 'data': {'file_path': file_path, 'f_time': 'finish'}}), content_type='application/json')
-            if type == 0:
-                reviews = Reviews.objects.filter(asin__in=asins,created__icontains=Reviews.objects.aggregate(Max('created'))
-                                                                            ['created__max']).all()
-                if reviews:
-                    for v in reviews:
-                        re = {
-                            'title':v.title,
-                            'name':v.name,
-                            'asin':v.asin,
-                            'variation':v.variation,
-                            'content':v.content,
-                            'review_link':v.review_link,
-                            'score':v.score,
-                            'is_vp':v.is_vp,
-                            'review_date':v.review_date.strftime('%Y-%m-%d'),
-                            'created':v.created.strftime('%Y-%m-%d'),
-                        }
-                        data.append(re)
+            is_asin = 1
+            for aid in asins:
+                user_aid = UserAsins.objects.filter(aid=aid.replace('\n',''))
+                if not user_aid:
+                    is_asin = 0
+            if is_asin:
+                if type == 0:
+                    reviews = Reviews.objects.filter(asin__in=asins,created__icontains=Reviews.objects.aggregate(Max('created'))
+                                                                                ['created__max']).all()
+                    if reviews:
+                        for v in reviews:
+                            re = {
+                                'title':v.title,
+                                'name':v.name,
+                                'asin':v.asin,
+                                'variation':v.variation,
+                                'content':v.content,
+                                'review_link':v.review_link,
+                                'score':v.score,
+                                'is_vp':v.is_vp,
+                                'review_date':v.review_date.strftime('%Y-%m-%d'),
+                                'created':v.created.strftime('%Y-%m-%d'),
+                            }
+                            data.append(re)
+                        fields = [
+                            'Title',
+                            'Name',
+                            'Asin',
+                            'Variation',
+                            'Content',
+                            'Review Link',
+                            'Score',
+                            'Vp',
+                            'Review Date',
+                            'Created'
+                        ]
+
+                        data_fields = [
+                            'title',
+                            'name',
+                            'asin',
+                            'variation',
+                            'content',
+                            'review_link',
+                            'score',
+                            'is_vp',
+                            'review_date',
+                            'created'
+                        ]
+                else:
+                    qa_max = Questions.objects.aggregate(Max('created'))
+                    questions = Questions.objects.filter(asin__in=asins, created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
+                    for val in questions:
+                        answers = Answers.objects.filter(question_id=val.id)
+                        if answers:
+                            for v in answers:
+                                re = {
+                                    'question':v.question.question,
+                                    'asin':v.question.asin,
+                                    'asked':v.question.asked,
+                                    'votes':v.question.votes,
+                                    'answer':v.answer,
+                                    'person':v.person,
+                                    'created':v.created.strftime('%Y-%m-%d %H:%M:%S'),
+                                }
+                                data.append(re)
+                        else:
+                            re = {
+                                'question': val.question,
+                                'asin': val.asin,
+                                'asked': val.asked,
+                                'votes': val.votes,
+                                'answer': '',
+                                'person': '',
+                                'created': val.created.strftime('%Y-%m-%d %H:%M:%S'),
+                            }
+                            data.append(re)
+
                     fields = [
-                        'Title',
-                        'Name',
+                        'Question',
                         'Asin',
-                        'Variation',
-                        'Content',
-                        'Review Link',
-                        'Score',
-                        'Vp',
-                        'Review Date',
+                        'Asked',
+                        'Votes',
+                        'Answer',
+                        'Person',
                         'Created'
                     ]
 
                     data_fields = [
-                        'title',
-                        'name',
+                        'question',
                         'asin',
-                        'variation',
-                        'content',
-                        'review_link',
-                        'score',
-                        'is_vp',
-                        'review_date',
+                        'asked',
+                        'votes',
+                        'answer',
+                        'person',
                         'created'
                     ]
-            else:
-                qa_max = Questions.objects.aggregate(Max('created'))
-                questions = Questions.objects.filter(asin__in=asins, created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
-                for val in questions:
-                    answers = Answers.objects.filter(question_id=val.id)
-                    if answers:
-                        for v in answers:
-                            re = {
-                                'question':v.question.question,
-                                'asin':v.question.asin,
-                                'asked':v.question.asked,
-                                'votes':v.question.votes,
-                                'answer':v.answer,
-                                'person':v.person,
-                                'created':v.created.strftime('%Y-%m-%d %H:%M:%S'),
-                            }
-                            data.append(re)
-                    else:
-                        re = {
-                            'question': val.question,
-                            'asin': val.asin,
-                            'asked': val.asked,
-                            'votes': val.votes,
-                            'answer': '',
-                            'person': '',
-                            'created': val.created.strftime('%Y-%m-%d %H:%M:%S'),
-                        }
-                        data.append(re)
-
-                fields = [
-                    'Question',
-                    'Asin',
-                    'Asked',
-                    'Votes',
-                    'Answer',
-                    'Person',
-                    'Created'
-                ]
-
-                data_fields = [
-                    'question',
-                    'asin',
-                    'asked',
-                    'votes',
-                    'answer',
-                    'person',
-                    'created'
-                ]
 
             task = Task()
             task.id
@@ -245,102 +251,112 @@ class Miner:
         res = []
         for val in tasks:
             data = []
+            aid_li = []
+            qa_is_done = 1
+            reviews_is_done = 1
             for aid in eval(val.asins):
                 aid = aid.replace('\n','')
-                if val.type == 1:
-                    qa = Questions.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
-                    if qa and qa[0].is_done:
-                        for q in qa:
-                            answers = Answers.objects.filter(question_id=q.id)
-                            if answers:
-                                for v in answers:
-                                    re = {
-                                        'question': v.question.question,
-                                        'asin': v.question.asin,
-                                        'asked': v.question.asked,
-                                        'votes': v.question.votes,
-                                        'answer': v.answer,
-                                        'person': v.person,
-                                        'created': v.created.strftime('%Y-%m-%d %H:%M:%S'),
-                                    }
-                                    data.append(re)
-                            else:
+                qa_check = Questions.objects.filter(asin=aid,is_done=0,created__icontains=val.created.strftime('%Y-%m-%d'))
+                reviews_check = AsinReviews.objects.filter(aid=aid,is_done=0,created__icontains=val.created.strftime('%Y-%m-%d'))
+                if qa_check:
+                    qa_is_done = 0
+                if reviews_check:
+                    reviews_is_done = 0
+                aid_li.append(aid)
+            if val.type == 1:
+                qa = Questions.objects.filter(asin__in=aid_li,created__icontains=val.created.strftime('%Y-%m-%d'))
+                if qa and qa_is_done:
+                    for q in qa:
+                        answers = Answers.objects.filter(question_id=q.id)
+                        if answers:
+                            for v in answers:
                                 re = {
-                                    'question': q.question,
-                                    'asin': q.asin,
-                                    'asked': q.asked,
-                                    'votes': q.votes,
-                                    'answer': '',
-                                    'person': '',
-                                    'created': q.created.strftime('%Y-%m-%d %H:%M:%S'),
+                                    'question': v.question.question,
+                                    'asin': v.question.asin,
+                                    'asked': v.question.asked,
+                                    'votes': v.question.votes,
+                                    'answer': v.answer,
+                                    'person': v.person,
+                                    'created': v.created.strftime('%Y-%m-%d %H:%M:%S'),
                                 }
                                 data.append(re)
-
-                            fields = [
-                                'Question',
-                                'Asin',
-                                'Asked',
-                                'Votes',
-                                'Answer',
-                                'Person',
-                                'Created'
-                            ]
-
-                            data_fields = [
-                                'question',
-                                'asin',
-                                'asked',
-                                'votes',
-                                'answer',
-                                'person',
-                                'created'
-                            ]
-                else:
-                    reviews_a = AsinReviews.objects.filter(aid=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
-                    reviews = Reviews.objects.filter(asin=aid,created__icontains=val.created.strftime('%Y-%m-%d'))
-                    if reviews_a and reviews_a[0].is_done:
-                        for v in reviews:
+                        else:
                             re = {
-                                'title': v.title,
-                                'name': v.name,
-                                'asin': v.asin,
-                                'variation': v.variation,
-                                'content': v.content,
-                                'review_link': v.review_link,
-                                'score': v.score,
-                                'is_vp': v.is_vp,
-                                'review_date': v.review_date.strftime('%Y-%m-%d'),
-                                'created': v.created.strftime('%Y-%m-%d'),
+                                'question': q.question,
+                                'asin': q.asin,
+                                'asked': q.asked,
+                                'votes': q.votes,
+                                'answer': '',
+                                'person': '',
+                                'created': q.created.strftime('%Y-%m-%d %H:%M:%S'),
                             }
                             data.append(re)
+
                         fields = [
-                            'Title',
-                            'Name',
+                            'Question',
                             'Asin',
-                            'Variation',
-                            'Content',
-                            'Review Link',
-                            'Score',
-                            'Vp',
-                            'Review Date',
+                            'Asked',
+                            'Votes',
+                            'Answer',
+                            'Person',
                             'Created'
                         ]
 
                         data_fields = [
-                            'title',
-                            'name',
+                            'question',
                             'asin',
-                            'variation',
-                            'content',
-                            'review_link',
-                            'score',
-                            'is_vp',
-                            'review_date',
+                            'asked',
+                            'votes',
+                            'answer',
+                            'person',
                             'created'
                         ]
-                if data:
-                    file_path = get_excel_file1(self, data, fields, data_fields)
-                    f_time = datetime.datetime.now()
-                    Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
-                    res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
+            else:
+                reviews_a = AsinReviews.objects.filter(aid__in=aid_li,created__icontains=val.created.strftime('%Y-%m-%d'))
+                reviews = Reviews.objects.filter(asin__in=aid_li,created__icontains=val.created.strftime('%Y-%m-%d'))
+                if reviews_a and reviews_is_done:
+                    for v in reviews:
+                        re = {
+                            'title': v.title,
+                            'name': v.name,
+                            'asin': v.asin,
+                            'variation': v.variation,
+                            'content': v.content,
+                            'review_link': v.review_link,
+                            'score': v.score,
+                            'is_vp': v.is_vp,
+                            'review_date': v.review_date.strftime('%Y-%m-%d'),
+                            'created': v.created.strftime('%Y-%m-%d'),
+                        }
+                        data.append(re)
+                    fields = [
+                        'Title',
+                        'Name',
+                        'Asin',
+                        'Variation',
+                        'Content',
+                        'Review Link',
+                        'Score',
+                        'Vp',
+                        'Review Date',
+                        'Created'
+                    ]
+
+                    data_fields = [
+                        'title',
+                        'name',
+                        'asin',
+                        'variation',
+                        'content',
+                        'review_link',
+                        'score',
+                        'is_vp',
+                        'review_date',
+                        'created'
+                    ]
+            if data:
+                file_path = get_excel_file1(self, data, fields, data_fields)
+                f_time = datetime.datetime.now()
+                Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
+                res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
         return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')
