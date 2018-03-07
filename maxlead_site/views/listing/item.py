@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json,datetime,calendar,time
+import json,datetime,calendar,time,os
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render,HttpResponse
 from django.forms.models import model_to_dict
@@ -11,6 +11,7 @@ from maxlead_site.views.app import App
 from maxlead_site.common.excel_world import get_excel_file
 from maxlead_site.common.common import get_review_keywords
 from maxlead_site.views.dashboard.dashboard import Dashboard
+from maxlead import settings
 
 class Item:
 
@@ -600,6 +601,28 @@ class Item:
 
         return HttpResponse(json.dumps({'code': 1, 'data': {'line_x1':line_x1,'line_x2':line_x2,'line_y1':line_y1,'line_y2':line_y2,'name1':name1,
                                                             'name2':name2}}),content_type='application/json')
+
+    @csrf_exempt
+    def ajax_update_listing(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponseRedirect("/admin/maxlead_site/login/")
+        asin = self.GET.get('aid', '')
+        if not asin:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'操作失败！'}),content_type='application/json')
+        work_path = settings.SPIDER_URL
+        os.chdir(work_path)
+        os.system('scrapyd-deploy')
+        cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % asin
+        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % asin
+        cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % asin
+        cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % asin
+        os.system(cmd_str)
+        os.system(cmd_str2)
+        os.system(cmd_str3)
+        os.system(cmd_str4)
+        os.chdir(settings.ROOT_PATH)
+        return HttpResponse(json.dumps({'code': 1, 'msg': u'更新正在进行！'}), content_type='application/json')
 
     @csrf_exempt
     def export_shuttle(self):

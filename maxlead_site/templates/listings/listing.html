@@ -32,6 +32,7 @@
                         <option value="0" {% if liststatus == '0' %}selected{% endif %}>OFF</option></select>
                 </form>
                 <div >
+                    <button class="funcButtons" type="button" id="update_listing">Update List</button>
                     <button class="funcButtons" type="button" id="addASINButton">Add</button>
                     <button class="funcButtons" type="button" id="editASINButton">Edit</button>
                     <button class="funcButtons" type="button" id="delASINButton">Delete</button>
@@ -388,6 +389,14 @@
                     },'json');
                 }
             }
+        });
+
+        $('#update_listing').on('click',function(){
+            $.get('/admin/maxlead_site/ajax_update_list',{},function (re) {
+                if(re.code == 0){
+                    alert(re.msg);
+                }
+            },'json');
         });
         </script>
     {% endblock %}

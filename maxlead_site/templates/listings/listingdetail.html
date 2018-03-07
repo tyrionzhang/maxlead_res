@@ -13,7 +13,9 @@
 {#                        </div>#}
                     </div>
                     <div class="productInfo">
-                        <a href="https://www.amazon.com/dp/{{ res.asin }}" target="_blank"><h2>{{ res.title }}</h2></a>
+                        <a href="https://www.amazon.com/dp/{{ res.asin }}" target="_blank">
+                            <h2>{{ res.title }} <button type="button" id="btn_update_data" data-aid="{{ res.asin }}">Update</button></h2>
+                        </a>
                         <table class="productInfoTable">
                             <tr>
                                 <td style="display: none;"><input type="hidden" name="id" value="{{ res.user_asin.id }}"></td>
@@ -604,6 +606,16 @@
                 },'json');
                 return false;
             });
+
+            $('#btn_update_data').on('click',function () {
+                $.get('/admin/maxlead_site/ajax_update_listing/',{'aid':$(this).data('aid')},function (re) {
+                    alert('更新正在进行。。。');
+                    if(re.code == 0){
+                        alert(re.msg);
+                    }
+                },'json');
+                return false;
+            })
         </script>
     {% endblock %}
 

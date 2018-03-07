@@ -21,6 +21,9 @@ class ListingSpider(scrapy.Spider):
             self.res = list(UserAsins.objects.filter(is_use=True, is_done=0).values('aid').annotate(count=Count('aid')))
         elif asin == '88':
             self.res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+        elif asin == '100':
+            self.res = list(UserAsins.objects.filter(is_use=True).exclude(listing_time__icontains=datetime.datetime.now().
+                                                        strftime("%Y-%m-%d")).values('aid').annotate(count=Count('aid')))
         else:
             urls1 = url % (asin, sr, int(time.time()), sr, asin)
             self.start_urls.append(urls1)
@@ -217,6 +220,6 @@ class ListingSpider(scrapy.Spider):
             yield item
             res = UserAsins.objects.filter(aid=asin_id)
             if res:
-                res.update(is_done=1)
+                res.update(is_done=1,listing_time=datetime.datetime.now())
 
 

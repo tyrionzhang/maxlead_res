@@ -351,6 +351,19 @@ class Listing:
         return HttpResponse(json.dumps({'code':1,'aid_str': aid_str, 'sku_str': sku_str,'data':data}), content_type='application/json')
 
     @csrf_exempt
+    def ajax_update_list(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 1, 'msg': u'用户未登录！'}), content_type='application/json')
+        work_path = settings.SPIDER_URL
+        os.chdir(work_path)
+        os.system('scrapyd-deploy')
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 100
+        os.system(cmd_str1)
+        os.chdir(settings.ROOT_PATH)
+        return HttpResponse(json.dumps({'code': 1, }), content_type='application/json')
+
+    @csrf_exempt
     def ajax_get_asins1(self):
         user = App.get_user_info(self)
         if not user:
