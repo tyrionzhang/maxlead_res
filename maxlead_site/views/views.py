@@ -108,9 +108,30 @@ def Spiders(request):
     return render(request, 'spider/home.html')
 
 def Spiders1(request):
-    perform_command1()
+    perform_command2()
     return render(request, 'spider/home.html')
 
+
+def perform_command2():
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    os.popen('scrapyd-deploy')
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+    if res:
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 88
+        os.popen(cmd_str1)
+        for i,val in enumerate(res,1):
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
+                       val['aid']
+            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % \
+                       val['aid']
+            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % \
+                       val['aid']
+            os.popen(cmd_str2)
+            os.popen(cmd_str3)
+            os.popen(cmd_str4)
+        os.chdir(settings.ROOT_PATH)
+    return True
 
 class test(UserSecuirty):
 
