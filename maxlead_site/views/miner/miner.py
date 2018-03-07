@@ -266,7 +266,7 @@ class Miner:
             if val.type == 1:
                 ob_time = val.created.strftime('%Y-%m-%d')
                 a = datetime.datetime.now()-val.created.replace(tzinfo=None)
-                if a.days >= 1:
+                if a.total_seconds() >= 7200:
                     ob_time = datetime.datetime.now().strftime('%Y-%m-%d')
                 qa = Questions.objects.filter(asin__in=aid_li,created__icontains=ob_time)
                 if qa and qa_is_done:
@@ -318,7 +318,7 @@ class Miner:
             else:
                 ob_time = val.created.strftime('%Y-%m-%d')
                 a = datetime.datetime.now() - val.created.replace(tzinfo=None)
-                if a.days >= 1:
+                if a.total_seconds() >= 7200:
                     ob_time = datetime.datetime.now().strftime('%Y-%m-%d')
                 reviews_a = AsinReviews.objects.filter(aid__in=aid_li,created__icontains=ob_time)
                 reviews = Reviews.objects.filter(asin__in=aid_li,created__icontains=ob_time)
