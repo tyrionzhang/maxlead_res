@@ -358,7 +358,7 @@ class Listing:
         work_path = settings.SPIDER_URL
         os.chdir(work_path)
         os.system('scrapyd-deploy')
-        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 100
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s -d user=%s' % (100,user.user_id)
         os.system(cmd_str1)
         os.chdir(settings.ROOT_PATH)
         return HttpResponse(json.dumps({'code': 1, }), content_type='application/json')

@@ -393,6 +393,7 @@
 
         $('#update_listing').on('click',function(){
             $.get('/admin/maxlead_site/ajax_update_list',{},function (re) {
+                alert('更新已运行。。。');
                 if(re.code == 0){
                     alert(re.msg);
                 }
