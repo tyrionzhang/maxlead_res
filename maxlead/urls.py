@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^static/(?P<path>.*)$', static.serve,{ 'document_root': settings.STATIC_URL }),
     url(r'^download/(?P<path>.*)$', static.serve,{ 'document_root': settings.DOWNLOAD_URL }),
     url(r'^admin/maxlead_site/spiders2/', max_views.Spiders2),
+    # url(r'^admin/maxlead_site/spiders/', max_views.Spiders),
     url(r'^admin/maxlead_site/test/', max_views.test1),
     url(r'^.well-known/acme-challenge/(.+)/$', max_views.letsencrpyt),
     url(r'^admin/maxlead_site/user_info/', test_views.user_info),

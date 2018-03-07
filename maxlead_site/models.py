@@ -41,6 +41,11 @@ class UserAsins(models.Model):
     is_done = models.IntegerField('Is Done', default=0, null=True)
     last_check = models.DateTimeField('Last Check', null=True)
     update_time = models.DateTimeField('Update Time', null=True)
+    listing_time = models.DateTimeField('Listing Time', null=True)
+    qa_time = models.DateTimeField('Qa Time', null=True)
+    review_time = models.DateTimeField('Review Time', null=True)
+    watcher_time = models.DateTimeField('Watcher Time', null=True)
+    catrank_time = models.DateTimeField('Watcher Time', null=True)
 
     class Meta:
         db_table = 'user_asins'

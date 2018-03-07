@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import scrapy,time,os
+import scrapy,time,os,datetime
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingWacherItem
 from maxlead_site.models import UserAsins
 from django.db.models import Count

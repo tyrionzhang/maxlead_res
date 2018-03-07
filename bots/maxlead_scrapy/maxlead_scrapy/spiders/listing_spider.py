@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import scrapy,time,os,re
+import scrapy,time,os,re,datetime
 import random
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
 from maxlead_site.models import UserAsins,Listings

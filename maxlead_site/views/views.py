@@ -58,26 +58,33 @@ def perform_command1():
     return True
 
 def get_asin_spiders():
-    schedule.enter(3600, 0, get_asin_spiders)
+    schedule.enter(86400, 0, get_asin_spiders)
     print(datetime.now())
-    user = UserProfile.objects.get(user_id=1)
-    asins = get_asins(user, status=1, type=1, is_done=1)
-    if asins:
-        work_path = settings.SPIDER_URL
-        os.chdir(work_path)
-        os.popen('scrapyd-deploy')
-        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 99
-        os.popen(cmd_str1)
-        for i, val in enumerate(asins, 1):
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
-            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
-            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val
-            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % val
+    listing_aid = UserAsins.objects.filter(is_use=1,listing_time__lt=datetime.now().strftime('%Y-%m-%d'))
+    qa_aid = UserAsins.objects.filter(is_use=1,qa_time__lt=datetime.now().strftime('%Y-%m-%d'))
+    review_aid = UserAsins.objects.filter(is_use=1,review_time__lt=datetime.now().strftime('%Y-%m-%d'))
+    wa_aid = UserAsins.objects.filter(is_use=1,watcher_time__lt=datetime.now().strftime('%Y-%m-%d'))
+    catr_aid = UserAsins.objects.filter(is_use=1,catrank_time__lt=datetime.now().strftime('%Y-%m-%d'))
+    if listing_aid:
+        for asin in listing_aid:
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % asin.aid
             os.popen(cmd_str)
-            os.popen(cmd_str2)
-            os.popen(cmd_str3)
-            os.popen(cmd_str4)
-        os.chdir(settings.ROOT_PATH)
+    if qa_aid:
+        for asin in qa_aid:
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % asin.aid
+            os.popen(cmd_str)
+    if review_aid:
+        for asin in review_aid:
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % asin.aid
+            os.popen(cmd_str)
+    if wa_aid:
+        for asin in wa_aid:
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % asin.aid
+            os.popen(cmd_str)
+    if catr_aid:
+        for asin in catr_aid:
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % asin.aid
+            os.popen(cmd_str)
     return True
 
 def Spiders2(request):
@@ -90,6 +97,13 @@ def Spiders2(request):
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
 
+
+    return render(request, 'spider/home.html')
+
+def Spiders(request):
+    schedule.enter(1, 0, get_asin_spiders)
+    # # 持续运行，直到计划时间队列变成空为止
+    schedule.run()
 
     return render(request, 'spider/home.html')
 

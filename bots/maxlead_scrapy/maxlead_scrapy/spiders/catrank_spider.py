@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import scrapy,time,os,re
+import scrapy,time,datetime
 import urllib
 from bots.maxlead_scrapy.maxlead_scrapy.items import CategoryRankItem
 from maxlead_site.models import UserAsins
