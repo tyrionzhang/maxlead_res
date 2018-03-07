@@ -264,7 +264,11 @@ class Miner:
                     reviews_is_done = 0
                 aid_li.append(aid)
             if val.type == 1:
-                qa = Questions.objects.filter(asin__in=aid_li,created__icontains=val.created.strftime('%Y-%m-%d'))
+                ob_time = val.created.strftime('%Y-%m-%d')
+                a = datetime.datetime.now()-val.created.replace(tzinfo=None)
+                if a.days >= 1:
+                    ob_time = datetime.datetime.now().strftime('%Y-%m-%d')
+                qa = Questions.objects.filter(asin__in=aid_li,created__icontains=ob_time)
                 if qa and qa_is_done:
                     for q in qa:
                         answers = Answers.objects.filter(question_id=q.id)
@@ -360,3 +364,21 @@ class Miner:
                 Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
                 res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
         return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')
+
+    def ajax_get_task_data(self):
+        tasks = Task.objects.filter(is_new=1, file_path='')
+        if not tasks:
+            return HttpResponse(json.dumps({'code': 0, 'data': 1}), content_type='application/json')
+        for val in tasks:
+            for aid in eval(val.asins):
+                aid = aid.replace('\n', '')
+                work_path = settings.SPIDER_URL
+                os.chdir(work_path)
+                os.system('scrapyd-deploy')
+                if val.type == 0:
+                    cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % aid
+                else:
+                    cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % aid
+                os.system(cmd_str)
+                os.chdir(settings.ROOT_PATH)
+        return HttpResponse(json.dumps({'code': 1, 'data': 1}), content_type='application/json')

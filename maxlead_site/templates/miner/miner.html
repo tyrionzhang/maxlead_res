@@ -3,6 +3,7 @@
             <main class="miner">
                 <h2>Miner</h2>  
                 <button id="addNewMiner" class="headButton" type="button"/>New Task</button>
+                <button id="updateNewMiner" class="headButton" type="button"/>Update Task</button>
                 <div id="addMinerTask" style="display:none;">
                     <form method = "post" action="" name="newTaskForm" />
                     <h3>New Task</h3>
@@ -161,6 +162,14 @@
             window.setInterval(function() {
                 get_export_fun();
             }, 5000);
+
+            $('#updateNewMiner').click(function () {
+                $.get('/admin/maxlead_site/ajax_get_task_data/',{},function (re) {
+                    if(re.code == 1){
+                        alert('更新成功！');
+                    }
+                },'json');
+            });
         </script>
 {% endblock %}
 
