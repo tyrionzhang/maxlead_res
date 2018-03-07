@@ -14,7 +14,7 @@
                     </div>
                     <div class="productInfo">
                         <a href="https://www.amazon.com/dp/{{ res.asin }}" target="_blank">
-                            <h2>{{ res.title }} <button type="button" id="btn_update_data" data-aid="{{ res.asin }}">Update</button></h2>
+                            <h2>{{ res.title }}</h2>
                         </a>
                         <table class="productInfoTable">
                             <tr>
@@ -34,7 +34,9 @@
                                     <a href="https://www.amazon.com/ask/questions/asin/{{ res.asin }}/" target="_blank">QA: {{ res.question_answer }}</a>
 
                                         <input type="hidden" name="qa_asin" value="{{ res.asin }}">
-                                    <button type="submit" id="export-qa">Export QA</button></form></td></tr>
+                                    <button type="submit" id="export-qa">Export</button>
+                                    <button type="button" class="spider_update" data-type="qa" data-aid="{{ res.asin }}">Update</button>
+                                </form></td></tr>
                         </table>
                         <h4>Golden Buy Box Winner</h4>
                         <hr>
@@ -55,6 +57,7 @@
                 </section>
                 <section class="detailWatcher">
                     <h3>Listing Watcher</h3>
+                        <button type="button" class="spider_update" data-type="watcher" data-aid="{{ res.asin }}">Update</button><br>
                     <div class="detailWatcherList">
                         {% if not listing_watchers %}
                         <p>No one is listing against this ASIN.</p><!--没有跟列记录时的文字提示-->
@@ -118,8 +121,9 @@
                         <input type="date" name="krStartDate" max="" min="2017-12-15" /> -
                         <input type="date" name="krEndDate" max="" min="2017-12-15" />
                         <input type="hidden" name="asin" value="{{ res.asin }}" />
-                        <input type="submit"  class="rvInfoButton" id="btn_search_rank" value="Update" />
+                        <input type="submit"  class="rvInfoButton" id="btn_search_rank" value="Search" />
                         <button type="submit"  class="rvInfoButton" id="btn_export_rank">Export</button>
+                        <button type="button" class="spider_update" data-type="catrank" data-aid="{{ res.asin }}">Update</button>
                     </form>
                     <div id="krVisual" style="width:95%;height:450px;">
                     </div>
@@ -163,6 +167,7 @@
                             <input type="hidden" name="review_asin" value="{{ res.asin }}">
                             <input type="hidden" name="words" value="">
                             <button class="rvInfoButton" type="submit">Export</button>
+                            <button type="button" class="spider_update" data-type="review" data-aid="{{ res.asin }}">Update</button>
                         </form>
                         <table id="table-review-list"><!--默认只显示3条-->
 
@@ -607,8 +612,8 @@
                 return false;
             });
 
-            $('#btn_update_data').on('click',function () {
-                $.get('/admin/maxlead_site/ajax_update_listing/',{'aid':$(this).data('aid')},function (re) {
+            $('.spider_update').on('click',function () {
+                $.get('/admin/maxlead_site/ajax_update_listing/',{'type':$(this).data('type'),'aid':$(this).data('aid')},function (re) {
                     alert('更新正在进行。。。');
                     if(re.code == 0){
                         alert(re.msg);

@@ -608,19 +608,21 @@ class Item:
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
         asin = self.GET.get('aid', '')
+        type = self.GET.get('type', '')
+        spiders_name = 'review_spider'
+        if type == 'qa':
+            spiders_name = 'qa_spider'
+        if type == 'watcher':
+            spiders_name = 'watcher_spider'
+        if type == 'catrank':
+            spiders_name = 'catrank_spider'
         if not asin:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'操作失败！'}),content_type='application/json')
         work_path = settings.SPIDER_URL
         os.chdir(work_path)
         os.system('scrapyd-deploy')
-        cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % asin
-        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % asin
-        cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % asin
-        cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % asin
+        cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=%s -d asin=%s' % (spiders_name,asin)
         os.system(cmd_str)
-        os.system(cmd_str2)
-        os.system(cmd_str3)
-        os.system(cmd_str4)
         os.chdir(settings.ROOT_PATH)
         return HttpResponse(json.dumps({'code': 1, 'msg': u'更新正在进行！'}), content_type='application/json')
 
