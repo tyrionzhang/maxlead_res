@@ -164,6 +164,7 @@
             }, 5000);
 
             $('#updateNewMiner').click(function () {
+                alert('更新已开始！');
                 $.get('/admin/maxlead_site/ajax_get_task_data/',{},function (re) {
                     if(re.code == 1){
                         alert('更新成功！');

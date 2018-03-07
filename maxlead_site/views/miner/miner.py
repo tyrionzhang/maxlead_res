@@ -316,8 +316,12 @@ class Miner:
                             'created'
                         ]
             else:
-                reviews_a = AsinReviews.objects.filter(aid__in=aid_li,created__icontains=val.created.strftime('%Y-%m-%d'))
-                reviews = Reviews.objects.filter(asin__in=aid_li,created__icontains=val.created.strftime('%Y-%m-%d'))
+                ob_time = val.created.strftime('%Y-%m-%d')
+                a = datetime.datetime.now() - val.created.replace(tzinfo=None)
+                if a.days >= 1:
+                    ob_time = datetime.datetime.now().strftime('%Y-%m-%d')
+                reviews_a = AsinReviews.objects.filter(aid__in=aid_li,created__icontains=ob_time)
+                reviews = Reviews.objects.filter(asin__in=aid_li,created__icontains=ob_time)
                 if reviews_a and reviews_is_done:
                     for v in reviews:
                         re = {
@@ -366,7 +370,8 @@ class Miner:
         return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')
 
     def ajax_get_task_data(self):
-        tasks = Task.objects.filter(is_new=1, file_path='')
+        user = App.get_user_info(self)
+        tasks = Task.objects.filter(is_new=1, file_path='',user_id=user.user_id)
         if not tasks:
             return HttpResponse(json.dumps({'code': 0, 'data': 1}), content_type='application/json')
         for val in tasks:
