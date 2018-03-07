@@ -107,6 +107,11 @@ def Spiders(request):
 
     return render(request, 'spider/home.html')
 
+def Spiders1(request):
+    perform_command1()
+    return render(request, 'spider/home.html')
+
+
 class test(UserSecuirty):
 
     def __init__(self):
