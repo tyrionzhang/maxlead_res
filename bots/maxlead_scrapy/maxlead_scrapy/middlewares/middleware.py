@@ -57,7 +57,7 @@ class UserAgent(UserAgentMiddleware):
             "Connection": "keep - alive"
         }
         ua = random.choice(self.user_agent_list)
-        time.sleep(3 + random.randint(0,9))
+        time.sleep(3 + random.randint(27,57))
         if ua:
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
             request.headers.setdefault('User-Agent', ua)

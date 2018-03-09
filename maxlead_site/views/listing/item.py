@@ -610,14 +610,30 @@ class Item:
         asin = self.GET.get('aid', '')
         type = self.GET.get('type', '')
         spiders_name = 'review_spider'
+        run_type = 1
         if type == 'qa':
             spiders_name = 'qa_spider'
+            if Questions.objects.filter(asin=asin,created__icontains=(datetime.datetime.now()-datetime.timedelta(days=1)).
+                                                                                            strftime('%Y-%m-%d')).first():
+                run_type = 0
         if type == 'watcher':
             spiders_name = 'watcher_spider'
+            if ListingWacher.objects.filter(asin=asin,created__icontains=(datetime.datetime.now()-datetime.timedelta(days=1))
+                                                                                        .strftime('%Y-%m-%d')).first():
+                run_type = 0
         if type == 'catrank':
             spiders_name = 'catrank_spider'
+            if CategoryRank.objects.filter(asin=asin,created__icontains=(datetime.datetime.now()-datetime.timedelta(days=1)).
+                                                                                        strftime('%Y-%m-%d')).first():
+                run_type = 0
+        if spiders_name == 'review_spider':
+            if AsinReviews.objects.filter(asin=asin,created__icontains=(datetime.datetime.now()-datetime.timedelta(days=1)).
+                                                                                        strftime('%Y-%m-%d')).first():
+                run_type = 0
         if not asin:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'操作失败！'}),content_type='application/json')
+        if not run_type:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'更新终止，数据已是最新！'}), content_type='application/json')
         work_path = settings.SPIDER_URL
         os.chdir(work_path)
         os.system('scrapyd-deploy')

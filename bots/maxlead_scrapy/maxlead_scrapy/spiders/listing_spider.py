@@ -25,8 +25,10 @@ class ListingSpider(scrapy.Spider):
             self.res = list(UserAsins.objects.filter(is_use=True,user_id=int(user)).exclude(listing_time__icontains=datetime.datetime.now().
                                                         strftime("%Y-%m-%d")).values('aid').annotate(count=Count('aid')))
         else:
-            urls1 = url % (asin, sr, int(time.time()), sr, asin)
-            self.start_urls.append(urls1)
+            self.res = list(UserAsins.objects.filter(aid__in=eval(asin),is_use=True, is_done=0).values('aid').annotate(count=Count('aid')))
+            for aid in eval(asin):
+                urls1 = url % (asin, sr, int(time.time()), sr, aid)
+                self.start_urls.append(urls1)
         if self.res:
             for v in self.res:
                 if not re.search(r'-',v['aid']):

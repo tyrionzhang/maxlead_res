@@ -3,11 +3,11 @@ from datetime import *
 import time,re
 from django.db.models import Count
 from django.shortcuts import render
-from maxlead_site.models import UserAsins,UserProfile
+from maxlead_site.models import UserAsins
 from maxlead import settings
 from maxlead_site.common.user_secuirty import UserSecuirty
 from maxlead_site.common.excel_world import read_csv_file
-from maxlead_site.common.common import get_asins
+from maxlead_site.common.que_task import que_to
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 
@@ -171,3 +171,16 @@ def letsencrpyt(request,token_value):
     with open('/home/techsupp/www/.well-known/acme-challenge/{}'.format(token_value)) as f:
         answer = f.readline().strip()
     return answer
+
+def qu1():
+    s_time = settings.SPIDER_TIME
+    schedule.enter(s_time, 0, qu1)
+    que_to()
+
+def QuSpiders(request):
+    schedule.enter(1, 0, qu1)
+    # # 持续运行，直到计划时间队列变成空为止
+    schedule.run()
+
+    return render(request, 'spider/home.html')
+
