@@ -6,13 +6,14 @@ from django.db.models import Count
 from maxlead_site.models import UserAsins
 from maxlead import settings
 from django.core.paginator import Paginator
+from scrapy import cmdline
 
 def qu_spiders(asins):
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
     os.popen('scrapyd-deploy')
     if asins:
-        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % asins
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % str(asins)
         os.popen(cmd_str1)
         for i, val in enumerate(asins, 1):
             cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \

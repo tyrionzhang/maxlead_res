@@ -22,8 +22,9 @@ class ListingSpider(scrapy.Spider):
         elif asin == '88':
             self.res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
         elif asin == '100':
-            self.res = list(UserAsins.objects.filter(is_use=True,user_id=int(user)).filter(listing_time__lt=(datetime.
+            self.res = list(UserAsins.objects.filter(is_use=True,user_id=int(user)).exclude(listing_time__icontains=(datetime.
                                                         datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d")).
+                                                        exclude(listing_time__icontains=datetime.datetime.now().strftime("%Y-%m-%d")).
                                                         values('aid').annotate(count=Count('aid')))
         else:
             self.res = list(UserAsins.objects.filter(aid__in=eval(asin),is_use=True, is_done=0).values('aid').annotate(count=Count('aid')))
