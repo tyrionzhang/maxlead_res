@@ -14,15 +14,15 @@ class QaSpider(scrapy.Spider):
     def __init__(self, asin=None, *args, **kwargs):
         urls = "https://www.amazon.com/ask/questions/asin/%s/?th=1&psc=1"
         super(QaSpider, self).__init__(*args, **kwargs)
-        if asin:
-            urls1 = urls % asin
-            self.start_urls.append(urls1)
-        else:
+        if asin == 88:
             res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
             if res:
                 for re in list(res):
                     asin = urls % re['aid']
                     self.start_urls.append(asin)
+        else:
+            urls1 = urls % asin
+            self.start_urls.append(urls1)
 
 
     def parse(self, response):

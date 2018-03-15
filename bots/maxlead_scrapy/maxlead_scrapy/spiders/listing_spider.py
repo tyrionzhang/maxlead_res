@@ -13,7 +13,7 @@ class ListingSpider(scrapy.Spider):
     start_urls = []
     res = []
 
-    def __init__(self, asin=None, user=None,*args, **kwargs):
+    def __init__(self, asin=None, user=None, *args, **kwargs):
         sr = random.randint(1,16)
         url = "https://www.amazon.com/dp/%s/ref=sr_1_%s?ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1"
         super(ListingSpider, self).__init__(*args, **kwargs)
@@ -27,10 +27,8 @@ class ListingSpider(scrapy.Spider):
                                                         exclude(listing_time__icontains=datetime.datetime.now().strftime("%Y-%m-%d")).
                                                         values('aid').annotate(count=Count('aid')))
         else:
-            self.res = list(UserAsins.objects.filter(aid__in=eval(asin),is_use=True, is_done=0).values('aid').annotate(count=Count('aid')))
-            for aid in eval(asin):
-                urls1 = url % (asin, sr, int(time.time()), sr, aid)
-                self.start_urls.append(urls1)
+            asin_li = asin.split('|')
+            self.res = list(UserAsins.objects.filter(aid__in=asin_li,is_use=True).values('aid').annotate(count=Count('aid')))
         if self.res:
             for v in self.res:
                 if not re.search(r'-',v['aid']):

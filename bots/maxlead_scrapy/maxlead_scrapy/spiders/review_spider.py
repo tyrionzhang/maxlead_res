@@ -16,15 +16,15 @@ class ReviewSpider(scrapy.Spider):
     def __init__(self, asin=None, *args, **kwargs):
         urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&th=1&psc=1"
         super(ReviewSpider, self).__init__(*args, **kwargs)
-        if asin:
-            urls1 = urls % asin
-            self.start_urls.append(urls1)
-        else:
+        if asin == 88:
             res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
             if res:
                 for re in list(res):
                     asin = urls % re['aid']
                     self.start_urls.append(asin)
+        else:
+            urls1 = urls % asin
+            self.start_urls.append(urls1)
 
     def parse(self, response):
         str = response.url[-7:]

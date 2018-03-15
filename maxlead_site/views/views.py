@@ -7,7 +7,10 @@ from maxlead_site.models import UserAsins
 from maxlead import settings
 from maxlead_site.common.user_secuirty import UserSecuirty
 from maxlead_site.common.excel_world import read_csv_file
-from maxlead_site.common.que_task import que_to
+import queue
+import math
+import threading
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 
@@ -172,15 +175,100 @@ def letsencrpyt(request,token_value):
         answer = f.readline().strip()
     return answer
 
-def qu1():
-    s_time = settings.SPIDER_TIME
-    schedule.enter(s_time, 0, qu1)
-    que_to()
+def qu_spiders(asins):
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    if asins:
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % asins
+        os.popen(cmd_str1)
+        for i, val in asins.split('|'):
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % \
+                       val
+            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % \
+                       val
+            cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % \
+                       val
+            os.popen(cmd_str2)
+            os.popen(cmd_str3)
+            os.popen(cmd_str4)
+
+    return
+
+def qu_review_spiders(asins):
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    if asins:
+        for i, val in asins.split('|'):
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % \
+                       val
+            os.popen(cmd_str2)
+    return
+
+def que_to():
+    q = queue.PriorityQueue()
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+    total_count = len(res)
+    total_page = math.ceil(total_count / 10)
+    paginator = Paginator(res, 10)
+
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    os.popen('scrapyd-deploy')
+    for page in range(total_page):
+        data = paginator.page(page + 1)
+        asins = ''
+        for k,aid in enumerate(data,1):
+            if k == len(data):
+                asins+=aid['aid']
+            else:
+                asins+=aid['aid']+'|'
+        q.put(qu_spiders(asins))
+        q.put(qu_review_spiders(asins))
+    os.chdir(settings.ROOT_PATH)
+
+    workers = [threading.Thread(target=process_job, args=(q,)),
+               threading.Thread(target=process_job, args=(q,))]
+
+    for w in workers:
+        w.setDaemon(True)
+        w.start()
+
+    q.join()
+
+def process_job(q):
+    while True:
+        q.get()
+        q.task_done()
 
 def QuSpiders(request):
-    schedule.enter(1, 0, qu1)
+    schedule.enter(1, 0, que_to)
     # # 持续运行，直到计划时间队列变成空为止
     schedule.run()
 
     return render(request, 'spider/home.html')
 
+def perform_command3():
+    s_time = settings.SPIDER_TIME
+    schedule.enter(s_time, 0, perform_command3)
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    os.popen('scrapyd-deploy')
+    cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % 88
+    os.popen(cmd_str)
+    cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 88
+    os.popen(cmd_str1)
+    cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % 88
+    cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % 88
+    cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % 88
+    os.popen(cmd_str2)
+    os.popen(cmd_str3)
+    os.popen(cmd_str4)
+    os.chdir(settings.ROOT_PATH)
+    return True
+
+def Spiders3(request):
+    schedule.enter(1, 0, perform_command3)
+    # # 持续运行，直到计划时间队列变成空为止
+    schedule.run()
+
+    return render(request, 'spider/home.html')

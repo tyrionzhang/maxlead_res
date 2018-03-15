@@ -11,7 +11,7 @@
 import sys, os, django
 import random
 
-sys.path.append('D:\myproject\maxlead_res')
+sys.path.append('D:\maxlead')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 
@@ -34,9 +34,9 @@ ITEM_PIPELINES = {
     # 'maxlead_scrapy.pipelines.MyImagesPipeline': 1,
 }
 
-IMAGES_STORE = 'D:\myproject\maxlead_res\download\images'
+IMAGES_STORE = 'D:\maxlead\download\images'
 IMAGES = '\download\images'
-PHANTOMJS_PATH = 'D:\\appList\\python35\\Scripts\\phantomjs.exe'
+PHANTOMJS_PATH = 'C:\\Users\\asus\\node_modules\\phantomjs\\lib\\phantom\\bin\\phantomjs.exe'
 
 IMAGES_EXPIRES = 90
 
@@ -64,7 +64,7 @@ UA = random.choice(user_agent_list)
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = UA
+# USER_AGENT = UA
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -108,6 +108,8 @@ COOKIES_ENABLED = False
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware':543,
+    'maxlead_scrapy.middlewares.middleware.UserAgent': 543,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None,
    # 'maxlead_scrapy.middlewares.MyCustomDownloaderMiddleware': 543,
    #  'scrapy_splash.SplashCookiesMiddleware': 723,
    #  'scrapy_splash.SplashMiddleware': 725,
