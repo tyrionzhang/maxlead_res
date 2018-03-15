@@ -14,7 +14,7 @@ class QaSpider(scrapy.Spider):
     def __init__(self, asin=None, *args, **kwargs):
         urls = "https://www.amazon.com/ask/questions/asin/%s/?th=1&psc=1"
         super(QaSpider, self).__init__(*args, **kwargs)
-        if asin == 88:
+        if asin == '88':
             res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
             if res:
                 for re in list(res):

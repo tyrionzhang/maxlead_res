@@ -17,7 +17,7 @@ class WatcherSpider(scrapy.Spider):
     def __init__(self, asin=None, *args, **kwargs):
         url1 = "https://www.amazon.com/gp/offer-listing/%s/ref=dp_olp_all_mbc?ie=UTF8&condition=new&th=1&psc=1"
         super(WatcherSpider, self).__init__(*args, **kwargs)
-        if asin == 88:
+        if asin == '88':
             if self.res:
                 for re in self.res:
                     asins = UserAsins.objects.values('aid','review_watcher','listing_watcher','sku','ownership').filter(aid=re['aid'])[0]
