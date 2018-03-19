@@ -254,20 +254,20 @@ class Miner:
             aid_li = []
             qa_is_done = 1
             reviews_is_done = 1
+            ob_time = val.created.strftime('%Y-%m-%d')
+            a = datetime.datetime.now() - val.created.replace(tzinfo=None)
+            if a.total_seconds() >= 7200:
+                ob_time = datetime.datetime.now().strftime('%Y-%m-%d')
             for aid in eval(val.asins):
                 aid = aid.replace('\n','')
-                qa_check = Questions.objects.filter(asin=aid,is_done=0,created__icontains=val.created.strftime('%Y-%m-%d'))
-                reviews_check = AsinReviews.objects.filter(aid=aid,is_done=0,created__icontains=val.created.strftime('%Y-%m-%d'))
+                qa_check = Questions.objects.filter(asin=aid,is_done=0,created__icontains=ob_time)
+                reviews_check = AsinReviews.objects.filter(aid=aid,is_done=0,created__icontains=ob_time)
                 if qa_check:
                     qa_is_done = 0
                 if reviews_check:
                     reviews_is_done = 0
                 aid_li.append(aid)
             if val.type == 1:
-                ob_time = val.created.strftime('%Y-%m-%d')
-                a = datetime.datetime.now()-val.created.replace(tzinfo=None)
-                if a.total_seconds() >= 7200:
-                    ob_time = datetime.datetime.now().strftime('%Y-%m-%d')
                 qa = Questions.objects.filter(asin__in=aid_li,created__icontains=ob_time)
                 if qa and qa_is_done:
                     for q in qa:
@@ -316,10 +316,6 @@ class Miner:
                             'created'
                         ]
             else:
-                ob_time = val.created.strftime('%Y-%m-%d')
-                a = datetime.datetime.now() - val.created.replace(tzinfo=None)
-                if a.total_seconds() >= 7200:
-                    ob_time = datetime.datetime.now().strftime('%Y-%m-%d')
                 reviews_a = AsinReviews.objects.filter(aid__in=aid_li,created__icontains=ob_time)
                 reviews = Reviews.objects.filter(asin__in=aid_li,created__icontains=ob_time)
                 if reviews_a and reviews_is_done:
