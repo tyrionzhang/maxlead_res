@@ -5,6 +5,7 @@ import random
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
+from django.utils import timezone
 
 
 class ListingSpider(scrapy.Spider):
@@ -222,6 +223,6 @@ class ListingSpider(scrapy.Spider):
             yield item
             res = UserAsins.objects.filter(aid=asin_id)
             if res:
-                res.update(is_done=1,listing_time=datetime.datetime.now())
+                res.update(is_done=1,listing_time=timezone.now())
 
 
