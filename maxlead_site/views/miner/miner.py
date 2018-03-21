@@ -247,7 +247,10 @@ class Miner:
             return HttpResponse(json.dumps({'code': 0, 'data': '任务添加失败！'}),content_type='application/json')
 
     def ajax_get_miner_data(self):
-        tasks = Task.objects.filter(is_new=1,file_path='')
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '请登陆！'}), content_type='application/json')
+        tasks = Task.objects.filter(is_new=1,file_path='',user_id=user.user_id)
         res = []
         for val in tasks:
             data = []
