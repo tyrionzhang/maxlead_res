@@ -366,6 +366,7 @@ class Miner:
                 f_time = datetime.datetime.now()
                 Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
                 res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
+            del(data)
         return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')
 
     def ajax_get_task_data(self):
