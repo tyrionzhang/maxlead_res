@@ -68,9 +68,7 @@ def get_excel_file1(self, data,fields,data_fields=[],prefix=''):
     if data:
         headings = []
 
-        file_name = '%s.xlsx' % (time.strftime('%Y-%m-%d %H%M%S'))
-        if prefix:
-            file_name = file_name + prefix
+        file_name = '%s%s.xlsx' % (time.strftime('%Y-%m-%d %H%M%S'),prefix)
         path_name1 = settings.DOWNLOAD_URL + '/miner_excel/' + file_name
         dir_path = settings.BASE_DIR + '/'+settings.DOWNLOAD_URL+'miner_excel/'
         path_name = dir_path + file_name
