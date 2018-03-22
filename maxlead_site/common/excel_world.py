@@ -59,7 +59,7 @@ def get_excel_file(self, data,fields,data_fields=[]):
 
         return response
 
-def get_excel_file1(self, data,fields,data_fields=[]):
+def get_excel_file1(self, data,fields,data_fields=[],prefix=''):
 
     """
     导出excel表格
@@ -69,6 +69,8 @@ def get_excel_file1(self, data,fields,data_fields=[]):
         headings = []
 
         file_name = '%s.xlsx' % (time.strftime('%Y-%m-%d %H%M%S'))
+        if prefix:
+            file_name = file_name + prefix
         path_name1 = settings.DOWNLOAD_URL + '/miner_excel/' + file_name
         dir_path = settings.BASE_DIR + '/'+settings.DOWNLOAD_URL+'miner_excel/'
         path_name = dir_path + file_name
