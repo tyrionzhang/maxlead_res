@@ -367,6 +367,7 @@ class Miner:
                 f_time = datetime.datetime.now()
                 Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
                 res.append({'id':task_id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
+                del (file_path)
             del(data)
             del(task_id)
         return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')
