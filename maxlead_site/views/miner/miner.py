@@ -257,6 +257,7 @@ class Miner:
             aid_li = []
             qa_is_done = 1
             reviews_is_done = 1
+            task_id = val.id
             ob_time = val.created.strftime('%Y-%m-%d')
             a = datetime.datetime.now() - val.created.replace(tzinfo=None)
             if a.total_seconds() >= 7200:
@@ -365,8 +366,9 @@ class Miner:
                 file_path = get_excel_file1(self, data, fields, data_fields)
                 f_time = datetime.datetime.now()
                 Task.objects.filter(id=val.id).update(is_new=0,file_path=file_path, finish_time=f_time)
-                res.append({'id':val.id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
+                res.append({'id':task_id,'file_path':file_path,'f_time':f_time.strftime('%Y-%m-%d %H:%M:%S')})
             del(data)
+            del(task_id)
         return HttpResponse(json.dumps({'code': 1,'data':res}),content_type='application/json')
 
     def ajax_get_task_data(self):
