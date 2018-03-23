@@ -627,7 +627,7 @@ class Item:
                                                                                         strftime('%Y-%m-%d')).first():
                 run_type = 0
         if spiders_name == 'review_spider':
-            if AsinReviews.objects.filter(asin=asin,created__icontains=(datetime.datetime.now()-datetime.timedelta(days=1)).
+            if AsinReviews.objects.filter(aid=asin,created__icontains=(datetime.datetime.now()-datetime.timedelta(days=1)).
                                                                                         strftime('%Y-%m-%d')).first():
                 run_type = 0
         if not asin:
