@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-  
-import requests,time,random
+import time,random
 from scrapy import log
 import logging
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
+# from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware #代理ip，这是固定的导入
+# from bots.maxlead_scrapy.maxlead_scrapy.settings import IPPOOL
 
 
 class UserAgent(UserAgentMiddleware):
@@ -66,3 +68,14 @@ class UserAgent(UserAgentMiddleware):
             request.headers.setdefault('Connection', headers['Connection'])
             request.headers.setdefault('Accept-Language', headers['Accept-Language'])
             request.headers.setdefault('Accept-Encoding', headers['Accept-Encoding'])
+
+
+# class IPPOOLS(HttpProxyMiddleware):
+#
+#     def __init__(self, ip=''):
+#         self.ip = ip
+#
+#     def process_request(self, request, spider):
+#         thisip = random.choice(IPPOOL)
+#         print("this is ip:" + thisip["ipaddr"])
+#         request.meta["proxy"] = "http://" + thisip["ipaddr"]

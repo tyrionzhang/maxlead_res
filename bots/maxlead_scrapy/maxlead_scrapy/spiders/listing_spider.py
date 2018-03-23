@@ -63,7 +63,10 @@ class ListingSpider(scrapy.Spider):
             item['brand'] = response.css('a#brand::text').extract_first()
             if not item['brand']:
                 item['brand'] = response.css('div#bylineInfo_feature_div a#bylineInfo::text').extract_first()
-            item['brand'] = item['brand'].replace('\n','').strip()
+            else:
+                item['brand'] = response.css('div#brandBylineWrapper a#bylineInfo::text').extract_first()
+            if item['brand']:
+                item['brand'] = item['brand'].replace('\n','').strip()
             item['shipping'] = response.css('span#price-shipping-message b::text').extract_first()
             if not item['shipping']:
                 item['shipping'] = response.css('a#creturns-policy-anchor-text::text').extract_first()

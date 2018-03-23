@@ -264,14 +264,12 @@ class Miner:
                 ob_time = datetime.datetime.now().strftime('%Y-%m-%d')
             for aid in eval(val.asins):
                 aid = aid.replace('\n','')
-                qa_check = Questions.objects.filter(asin=aid,is_done=0,created__icontains=ob_time)
-                reviews_check = AsinReviews.objects.filter(aid=aid,is_done=0,created__icontains=ob_time)
+                aid_li.append(aid)
+
+            if val.type == 1:
+                qa_check = Questions.objects.filter(asin__in=aid_li, is_done=0, created__icontains=ob_time)
                 if qa_check:
                     qa_is_done = 0
-                if reviews_check:
-                    reviews_is_done = 0
-                aid_li.append(aid)
-            if val.type == 1:
                 qa = Questions.objects.filter(asin__in=aid_li,created__icontains=ob_time)
                 if qa and qa_is_done:
                     for q in qa:
@@ -320,6 +318,9 @@ class Miner:
                             'created'
                         ]
             else:
+                reviews_check = AsinReviews.objects.filter(aid=aid_li, is_done=0, created__icontains=ob_time)
+                if reviews_check:
+                    reviews_is_done = 0
                 reviews_a = AsinReviews.objects.filter(aid__in=aid_li,created__icontains=ob_time)
                 reviews = Reviews.objects.filter(asin__in=aid_li,created__icontains=ob_time)
                 if reviews_a and reviews_is_done:
