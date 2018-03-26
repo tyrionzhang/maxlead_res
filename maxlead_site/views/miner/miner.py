@@ -232,10 +232,10 @@ class Miner:
                 return HttpResponse(json.dumps({'code': 1, 'data': {'id': id, 'file_path': file_path, 'f_time':\
                                                     f_time.strftime('%Y-%m-%d %H:%M:%S')}}),content_type='application/json')
             else:
+                work_path = settings.SPIDER_URL
+                os.chdir(work_path)
+                os.system('scrapyd-deploy')
                 for aid  in asins:
-                    work_path = settings.SPIDER_URL
-                    os.chdir(work_path)
-                    os.system('scrapyd-deploy')
                     if type == 0:
                         cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % aid
                     else:
@@ -378,12 +378,12 @@ class Miner:
         tasks = Task.objects.filter(is_new=1, file_path='',user_id=user.user_id)
         if not tasks:
             return HttpResponse(json.dumps({'code': 0, 'data': 1}), content_type='application/json')
+        work_path = settings.SPIDER_URL
+        os.chdir(work_path)
+        os.system('scrapyd-deploy')
         for val in tasks:
             for aid in eval(val.asins):
                 aid = aid.replace('\n', '')
-                work_path = settings.SPIDER_URL
-                os.chdir(work_path)
-                os.system('scrapyd-deploy')
                 if val.type == 0:
                     cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % aid
                 else:

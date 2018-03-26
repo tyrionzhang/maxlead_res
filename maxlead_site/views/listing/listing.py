@@ -21,10 +21,10 @@ class Listing:
         asins = newASIN.split('|')
         work_path = settings.SPIDER_URL
         os.chdir(work_path)
+        os.system('scrapyd-deploy')
         for val in asins:
             checks = UserAsins.objects.filter(aid=val)
             if len(checks) == 1:
-                os.system('scrapyd-deploy')
                 cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
                 cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % val
                 cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
