@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json,datetime,os
+from decimal import *
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -193,19 +194,18 @@ class Listing:
                         if listing[0].price and listing[1].price:
                             price2 = float(listing[0].price[1:]) - float(listing[1].price[1:])
                         else:
-                            price2 = ''
+                            price2 = 0
                         total_review2 = int(listing[0].total_review) - int(listing[1].total_review)
                         rvw_score2 = round(float(listing[0].rvw_score) - float(listing[1].rvw_score),2)
                     else:
-                        price2 = ''
-                        total_review2 = ''
-                        rvw_score2 = ''
+                        price2 = 0
+                        total_review2 = 0
+                        rvw_score2 = 0
 
                     last_check_data = listing[0].user_asin.last_check
                     last_check = ''
                     if last_check_data:
                         last_check = last_check_data.strftime("%Y-%m-%d %H:%M:%S")
-
                     re = {
                         'id':listing[0].id,
                         'title':listing[0].title,
@@ -214,7 +214,7 @@ class Listing:
                         'sku':listing[0].user_asin.sku,
                         'brand':listing[0].brand,
                         'price':listing[0].price,
-                        'price2':price2,
+                        'price2':str(Decimal(price2).quantize(Decimal('0.00'))),
                         'total_review':listing[0].total_review,
                         'total_review2':total_review2,
                         'rvw_score2':rvw_score2,
