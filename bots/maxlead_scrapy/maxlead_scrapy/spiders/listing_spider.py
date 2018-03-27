@@ -62,9 +62,7 @@ class ListingSpider(scrapy.Spider):
                 item['answered'] = qac.replace('\n','').strip().split(' answered')[0]
             item['brand'] = response.css('a#brand::text').extract_first()
             if not item['brand']:
-                item['brand'] = response.css('div#bylineInfo_feature_div a#bylineInfo::text').extract_first()
-            else:
-                item['brand'] = response.css('div#brandBylineWrapper a#bylineInfo::text').extract_first()
+                item['brand'] = response.css('#bylineInfo::text').extract_first()
             if item['brand']:
                 item['brand'] = item['brand'].replace('\n','').strip()
             item['shipping'] = response.css('span#price-shipping-message b::text').extract_first()
