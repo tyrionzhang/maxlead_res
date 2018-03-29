@@ -391,3 +391,17 @@ class Miner:
                 os.system(cmd_str)
                 os.chdir(settings.ROOT_PATH)
         return HttpResponse(json.dumps({'code': 1, 'data': 1}), content_type='application/json')
+
+    @csrf_exempt
+    def delete_task_data(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '请登陆！'}), content_type='application/json')
+        id = self.GET.get('task_id')
+        if not id:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '数据有误！'}), content_type='application/json')
+        task = Task.objects.get(id=id)
+        if not task:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '数据不存在/被删除！'}), content_type='application/json')
+        task.delete()
+        return HttpResponse(json.dumps({'code': 1, 'data': 1}), content_type='application/json')

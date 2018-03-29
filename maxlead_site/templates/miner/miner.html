@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <table cellspacing="0px">
-                    <tr id="th-task"><th>Name</th><th>Type</th><th>Description</th><th>Request Time</th><th>Finish Time</th><th>Action</th></tr>
+                    <tr id="th-task"><th>Name</th><th>Type</th><th>Description</th><th>Request Time</th><th>Finish Time</th><th>Action</th><th>Fun</th></tr>
                     {% for v in data %}
                     <tr id="tr_task_{{ v.id }}">
                         <td>{{ v.name }}</td>
@@ -35,7 +35,9 @@
                                 {% endif %}
 
                             </span>
-                        </td></tr>
+                        </td>
+                        <td><a href="javascript:;" class="minner-del" data-id="{{ v.id }}">delete</a></td>
+                    </tr>
                     {% endfor %}
                 </table>
                 
@@ -171,6 +173,20 @@
                         alert('更新成功！');
                     }
                 },'json');
+            });
+            $('.minner-del').click(function () {
+               var task_id = $(this).data('id');
+               if(confirm('确定删除？')){
+                   $.get('/admin/maxlead_site/delete_task_data/',{'task_id':task_id},function (re) {
+                        if(re.code == 1){
+                            alert('删除成功！');
+                            $('#tr_task_'+task_id).remove();
+                        }else {
+                            alert(re.msg);
+                        }
+
+                    },'json');
+               }
             });
         </script>
 {% endblock %}

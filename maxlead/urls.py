@@ -77,6 +77,7 @@ urlpatterns = [
     url(r'^admin/maxlead_site/task_add/', Miner.add),
     url(r'^admin/maxlead_site/ajax_get_miner_data/', Miner.ajax_get_miner_data),
     url(r'^admin/maxlead_site/ajax_get_task_data/', Miner.ajax_get_task_data),
+    url(r'^admin/maxlead_site/delete_task_data/', Miner.delete_task_data),
     url(r'^admin/', admin.site.urls),
     url('^$', Dashboard.index),
     url('^admin/maxlead_site/export_users/', max_views.export_users),
