@@ -53,7 +53,7 @@ class UserAgent(UserAgentMiddleware):
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
             "Accept-Encoding": "gzip, deflate, br",
-            "Referer": "https://www.google.com",
+            "Referer": "https://www.baidu.com",
             "Connection": "keep - alive"
         }
         ua = random.choice(self.user_agent_list)
