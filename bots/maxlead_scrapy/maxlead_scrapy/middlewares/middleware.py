@@ -3,8 +3,6 @@ import time,random
 from scrapy import log
 import logging
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
-# from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware #代理ip，这是固定的导入
-# from bots.maxlead_scrapy.maxlead_scrapy.settings import IPPOOL
 
 
 class UserAgent(UserAgentMiddleware):

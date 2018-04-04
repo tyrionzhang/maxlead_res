@@ -6,6 +6,8 @@ from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
 from django.utils import timezone
+from maxlead_site.common.common import get_asins
+from maxlead_site.models import UserProfile
 
 
 class ListingSpider(scrapy.Spider):
@@ -23,7 +25,9 @@ class ListingSpider(scrapy.Spider):
         elif asin == '88':
             self.res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
         elif asin == '100':
-            self.res = list(UserAsins.objects.filter(is_use=True,user_id=int(user)).exclude(listing_time__icontains=(datetime.
+            user = UserProfile.objects.get(user_id=int(user))
+            aid_list = get_asins(user)
+            self.res = list(UserAsins.objects.filter(is_use=True,aid__in=aid_list).exclude(listing_time__icontains=(datetime.
                                                         datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d")).
                                                         exclude(listing_time__icontains=datetime.datetime.now().strftime("%Y-%m-%d")).
                                                         values('aid').annotate(count=Count('aid')))
