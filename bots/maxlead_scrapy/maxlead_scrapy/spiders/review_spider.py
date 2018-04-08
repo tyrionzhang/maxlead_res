@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import scrapy,time,datetime
+import random
 from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
 from maxlead_site.models import UserAsins,AsinReviews
 from scrapy import log
@@ -27,6 +28,7 @@ class ReviewSpider(scrapy.Spider):
             self.start_urls.append(urls1)
 
     def parse(self, response):
+        time.sleep(3 + random.randint(27, 57))
         str = response.url[-7:]
         res_asin = response.url.split('/')
         if str == 'maxlead':

@@ -41,6 +41,7 @@ class ListingSpider(scrapy.Spider):
                     self.start_urls.append(urls1)
 
     def parse(self, response):
+        time.sleep(3 + random.randint(27, 57))
         res_asin = response.url.split('/')
         asin_id = res_asin[4]
         item = ListingsItem()

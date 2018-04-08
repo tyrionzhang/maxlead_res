@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-  
-import time,random
+import random
 from scrapy import log
 import logging
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
@@ -57,7 +57,6 @@ class UserAgent(UserAgentMiddleware):
             "Connection": "keep - alive"
         }
         ua = random.choice(self.user_agent_list)
-        time.sleep(3 + random.randint(27,57))
         if ua:
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
             request.headers.setdefault('User-Agent', ua)
