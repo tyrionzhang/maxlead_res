@@ -41,7 +41,6 @@ class ListingSpider(scrapy.Spider):
                     self.start_urls.append(urls1)
 
     def parse(self, response):
-        time.sleep(3 + random.randint(27, 57))
         res_asin = response.url.split('/')
         asin_id = res_asin[4]
         item = ListingsItem()
@@ -227,6 +226,7 @@ class ListingSpider(scrapy.Spider):
                 if promotions:
                     item['promotion'] = promotions
             yield item
+            time.sleep(3 + random.randint(117, 177))
             res = UserAsins.objects.filter(aid=asin_id)
             if res:
                 res.update(is_done=1,listing_time=timezone.now())

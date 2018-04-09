@@ -28,7 +28,6 @@ class ReviewSpider(scrapy.Spider):
             self.start_urls.append(urls1)
 
     def parse(self, response):
-        time.sleep(3 + random.randint(27, 57))
         str = response.url[-7:]
         res_asin = response.url.split('/')
         if str == 'maxlead':
@@ -74,6 +73,7 @@ class ReviewSpider(scrapy.Spider):
             review_date = time.strptime(review.css('span.review-date::text').extract_first()[3:40],"%B %d, %Y")
             item['review_date'] = time.strftime("%Y-%m-%d", review_date)
             yield item
+        time.sleep(3 + random.randint(27, 57))
 
         next_page = response.css('li.a-last a::attr("href")').extract_first()
         if next_page is not None:
