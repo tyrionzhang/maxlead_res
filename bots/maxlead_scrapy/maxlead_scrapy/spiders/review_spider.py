@@ -15,7 +15,7 @@ class ReviewSpider(scrapy.Spider):
     asin_id = ''
 
     def __init__(self, asin=None, *args, **kwargs):
-        urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&th=1&psc=1"
+        urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&pageSize=50&th=1&psc=1"
         super(ReviewSpider, self).__init__(*args, **kwargs)
         if asin == '88':
             res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
