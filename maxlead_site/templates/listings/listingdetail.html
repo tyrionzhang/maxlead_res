@@ -247,6 +247,29 @@
 
             get_review('{{ asin }}');
 
+            $.get('/admin/maxlead_site/ajax_get_radar/',{'asin':'{{ asin }}','page':1},function (re) {
+                if(re.code == 1){
+                    if (re.data.data){
+                        el = '';
+                        $.each(re.data.data,function(index,value){
+                            el += '<tr>\n' +
+                            '<td>'+value['created']+'</td>\n' +
+                            '<td>'+value['name']+'</td><td>'+value['text1']+'</td>\n' +
+                            '<td>'+value['text2']+'</td>\n' +
+                            '<td><span class="actMore" data-text1="'+value['text1']+'" data-text2="'+value['text2']+'">Show More</span></td></tr>\n' +
+                            '<tr>\n';
+                        });
+                        $('#tb_detail_act').html(el);
+                        $('#act_more').data('page', parseInt(page)+1);
+                    }
+
+                    if(!re.data.is_page){
+                        $('#act_more').remove();
+                        return false;
+                    }
+                }
+            },'json');
+
             function get_review(asin) {
                 $('input[name="words"]').val('');
                 var data = {

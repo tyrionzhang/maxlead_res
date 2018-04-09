@@ -65,21 +65,21 @@ class Item:
         if len(listing_watchers) < 3:
             li_watcher_page = 0
 
-        activity_radar = Dashboard._get_activity_radar(self, asin=asin)
-
-        if activity_radar:
-            for val in activity_radar:
-                if val['text1']:
-                    val['text1'] = val['text1'][0:90]
-                if val['text2']:
-                    val['text2'] = val['text2'][0:90]
-            # activity_radar[0].title_re = activity_radar[0].title[0:90]
-            # activity_radar[0].title1_re = activity_radar[0].title1[0:90]
-            # activity_radar[0].description_re = activity_radar[0].description[0:90]
-            # activity_radar[0].description1_re = activity_radar[0].description1[0:90]
-            # activity_radar = activity_radar[0]
-        else:
-            activity_radar = []
+        # activity_radar = Dashboard._get_activity_radar(self, asin=asin)
+        #
+        # if activity_radar:
+        #     for val in activity_radar:
+        #         if val['text1']:
+        #             val['text1'] = val['text1'][0:90]
+        #         if val['text2']:
+        #             val['text2'] = val['text2'][0:90]
+        #     # activity_radar[0].title_re = activity_radar[0].title[0:90]
+        #     # activity_radar[0].title1_re = activity_radar[0].title1[0:90]
+        #     # activity_radar[0].description_re = activity_radar[0].description[0:90]
+        #     # activity_radar[0].description1_re = activity_radar[0].description1[0:90]
+        #     # activity_radar = activity_radar[0]
+        # else:
+        #     activity_radar = []
 
         if question_count and question_count[0].count:
             qa_count = question_count[0].count
@@ -121,7 +121,6 @@ class Item:
             'user': user,
             'avator': user.user.username[0],
             'res':item,
-            'activity_radar':activity_radar,
             'listing_watchers':listing_watchers,
             'li_watcher_page':li_watcher_page,
             'catgorys':catgorys,
@@ -137,8 +136,6 @@ class Item:
             return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
         asin = self.GET.get('asin','')
         page = self.GET.get('page',1)
-        listBgn = self.GET.get('listBgn','')
-        listEnd = self.GET.get('listEnd','')
         offset = (int(page)-1)*3
 
         listing_watchers = []
