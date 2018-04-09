@@ -88,8 +88,8 @@ def get_asin_spiders():
     return True
 
 def Spiders2(request):
-    schedule.enter(43200, 0, perform_command)
-    schedule.enter(43200, 0, perform_command1)
+    schedule.enter(28800, 0, perform_command)
+    schedule.enter(28800, 0, perform_command1)
     # schedule.enter(3600, 0, get_asin_spiders)
     # # 持续运行，直到计划时间队列变成空为止
     print('Spiders is runing!Time:%s' % datetime.now())
