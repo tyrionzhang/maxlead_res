@@ -59,9 +59,6 @@
                     <h3>Listing Watcher</h3>
                         <button type="button" class="spider_update" data-type="watcher" data-aid="{{ res.asin }}">Update</button><br>
                     <div class="detailWatcherList">
-                        {% if not listing_watchers %}
-                        <p>No one is listing against this ASIN.</p><!--没有跟列记录时的文字提示-->
-                        {% else %}
                         <table id="tb_li_wathcer"><!--默认只显示5条-->
                             {% for val in listing_watchers %}
                             <tr><td>{{ val.created }}</td>
@@ -75,14 +72,11 @@
                             </tr>
                             {% endfor %}
                         </table>
-                        {% if li_watcher_page %}
                         <button type="button" class="moreButton" id="li_watcher_more" data-page="">More</button>
-                        {% endif %}
                         <div >
                             <img src ="" style="display:none" id="screenshot" />
                         </div>
-                        {% endif %}
-                    </div>                    
+                    </div>
                 </section>
                 <section class="detailChart">
                     <h3>Time Shuttle</h3>
@@ -267,6 +261,9 @@
                         $('#act_more').remove();
                         return false;
                     }
+                }else{
+                    var el = "<p>No one is listing against this ASIN.</p>";
+                    $('.detailWatcherList').html(el);
                 }
             },'json');
 
