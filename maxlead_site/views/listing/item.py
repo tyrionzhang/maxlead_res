@@ -44,26 +44,7 @@ class Item:
             catgorys.append(item.user_asin.cat3)
 
         UserAsins.objects.filter(id=item.user_asin.id).update(last_check=datetime.datetime.now())
-        qa_max = Questions.objects.filter(asin=item.asin).aggregate(Max('created'))
-        if not qa_max or not qa_max['created__max']:
-            qa_max = Questions.objects.aggregate(Max('created'))
-        question_count = Questions.objects.filter(asin=item.asin,created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
-        answer_count = item.answered
-        listing_watchers = []
-        listing_watchers_max = ListingWacher.objects.filter(asin=item.asin).aggregate(Max('created'))
-        if not listing_watchers_max or not listing_watchers_max['created__max']:
-            listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
-        if listing_watchers_max and listing_watchers_max['created__max']:
-            listing_watchers = ListingWacher.objects.filter(asin=item.asin,created__icontains=listing_watchers_max['created__max']. \
-                                                        strftime("%Y-%m-%d"))
-        item_offer = len(listing_watchers)
-        if listing_watchers:
-            listing_watchers = listing_watchers[0:3]
-        for val in listing_watchers:
-            val.created = val.created.strftime('%Y-%m-%d %H:%M:%S')
-        li_watcher_page = 1
-        if len(listing_watchers) < 3:
-            li_watcher_page = 0
+
 
         # activity_radar = Dashboard._get_activity_radar(self, asin=asin)
         #
@@ -81,11 +62,6 @@ class Item:
         # else:
         #     activity_radar = []
 
-        if question_count and question_count[0].count:
-            qa_count = question_count[0].count
-        else:
-            qa_count = question_count.count()
-        item.question_answer = str(answer_count)+'/'+str(qa_count)
         box_res = eval(item.buy_box_res)
         if box_res:
             if 'Fulfilled by Amazon' in box_res:
@@ -115,19 +91,68 @@ class Item:
             item.rvw_score = int(item.rvw_score)
         if item.category_rank:
             item.category_rank = item.category_rank.split('|')
-        item.item_offer = item_offer
 
         data = {
             'user': user,
             'avator': user.user.username[0],
             'res':item,
-            'listing_watchers':listing_watchers,
-            'li_watcher_page':li_watcher_page,
             'catgorys':catgorys,
             'asin':asin,
             'time_pid':int(time.time()),
         }
         return render(self, 'listings/listingdetail.html',data)
+
+    @csrf_exempt
+    def item_offers(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+
+        asin = self.GET.get('asin', '')
+        listing_watchers_max = ListingWacher.objects.filter(asin=asin).aggregate(Max('created'))
+        if not listing_watchers_max or not listing_watchers_max['created__max']:
+            listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
+        listing_watchers = ListingWacher.objects.filter(asin=asin,created__icontains=listing_watchers_max['created__max']. \
+                                                        strftime("%Y-%m-%d"))
+        item_offer = len(listing_watchers)
+        return HttpResponse(json.dumps({'code': 1, 'item_offer': item_offer}), content_type='application/json')
+
+    @csrf_exempt
+    def question_answer(self):
+        user = App.get_user_info(self)
+        if not user:
+            return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+
+        asin = self.GET.get('asin', '')
+        listing_max = Listings.objects.filter(asin=asin).aggregate(Max('created'))
+        if not listing_max or not listing_max['created__max']:
+            listing_max = Listings.objects.aggregate(Max('created'))
+        start_time = datetime.datetime.now().strftime("%Y-%m-1")
+        end_time = listing_max['created__max'].strftime("%Y-%m-%d")
+        if int(datetime.datetime.now().strftime("%d")) <= 5:
+            mid_time = datetime.datetime.now() - relativedelta(months=+1)
+            mid_days = calendar.monthrange(mid_time.year, mid_time.month)
+            start_time = mid_time.strftime("%Y-%m-1")
+            end_time = mid_time.strftime("%Y-%m-" + str(mid_days[1]))
+        listing = Listings.objects.filter(asin=asin).filter(created__gte=start_time).filter(
+            created__lte=end_time).order_by('-created')
+        if not listing:
+            item = Listings.objects.filter(asin=asin).filter(
+                created__icontains=listing_max['created__max'].strftime("%Y-%m-%d"))[0]
+        else:
+            item = listing[0]
+        qa_max = Questions.objects.filter(asin=asin).aggregate(Max('created'))
+        if not qa_max or not qa_max['created__max']:
+            qa_max = Questions.objects.aggregate(Max('created'))
+        question_count = Questions.objects.filter(asin=asin,
+                                                  created__icontains=qa_max['created__max'].strftime("%Y-%m-%d"))
+        answer_count = item.answered
+        if question_count and question_count[0].count:
+            qa_count = question_count[0].count
+        else:
+            qa_count = question_count.count()
+        question_answer = str(answer_count)+'/'+str(qa_count)
+        return HttpResponse(json.dumps({'code': 1, 'question_answer': question_answer}), content_type='application/json')
 
     @csrf_exempt
     def ajax_get_watcher(self):

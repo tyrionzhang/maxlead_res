@@ -61,6 +61,8 @@ urlpatterns = [
     url(r'^admin/maxlead_site/export_shuttle/', Item.export_shuttle),
     url(r'^admin/maxlead_site/ajax_get_radar/', Item.ajax_get_radar),
     url(r'^admin/maxlead_site/ajax_get_watcher/', Item.ajax_get_watcher),
+    url(r'^admin/maxlead_site/item_offers/', Item.item_offers),
+    url(r'^admin/maxlead_site/question_answer/', Item.question_answer),
     url(r'^admin/maxlead_site/ajax_k_rank/', Item.ajax_k_rank),
     url(r'^admin/maxlead_site/export_k_rank/', Item.export_k_rank),
     url(r'^admin/maxlead_site/ajax_update_listing/', Item.ajax_update_listing),

@@ -27,11 +27,11 @@
                                 <td>Brand: {{ res.brand }}</td>
                                 <td>SKU: {{ res.user_asin.sku }}</td>
                                 <td>Inventory: unknown</td></tr>
-                            <tr><td>New Item Offers: {{ res.item_offer }}</td>
+                            <tr><td>New Item Offers: <span id="item_offers"></span></td>
                                 <td><a href="https://www.amazon.com/product-reviews/{{ res.asin }}/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews" target="_blank">Reviews: {{ res.total_review }}</a></td>
                                 <td><span class="star{{ res.rvw_score }}"></span></td>
                                 <td><form action="/admin/maxlead_site/export_qa/" method="get" name="export_qa">
-                                    <a href="https://www.amazon.com/ask/questions/asin/{{ res.asin }}/" target="_blank">QA: {{ res.question_answer }}</a>
+                                    <a href="https://www.amazon.com/ask/questions/asin/{{ res.asin }}/" target="_blank">QA: <span id="question_answer"></span></a>
 
                                         <input type="hidden" name="qa_asin" value="{{ res.asin }}">
                                     <button type="submit" id="export-qa">Export</button>
@@ -267,6 +267,39 @@
                         $('#act_more').remove();
                         return false;
                     }
+                }
+            },'json');
+
+            $.get('/admin/maxlead_site/ajax_get_watcher/',{'page':1,'asin':'{{ asin }}'},function (re) {
+                    if(re.code == 1){
+                        var el = '';
+                        $.each(re.data.data,function(index,value) {
+                            el += '<tr><td>'+value['created']+'</td>\n' +
+                                '<td><a href="'+value['seller_link']+'" target="_blank">Seller: '+value['seller']+'</a></td>\n' +
+                                '<td>Price: '+value['price']+'</td>\n' +
+                                '<td>'+value['fba']+'</td>\n' +
+                                '<td>'+value['prime']+'</td>\n'+
+                                '<td>'+value['shipping']+'</td>\n'+
+                                '<td>'+value['winner']+'</td>\n'+
+                                '<td><a href="'+value['images']+'" target="_blank">Screenshot</a></td></tr>';
+                        });
+                        $('#tb_li_wathcer').html(el);
+                        $('#li_watcher_more').data('page',1);
+                        if(!re.data.li_watcher_page){
+                            $('#li_watcher_more').remove();
+                        }
+                    }
+                },'json');
+
+            $.get('/admin/maxlead_site/item_offers/',{'asin':'{{ asin }}'},function (re) {
+                if(re.code == 1){
+                    $('#item_offers').html(re.item_offer);
+                }
+            },'json');
+
+            $.get('/admin/maxlead_site/question_answer/',{'asin':'{{ asin }}'},function (re) {
+                if(re.code == 1){
+                    $('#question_answer').html(re.question_answer);
                 }
             },'json');
 
