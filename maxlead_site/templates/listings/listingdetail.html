@@ -60,17 +60,7 @@
                         <button type="button" class="spider_update" data-type="watcher" data-aid="{{ res.asin }}">Update</button><br>
                     <div class="detailWatcherList">
                         <table id="tb_li_wathcer"><!--默认只显示5条-->
-                            {% for val in listing_watchers %}
-                            <tr><td>{{ val.created }}</td>
-                                <td>{% if val.seller_link %}<a href="{{ val.seller_link }}" target="_blank">Seller: {{ val.seller }}{% else %}Seller: {{ val.seller }}{% endif %}</a></td>
-                                <td>Price: {% if val.price %}{{ val.price }}{% else %} {% endif %}</td>
-                                <td>{% if val.fba %}FBA{% else %}FBM{% endif %}</td>
-                                <td>{% if val.prime %}Prime{% else %} {% endif %}</td>
-                                <td>{% if val.shipping %}{{ val.shipping }}{% else %} {% endif %}</td>
-                                <td>{% if val.winner %}	Buy box winner{% else %}not winner{% endif %}</td>
-                                <td><a href="{{ val.images }}" target="_blank">Screenshot</a></td>
-                            </tr>
-                            {% endfor %}
+
                         </table>
                         <button type="button" class="moreButton" id="li_watcher_more" data-page="">More</button>
                         <div >
@@ -171,17 +161,8 @@
                 <section class="detailRadar">
                     <h3>Activity Radar</h3>
                     <div class="detailAct">
-                        {% if activity_radar %}
                         <table id="tb_detail_act"><!--默认只显示3条-->
-                            <tr><th>Time</th><th>Object</th><th>Previous</th><th>New</th><th></th><tr>
-                            {% for val in activity_radar %}
-                            <tr>
-                                <td>{{ val.created }}</td>
-                                <td>{{ val.name }}</td><td>{{ val.text1 }}</td>
-                                <td>{{ val.text2}}</td>
-                                <td><span class="actMore" data-text1="{{ val.text1 }}" data-text2="{{ val.text2 }}">Show More</span></td></tr>
-                            <tr>
-                            {% endfor %}
+
                         </table>
                         <div id="actOut" style="display:none;">
                             <div class="actIn">
@@ -190,8 +171,7 @@
                             <button class="moreButton">Close</button>
                             </div>
                         </div>
-                        {% endif %}
-                    </div>                    
+                    </div>
                 </section>
                 <div id="editASIN"  style="display:none;">
                     <h3>Basic Info</h3>
@@ -241,33 +221,38 @@
 
             get_review('{{ asin }}');
 
-            $.get('/admin/maxlead_site/ajax_get_radar/',{'asin':'{{ asin }}','page':1},function (re) {
-                if(re.code == 1){
-                    if (re.data.data){
-                        el = '';
-                        $.each(re.data.data,function(index,value){
-                            el += '<tr>\n' +
-                            '<td>'+value['created']+'</td>\n' +
-                            '<td>'+value['name']+'</td><td>'+value['text1']+'</td>\n' +
-                            '<td>'+value['text2']+'</td>\n' +
-                            '<td><span class="actMore" data-text1="'+value['text1']+'" data-text2="'+value['text2']+'">Show More</span></td></tr>\n' +
-                            '<tr>\n';
-                        });
-                        $('#tb_detail_act').html(el);
-                        $('#act_more').data('page', parseInt(page)+1);
-                    }
+            get_watchers(1, '{{ asin }}');
 
-                    if(!re.data.is_page){
-                        $('#act_more').remove();
-                        return false;
-                    }
-                }else{
-                    var el = "<p>No one is listing against this ASIN.</p>";
-                    $('.detailWatcherList').html(el);
-                }
-            },'json');
+            get_radar('{{ asin }}', 1);
 
-            $.get('/admin/maxlead_site/ajax_get_watcher/',{'page':1,'asin':'{{ asin }}'},function (re) {
+            function get_radar(asin,page) {
+                $.get('/admin/maxlead_site/ajax_get_radar/',{'asin':asin,'page':parseInt(page)},function (re) {
+                    if(re.code == 1){
+                        if (re.data.data){
+                            el = '';
+                            $.each(re.data.data,function(index,value){
+                                el += '<tr>\n' +
+                                '<td>'+value['created']+'</td>\n' +
+                                '<td>'+value['name']+'</td><td>'+value['text1']+'</td>\n' +
+                                '<td>'+value['text2']+'</td>\n' +
+                                '<td><span class="actMore" data-text1="'+value['text1']+'" data-text2="'+value['text2']+'">Show More</span></td></tr>\n' +
+                                '<tr>\n';
+                            });
+                            $('#tb_detail_act').append(el);
+                            $('#act_more').data('page', parseInt(page)+1);
+                        }
+
+                        if(!re.data.is_page){
+                            $('#act_more').remove();
+                            return false;
+                        }
+
+                    }
+                },'json');
+            }
+
+            function get_watchers(page, asin) {
+                $.get('/admin/maxlead_site/ajax_get_watcher/',{'page':page,'asin':asin},function (re) {
                     if(re.code == 1){
                         var el = '';
                         $.each(re.data.data,function(index,value) {
@@ -280,13 +265,15 @@
                                 '<td>'+value['winner']+'</td>\n'+
                                 '<td><a href="'+value['images']+'" target="_blank">Screenshot</a></td></tr>';
                         });
-                        $('#tb_li_wathcer').html(el);
-                        $('#li_watcher_more').data('page',1);
+                        $('#tb_li_wathcer').append(el);
+                        $('#li_watcher_more').data('page',page+1);
                         if(!re.data.li_watcher_page){
                             $('#li_watcher_more').remove();
                         }
                     }
-                },'json');
+                },'json')
+            }
+
 
             $.get('/admin/maxlead_site/item_offers/',{'asin':'{{ asin }}'},function (re) {
                 if(re.code == 1){
@@ -533,31 +520,7 @@
             $('.detailAct').on('click', '#act_more',function () {
                 var page = $(this).data('page')?$(this).data('page'):1;
                 var asin = '{{ res.asin }}';
-                $.get('/admin/maxlead_site/ajax_get_radar/',{'asin':asin,'page':parseInt(page)},function (re) {
-                    if(re.code == 1){
-                        if (re.data.data){
-                            el = '';
-                            $.each(re.data.data,function(index,value){
-                                el += '<tr>\n' +
-                                '<td>'+value['created']+'</td>\n' +
-                                '<td>'+value['name']+'</td><td>'+value['text1']+'</td>\n' +
-                                '<td>'+value['text2']+'</td>\n' +
-                                '<td><span class="actMore" data-text1="'+value['text1']+'" data-text2="'+value['text2']+'">Show More</span></td></tr>\n' +
-                                '<tr>\n';
-                            });
-                            $('#tb_detail_act').append(el);
-                            $('#act_more').data('page', parseInt(page)+1);
-                        }
-
-                        if(!re.data.is_page){
-                            $('#act_more').remove();
-                            return false;
-                        }
-
-                    }else{
-                        alert(re.msg);
-                    }
-                },'json');
+                get_radar(asin,page);
             });
 
             $('.detailWatcherList').on('click','.screenshotButton',function () {
@@ -568,28 +531,7 @@
             $('.detailWatcherList').on('click','#li_watcher_more',function () {
                 var page = $(this).data('page')?parseInt($(this).data('page')):1;
                 var asin = '{{ res.asin }}';
-                $.get('/admin/maxlead_site/ajax_get_watcher/',{'page':page+1,'asin':asin},function (re) {
-                    if(re.code == 1){
-                        var el = '';
-                        $.each(re.data.data,function(index,value) {
-                            el += '<tr><td>'+value['created']+'</td>\n' +
-                                '<td><a href="'+value['seller_link']+'" target="_blank">Seller: '+value['seller']+'</a></td>\n' +
-                                '<td>Price: '+value['price']+'</td>\n' +
-                                '<td>'+value['fba']+'</td>\n' +
-                                '<td>'+value['prime']+'</td>\n'+
-                                '<td>'+value['shipping']+'</td>\n'+
-                                '<td>'+value['winner']+'</td>\n'+
-                                '<td><a href="'+value['images']+'" target="_blank">Screenshot</a></td></tr>';
-                        });
-                        $('#tb_li_wathcer').append(el);
-                        $('#li_watcher_more').data('page',page+1);
-                        if(!re.data.li_watcher_page){
-                            $('#li_watcher_more').remove();
-                        }
-                    }else{
-                        alert(re.msg)
-                    }
-                },'json')
+                get_watchers(page, asin);
             });
 
             function get_rank() {
