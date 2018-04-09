@@ -270,6 +270,9 @@
                         if(!re.data.li_watcher_page){
                             $('#li_watcher_more').remove();
                         }
+                    }else{
+                        var str = "<p>No one is listing against this ASIN.</p>";
+                        $('.detailWatcherList').html(str);
                     }
                 },'json')
             }
