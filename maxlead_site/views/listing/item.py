@@ -169,6 +169,8 @@ class Item:
             listing_watchers_max = ListingWacher.objects.aggregate(Max('created'))
         listing_watchers = ListingWacher.objects.filter(asin=asin,created__icontains=listing_watchers_max['created__max']. \
                                                         strftime("%Y-%m-%d"))
+        if not listing_watchers:
+            return HttpResponse(json.dumps({'code': 0}), content_type='application/json')
         if listing_watchers:
             listing_watchers = listing_watchers[offset:offset+3]
         data = []
