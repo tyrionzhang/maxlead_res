@@ -78,7 +78,7 @@ class ReviewSpider(scrapy.Spider):
         next_page = response.css('li.a-last a::attr("href")').extract_first()
         if next_page is not None:
             self.asin_id = next_page.split('/')[3][0:10]
-            next_page = next_page + '&mytype=maxlead&pageSize=50'
+            next_page = next_page + '&pageSize=50&mytype=maxlead'
             next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse)
         else:
