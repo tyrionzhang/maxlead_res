@@ -44,10 +44,10 @@ class QaSpider(scrapy.Spider):
             qa_page = response.urljoin(qa_url)
             time.sleep(2)
             yield scrapy.Request(qa_page, callback=self.get_answer)
-        time.sleep(3 + random.randint(27, 57))
 
         next_page = response.css('div#askPaginationBar li.a-last a::attr("href")').extract_first()
         if next_page is not None:
+            time.sleep(3 + random.randint(27, 57))
             next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse)
         else:

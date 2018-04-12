@@ -73,10 +73,10 @@ class ReviewSpider(scrapy.Spider):
             review_date = time.strptime(review.css('span.review-date::text').extract_first()[3:40],"%B %d, %Y")
             item['review_date'] = time.strftime("%Y-%m-%d", review_date)
             yield item
-        time.sleep(3 + random.randint(27, 57))
 
         next_page = response.css('li.a-last a::attr("href")').extract_first()
         if next_page is not None:
+            time.sleep(3 + random.randint(27, 57))
             self.asin_id = next_page.split('/')[3][0:10]
             next_page = next_page + '&pageSize=50&mytype=maxlead'
             next_page = response.urljoin(next_page)

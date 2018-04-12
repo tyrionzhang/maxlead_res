@@ -87,10 +87,11 @@ class CatrankSpider(scrapy.Spider):
                     break
                 else:
                     yield item
-        time.sleep(3 + random.randint(27, 57))
+
         if not self.check:
             next_page = response.css('a#pagnNextLink ::attr("href")').extract_first()
             if next_page is not None:
+                time.sleep(3 + random.randint(27, 57))
                 page = next_page.split('page=')
                 page = page[1].split('&')[0]
                 if int(page)<=20:
