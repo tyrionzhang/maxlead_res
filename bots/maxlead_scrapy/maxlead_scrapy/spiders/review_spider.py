@@ -78,7 +78,7 @@ class ReviewSpider(scrapy.Spider):
         if next_page is not None:
             time.sleep(3 + random.randint(27, 57))
             self.asin_id = next_page.split('/')[3][0:10]
-            next_page = next_page + '&pageSize=50&mytype=maxlead'
+            next_page = next_page + '&mytype=maxlead'
             next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse)
         else:
