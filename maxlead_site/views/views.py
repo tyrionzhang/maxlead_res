@@ -3,12 +3,13 @@ from datetime import *
 import time,re
 from django.db.models import Count
 from django.shortcuts import render
-from maxlead_site.models import UserAsins
 from maxlead import settings
 from maxlead_site.common.user_secuirty import UserSecuirty
 from maxlead_site.common.excel_world import read_csv_file
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
+from maxlead_site.models import UserAsins,AsinReviews,Reviews,AsinReviewsBackcup,ReviewsBackcup,Questions,QuestionsBackcup
+from maxlead_site.models import Answers,AnswersBackcup,ListingWacherBackcup,ListingWacher,Listings,ListingsBackcup,CategoryRank,CategoryRankBackcup
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
@@ -59,7 +60,7 @@ def perform_command1():
 
 def Spiders2(request):
     schedule.enter(28800, 0, perform_command)
-    schedule.enter(28800, 0, perform_command1)
+    schedule.enter(89200, 0, perform_command1)
     # 持续运行，直到计划时间队列变成空为止
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
@@ -122,6 +123,87 @@ def test1(request):
 
     print(regip)
     return HttpResponse(regip)
+
+def back_up_table():
+    schedule.enter(864000, 0, back_up_table)
+    now =datetime.now()
+    date = now + timedelta(days=-9)
+    review_date = now + timedelta(days=-21)
+    asin_reviews = AsinReviews.objects.filter(created__lt=review_date)
+    reviews = Reviews.objects.filter(created__lt=review_date)
+    questions = Questions.objects.filter(created__lt=review_date)
+    answers = Answers.objects.filter(created__lt=review_date)
+    listingWachers = ListingWacher.objects.filter(created__lt=review_date)
+    listings = Listings.objects.filter(created__lt=date)
+    categoryranks = CategoryRank.objects.filter(created__lt=date)
+    if asin_reviews:
+        querysetlist = []
+        for val in asin_reviews:
+            querysetlist.append(AsinReviewsBackcup(ar_id=val.id,aid=val.aid,positive_keywords=val.positive_keywords,negative_keywords=val.negative_keywords,
+                                            avg_score=val.avg_score,total_review=val.total_review,is_done=val.is_done,created=val.created))
+        ob = AsinReviewsBackcup.objects.bulk_create(querysetlist)
+        if ob:
+            asin_reviews.delete()
+    if reviews:
+        querysetlist = []
+        for val in reviews:
+            querysetlist.append(ReviewsBackcup(rid=val.id,name=val.name,asin=val.asin,title=val.title,variation=val.variation,content=val.content,
+                                review_link=val.review_link,score=val.score,is_vp=val.is_vp,review_date=val.review_date,
+                                created=val.created,image_names=val.image_names,image_thumbs=val.image_thumbs,image_urls=val.image_urls))
+        ob = ReviewsBackcup.objects.bulk_create(querysetlist)
+        if ob:
+            reviews.delete()
+    if answers:
+        querysetlist = []
+        for val in answers:
+            querysetlist.append(AnswersBackcup(qid=val.question_id, person=val.person, answer=val.answer,created=val.created))
+        ob = AnswersBackcup.objects.bulk_create(querysetlist)
+        if ob:
+            answers.delete()
+    if questions:
+        querysetlist = []
+        for val in questions:
+            querysetlist.append(QuestionsBackcup(qid=val.id,question=val.question,asin=val.asin,asked=val.asked,votes=val.votes,
+                                                 count=val.count,is_done=val.is_done,created=val.created))
+        ob = QuestionsBackcup.objects.bulk_create(querysetlist)
+        if ob:
+            questions.delete()
+    if listingWachers:
+        querysetlist = []
+        for val in listingWachers:
+            querysetlist.append(ListingWacherBackcup(asin=val.asin,seller=val.seller,seller_link=val.seller_link,price=val.price,
+                                                     shipping=val.shipping,fba=val.fba,prime=val.prime,winner=val.winner,
+                                                     images=val.images,created=val.created))
+        ob = ListingWacherBackcup.objects.bulk_create(querysetlist)
+        if ob:
+            listingWachers.delete()
+    if listings:
+        querysetlist = []
+        for val in listings:
+            querysetlist.append(ListingsBackcup(user_asin=val.user_asin_id,title=val.title,answered=val.answered,asin=val.asin,
+                                                sku=val.sku,brand=val.brand,shipping=val.shipping,prime=val.prime,description=val.description,
+                                                feature=val.feature,promotion=val.promotion,lightning_deal=val.lightning_deal,
+                                                buy_box=val.buy_box,buy_box_link=val.buy_box_link,buy_box_res=val.buy_box_res,
+                                                price=val.price,total_review=val.total_review,total_qa=val.total_qa,rvw_score=val.rvw_score,
+                                                category_rank=val.category_rank,inventory=val.inventory,is_review_watcher=val.is_review_watcher,
+                                                is_listing_watcher=val.is_listing_watcher,created=val.created,image_date=val.image_date,
+                                                image_names=val.image_names,image_thumbs=val.image_thumbs,image_urls=val.image_urls))
+        ob = ListingsBackcup.objects.bulk_create(querysetlist)
+        if ob:
+            listings.delete()
+    if categoryranks:
+        querysetlist = []
+        for val in categoryranks:
+            querysetlist.append(CategoryRankBackcup(user_asin=val.user_asin,asin=val.asin,cat=val.cat,keywords=val.keywords,
+                                                    rank=val.rank,is_ad=val.is_ad,created=val.created))
+        ob = CategoryRankBackcup.objects.bulk_create(querysetlist)
+        if ob:
+            categoryranks.delete()
+    return True
+
+def back_upTable(request):
+    schedule.enter(1, 0, back_up_table)
+    schedule.run()
 
 def export_users(request):
     re = read_csv_file('/home/techsupp/www/staffx.csv')
