@@ -319,9 +319,13 @@ class Item:
         if not user:
             return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
         asin = self.GET.get('asin','')
-        krStartDate = self.GET.get('krStartDate',datetime.datetime.now().strftime("%Y-%m-1"))
-        krEndDate = self.GET.get('krEndDate',datetime.datetime.now().strftime("%Y-%m-d"))
+        krStartDate = self.GET.get('krStartDate','')
+        krEndDate = self.GET.get('krEndDate','')
         kwdCat = self.GET.get('kwdCat','')
+
+        if not krStartDate and not krEndDate:
+            krStartDate = datetime.datetime.now() + datetime.timedelta(days = -30)
+            krEndDate = datetime.datetime.now()
 
         ranks = CategoryRank.objects.filter(asin=asin,user_asin=asin)
         if kwdCat:
@@ -340,27 +344,27 @@ class Item:
                 keys = val.cat.split(',n:')[-1]
                 if keys in cat_y:
                     cat_y[keys] += ','+str(val.rank)
-                    cat_y['time'+keys] += ',' + val.created.strftime("%d")
+                    cat_y['time'+keys] += ',' + val.created.strftime("%Y-%m-%d %H:%M:%S")
                 else:
                     cat_y.update({keys:str(val.rank)})
-                    cat_y.update({'time'+keys:val.created.strftime("%d")})
+                    cat_y.update({'time'+keys:val.created.strftime("%Y-%m-%d %H:%M:%S")})
 
             if val.keywords and not val.cat:
                 if val.keywords in keywords_y:
                     keywords_y[val.keywords] += ','+str(val.rank)
-                    keywords_y['time'+val.keywords] += ',' + val.created.strftime("%d")
+                    keywords_y['time'+val.keywords] += ',' + val.created.strftime("%Y-%m-%d %H:%M:%S")
                 else:
                     keywords_y.update({val.keywords:str(val.rank)})
-                    keywords_y.update({'time'+val.keywords:val.created.strftime("%d")})
+                    keywords_y.update({'time'+val.keywords:val.created.strftime("%Y-%m-%d %H:%M:%S")})
 
             if val.keywords and  val.cat:
                 keys_c = val.cat.split(',n:')[-1]
                 if val.keywords+'/'+keys_c in keycat_y:
                     keycat_y[val.keywords+'/'+keys_c] += ','+str(val.rank)
-                    keycat_y['time'+val.keywords+'/'+keys_c] += ',' + val.created.strftime("%d")
+                    keycat_y['time'+val.keywords+'/'+keys_c] += ',' + val.created.strftime("%Y-%m-%d %H:%M:%S")
                 else:
                     keycat_y.update({val.keywords+'/'+keys_c:str(val.rank)})
-                    keycat_y.update({'time'+val.keywords+'/'+keys_c:val.created.strftime("%d")})
+                    keycat_y.update({'time'+val.keywords+'/'+keys_c:val.created.strftime("%Y-%m-%d %H:%M:%S")})
 
         chart = []
         if cat_y:
@@ -557,9 +561,12 @@ class Item:
         asin = self.GET.get('asin', '')
         tsData1 = self.GET.get('tsData1', '')
         tsData2 = self.GET.get('tsData2', '')
-        tsStartDate = self.GET.get('tsStartDate', datetime.datetime.now().strftime("%Y-%m-1"))
-        tsEndDate = self.GET.get('tsEndDate', datetime.datetime.now().strftime("%Y-%m-%d"))
+        tsStartDate = self.GET.get('tsStartDate', '')
+        tsEndDate = self.GET.get('tsEndDate', '')
         listing = Listings.objects.filter(asin=asin).order_by('-created')
+        if not tsStartDate and not tsEndDate:
+            tsStartDate = datetime.datetime.now() + datetime.timedelta(days = -30)
+            tsEndDate = datetime.datetime.now()
         if tsStartDate:
             listing = listing.filter(created__gte=tsStartDate)
         if tsEndDate:
@@ -580,47 +587,47 @@ class Item:
                     cate_rank = cate_rank.replace(',','')
                 if tsData1 == 'bsr':
                     name1 = 'BSR'
-                    line_x1.append(int(v.created.strftime("%d")))
+                    line_x1.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y1.append(cate_rank)
                 if tsData2 == 'bsr':
                     name2 = 'BSR'
-                    line_x2.append(int(v.created.strftime("%d")))
+                    line_x2.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y2.append(cate_rank)
             if v.price:
                 if tsData1 == 'price':
                     name1 = 'price'
-                    line_x1.append(int(v.created.strftime("%d")))
+                    line_x1.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y1.append(float(v.price[1:]))
                 if tsData2 == 'price':
                     name2 = 'price'
-                    line_x2.append(int(v.created.strftime("%d")))
+                    line_x2.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y2.append(float(v.price[1:]))
             if v.total_review:
                 if tsData1 == 'reviews':
                     name1 = 'reviews'
-                    line_x1.append(int(v.created.strftime("%d")))
+                    line_x1.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y1.append(int(v.total_review))
                 if tsData2 == 'reviews':
                     name2 = 'reviews'
-                    line_x2.append(int(v.created.strftime("%d")))
+                    line_x2.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y2.append(int(v.total_review))
             if v.rvw_score:
                 if tsData1 == 'score':
                     name1 = 'score'
-                    line_x1.append(int(v.created.strftime("%d")))
+                    line_x1.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y1.append(float(v.rvw_score))
                 if tsData2 == 'score':
                     name2 = 'score'
-                    line_x2.append(int(v.created.strftime("%d")))
+                    line_x2.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y2.append(float(v.rvw_score))
             if v.total_qa:
                 if tsData1 == 'qa':
                     name1 = 'qa'
-                    line_x1.append(int(v.created.strftime("%d")))
+                    line_x1.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y1.append(int(v.total_qa))
                 if tsData2 == 'qa':
                     name2 = 'qa'
-                    line_x2.append(int(v.created.strftime("%d")))
+                    line_x2.append(v.created.strftime("%Y-%m-%d %H:%M:%S"))
                     line_y2.append(int(v.total_qa))
 
         return HttpResponse(json.dumps({'code': 1, 'data': {'line_x1':line_x1,'line_x2':line_x2,'line_y1':line_y1,'line_y2':line_y2,'name1':name1,

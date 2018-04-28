@@ -499,6 +499,10 @@
                                title: "y-"+re.data['name2'],
                                side: 'right',
                                overlaying: 'y1'
+                           },
+                           xaxis:{
+                                showgrid: false,                  // remove the x-axis grid lines
+                                tickformat: "%m-%d"              // customize the date format to "month, day"
                            }
                         };
 
@@ -564,7 +568,16 @@
                                 }
                             });
                         });
-                        Plotly.newPlot('krVisual', chart_data);
+
+                        var layout = {
+                           xaxis:{
+                                showgrid: false,                  // remove the x-axis grid lines
+                                tickformat: "%m-%d"              // customize the date format to "month, day"
+                           }
+
+
+                        };
+                        Plotly.newPlot('krVisual', chart_data, layout);
                     }else{
                         alert(re.msg);
                     }
