@@ -29,6 +29,7 @@ class WatcherSpider(scrapy.Spider):
 
     def parse(self, response):
         res_asin = response.url.split('/')
+        check_winner = response.url.split('&')[-1]
         driver = webdriver.PhantomJS(executable_path=settings.PHANTOMJS_PATH)
         driver.get(response.url)
         # img = Image.open(StringIO(base64.b64decode(driver.get_screenshot_as_base64())))
@@ -76,7 +77,7 @@ class WatcherSpider(scrapy.Spider):
                     item['prime'] = 1
                 else:
                     item['prime'] = 0
-                if k == 1:
+                if k == 1 and check_winner == 'psc=1':
                     item['winner'] = 1
                 else:
                     item['winner'] = 0
