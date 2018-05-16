@@ -1,6 +1,9 @@
 import os,sched
 from datetime import *
 import time,re
+import queue
+import threading
+import operator
 from django.db.models import Count
 from django.shortcuts import render
 from maxlead import settings
@@ -213,3 +216,96 @@ def letsencrpyt(request,token_value):
     with open('/home/techsupp/www/.well-known/acme-challenge/{}'.format(token_value)) as f:
         answer = f.readline().strip()
     return answer
+
+class perform_command_que(threading.Thread):
+    def __init__(self, t_name, queue,aids):
+        threading.Thread.__init__(self,name=t_name)
+        self.data = queue
+        self.aids = aids
+        self.t_name = t_name
+
+    def run(self):
+        work_path = settings.SPIDER_URL
+        os.chdir(work_path)
+        os.popen('scrapyd-deploy')
+
+        while 1:
+            try:
+                val_even = self.data.get(1)
+                if val_even == 1:
+                    for val in self.aids:
+                        cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['aid']
+                        cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % val['aid']
+                        cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val['aid']
+                        os.popen(cmd_str3)
+                        os.popen(cmd_str4)
+                        os.popen(cmd_str)
+                    os.chdir(settings.ROOT_PATH)
+                    self.data.put(2)
+                    time.sleep(10)
+            except:
+                print('%s:%s finished!' % (time.time(), self.getName()))
+                break
+
+class perform_command_que1(threading.Thread):
+    def __init__(self, t_name, queue,aids):
+        threading.Thread.__init__(self,name=t_name)
+        self.data = queue
+        self.aids = aids
+        self.t_name = t_name
+
+    def run(self):
+        work_path = settings.SPIDER_URL
+        os.chdir(work_path)
+        os.popen('scrapyd-deploy')
+
+        while 1:
+            try:
+                val_even = self.data.get(2)
+                if val_even == 2:
+                    for val in self.aids:
+                        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val['aid']
+                        os.popen(cmd_str2)
+
+                    os.chdir(settings.ROOT_PATH)
+                    self.data.put(3)
+                    time.sleep(10)
+            except:
+                print('%s:%s finished!' % (time.time(), self.getName()))
+                break
+
+class perform_command_que3(threading.Thread):
+    def __init__(self, t_name, queue,aids):
+        threading.Thread.__init__(self,name=t_name)
+        self.data = queue
+        self.aids = aids
+        self.t_name = t_name
+
+    def run(self):
+        work_path = settings.SPIDER_URL
+        os.chdir(work_path)
+        os.popen('scrapyd-deploy')
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % 88
+        os.popen(cmd_str1)
+        os.chdir(settings.ROOT_PATH)
+        self.data.put(1)
+        time.sleep(10)
+
+def run_command_queue(request):
+    q = queue.Queue()
+    res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
+
+    tname = 'reviews_done'
+    rname = 'rank_done'
+    lname = 'listing_done'
+    lis = perform_command_que3(lname, q, res)
+    reviews = perform_command_que(tname, q, res)
+    ranks = perform_command_que1(rname, q, res)
+    lis.start()
+    reviews.start()
+    ranks.start()
+    lis.join()
+    reviews.join()
+    ranks.join()
+    return render(request, 'spider/home.html')
+
