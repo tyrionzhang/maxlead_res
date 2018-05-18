@@ -43,10 +43,4 @@ class ListingWacherItem(DjangoItem):
 class CategoryRankItem(DjangoItem):
     django_model = CategoryRank
 
-class FileDownloadItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    file_urls=scrapy.Field()
-    files=scrapy.Field()
-
 
