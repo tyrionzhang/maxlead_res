@@ -1,0 +1,46 @@
+{% extends "Stocks/layouts/login_base.html" %}
+{% block container %}
+    <div id="body" class="clearfix">
+        <div class="login">
+            <form name="userLogin" autocomplete="on" action="/admin/maxlead_site/login/" method="post">
+                <div class="text-box-1">
+                    <label>Username:</label>
+                    <input type="text" name="username">
+                </div>
+                <br>
+                <div class="text-box-1">
+                    <label>Password:</label>
+                    <input type="password" name="password">
+                    <input type="hidden" name="type" value="stock">
+                </div>
+                <div class="btn">
+                    <input type="submit" value="Sign in" id="btn_login" class="fun-btn">
+                </div>
+                <!-- <p>I forget my password</p> -->
+            </form>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+          $("form[name='userLogin']").submit(function(e){
+            e.preventDefault();
+          });
+        });
+        $('#btn_login').on('click',function () {
+            var data = {
+              'username':$('input[name="username"]').val(),
+              'password':$('input[name="password"]').val(),
+              'type':$('input[name="type"]').val()
+            };
+            $.post('/admin/maxlead_site/login/',data,function (re) {
+               if(re.code==0){
+                   alert(re.msg);
+               }
+               if(re.code==99){
+                   window.location.href='/admin/max_stock/index/';
+               }
+            },'json');
+            return false;
+        });
+    </script>
+{% endblock %}

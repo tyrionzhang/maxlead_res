@@ -25,7 +25,10 @@ class Logins:
         if self.method == 'POST':
             username = self.POST.get('username', '')
             password = self.POST.get('password', '')
+            type = self.POST.get('type', '')
             user = auth.authenticate(username=username, password=password)
+            if not username or not password:
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'账号/密码不能为空！'}), content_type='application/json')
             if not user:
                 return HttpResponse(json.dumps({'code': 0, 'msg': u'账号/密码错误，请确认后重试！'}), content_type='application/json')
             user1 = User.objects.get(username=username)
@@ -38,6 +41,8 @@ class Logins:
                 auth.login(self, user)
                 self.session.set_expiry(604800) # 登陆状态生命
                 commons.loger(description='用户登陆正常',user=user,name='用户登陆')
+                if type == 'stock':
+                    return HttpResponse(json.dumps({'code': 99, 'msg': u'用户登陆正常!'}), content_type='application/json')
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'用户登陆正常!'}),content_type='application/json')
             else:
                 if user_file[0].em_count >= 5:

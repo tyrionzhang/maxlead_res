@@ -23,11 +23,16 @@ from maxlead_site.views.listing.listing import Listing
 from maxlead_site.views.listing.item import Item
 from maxlead_site.views.dashboard.dashboard import Dashboard
 from maxlead_site.views.miner.miner import Miner
+
+# views of max_stock
+from max_stock.views import views as stock_views
+from max_stock.views import users as stock_users
+from max_stock.views import stocks
 from django.views import static
 from maxlead import settings
 
 urlpatterns = [
-    # url(r'^admin/warehouse/spiders/', warehouse_views.home),
+    # url(r'^admin/warehouse/spider/', warehouse_views.home),
     url(r'^static/(?P<path>.*)$', static.serve,{ 'document_root': settings.STATIC_URL }),
     url(r'^download/(?P<path>.*)$', static.serve,{ 'document_root': settings.DOWNLOAD_URL }),
     url(r'^admin/maxlead_site/spiders2/', max_views.Spiders2),
@@ -85,5 +90,10 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url('^$', Dashboard.index),
     url('^admin/maxlead_site/export_users/', max_views.export_users),
+
+    # urls of max_stock
+    url('^admin/max_stock/test1/', stock_views.test1),
+    url('^admin/max_stock/login/', stock_users.userLogin),
+    url('^admin/max_stock/index/', stocks.index),
 ]
 
