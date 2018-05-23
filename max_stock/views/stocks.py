@@ -112,3 +112,21 @@ def get_threshold(request):
             return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
         else:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'Error,data is not found!'}), content_type='application/json')
+
+@csrf_exempt
+def threshold_del(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        id = request.POST.get('id','')
+        if id:
+            res = Thresholds.objects.filter(id=id).delete()
+            if res:
+                return HttpResponse(json.dumps({'code': 1, 'data': 0}), content_type='application/json')
+            else:
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'Is faild!'}),
+                                    content_type='application/json')
+        else:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'Error,data is not found!'}),
+                                content_type='application/json')
