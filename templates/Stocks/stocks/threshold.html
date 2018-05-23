@@ -1,6 +1,6 @@
 {% extends "Stocks/layouts/base.html" %}
 {% block container %}
-    <div id="main" data-name="reviews">
+    <div id="main" data-name="thresholds">
         <div class="con-head">
             <h1>title</h1>
             <div class="text-box">
@@ -16,7 +16,7 @@
             </div>
             <div class="con-head-right">
                 <div class="btn btn-green">
-                    <button>Export</button>
+                    <button id="threshold_add">Add</button>
                 </div>
                 <div class="btn btn-blue">
                     <button>Import</button>
@@ -28,48 +28,29 @@
             <table id="datas" class="tb-datas">
                 <tr id="tr-head">
                     <th>Sku</th>
-                    <th>Description</th>
                     <th>Warehouse</th>
-                    <th>Qty</th>
-                    <th>Date</th>
+                    <th>Threshold</th>
+                    <th>Fun</th>
                 </tr>
                 <tr>
                     <td>sku-ddd-ccc</td>
-                    <td>HANDLE GRIP</td>
                     <td>TWU</td>
                     <td>20</td>
-                    <td>2018-12-22</td>
+                    <td>
+                        <a href="#" class="fun-btn btn-edit">Edit</a>
+                        <a href="#" class="fun-btn btn-del">Del</a>
+                    </td>
                 </tr>
                 <tr>
                     <td>sku-ddd-ccc</td>
-                    <td>HANDLE GRIP</td>
                     <td>TWU</td>
                     <td>20</td>
-                    <td>2018-12-22</td>
+                    <td>
+                        <a href="#" class="fun-btn btn-edit">Edit</a>
+                        <a href="#" class="fun-btn btn-del">Del</a>
+                    </td>
                 </tr>
             </table>
         </div>
     </div>
-    <script>
-        $(document).ready(function(){
-          $("form[name='userLogin']").submit(function(e){
-            e.preventDefault();
-          });
-        });
-        $('#btn_login').on('click',function () {
-            var data = {
-              'username':$('input[name="username"]').val(),
-              'password':$('input[name="password"]').val()
-            };
-            $.post('/admin/maxlead_site/login/',data,function (re) {
-               if(re.code==0){
-                   alert(re.msg);
-               }
-               if(re.code==99){
-                   window.location.href='/admin/max_stock/index/';
-               }
-            },'json');
-            return false;
-        });
-    </script>
 {% endblock %}

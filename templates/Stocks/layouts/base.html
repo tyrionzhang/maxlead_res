@@ -12,7 +12,7 @@
         <script src="../../../static/max_stock/js/common.js"></script>
     </head>
     <body>
-        <div id="review" class="wrapper">
+        <div class="wrapper">
 		<div id="header">
 			<!-- <ul class="ul-name-list">
 				<li class="checked">Exl</li>
@@ -31,9 +31,9 @@
 				</div>
 				<div class="menu">
 					<ul class="ul-menu">
-						<li class="checked"><a href="#">Review Data</a></li>
-						<li><a href="threshold.html">Threshold</a></li>
-						<li><a href="threshold.html">UserAdmin</a></li>
+						<li id="reviews"><a href="/admin/max_stock/index/">Review Data</a></li>
+						<li id="thresholds"><a href="/admin/max_stock/threshold/">Threshold</a></li>
+						<li id="user_admin"><a href="threshold.html">UserAdmin</a></li>
 					</ul>
 				</div>
 			</div>
@@ -46,6 +46,42 @@
 		</div>
 		<!-- <div id="footer">footer</div> -->
 </div>
+<div class="wrap-paper hide"></div>
+	<div class="save-threshold hide">
+		<form action="" id="form_threshold">
+			<span class="btn-close">x</span>
+			<h2 style="margin: 0 0px 0 164px;">库存阈值设置</h2>
+			<label class="lab-post-param">
+				<span>SKU:</span>
+				<input type="text" name="sku">
+			</label>
+			<label class="lab-post-param">
+				<span>Warehouse:</span>
+				<input type="text" name="warehouse">
+			</label>
+			<label class="lab-post-param">
+				<span>Threshold:</span>
+				<input type="text" name="threshold">
+			</label>
+			<div>
+				<input type="submit" value="Save" id="btn-threshold">
+			</div>
+		</form>
+	</div>
+	<script>
+		$('#threshold_add').on('click', function(){
+			$('.wrap-paper').removeClass('hide');
+			$('.save-threshold').removeClass('hide');
+		});
+		$('.wrap-paper').on('click', function(){
+			$('.wrap-paper').addClass('hide');
+			$('.save-threshold').addClass('hide');
+		});
+		$('.btn-close').on('click', function(){
+			$('.wrap-paper').addClass('hide');
+			$('.save-threshold').addClass('hide');
+		});
+	</script>
 </body>
 </html>
 <!-- footer.php END -->

@@ -15,3 +15,10 @@ def index(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     return render(request,"Stocks/stocks/index.html")
+
+@csrf_exempt
+def threshold(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+    return render(request,"Stocks/stocks/threshold.html")

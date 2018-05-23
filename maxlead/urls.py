@@ -95,5 +95,6 @@ urlpatterns = [
     url('^admin/max_stock/test1/', stock_views.test1),
     url('^admin/max_stock/login/', stock_users.userLogin),
     url('^admin/max_stock/index/', stocks.index),
+    url('^admin/max_stock/threshold/', stocks.threshold),
 ]
 
