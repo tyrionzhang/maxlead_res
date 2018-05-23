@@ -57,10 +57,16 @@ body,ul{margin: 0;padding: 0;}
 }
 .text-box {
 	float: left;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 .text-box input {
     font-size: 16px;
 	line-height: 23px;
+}
+.text-box select {
+    font-size: 16px;
+    padding: 3.8px 23px 3.8px 8px;
 }
 .text-box-btn input {
     font-size: 16px;
@@ -179,7 +185,7 @@ body,ul{margin: 0;padding: 0;}
 }
 #body{ width: 100%; min-width: 980px; height: 94%; margin: 0 auto;}
 #aside{ float: left; width: 22.8%; height: 100%; background: #f7f2f2;}
-#main{ float: right; width: 77%; height: 100%; background: #f7f2f2;}
+#main{ float: right; width: 77%; background: #f7f2f2;}
 /*#footer{ width: 100%; min-width: 980px; height: 90px; margin: 0 auto; background: #08f;}*/
 .clear {
 	clear: both;

@@ -2,18 +2,34 @@
 {% block container %}
     <div id="main" data-name="reviews">
         <div class="con-head">
-            <h1>title</h1>
-            <div class="text-box">
-                <label>
-                    <span>搜索:</span>
-                    <input type="text" name="keywords">
-                </label>
-            </div>
-            <div class="text-box-btn">
-                <label>
-                    <input type="button" name="keywords" value="Search">
-                </label>
-            </div>
+            <h1>{{ title }}</h1>
+            <form action="/admin/max_stock/index/">
+                <div class="text-box">
+                    <label>
+                        <span>Search:</span>
+                        <input type="text" name="keywords">
+                    </label>
+                </div>
+                <div class="text-box">
+                    <label>
+                        <span>Warehouse:</span>
+                        <select name="warehouse" id="">
+                            <option value="">All</option>
+                            <option value="EXL">EXL</option>
+                            <option value="TWU">TWU</option>
+                            <option value="Hanover">Hanover</option>
+                            <option value="ILL">ILL</option>
+                            <option value="WA">WA</option>
+                            <option value="EGO">EGO</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="text-box-btn">
+                    <label>
+                        <input type="submit" value="Search">
+                    </label>
+                </div>
+            </form>
             <div class="con-head-right">
                 <div class="btn btn-green">
                     <button>Export</button>
@@ -28,25 +44,19 @@
             <table id="datas" class="tb-datas">
                 <tr id="tr-head">
                     <th>Sku</th>
-                    <th>Description</th>
                     <th>Warehouse</th>
                     <th>Qty</th>
                     <th>Date</th>
                 </tr>
+                {% for val in stock_list %}
                 <tr>
-                    <td>sku-ddd-ccc</td>
-                    <td>HANDLE GRIP</td>
-                    <td>TWU</td>
-                    <td>20</td>
-                    <td>2018-12-22</td>
+                    <td>{{ val.sku }}</td>
+                    <td>{{ val.warehouse }}</td>
+                    <td>{{ val.qty }}</td>
+                    <td>{{ val.created }}</td>
                 </tr>
-                <tr>
-                    <td>sku-ddd-ccc</td>
-                    <td>HANDLE GRIP</td>
-                    <td>TWU</td>
-                    <td>20</td>
-                    <td>2018-12-22</td>
-                </tr>
+                {% endfor %}
+
             </table>
         </div>
     </div>

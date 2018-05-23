@@ -22,12 +22,12 @@
 				<li>Wa</li>
 				<li>Ego</li>
 			</ul> -->
-			<h3>Welcome!</h3>
+			<h3>Welcome,{{ user.user.username }}!</h3>
 		</div>
 		<div id="body" class="clearfix">
 			<div id="aside">
 				<div class="logo">
-					<img src="http://placekitten.com/353/200" alt="" style="width: 100%;">
+					<img src="http://placekitten.com/353/209" alt="" style="width: 100%;">
 				</div>
 				<div class="menu">
 					<ul class="ul-menu">
@@ -55,10 +55,19 @@
 				<span>SKU:</span>
 				<input type="text" name="sku">
 			</label>
-			<label class="lab-post-param">
-				<span>Warehouse:</span>
-				<input type="text" name="warehouse">
-			</label>
+			<div class="text-box" style="float: none;margin-left: 30px;">
+                <label>
+                    <span>Warehouse:</span>
+                    <select name="sel_warehouse">
+                        <option value="EXL">EXL</option>
+                        <option value="TWU">TWU</option>
+                        <option value="Hanover">Hanover</option>
+                        <option value="ILL">ILL</option>
+                        <option value="WA">WA</option>
+                        <option value="EGO">EGO</option>
+                    </select>
+                </label>
+            </div>
 			<label class="lab-post-param">
 				<span>Threshold:</span>
 				<input type="text" name="threshold">
@@ -68,20 +77,7 @@
 			</div>
 		</form>
 	</div>
-	<script>
-		$('#threshold_add').on('click', function(){
-			$('.wrap-paper').removeClass('hide');
-			$('.save-threshold').removeClass('hide');
-		});
-		$('.wrap-paper').on('click', function(){
-			$('.wrap-paper').addClass('hide');
-			$('.save-threshold').addClass('hide');
-		});
-		$('.btn-close').on('click', function(){
-			$('.wrap-paper').addClass('hide');
-			$('.save-threshold').addClass('hide');
-		});
-	</script>
+
 </body>
 </html>
 <!-- footer.php END -->
