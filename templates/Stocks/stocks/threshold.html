@@ -55,12 +55,32 @@
                     <td>{{ val.threshold }}</td>
                     <td>
                         <a href="javascript:;" class="fun-btn btn-edit threshold-edit" data-id="{{ val.id }}">Edit</a>
-                        <a href="#" class="fun-btn btn-del" data-id="{{ val.id }}">Del</a>
+                        <a href="javascript:;" class="fun-btn btn-del threshold-del" data-id="{{ val.id }}">Del</a>
                     </td>
                 </tr>
                 {% endfor %}
             </table>
         </div>
     </div>
+    <script>
+        $('.threshold-del').on('click', function () {
+            if(confirm('Are you sure?')){
+                var id = $(this).data('id');
+                var del_tr = $(this).parents('tr');
+                $.post('/admin/max_stock/threshold_del/',{'id':id},function (re) {
+                   if(re.code==1){
+                       del_tr.remove();
+                   }
+                   if(re.code==0){
+                       alert(re.msg);
+                   }
+                   if(re.code==66){
+                       window.location.href='/admin/max_stock/login/';
+                   }
+                },'json');
+                return false;
+            }
 
+        });
+    </script>
 {% endblock %}
