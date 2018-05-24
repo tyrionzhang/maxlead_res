@@ -183,6 +183,21 @@ body,ul{margin: 0;padding: 0;}
     top: -5px;
     right: 1px;
 }
+.tr-blue1 td:nth-child(3){
+    background-color: #769e31;
+}
+.tr-blue1 td:nth-child(4){
+    background-color: #db5461;
+}
+#import_modal {
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    padding: 9px;
+    box-shadow: 1px 2px 8px #412e2e;
+    top: 99px;
+    left: 42%;
+}
 #body{ width: 100%; min-width: 980px; height: 94%; margin: 0 auto;}
 #aside{ float: left; width: 22.8%; height: 100%; background: #f7f2f2;}
 #main{ float: right; width: 77%; background: #f7f2f2;}

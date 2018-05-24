@@ -35,7 +35,7 @@
                     <button>Export</button>
                 </div>
                 <div class="btn btn-blue">
-                    <button>Import</button>
+                    <button id="import_index">Import</button>
                 </div>
             </div>
             <div class="clear"></div>
@@ -60,11 +60,26 @@
             </table>
         </div>
     </div>
+    <div class="hide" id="import_modal">
+        <form id="import_form" action="/admin/max_stock/stock_checked/" method="post" enctype="multipart/form-data">
+            <input type="file" name="myfile">
+            <input type="submit" value="Submit" id="btn_import_modal">
+        </form>
+        <div id="import_msg"></div>
+    </div>
     <script>
         $(document).ready(function(){
           $("form[name='userLogin']").submit(function(e){
             e.preventDefault();
           });
+          $('#import_index').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#import_modal').removeClass('hide');
+            });
+            $('body').on('click','.wrap-paper' , function(){
+                $('.wrap-paper').addClass('hide');
+                $('#import_modal').addClass('hide');
+            });
         });
         $('#btn_login').on('click',function () {
             var data = {

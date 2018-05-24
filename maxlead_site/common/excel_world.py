@@ -226,7 +226,7 @@ def read_excel_file1(model,res):
     data.sheet_names()  # 获取xls文件中所有sheet的名称
     table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
     nrows = table.nrows
-    fields = Thresholds._meta.fields
+    fields = model._meta.fields
     for i in range(nrows):
         str1 = ''
         str2 = ''
@@ -255,3 +255,30 @@ def read_excel_file1(model,res):
             msg += '第%s行添加有误。<br>' % (i+1)
             continue
     return {'code': 1, 'msg': msg}
+
+def read_excel_data(model,res):
+    fname = res
+    re_data = []
+    if os.path.isfile(fname):
+        data = xlrd.open_workbook(fname)  # 打开fname文件
+        data.sheet_names()  # 获取xls文件中所有sheet的名称
+        table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+        nrows = table.nrows
+        fields = model._meta.fields
+        for i in range(nrows):
+            re_v = {}
+            if i + 1 < nrows:
+                for n,val in enumerate(fields,0):
+                    if not n == 0:
+                        re_val = table.cell_value(i + 1, n-1,)
+                        if val.get_internal_type() == 'CharField':
+                            re_val = re_val.strip()
+                        if val.get_internal_type() == 'DateTimeField':
+                            re_val = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        if val.get_internal_type() == 'DateField':
+                            re_val = datetime.datetime.now().strftime("%Y-%m-%d")
+                        if val.get_internal_type() == 'IntegerField':
+                            re_val = int(table.cell_value(i + 1, n - 1, ))
+                        re_v.update({val.name:re_val})
+                re_data.append(re_v)
+    return re_data

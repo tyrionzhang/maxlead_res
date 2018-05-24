@@ -5,7 +5,7 @@ from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from max_stock.models import WarehouseStocks,Thresholds
-from maxlead_site.common.excel_world import read_excel_file1
+from maxlead_site.common.excel_world import read_excel_file1,read_excel_data
 from maxlead_site.views.app import App
 from maxlead import settings
 
@@ -27,9 +27,88 @@ def index(request):
     data = {
         'stock_list':stocks,
         'user': user,
+        'keywords': keywords,
+        'warehouse': warehouse,
         'title': 'Inventory',
     }
     return render(request,"Stocks/stocks/index.html",data)
+
+@csrf_exempt
+def stock_checked(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+    data = []
+    cover_data = ''
+    if request.method == 'POST':
+        myfile = request.FILES.get('myfile','')
+        file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
+        f = open(file_path, 'wb')
+        for chunk in myfile.chunks():
+            f.write(chunk)
+        f.close()
+        res = read_excel_data(WarehouseStocks, file_path)
+        if res:
+            for val in res:
+                re1 = {}
+                re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse']).get()
+                is_same = ''
+                if not re.qty == val['qty']:
+                    is_same = 1
+                re1.update({
+                    'id':re.id,
+                    'sku':val['sku'],
+                    'warehouse':val['warehouse'],
+                    'qty_old':re.qty,
+                    'qty_new':val['qty'],
+                    'is_same':is_same,
+                })
+                data.append(re1)
+                cover_data += str(re1)+"|"
+            os.remove(file_path)
+    data = {
+        'data':data,
+        'cover_data':cover_data,
+        'user': user,
+        'title': 'Inventory-Check',
+    }
+    return render(request, "Stocks/stocks/stock_checked.html", data)
+
+@csrf_exempt
+def checked_edit(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        id = request.POST.get('id','')
+        qty = request.POST.get('qty','')
+        res = WarehouseStocks.objects.filter(id=id)
+        if not res:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not found!'}), content_type='application/json')
+        i = res.update(qty=qty)
+        if i:
+            return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}), content_type='application/json')
+
+@csrf_exempt
+def checked_batch_edit(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        data = request.POST.get('data_stock','')
+        msg = '操作成功！\n'
+        if data:
+            data = eval(data)
+            for i,val in enumerate(data,1):
+                try:
+                    re = WarehouseStocks.objects.filter(id=val['id'])
+                    if re:
+                        re.update(qty=val['qty_new'])
+                except:
+                    msg += "第%s行修改有误！\n" % i
+                    continue
+
+        return HttpResponse(json.dumps({'code': 1, 'msg': msg}), content_type='application/json')
 
 # threshold start
 @csrf_exempt
@@ -137,12 +216,13 @@ def threshold_import(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
         myfile = request.FILES.get('myfile','')
+        if not myfile:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}),content_type='application/json')
         file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
         f = open(file_path, 'wb')
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        if not myfile:
-            return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}),content_type='application/json')
         res = read_excel_file1(Thresholds,file_path)
+        os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
