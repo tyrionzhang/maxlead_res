@@ -99,5 +99,6 @@ urlpatterns = [
     url('^admin/max_stock/threshold_add/', stocks.threshold_add),
     url('^admin/max_stock/get_threshold/', stocks.get_threshold),
     url('^admin/max_stock/threshold_del/', stocks.threshold_del),
+    url('^admin/max_stock/threshold_import/', stocks.threshold_import),
 ]
 

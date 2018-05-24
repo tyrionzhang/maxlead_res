@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-import time,json
+import os,json
 from django.contrib import auth
 from django.shortcuts import render,HttpResponse
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from max_stock.models import WarehouseStocks,Thresholds
-from django.db.models import Q
-from maxlead_site.views import commons
+from maxlead_site.common.excel_world import read_excel_file1
 from maxlead_site.views.app import App
+from maxlead import settings
 
 @csrf_exempt
 def index(request):
@@ -130,3 +129,20 @@ def threshold_del(request):
         else:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'Error,data is not found!'}),
                                 content_type='application/json')
+
+@csrf_exempt
+def threshold_import(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        myfile = request.FILES.get('myfile','')
+        file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
+        f = open(file_path, 'wb')
+        for chunk in myfile.chunks():
+            f.write(chunk)
+        f.close()
+        if not myfile:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}),content_type='application/json')
+        res = read_excel_file1(Thresholds,file_path)
+        return HttpResponse(json.dumps(res), content_type='application/json')
