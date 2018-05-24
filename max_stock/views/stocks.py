@@ -5,7 +5,7 @@ from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from max_stock.models import WarehouseStocks,Thresholds
-from maxlead_site.common.excel_world import read_excel_file1,read_excel_data
+from maxlead_site.common.excel_world import read_excel_file1,read_excel_data,get_excel_file
 from maxlead_site.views.app import App
 from maxlead import settings
 
@@ -110,6 +110,35 @@ def checked_batch_edit(request):
 
         return HttpResponse(json.dumps({'code': 1, 'msg': msg}), content_type='application/json')
 
+@csrf_exempt
+def export_stocks(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+    keywords = request.GET.get('keywords', '')
+    warehouse = request.GET.get('warehouse', '')
+    stocks = WarehouseStocks.objects.all()
+    if keywords:
+        stocks = stocks.filter(sku__contains=keywords)
+    if warehouse:
+        stocks = stocks.filter(warehouse=warehouse)
+
+    data = []
+    if stocks:
+        for val in stocks:
+            re = {
+                'sku':val.sku,
+                'warehouse':val.warehouse,
+                'qty':val.qty,
+                'created':val.created.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            data.append(re)
+        fields = ['SKU','Warehouse','QTY','Created']
+        data_fields = ['sku','warehouse','qty','created']
+        return get_excel_file(request, data, fields, data_fields)
+    else:
+        return HttpResponse('没有数据~~')
+
 # threshold start
 @csrf_exempt
 def threshold(request):
@@ -128,6 +157,8 @@ def threshold(request):
     data = {
         'user':user,
         'list':list,
+        'keywords':sku,
+        'warehouse':warehouse,
         'title':'Setting',
     }
     return render(request,"Stocks/stocks/threshold.html",data)

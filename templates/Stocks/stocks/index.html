@@ -32,7 +32,7 @@
             </form>
             <div class="con-head-right">
                 <div class="btn btn-green">
-                    <button>Export</button>
+                    <button id="btn_export_stocks">Export</button>
                 </div>
                 <div class="btn btn-blue">
                     <button id="import_index">Import</button>
@@ -69,6 +69,8 @@
     </div>
     <script>
         $(document).ready(function(){
+          $('input[name="keywords"]').val('{{ keywords }}');
+          $('select[name="warehouse"]').val('{{ warehouse }}');
           $("form[name='userLogin']").submit(function(e){
             e.preventDefault();
           });
@@ -95,6 +97,13 @@
                }
             },'json');
             return false;
+        });
+
+        $('#btn_export_stocks').on('click',function () {
+            var keywords = $('input[name="keywords"]').val();
+            var warehouse = $('select[name="warehouse"]').val();
+            var url = '/admin/max_stock/export_stocks/?keywords='+keywords+'&warehouse='+warehouse;
+            window.location.href=url;
         });
     </script>
 {% endblock %}

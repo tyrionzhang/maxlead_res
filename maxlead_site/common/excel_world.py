@@ -5,7 +5,6 @@ from io import *
 import os,time,xlrd,csv,datetime
 from django.contrib.auth.models import User
 from maxlead_site.models import UserProfile
-from max_stock.models import Thresholds
 from maxlead import settings
 
 def get_excel_file(self, data,fields,data_fields=[]):

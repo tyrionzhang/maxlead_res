@@ -72,6 +72,8 @@
     </div>
 
     <script>
+        $('input[name="keywords"]').val('{{ keywords }}');
+        $('select[name="warehouse"]').val('{{ warehouse }}');
         $('#threshold_import').on('click',function () {
             $('.wrap-paper').removeClass('hide');
 		    $('#import_modal').removeClass('hide');

@@ -98,6 +98,7 @@ urlpatterns = [
     url('^admin/max_stock/stock_checked/', stocks.stock_checked),
     url('^admin/max_stock/checked_edit/', stocks.checked_edit),
     url('^admin/max_stock/checked_batch_edit/', stocks.checked_batch_edit),
+    url('^admin/max_stock/export_stocks/', stocks.export_stocks),
     url('^admin/max_stock/threshold/', stocks.threshold),
     url('^admin/max_stock/threshold_add/', stocks.threshold_add),
     url('^admin/max_stock/get_threshold/', stocks.get_threshold),
