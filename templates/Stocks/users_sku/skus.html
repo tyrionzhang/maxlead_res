@@ -1,0 +1,167 @@
+{% extends "Stocks/layouts/base.html" %}
+{% block container %}
+    <div id="main" data-name="users_sku">
+        <div class="con-head">
+            <h1>{{ title }}</h1>
+            <form action="/admin/max_stock/users_sku/">
+                <div class="text-box">
+                    <label>
+                        <span>Search:</span>
+                        <input type="text" name="keywords">
+                    </label>
+                </div>
+
+                <div class="text-box-btn">
+                    <label>
+                        <input type="submit" value="Search">
+                    </label>
+                </div>
+            </form>
+            <div class="con-head-right">
+                <div class="btn btn-green">
+                    <button id="user_add">Add</button>
+                </div>
+                <div class="btn btn-blue">
+                    <button id="user_import">Import</button>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="con-body">
+            <table id="datas" class="tb-datas">
+                <tr id="tr-head">
+                    <th>User</th>
+                    <th>sku</th>
+                    <th>Fun</th>
+                </tr>
+                {% for val in data %}
+                <tr>
+                    <td>{{ val.user.username }}</td>
+                    <td>{{ val.sku }}</td>
+                    <td>
+                        <a href="javascript:;" class="fun-btn btn-del user-del" data-id="{{ val.id }}">Del</a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+    <div class="save-threshold hide" id="save_user">
+		<form action="" id="form_user">
+			<span class="btn-close">x</span>
+			<h2 style="margin: 0 0px 0 164px;">sku数据</h2>
+			<div class="text-box" style="float: none;margin-left: 30px;">
+                <label>
+                    <span>User:</span>
+                    <select name="user_id">
+                        {% for val in user_list %}
+                        <option value="{{ val.id }}">{{ val.username }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <label class="lab-post-param">
+				<span>SKU:</span>
+				<input type="text" name="sku">
+			</label>
+
+			<div>
+				<input type="submit" value="Save" id="btn_user">
+			</div>
+		</form>
+    </div>
+
+    <div class="hide" id="import_modal">
+        <form id="import_form" method="post" enctype="multipart/form-data">
+            <input type="file" name="myfile">
+            <input type="submit" value="Submit" id="btn_import_modal">
+        </form>
+        <div id="import_msg"></div>
+    </div>
+    <script>
+        $(document).ready(function(){
+          $('input[name="keywords"]').val('{{ keywords }}');
+
+          $('#user_add').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#save_user').removeClass('hide');
+                $('#form_user')[0].reset();
+                $('#btn_user').removeAttr('disabled');
+            });
+
+          $('#user_import').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#import_modal').removeClass('hide');
+            });
+            $('body').on('click','.wrap-paper' , function(){
+                $('.wrap-paper').addClass('hide');
+                $('#import_modal').addClass('hide');
+                $('#save_user').addClass('hide');
+            });
+        });
+        $('#btn_user').on('click',function () {
+            var id = $('input[name="id"]').val();
+            var data = {
+              'user_id':$('select[name="user_id"]').val(),
+              'sku':$('input[name="sku"]').val(),
+              'id':id
+            };
+            if (!id){
+                $(this).attr("disabled", true);
+            }
+            $.post('/admin/max_stock/save_add/',data,function (re) {
+               if(re.code==0 || re.code==1){
+                   alert(re.msg);
+                   if(re.code==1){
+                       window.location.reload();
+                   }
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#btn_import_modal').on('click', function () {
+            var form_data = new FormData();
+            var file_info =$('input[name="myfile"]')[0].files[0];
+            form_data.append('myfile',file_info);
+            //if(file_info==undefined)暂且不许要判断是否有附件
+                //alert('你没有选择任何文件');
+                //return false
+            $.ajax({
+                url:'/admin/max_stock/import_sku/',
+                type:'POST',
+                data: form_data,
+                processData: false,  // tell jquery not to process the data
+                contentType: false, // tell jquery not to set contentType
+                success: function(callback) {
+                    $('#import_msg').append('Work is done!<br>');
+                    $('#import_msg').append(callback.msg);
+                }
+            });
+            return false;
+        });
+
+        $('.user-del').on('click', function () {
+            var id=$(this).data('id');
+            if (confirm('确定删除？')) {
+                $.post('/admin/max_stock/del_sku/',{'id':id},function (re) {
+                   if(re.code==0 || re.code==1){
+                       alert(re.msg);
+                       if(re.code==1){
+                           window.location.reload();
+                       }
+                   }
+                   if(re.code==66){
+                       window.location.href='/admin/max_stock/login/';
+                   }
+                   return false;
+                },'json');
+            }
+
+        });
+    </script>
+{% endblock %}

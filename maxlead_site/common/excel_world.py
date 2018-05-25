@@ -246,7 +246,11 @@ def read_excel_file1(model,res,model_name):
                         if n+1 == len(fields):
                             a = '%s'
                             a1 = "\'%s\'"
-
+                        if val.name == 'user':
+                            user_obj = User.objects.filter(username=val_res)
+                            if user_obj:
+                                val_res = user_obj[0].id
+                                val.name = 'user_id'
                         if val.get_internal_type() == 'DateTimeField':
                             val_res = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         if val.get_internal_type() == 'DateField':

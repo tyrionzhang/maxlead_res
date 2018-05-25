@@ -27,6 +27,7 @@ from maxlead_site.views.miner.miner import Miner
 # views of max_stock
 from max_stock.views import views as stock_views
 from max_stock.views import users as stock_users
+from max_stock.views import users_sku as skus
 from max_stock.views import stocks
 from django.views import static
 from maxlead import settings
@@ -108,5 +109,9 @@ urlpatterns = [
     url('^admin/max_stock/get_threshold/', stocks.get_threshold),
     url('^admin/max_stock/threshold_del/', stocks.threshold_del),
     url('^admin/max_stock/threshold_import/', stocks.threshold_import),
+    url('^admin/max_stock/users_sku/', skus.sku_list),
+    url('^admin/max_stock/save_sku/', skus.save_sku),
+    url('^admin/max_stock/import_sku/', skus.import_sku),
+    url('^admin/max_stock/del_sku/', skus.del_sku),
 ]
 
