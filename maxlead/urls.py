@@ -94,6 +94,10 @@ urlpatterns = [
     # urls of max_stock
     url('^admin/max_stock/test1/', stock_views.test1),
     url('^admin/max_stock/login/', stock_users.userLogin),
+    url('^admin/max_stock/user_list/', stock_users.user_list),
+    url('^admin/max_stock/user_save/', stock_users.user_save),
+    url('^admin/max_stock/users_import/', stock_users.users_import),
+    url('^admin/max_stock/users_del/', stock_users.users_del),
     url('^admin/max_stock/index/', stocks.index),
     url('^admin/max_stock/stock_checked/', stocks.stock_checked),
     url('^admin/max_stock/checked_edit/', stocks.checked_edit),

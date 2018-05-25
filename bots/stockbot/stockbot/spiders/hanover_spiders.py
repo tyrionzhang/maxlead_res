@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import scrapy,os,time
-import linecache
 from selenium import webdriver
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
@@ -115,7 +114,10 @@ class HanoverSpider(scrapy.Spider):
                         msg_str2 += 'SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n' % (item['sku'],item['warehouse'],item['qty'],threshold[0].threshold)
             driver.quit()
 
-        with open(file_path, "w+") as f:
+        if not os.path.isfile(file_path):
+            with open(file_path, "w+") as f:
+                f.close()
+        with open(file_path, "r+") as f:
             old = f.read()
             f.seek(0)
             if msg_str1:

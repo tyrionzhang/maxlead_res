@@ -108,7 +108,7 @@ def get_excel_file1(self, data,fields,data_fields=[],prefix=''):
 
         return path_name1
 
-def read_excel_file(res):
+def read_excel_file(res,type=None):
     fname = res
     if not os.path.isfile(fname):
         return {'code':0,'msg':'File is not found!'}
@@ -129,33 +129,39 @@ def read_excel_file(res):
                 user.email = table.cell_value(i + 1, 1, )
                 user.id
                 user.save()
-                if table.cell_value(i + 1, 4, ):
-                    group_obj = UserProfile.objects.filter(user__username=table.cell_value(i + 1, 4, ))
+                if type == 'stock':
+                    user_file = UserProfile()
+                    user_file.id = user.userprofile.id
+                    user_file.role = 99
+                    user_file.save(update_fields=['role'])
                 else:
-                    group_obj = UserProfile.objects.filter(id=1)
-                roles = table.cell_value(i + 1, 3, )
-                status = table.cell_value(i + 1, 2, )
+                    if table.cell_value(i + 1, 4, ):
+                        group_obj = UserProfile.objects.filter(user__username=table.cell_value(i + 1, 4, ))
+                    else:
+                        group_obj = UserProfile.objects.filter(id=1)
+                    roles = table.cell_value(i + 1, 3, )
+                    status = table.cell_value(i + 1, 2, )
 
-                user_file = UserProfile()
-                user_file.id = user.userprofile.id
-                user_file.user_id = user.id
+                    user_file = UserProfile()
+                    user_file.id = user.userprofile.id
+                    user_file.user_id = user.id
 
-                if roles == 'member':
-                    user_file.role = 0
-                elif roles == 'leader':
-                    user_file.role = 1
-                else:
-                    user_file.role = 2
-                if status == 'active':
-                    user_file.state = 1
-                else:
-                    user_file.state = 0
-                if group_obj:
-                    user_file.group = group_obj[0]
-                else:
-                    user_file.group = UserProfile.objects.filter(id=1)[0]
+                    if roles == 'member':
+                        user_file.role = 0
+                    elif roles == 'leader':
+                        user_file.role = 1
+                    else:
+                        user_file.role = 2
+                    if status == 'active':
+                        user_file.state = 1
+                    else:
+                        user_file.state = 0
+                    if group_obj:
+                        user_file.group = group_obj[0]
+                    else:
+                        user_file.group = UserProfile.objects.filter(id=1)[0]
 
-                user_file.save(update_fields=update_fields1)
+                    user_file.save(update_fields=update_fields1)
         except:
             msg += '第%s行添加有误。<br>' % i
             continue
@@ -179,6 +185,7 @@ def read_csv_file(res):
                 user.email = val[1]
                 user.id
                 user.save()
+
                 if val[4]:
                     group_obj = UserProfile.objects.filter(user__username=val[4])
                 else:
@@ -214,7 +221,7 @@ def read_csv_file(res):
     return {'code': 1, 'msg': msg}
 
 
-def read_excel_file1(model,res):
+def read_excel_file1(model,res,model_name):
     from django.db import connection, transaction
     cursor = connection.cursor()
     fname = res
@@ -248,7 +255,7 @@ def read_excel_file1(model,res):
                             a1 = "%s,"
                         str1 += a % val.name
                         str2 += a1  % val_res
-                sql = "insert into stock_thresholds (%s) VALUES (%s)" % (str1,str2)
+                sql = "insert into %s (%s) VALUES (%s)" % (model_name,str1,str2)
                 cursor.execute(sql)
         except:
             msg += '第%s行添加有误。<br>' % (i+1)

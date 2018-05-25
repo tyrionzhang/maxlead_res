@@ -63,8 +63,10 @@ class TwuSpider(scrapy.Spider):
                     if threshold and threshold[0].threshold >= int(item['qty']):
                         msg_str2 += 'SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n' % (
                         item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
-
-            with open(file_path, "w+") as f:
+            if not os.path.isfile(file_path):
+                with open(file_path, "w+") as f:
+                    f.close()
+            with open(file_path, "r+") as f:
                 old = f.read()
                 f.seek(0)
                 f.write(msg_str1)

@@ -254,6 +254,6 @@ def threshold_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        res = read_excel_file1(Thresholds,file_path)
+        res = read_excel_file1(Thresholds,file_path,'stock_thresholds')
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
