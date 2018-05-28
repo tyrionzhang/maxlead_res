@@ -15,8 +15,8 @@ class HanoverSpider(scrapy.Spider):
     ]
     sku_list = []
 
-    def __init__(self):
-        super(HanoverSpider, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(HanoverSpider, self).__init__(*args, **kwargs)
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'userSkus_txt.txt')
         with open(file_path, "r") as f:
             sku_list = f.read()
