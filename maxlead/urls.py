@@ -93,7 +93,7 @@ urlpatterns = [
     url('^admin/maxlead_site/export_users/', max_views.export_users),
 
     # urls of max_stock
-    url('^admin/max_stock/test1/', stock_views.test1),
+    url('^admin/max_stock/stock_spiders/', stock_views.stock_spiders),
     url('^admin/max_stock/login/', stock_users.userLogin),
     url('^admin/max_stock/user_list/', stock_users.user_list),
     url('^admin/max_stock/user_save/', stock_users.user_save),
