@@ -110,7 +110,7 @@
             if (!id){
                 $(this).attr("disabled", true);
             }
-            $.post('/admin/max_stock/save_add/',data,function (re) {
+            $.post('/admin/max_stock/save_sku/',data,function (re) {
                if(re.code==0 || re.code==1){
                    alert(re.msg);
                    if(re.code==1){
