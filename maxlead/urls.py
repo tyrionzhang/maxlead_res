@@ -93,7 +93,6 @@ urlpatterns = [
     url('^admin/maxlead_site/export_users/', max_views.export_users),
 
     # urls of max_stock
-    url(r'^static_stocks/(?P<path>.*)$', static.serve,{ 'document_root': settings.STATIC_STOCKS_URL }),
     url('^admin/max_stock/test1/', stock_views.test1),
     url('^admin/max_stock/login/', stock_users.userLogin),
     url('^admin/max_stock/user_list/', stock_users.user_list),
