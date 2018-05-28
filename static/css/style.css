@@ -1,0 +1,215 @@
+html,body,.wrapper {height: 100%}
+body,ul{margin: 0;padding: 0;}
+.clearfix { *zoom: 1;}
+.clearfix:after{ content: ""; display: block; height: 0; visibility:hidden; clear: both;}
+#header{ width: 100%; min-width: 980px; height: 6%; min-height: 40px;margin: 0 auto; background: #101010;}
+.a-logout {
+    position: absolute;
+    display: inline-block;
+    color: white;
+    float: right;
+    right: 16px;
+    top: 9px;
+}
+#header h3 {
+	color: white;
+    margin: 0;
+    line-height: 20px;
+    padding: 10px;
+}
+.ul-name-list li {
+	list-style: none;
+	display: inline;
+	color: white;
+    font-size: 16px;
+	line-height: 38px;
+	padding: 0 10px 0 10px;
+	cursor: pointer;
+}
+.ul-name-list li:hover,
+.ul-name-list li:active {
+	color: #b7b3b3;
+}
+
+.ul-name-list .checked {
+	color: #b7b3b3;
+}
+.ul-menu li {
+    list-style: none;
+    display: block;
+    border: 1px solid #b7b3b3;
+    border-right: none;
+    color: #252222;
+    box-shadow: 0 1px 0 #888888;
+    cursor: pointer;
+}
+.ul-menu li a {
+	display: block;
+    text-decoration: none;
+    color: #252222;
+    text-align: center;
+    padding: 9px;
+}
+.ul-menu li a:hover {
+	background-color: #3e3838;
+	color: white;
+}
+
+.ul-menu .checked a {
+	background-color: #3e3838;
+	color: white;
+}
+.con-head {
+	border-bottom: 1px solid #888888;
+    padding: 0 16px 19px 16px;
+}
+.text-box {
+	float: left;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.text-box input {
+    font-size: 16px;
+	line-height: 23px;
+}
+.text-box select {
+    font-size: 16px;
+    padding: 3.8px 23px 3.8px 8px;
+}
+.text-box-btn input {
+    font-size: 16px;
+	padding: 3px;
+}
+.con-head-right {
+	float: right;
+    margin-bottom: 1px;
+}
+.con-head-right .btn {
+	display: inline-block;
+	
+}
+
+.login {
+    width: 300px;
+    padding: 23px;
+    margin: 9% auto;
+    box-shadow: 1px 2px 3px #676869;
+}
+.btn button,
+.btn .fun-btn {
+    border: 0;
+    color: white;
+    border-radius: 4px;
+    padding: 2px 5px 2px 5px;
+    cursor: pointer;
+    box-shadow: 0px 1px 1px #888888;
+}
+#btn_login {
+    background-color: #4c4949;
+    margin-top: 20px;
+    margin-left: 120px;
+    padding: 5px;
+}
+.btn-green button {
+	background: -webkit-linear-gradient(top, #a29c9c, #252222);
+	background: -webkit-gradient(linear, left top, left bottom, from(#a29c9c), to(#252222));
+}
+.btn-blue button {
+	background: -webkit-linear-gradient(top, #a29c9c, #252222);
+	background: -webkit-gradient(linear, left top, left bottom, from(#252222), to(#a29c9c));
+}
+#datas {
+    width: 100%;
+	text-align: center;
+    padding: 20px 0 20px 0;
+}
+
+#tr-head {background: #9090f0;}
+#tr-head th {
+	height: 36px;
+}
+
+.tb-datas tr:nth-child(odd){background: white;}
+
+.fun-btn {
+    display: inline-block;
+    text-decoration: none;
+    padding: 0 5px 0 5px;
+    color: white;
+    border-radius: 5px;
+}
+.btn-edit {
+	background-color: #9090f0;
+}
+.btn-del {
+	background-color: #3e3838;
+}
+.wrap-paper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+    z-index: 999;
+}
+.save-threshold,.save_user {
+    position: absolute;
+    z-index: 1000;
+    width: 423px;
+    background-color: #f7f2f2;
+    box-shadow: 1px 2px 8px #412e2e;
+    padding: 20px;
+    border-radius: 5px;
+    top: 18%;
+    left: 35%;
+}
+
+.lab-post-param {
+	display: block;
+	margin: 20px 0 20px 31px;
+}
+
+#btn-threshold {
+    display: block;
+    margin: 0 auto;
+}
+.hide {
+	display: none;
+}
+.show {
+	display: block;
+}
+.btn-close {
+    display: block;
+    width: 10px;
+    height: 10px;
+    padding: 11px;
+    cursor: pointer;
+    position: absolute;
+    top: -5px;
+    right: 1px;
+}
+.tr-blue1 td:nth-child(3){
+    background-color: #769e31;
+}
+.tr-blue1 td:nth-child(4){
+    background-color: #db5461;
+}
+#import_modal {
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    padding: 9px;
+    box-shadow: 1px 2px 8px #412e2e;
+    top: 99px;
+    left: 42%;
+}
+#body{ width: 100%; min-width: 980px; height: 94%; margin: 0 auto;}
+#aside{ float: left; width: 22.8%; height: 100%; background: #f7f2f2;}
+#main{ float: right; width: 77%; background: #f7f2f2;}
+/*#footer{ width: 100%; min-width: 980px; height: 90px; margin: 0 auto; background: #08f;}*/
+.clear {
+	clear: both;
+}
