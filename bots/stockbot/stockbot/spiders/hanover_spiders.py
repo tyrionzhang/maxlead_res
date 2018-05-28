@@ -9,11 +9,20 @@ from django.core.mail import send_mail
 
 class HanoverSpider(scrapy.Spider):
     name = "hanover_spider"
-
     start_urls = [
         'http://www.telescoassoc.com/prod/hnv/transform.aspx?_h=go&_md=vwInventory&_tpl=vwInventoryList.xsl&_gt=-1&_gs=20&rhash=5adab926c2b523c494&_ha=gmv&spiders=myspiders',
         'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}'
     ]
+    sku_list = []
+
+    def __init__(self):
+        super(HanoverSpider, self).__init__()
+        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'userSkus_txt.txt')
+        with open(file_path, "r") as f:
+            sku_list = f.read()
+            f.close()
+        if sku_list:
+            self.sku_list = eval(sku_list)
 
     def parse(self, response):
         type = response.url[-9:]

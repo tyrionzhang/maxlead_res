@@ -2,11 +2,25 @@ import os,sched
 from datetime import *
 import time
 from maxlead import settings
+from max_stock.models import SkuUsers
 from django.http import HttpResponse
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
 schedule = sched.scheduler(time.time, time.sleep)
+
+def _set_user_sku():
+    sku_list = []
+    user_skus = SkuUsers.objects.filter().all()
+    if user_skus:
+        for val in user_skus:
+            sku_list.append(val.sku)
+        file_path = os.path.join(settings.BASE_DIR, settings.THRESHOLD_TXT, 'userSkus_txt.txt')
+        with open(file_path, "w+") as f:
+            sku_list = str(sku_list)
+            f.write(sku_list)
+            f.close()
+    return True
 
 def perform_command():
     # 安排inc秒后再次运行自己，即周期运行
@@ -25,6 +39,7 @@ def perform_command():
 def stock_spiders(request):
     schedule.enter(60, 0, perform_command)
     # 持续运行，直到计划时间队列变成空为止
+    _set_user_sku()
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
     return HttpResponse(request, 'Spiders is runing!Time:%s' % datetime.now())

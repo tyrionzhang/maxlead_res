@@ -9,6 +9,16 @@ from django.core.mail import send_mail
 
 class TwuSpider(scrapy.Spider):
     name = "twu_spider"
+    sku_list = []
+
+    def __init__(self):
+        super(TwuSpider, self).__init__()
+        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'userSkus_txt.txt')
+        with open(file_path, "r") as f:
+            sku_list = f.read()
+            f.close()
+        if sku_list:
+            self.sku_list = eval(sku_list)
 
     def start_requests(self):
         return [Request("http://www.thewarehouseusadata.com/maxlead/inventory.php", meta={'cookiejar': 1}, callback=self.post_login)]
