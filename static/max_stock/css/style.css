@@ -3,6 +3,14 @@ body,ul{margin: 0;padding: 0;}
 .clearfix { *zoom: 1;}
 .clearfix:after{ content: ""; display: block; height: 0; visibility:hidden; clear: both;}
 #header{ width: 100%; min-width: 980px; height: 6%; min-height: 40px;margin: 0 auto; background: #101010;}
+.a-logout {
+    position: absolute;
+    display: inline-block;
+    color: white;
+    float: right;
+    right: 16px;
+    top: 9px;
+}
 #header h3 {
 	color: white;
     margin: 0;
@@ -146,7 +154,7 @@ body,ul{margin: 0;padding: 0;}
     opacity: 0.5;
     z-index: 999;
 }
-.save-threshold {
+.save-threshold,.save_user {
     position: absolute;
     z-index: 1000;
     width: 423px;

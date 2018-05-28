@@ -75,7 +75,7 @@ def user_save(request):
             update_fields = ['username', 'email']
             user = User()
             user.username = username
-            if not password:
+            if password:
                 user.set_password(password)
                 update_fields.append('password')
             user.email = request.POST.get('email', '')
@@ -115,3 +115,7 @@ def users_del(request):
         res = user_obj.delete()
         if res:
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}), content_type='application/json')
+
+def logout(self):
+    auth.logout(self)
+    return HttpResponseRedirect("/admin/max_stock/login/")

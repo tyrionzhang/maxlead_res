@@ -22,7 +22,8 @@
 				<li>Wa</li>
 				<li>Ego</li>
 			</ul> -->
-			<h3>Welcome,{{ user.user.username }}!</h3>
+			<h3>Welcome,<a href="javascript:;" style="text-decoration: none;color: white;" id="user_info">{{ user.user.username }}</a>!</h3>
+            <a href="/admin/max_stock/logout/" class="a-logout">Logout</a>
 		</div>
 		<div id="body" class="clearfix">
 			<div id="aside">
@@ -78,7 +79,73 @@
 			</div>
 		</form>
 	</div>
+    <div class="save_user hide" id="save_userinfo">
+		<form action="" id="form_userinfo">
+			<span class="btn-close">x</span>
+			<h2 style="margin: 0 0px 0 164px;">用户数据</h2>
+			<label class="lab-post-param">
+				<span>Username:</span>
+				<input type="text" name="username_info">
+			</label>
+            <label class="lab-post-param">
+				<span>Password:</span>
+				<input type="password" name="password_info">
+			</label>
+            <label class="lab-post-param">
+				<span>Email:</span>
+				<input type="text" name="email_info">
+			</label>
+            <input type="hidden" name="id_info" value="{{ user.user.id }}">
+			<div>
+				<input type="submit" value="Save" id="btn_user_info">
+			</div>
+		</form>
+    </div>
+        <script>
+            $(document).ready(function(){
+                $('#user_info').on('click',function () {
+                    $('.wrap-paper').removeClass('hide');
+                    $('#save_userinfo').removeClass('hide');
+                    $('#form_userinfo')[0].reset();
 
+                    var username = '{{ user.user.username }}';
+                    var email = '{{ user.user.email }}';
+                    var id = {{ user.user.id }};
+                    $('input[name="username_info"]').val(username);
+                    $('input[name="email_info"]').val(email);
+                });
+
+                $('body').on('click','.wrap-paper' , function(){
+                    $('.wrap-paper').addClass('hide');
+                    $('#save_userinfo').addClass('hide');
+                });
+
+               $('#btn_user_info').on('click',function () {
+                    var id = $('input[name="id_info"]').val();
+                    var data = {
+                      'username':$('input[name="username_info"]').val(),
+                      'password':$('input[name="password_info"]').val(),
+                      'email':$('input[name="email_info"]').val(),
+                      'id':id
+                    };
+                    if (!id){
+                        $(this).attr("disabled", true);
+                    }
+                    $.post('/admin/max_stock/user_save/',data,function (re) {
+                       if(re.code==0 || re.code==1){
+                           alert(re.msg);
+                           if(re.code==1){
+                               window.location.reload();
+                           }
+                       }
+                       if(re.code==66){
+                           window.location.href='/admin/max_stock/login/';
+                       }
+                    },'json');
+                    return false;
+                });
+            });
+        </script>
 </body>
 </html>
 <!-- footer.php END -->

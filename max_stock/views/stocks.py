@@ -51,24 +51,23 @@ def stock_checked(request):
         if res:
             for val in res:
                 re1 = {}
-                re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse']).get()
-                is_same = ''
-                if not re.qty == val['qty']:
-                    is_same = 1
-                re1.update({
-                    'id':re.id,
-                    'sku':val['sku'],
-                    'warehouse':val['warehouse'],
-                    'qty_old':re.qty,
-                    'qty_new':val['qty'],
-                    'is_same':is_same,
-                })
-                data.append(re1)
-                cover_data += str(re1)+"|"
+                re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'])
+                if re:
+                    is_same = ''
+                    if not re[0].qty == val['qty']:
+                        is_same = 1
+                    re1.update({
+                        'id':re[0].id,
+                        'sku':val['sku'],
+                        'warehouse':val['warehouse'],
+                        'qty_old':re[0].qty,
+                        'qty_new':val['qty'],
+                        'is_same':is_same,
+                    })
+                    data.append(re1)
             os.remove(file_path)
     data = {
         'data':data,
-        'cover_data':cover_data,
         'user': user,
         'title': 'Inventory-Check',
     }
