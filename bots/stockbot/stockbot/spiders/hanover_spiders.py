@@ -4,7 +4,7 @@ from selenium import webdriver
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
-from max_stock.models import WarehouseStocks,Thresholds
+from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
 from django.core.mail import send_mail
 
 class HanoverSpider(scrapy.Spider):
@@ -65,8 +65,11 @@ class HanoverSpider(scrapy.Spider):
                     yield item
 
                     threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
+                    user = SkuUsers.objects.filter(sku=item['sku'])
                     if threshold and threshold[0].threshold >= int(item['qty']):
-                        msg_str2 += 'SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n' % (item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                        if user:
+                            msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % ( user[0].user.email,
+                                                    item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
             driver.quit()
         else:
             msg_str1 = 'complete\n'
@@ -119,8 +122,11 @@ class HanoverSpider(scrapy.Spider):
                         item['qty'] = 0
                     yield item
                     threshold = Thresholds.objects.filter(sku=item['sku'],warehouse=item['warehouse'])
+                    user = SkuUsers.objects.filter(sku=item['sku'])
                     if threshold and threshold[0].threshold >= int(item['qty']):
-                        msg_str2 += 'SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n' % (item['sku'],item['warehouse'],item['qty'],threshold[0].threshold)
+                        if user:
+                            msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
+                                                    item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
             driver.quit()
 
         if not os.path.isfile(file_path):
@@ -139,10 +145,25 @@ class HanoverSpider(scrapy.Spider):
             msg1 = f.readline()
             msg2 = f.readline()
             if msg1 == 'complete\n' and msg2 == 'complete\n':
-                send_msg = f.read()
-                subject = 'Maxlead库存预警'
-                from_email = max_settings.EMAIL_HOST_USER
-                send_mail(subject, send_msg, from_email, ['469810717@qq.com'], fail_silently=False)
+                msg_line = f.read()
+                if msg_line:
+                    msg_line = msg_line.split('|')
+                    msg_line.pop()
+
+                    msg = {}
+                    for i, val in enumerate(msg_line, 1):
+                        val = val.split('=>')
+                        msg_res_str = val[1]
+                        for n, v in enumerate(msg_line, 1):
+                            v = v.split('=>')
+                            if not n == i and val[0] == v[0]:
+                                msg_res_str += v[1]
+                        msg.update({val[0]: msg_res_str})
+                    for key in msg:
+                        subject = 'Maxlead库存预警'
+                        from_email = max_settings.EMAIL_HOST_USER
+                        send_mail(subject, msg[key], from_email, [key], fail_silently=False)
+
                 f.close()
                 os.remove(file_path)
 
