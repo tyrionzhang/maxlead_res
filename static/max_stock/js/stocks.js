@@ -79,8 +79,8 @@ $(document).ready(function(){
 		$('.wrap-paper').addClass('hide');
 		$('.save-threshold').addClass('hide');
 	});
-	$('.btn-close').on('click', function(){
+	$('body').on('click', '.btn-close', function(){
 		$('.wrap-paper').addClass('hide');
-		$('.save-threshold').addClass('hide');
+		$('.save-block-info').addClass('hide');
 	});
 });
