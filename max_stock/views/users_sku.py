@@ -18,6 +18,10 @@ def sku_list(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords', '')
     res = SkuUsers.objects.all()
+    if not user.user.is_superuser:
+        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
+        if skus:
+            res = res.filter(sku__in=skus)
     if keywords:
         res = res.filter(Q(sku__contains=keywords) | Q(user__username__contains=keywords))
     user_list = User.objects.filter(userprofile__role=99)

@@ -61,6 +61,7 @@ def user_save(request):
             user_file.id = user.userprofile.id
             user_file.user_id = user.id
             user_file.role = 99
+            user_file.state = 1
             user_file.save()
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}),
                                 content_type='application/json')

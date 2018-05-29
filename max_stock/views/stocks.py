@@ -4,7 +4,7 @@ from django.contrib import auth
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from max_stock.models import WarehouseStocks,Thresholds
+from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
 from maxlead_site.common.excel_world import read_excel_file1,read_excel_data,get_excel_file
 from maxlead_site.views.app import App
 from maxlead import settings
@@ -17,11 +17,19 @@ def index(request):
     keywords = request.GET.get('keywords','')
     warehouse = request.GET.get('warehouse','')
     stocks = WarehouseStocks.objects.all()
+    if not user.user.is_superuser:
+        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
+        if skus:
+            stocks = stocks.filter(sku__in=skus)
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
     if warehouse:
         stocks = stocks.filter(warehouse=warehouse)
     for val in stocks:
+        val.is_same = 0
+        threshold_obj = Thresholds.objects.filter(sku=val.sku,warehouse=val.warehouse)
+        if threshold_obj and threshold_obj[0].threshold >= val.qty:
+            val.is_same = 1
         val.created = val.created.strftime("%Y-%m-%d %H:%M:%S")
 
     data = {
@@ -117,6 +125,10 @@ def export_stocks(request):
     keywords = request.GET.get('keywords', '')
     warehouse = request.GET.get('warehouse', '')
     stocks = WarehouseStocks.objects.all()
+    if not user.user.is_superuser:
+        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
+        if skus:
+            stocks = stocks.filter(sku__in=skus)
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
     if warehouse:
@@ -147,6 +159,10 @@ def threshold(request):
     sku = request.GET.get('keywords','')
     warehouse = request.GET.get('warehouse','')
     list = Thresholds.objects.all()
+    if not user.user.is_superuser:
+        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
+        if skus:
+            list = list.filter(sku__in=skus)
     if sku:
         list = list.filter(sku__contains=sku)
     if warehouse:

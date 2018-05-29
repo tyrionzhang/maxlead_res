@@ -49,7 +49,7 @@
                     <th>Date</th>
                 </tr>
                 {% for val in stock_list %}
-                <tr>
+                <tr class="tr-stock-blue{{ val.is_same }}">
                     <td>{{ val.sku }}</td>
                     <td>{{ val.warehouse }}</td>
                     <td>{{ val.qty }}</td>
@@ -69,7 +69,7 @@
     </div>
     <script>
         $(document).ready(function(){
-          $('input[name="keywords"]').val('{{ keywords }}');
+          $('input[name="keywords"]').val("{{ keywords }}");
           $('select[name="warehouse"]').val('{{ warehouse }}');
           $("form[name='userLogin']").submit(function(e){
             e.preventDefault();

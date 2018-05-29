@@ -34,7 +34,9 @@
 					<ul class="ul-menu">
 						<li id="reviews"><a href="/admin/max_stock/index/">Review Data</a></li>
 						<li id="thresholds"><a href="/admin/max_stock/threshold/">Threshold</a></li>
+                        {% if user.user.is_superuser %}
 						<li id="user_admin"><a href="/admin/max_stock/user_list/">UserAdmin</a></li>
+                        {% endif %}
 						<li id="users_sku"><a href="/admin/max_stock/users_sku/">UsersSku</a></li>
 					</ul>
 				</div>

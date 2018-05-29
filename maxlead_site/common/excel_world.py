@@ -133,6 +133,7 @@ def read_excel_file(res,type=None):
                     user_file = UserProfile()
                     user_file.id = user.userprofile.id
                     user_file.role = 99
+                    user_file.state = 1
                     user_file.save(update_fields=['role'])
                 else:
                     if table.cell_value(i + 1, 4, ):
