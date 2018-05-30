@@ -26,6 +26,7 @@ def perform_command():
     # 安排inc秒后再次运行自己，即周期运行
     spiders_time = settings.STOCHS_TIME
     schedule.enter(spiders_time, 0, perform_command)
+    _set_user_sku()
 
     work_path = settings.STOCHS_SPIDER_URL
     os.chdir(work_path)
@@ -39,7 +40,6 @@ def perform_command():
 def stock_spiders(request):
     schedule.enter(60, 0, perform_command)
     # 持续运行，直到计划时间队列变成空为止
-    _set_user_sku()
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
     return HttpResponse(request, 'Spiders is runing!Time:%s' % datetime.now())
