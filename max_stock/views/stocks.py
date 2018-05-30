@@ -8,6 +8,7 @@ from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
 from maxlead_site.common.excel_world import read_excel_file1,read_excel_data,get_excel_file
 from maxlead_site.views.app import App
 from maxlead import settings
+from max_stock.views import views
 
 @csrf_exempt
 def index(request):
@@ -47,7 +48,6 @@ def stock_checked(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     data = []
-    cover_data = ''
     if request.method == 'POST':
         myfile = request.FILES.get('myfile','')
         file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
@@ -92,8 +92,15 @@ def checked_edit(request):
         res = WarehouseStocks.objects.filter(id=id)
         if not res:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not found!'}), content_type='application/json')
+        old_qty = res[0].qty
         i = res.update(qty=qty)
         if i:
+            data = {
+                'user':user.user,
+                'fun':request.path,
+                'description':'Sku:%s,QTY for %s to %s.' % (res[0].sku,old_qty,qty),
+            }
+            views.save_logs(data)
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}), content_type='application/json')
 
 @csrf_exempt
@@ -114,6 +121,12 @@ def checked_batch_edit(request):
                 except:
                     msg += "第%s行修改有误！\n" % i
                     continue
+            data = {
+                'user': user.user,
+                'fun': request.path,
+                'description': 'User:%s, all covered' % user.user.username,
+            }
+            views.save_logs(data)
 
         return HttpResponse(json.dumps({'code': 1, 'msg': msg}), content_type='application/json')
 

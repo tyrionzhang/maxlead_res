@@ -27,3 +27,12 @@ class SkuUsers(models.Model):
 
     class Meta:
         db_table = 'sku_users'
+
+class StockLogs(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    fun = models.CharField('Sku',max_length=225)
+    description = models.TextField('Description')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'stock_logs'

@@ -114,5 +114,6 @@ urlpatterns = [
     url('^admin/max_stock/save_sku/', skus.save_sku),
     url('^admin/max_stock/import_sku/', skus.import_sku),
     url('^admin/max_stock/del_sku/', skus.del_sku),
+    url('^admin/max_stock/logs/', skus.logs),
 ]
 

@@ -2,7 +2,7 @@ import os,sched
 from datetime import *
 import time
 from maxlead import settings
-from max_stock.models import SkuUsers
+from max_stock.models import SkuUsers,StockLogs
 from django.http import HttpResponse
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
@@ -43,3 +43,12 @@ def stock_spiders(request):
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
     return HttpResponse(request, 'Spiders is runing!Time:%s' % datetime.now())
+
+def save_logs(data):
+    logs = StockLogs()
+    logs.id
+    logs.user = data['user']
+    logs.fun = data['fun']
+    logs.description = data['description']
+    res = logs.save()
+    return True

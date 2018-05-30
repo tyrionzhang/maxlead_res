@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.db.models import Q
 from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
-from max_stock.models import SkuUsers
+from max_stock.models import SkuUsers,StockLogs
 from maxlead_site.common.excel_world import read_excel_file1
 from maxlead import settings
 
@@ -84,3 +84,19 @@ def del_sku(request):
         res = sku_obj.delete()
         if res:
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}), content_type='application/json')
+
+@csrf_exempt
+def logs(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+    keywords = request.GET.get('keywords', '')
+    res = StockLogs.objects.all()
+    if keywords:
+        res = res.filter(Q(fun__contains=keywords)|Q(user__username__contains=keywords)|Q(description__contains=keywords))
+    data = {
+        'data': res,
+        'title': "Logs",
+        'user': user,
+    }
+    return render(request, "Stocks/users_sku/logs.html", data)
