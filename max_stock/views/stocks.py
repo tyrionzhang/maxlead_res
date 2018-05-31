@@ -20,8 +20,7 @@ def index(request):
     stocks = WarehouseStocks.objects.all()
     if not user.user.is_superuser:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
-        if skus:
-            stocks = stocks.filter(sku__in=skus)
+        stocks = stocks.filter(sku__in=skus)
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
     if warehouse:
