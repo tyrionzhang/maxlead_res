@@ -214,6 +214,8 @@ class Dashboard:
         user = App.get_user_info(self)
         if not user:
             return HttpResponseRedirect("/admin/maxlead_site/login/")
+        if not user.role == 99:
+            return HttpResponseRedirect("/admin/max_stock/index/")
         viewRange = self.GET.get('viewRange',user.user.id)
 
         if viewRange:
