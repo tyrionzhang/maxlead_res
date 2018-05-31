@@ -88,8 +88,9 @@ urlpatterns = [
     url(r'^admin/maxlead_site/ajax_get_miner_data/', Miner.ajax_get_miner_data),
     url(r'^admin/maxlead_site/ajax_get_task_data/', Miner.ajax_get_task_data),
     url(r'^admin/maxlead_site/delete_task_data/', Miner.delete_task_data),
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', Dashboard.index),
     url('^$', Dashboard.index),
+    url('^admin/maxlead_site/', Dashboard.index),
     url('^admin/maxlead_site/export_users/', max_views.export_users),
 
     # urls of max_stock
@@ -101,6 +102,7 @@ urlpatterns = [
     url('^admin/max_stock/users_del/', stock_users.users_del),
     url('^admin/max_stock/logout/', stock_users.logout),
     url('^admin/max_stock/index/', stocks.index),
+    url('^admin/max_stock/', stocks.index),
     url('^admin/max_stock/stock_checked/', stocks.stock_checked),
     url('^admin/max_stock/checked_edit/', stocks.checked_edit),
     url('^admin/max_stock/checked_batch_edit/', stocks.checked_batch_edit),
