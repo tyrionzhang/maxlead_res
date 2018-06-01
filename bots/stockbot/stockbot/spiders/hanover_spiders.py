@@ -50,7 +50,6 @@ class HanoverSpider(scrapy.Spider):
             btn_login[0].click()
             res = driver.find_elements_by_css_selector('#ViewManyListTable tr')
             res.pop(0)
-            WarehouseStocks.objects.filter(warehouse='Hanover').delete()
             for val in res:
                 item = WarehouseStocksItem()
                 td_re = val.find_elements_by_tag_name('td')
@@ -58,6 +57,7 @@ class HanoverSpider(scrapy.Spider):
                     item['sku'] = td_re[0].text
                     if item['sku'] in self.sku_list:
                         item['warehouse'] = 'Hanover'
+                        item['is_new'] = 1
                         if td_re[2].text and not td_re[2].text == ' ':
                             item['qty'] = td_re[2].text
                             item['qty'] = item['qty'].replace(',','')
@@ -109,7 +109,6 @@ class HanoverSpider(scrapy.Spider):
             res.pop(1)
             res.pop(0)
             res.pop()
-            WarehouseStocks.objects.filter(warehouse='EXL').delete()
             for val in res:
                 item = WarehouseStocksItem()
                 tds = val.find_elements_by_tag_name('td')

@@ -15,6 +15,7 @@ class WarehouseStocks(models.Model):
     sku = models.CharField('Sku',max_length=225)
     warehouse = models.CharField('Warehouse', max_length=225)
     qty = models.IntegerField('Qty', default=0)
+    is_new = models.IntegerField('Is New', default=1)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:

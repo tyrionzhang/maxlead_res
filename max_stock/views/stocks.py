@@ -49,6 +49,7 @@ def stock_checked(request):
     data = []
     if request.method == 'POST':
         myfile = request.FILES.get('myfile','')
+        type = request.POST.get('type','')
         file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
         f = open(file_path, 'wb')
         for chunk in myfile.chunks():
@@ -59,25 +60,34 @@ def stock_checked(request):
             for val in res:
                 re1 = {}
                 re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'])
+                is_same = ''
                 if re:
-                    is_same = ''
                     if not re[0].qty == val['qty']:
                         is_same = 1
-                    re1.update({
-                        'id':re[0].id,
-                        'sku':val['sku'],
-                        'warehouse':val['warehouse'],
-                        'qty_old':re[0].qty,
-                        'qty_new':val['qty'],
-                        'is_same':is_same,
-                    })
-                    data.append(re1)
+                    id = re[0].id
+                    qty_old = re[0].qty
+                else:
+                    id = 0
+                    qty_old = 0
+                    is_same = 1
+                re1.update({
+                    'id':id,
+                    'sku':val['sku'],
+                    'warehouse':val['warehouse'],
+                    'qty_old':qty_old,
+                    'qty_new':val['qty'],
+                    'is_same':is_same,
+                })
+                if type == 'new':
+                    re1.update({'type':type})
+                data.append(re1)
             os.remove(file_path)
-    data = {
-        'data':data,
-        'user': user,
-        'title': 'Inventory-Check',
-    }
+        data = {
+            'data':data,
+            'user': user,
+            'title': 'Inventory-Check',
+            'type': type,
+        }
     return render(request, "Stocks/stocks/stock_checked.html", data)
 
 @csrf_exempt
@@ -86,21 +96,46 @@ def checked_edit(request):
     if not user:
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
-        id = request.POST.get('id','')
+        id = int(request.POST.get('id',''))
         qty = request.POST.get('qty','')
-        res = WarehouseStocks.objects.filter(id=id)
-        if not res:
-            return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not found!'}), content_type='application/json')
-        old_qty = res[0].qty
-        i = res.update(qty=qty)
-        if i:
-            data = {
-                'user':user.user,
-                'fun':request.path,
-                'description':'Sku:%s,QTY for %s to %s.' % (res[0].sku,old_qty,qty),
-            }
-            views.save_logs(data)
-            return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}), content_type='application/json')
+        sku = request.POST.get('sku','')
+        warehouse = request.POST.get('warehouse','')
+        type = request.POST.get('type','')
+        if id:
+            res = WarehouseStocks.objects.filter(id=id)
+            if not res:
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not found!'}), content_type='application/json')
+        if type == 'new':
+            if id:
+                i = res.update(qty=qty)
+            else:
+                obj = WarehouseStocks()
+                obj.id
+                obj.sku = sku
+                obj.warehouse = warehouse
+                obj.qty = qty
+                obj.is_new = 0
+                obj.save()
+                i = obj.id
+            if i:
+                data = {
+                    'user': user.user,
+                    'fun': request.path,
+                    'description': 'Sku:%s,QTY covered %s.' % (res[0].sku, qty),
+                }
+            re_qty = qty
+        else:
+            qtys = res[0].qty-int(qty)
+            i = res.update(qty=qtys)
+            if i:
+                data = {
+                    'user':user.user,
+                    'fun':request.path,
+                    'description':'Sku:%s,QTY lower %s.' % (res[0].sku,qty),
+                }
+            re_qty = qtys
+        views.save_logs(data)
+        return HttpResponse(json.dumps({'code': 1, 'data': re_qty}), content_type='application/json')
 
 @csrf_exempt
 def checked_batch_edit(request):
@@ -116,16 +151,18 @@ def checked_batch_edit(request):
                 try:
                     re = WarehouseStocks.objects.filter(id=val['id'])
                     if re:
-                        re.update(qty=val['qty_new'])
+                        qtys = re[0].qty - val['qty_new']
+                        i = re.update(qty=qtys)
+                        if i:
+                            data = {
+                                'user': user.user,
+                                'fun': request.path,
+                                'description': 'Sku:%s,QTY lower %s.' % (re[0].sku, val['qty_new']),
+                            }
+                            views.save_logs(data)
                 except:
                     msg += "第%s行修改有误！\n" % i
                     continue
-            data = {
-                'user': user.user,
-                'fun': request.path,
-                'description': 'User:%s, all covered' % user.user.username,
-            }
-            views.save_logs(data)
 
         return HttpResponse(json.dumps({'code': 1, 'msg': msg}), content_type='application/json')
 
@@ -284,3 +321,50 @@ def threshold_import(request):
         res = read_excel_file1(Thresholds,file_path,'stock_thresholds')
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
+
+@csrf_exempt
+def check_new(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        data = request.POST.get('data','')
+        if data:
+            data = eval(data)
+            for val in data:
+                try:
+                    obj = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=1)
+                    if obj:
+                        obj.delete()
+                except:
+                    continue
+                return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfuly!'}),content_type='application/json')
+
+@csrf_exempt
+def check_all_new(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        data = request.POST.get('data','')
+        if data:
+            data = eval(data)
+            querylist = []
+            for val in data:
+                try:
+                    obj = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=0)
+                    if obj:
+                        i = obj.update(qty=val['qty'])
+                    else:
+                        querylist.append(WarehouseStocks(sku=val['sku'],warehouse=val['warehouse'],qty=val['qty'],is_new=0))
+                    data_log = {
+                        'user': user.user,
+                        'fun': request.path,
+                        'description': 'Sku:%s,QTY covered %s.' % (val['sku'], val['qty']),
+                    }
+                    views.save_logs(data_log)
+                except:
+                    continue
+            if querylist:
+                WarehouseStocks.objects.bulk_create(querylist)
+            return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfuly!'}),content_type='application/json')

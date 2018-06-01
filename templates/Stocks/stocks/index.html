@@ -30,6 +30,11 @@
                     </label>
                 </div>
             </form>
+            <div class="con-head-left">
+                <div class="btn btn-blue">
+                    <button id="inventory_import">Inventory Import</button>
+                </div>
+            </div>
             <div class="con-head-right">
                 <div class="btn btn-green">
                     <button id="btn_export_stocks">Export</button>
@@ -77,6 +82,11 @@
           $('#import_index').on('click',function () {
                 $('.wrap-paper').removeClass('hide');
                 $('#import_modal').removeClass('hide');
+            });
+          $('#inventory_import').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#import_modal').removeClass('hide');
+                $('#import_form').append('<input type="hidden" name="type" value="new">');
             });
             $('body').on('click','.wrap-paper' , function(){
                 $('.wrap-paper').addClass('hide');

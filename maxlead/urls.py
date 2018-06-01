@@ -112,6 +112,8 @@ urlpatterns = [
     url('^admin/max_stock/get_threshold/', stocks.get_threshold),
     url('^admin/max_stock/threshold_del/', stocks.threshold_del),
     url('^admin/max_stock/threshold_import/', stocks.threshold_import),
+    url('^admin/max_stock/check_new/', stocks.check_new),
+    url('^admin/max_stock/check_all_new/', stocks.check_all_new),
     url('^admin/max_stock/users_sku/', skus.sku_list),
     url('^admin/max_stock/save_sku/', skus.save_sku),
     url('^admin/max_stock/import_sku/', skus.import_sku),

@@ -84,6 +84,11 @@ body,ul{margin: 0;padding: 0;}
 	float: right;
     margin-bottom: 1px;
 }
+.con-head-left {
+    position: absolute;
+	float: left;
+    margin-bottom: 1px;
+}
 .con-head-right .btn {
 	display: inline-block;
 	

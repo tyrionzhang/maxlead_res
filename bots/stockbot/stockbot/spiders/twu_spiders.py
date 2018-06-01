@@ -52,7 +52,6 @@ class TwuSpider(scrapy.Spider):
             res.pop(1)
             res.pop(0)
             fields.pop(0)
-            WarehouseStocks.objects.filter(warehouse='TWU').delete()
             msg_str1 = 'complete\n'
             msg_str2 = ''
             file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
@@ -63,6 +62,7 @@ class TwuSpider(scrapy.Spider):
                     item['sku'] = items[0]
                     if item['sku'] in self.sku_list:
                         item['warehouse'] = 'TWU'
+                        item['is_new'] = 1
                         if items[11] and not items[11] == ' ':
                             item['qty'] = items[11]
                             item['qty'] = item['qty'].replace(',', '')

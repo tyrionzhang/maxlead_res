@@ -289,7 +289,10 @@ def read_excel_data(model,res):
                         if val.get_internal_type() == 'DateField':
                             re_val = datetime.datetime.now().strftime("%Y-%m-%d")
                         if val.get_internal_type() == 'IntegerField':
-                            re_val = int(table.cell_value(i + 1, n - 1, ))
+                            if not re_val:
+                                re_val = val.default
+                            else:
+                                re_val = int(re_val)
                         re_v.update({val.name:re_val})
                 re_data.append(re_v)
     return re_data

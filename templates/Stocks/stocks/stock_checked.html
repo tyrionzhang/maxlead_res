@@ -32,7 +32,7 @@
 {#            </form>#}
             <div class="con-head-right">
                 <div class="btn btn-blue">
-                    <button id="all_covered">All covered</button>
+                    <button id="all_covered{{ type }}">{% if not type == 'new' %}All covered{% endif %}</button>
                 </div>
             </div>
             <div class="clear"></div>
@@ -47,19 +47,25 @@
                     <th>Fun</th>
                 </tr>
                 {% for val in data %}
-                <tr class="tr-blue{{ val.is_same }}">
+                <tr class="tr-blue{{ val.is_same }} tr_covered">
                     <td>{{ val.sku }}</td>
                     <td>{{ val.warehouse }}</td>
                     <td>{{ val.qty_old }}</td>
                     <td>{{ val.qty_new }}</td>
                     <td>
-                        {% if val.is_same == 1 %}
-                        <a href="javascript:;" class="fun-btn btn-edit stock-check-edit" data-id="{{ val.id }}">Edit</a>
-                        {% endif %}
+                        <a href="javascript:;" class="fun-btn btn-edit stock-check-edit" data-id="{{ val.id }}">
+                            {% if type == 'new' %}
+                                Covered
+                            {% else %}
+                                Edit
+                            {% endif %}
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
-
+            {% if type == 'new' %}
+                <tr><td colspan="5" style="text-align: left"><a href="javascript:;" class="fun-btn btn-edit all_save">All save</a></td></tr>
+            {% endif %}
             </table>
         </div>
     </div>
@@ -70,17 +76,24 @@
             });
             $('.stock-check-edit').on('click', function () {
                 var elem = $(this);
+                var elem_tr = $(this).parents('tr');
                 var id = elem.data('id');
                 var qty = elem.parents('td').prev().html();
+                var sku = elem.parents('tr').children('td:eq(0)').html();
+                var warehouse = elem.parents('tr').children('td:eq(1)').html();
                 var data = {
                     'id':id,
-                    'qty':qty
+                    'sku':sku,
+                    'warehouse':warehouse,
+                    'qty':qty,
+                    'type':'{{ type }}'
                 };
                 $.post('/admin/max_stock/checked_edit/',data,function (re) {
                    if(re.code==1){
-                       elem.parents('tr').children('td:eq(2)').html(qty);
+                       elem.parents('tr').children('td:eq(2)').html(re.data);
                        elem.parents('tr').removeClass('tr-blue1');
                        elem.remove();
+                       elem_tr.removeClass('tr_covered');
                    }
                    if(re.code==0){
                        alert(re.msg);
@@ -93,7 +106,7 @@
             });
 
             $('#all_covered').on('click', function () {
-                if(confirm('确认全部覆盖？')){
+                if(confirm('确认全部修改？')){
                     var data = new Array();
                     {% for val in data %}
                         var re = {
@@ -120,6 +133,30 @@
                     },'json');
                     return false;
                 }
+            });
+
+            $('.all_save').on('click',function () {
+                var data = new Array()
+                $('.tr-blue1').each(function () {
+                    var re = {
+                        'sku': $(this).find('td:eq(0)').html(),
+                        'warehouse': $(this).find('td:eq(1)').html(),
+                        'qty': $(this).find('td:eq(3)').html()
+                    };
+                    data.push(re);
+                });
+                 $.post('/admin/max_stock/check_all_new/',{'data':JSON.stringify(data)},function(re){
+                    if (re.code == 1) {
+                        alert(re.msg);
+                        window.location.reload();
+                    }
+                    if (re.code == 0) {
+                        alert(re.msg);
+                    }
+                    if (re.code == 66) {
+                        window.location.href = '/admin/max_stock/login/';
+                    }
+                },'json');
             });
         });
     </script>
