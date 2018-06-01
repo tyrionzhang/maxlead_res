@@ -247,7 +247,7 @@ def read_excel_file1(model,res,model_name):
                         if n+1 == len(fields):
                             a = '%s'
                             a1 = "\'%s\'"
-                        if val.name == 'user':
+                        if val.name == 'user_id' or val.name == 'user':
                             user_obj = User.objects.filter(username=val_res)
                             if user_obj:
                                 val_res = user_obj[0].id
