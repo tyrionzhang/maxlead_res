@@ -38,7 +38,7 @@ def perform_command():
     os.chdir(settings.ROOT_PATH)
 
 def stock_spiders(request):
-    schedule.enter(60, 0, perform_command)
+    schedule.enter(46800, 0, perform_command)
     # 持续运行，直到计划时间队列变成空为止
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
