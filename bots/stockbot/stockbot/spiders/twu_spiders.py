@@ -90,7 +90,8 @@ class TwuSpider(scrapy.Spider):
             with open(file_path, "r") as f:
                 msg1 = f.readline()
                 msg2 = f.readline()
-                if msg1 == 'complete\n' and msg2 == 'complete\n':
+                msg3 = f.readline()
+                if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n':
                     msg_line = f.read()
                     if msg_line:
                         msg_line = msg_line.split('|')

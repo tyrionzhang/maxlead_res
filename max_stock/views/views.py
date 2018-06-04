@@ -31,10 +31,12 @@ def perform_command():
     work_path = settings.STOCHS_SPIDER_URL
     os.chdir(work_path)
     os.popen('scrapyd-deploy')
-    cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider'
     cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider'
-    os.popen(cmd_str1)
+    cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider'
+    cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider'
     os.popen(cmd_str2)
+    os.popen(cmd_str1)
+    os.popen(cmd_str3)
     os.chdir(settings.ROOT_PATH)
 
 def stock_spiders(request):
