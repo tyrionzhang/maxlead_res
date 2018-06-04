@@ -16,7 +16,7 @@ def sku_list(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
-    keywords = request.GET.get('keywords', '')
+    keywords = request.GET.get('keywords', '').replace('amp;','')
     res = SkuUsers.objects.all()
     if not user.user.is_superuser:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
@@ -40,7 +40,7 @@ def save_sku(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
         user_id = request.POST.get('user_id', '')
-        sku = request.POST.get('sku', '')
+        sku = request.POST.get('sku', '').replace('amp;','')
         if not user_id or not sku:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'user/sku is empty！'}), content_type='application/json')
         user_obj = User.objects.filter(id=user_id)
@@ -90,7 +90,7 @@ def logs(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
-    keywords = request.GET.get('keywords', '')
+    keywords = request.GET.get('keywords', '').replace('amp;','')
     res = StockLogs.objects.all()
     if keywords:
         res = res.filter(Q(fun__contains=keywords)|Q(user__username__contains=keywords)|Q(description__contains=keywords))

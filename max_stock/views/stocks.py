@@ -125,7 +125,7 @@ def checked_edit(request):
     if request.method == 'POST':
         id = int(request.POST.get('id',''))
         qty = request.POST.get('qty','')
-        sku = request.POST.get('sku','')
+        sku = request.POST.get('sku','').replace('amp;','')
         warehouse = request.POST.get('warehouse','')
         type = request.POST.get('type','')
         if id:
@@ -198,7 +198,7 @@ def export_stocks(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
-    keywords = request.GET.get('keywords', '')
+    keywords = request.GET.get('keywords', '').replace('amp;','')
     warehouse = request.GET.get('warehouse', '')
     stocks = WarehouseStocks.objects.all()
     if not user.user.is_superuser:
@@ -232,7 +232,7 @@ def threshold(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
-    sku = request.GET.get('keywords','')
+    sku = request.GET.get('keywords','').replace('amp;','')
     warehouse = request.GET.get('warehouse','')
     list = Thresholds.objects.all()
     if not user.user.is_superuser:
@@ -260,7 +260,7 @@ def threshold_add(request):
     if not user:
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
-        sku = request.POST.get('sku','')
+        sku = request.POST.get('sku','').replace('amp;','')
         warehouse = request.POST.get('warehouse','')
         threshold = request.POST.get('threshold',0)
         id = request.POST.get('id',0)
@@ -360,7 +360,7 @@ def check_new(request):
             data = eval(data)
             for val in data:
                 try:
-                    obj = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=1)
+                    obj = WarehouseStocks.objects.filter(sku=val['sku'].replace('amp;',''),warehouse=val['warehouse'],is_new=1)
                     if obj:
                         obj.delete()
                 except:
@@ -378,6 +378,7 @@ def check_all_new(request):
             data = eval(data)
             querylist = []
             for val in data:
+                val['sku'] = val['sku'].replace('amp;','')
                 try:
                     obj = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=0)
                     if obj:
@@ -410,10 +411,10 @@ def covered_stocks(user,data,path):
     data_log = {
         'user': user,
         'fun': path,
-        'description': 'Sku:%s,QTY covered by %s.' % (data['sku'], data['qty_new']),
+        'description': 'Sku:%s,QTY covered by %s.' % (create_obj.sku, data['qty_new']),
     }
     views.save_logs(data_log)
-    obj = WarehouseStocks.objects.filter(sku=data['sku'], warehouse=data['warehouse']).exclude(id=create_obj.id).delete()
+    obj = WarehouseStocks.objects.filter(sku=create_obj.sku, warehouse=data['warehouse']).exclude(id=create_obj.id).delete()
     if obj:
         return {'code':1,'msg':'Successfully!'}
 
@@ -423,7 +424,7 @@ def covered_new(request):
     if not user:
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
-        sku = request.POST.get('sku','')
+        sku = request.POST.get('sku','').replace('amp;','')
         warehouse = request.POST.get('warehouse','')
         qty_new = request.POST.get('qty_new','')
         date = request.POST.get('date','')
