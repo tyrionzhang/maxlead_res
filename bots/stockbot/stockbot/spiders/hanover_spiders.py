@@ -149,6 +149,9 @@ class HanoverSpider(scrapy.Spider):
                 if msg_line:
                     msg_line = msg_line.split('|')
                     msg_line.pop()
+                    all_msg = ''
+                    subject = 'Maxlead库存预警'
+                    from_email = max_settings.EMAIL_HOST_USER
 
                     msg = {}
                     for i, val in enumerate(msg_line, 1):
@@ -160,10 +163,9 @@ class HanoverSpider(scrapy.Spider):
                                 msg_res_str += v[1]
                         msg.update({val[0]: msg_res_str})
                     for key in msg:
-                        subject = 'Maxlead库存预警'
-                        from_email = max_settings.EMAIL_HOST_USER
+                        all_msg += msg[key]
                         send_mail(subject, msg[key], from_email, [key], fail_silently=False)
-
+                    send_mail(subject, all_msg, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
                 f.close()
                 os.remove(file_path)
 
