@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 
 class HanoverSpider(scrapy.Spider):
     name = "hanover_spider"
+    msg_str1 = ""
     start_urls = [
         'http://www.telescoassoc.com/prod/hnv/transform.aspx?_h=go&_md=vwInventory&_tpl=vwInventoryList.xsl&_gt=-1&_gs=20&rhash=5adab926c2b523c494&_ha=gmv&spiders=myspiders',
         'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}'
@@ -28,7 +29,6 @@ class HanoverSpider(scrapy.Spider):
         type = response.url[-9:]
 
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
-        msg_str1 = ''
         msg_str2 = ''
         if type == 'myspiders':
             driver = webdriver.PhantomJS(executable_path=settings.PHANTOMJS_PATH)
@@ -73,7 +73,7 @@ class HanoverSpider(scrapy.Spider):
                                                         item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
             driver.quit()
         else:
-            msg_str1 = 'complete\n'
+            self.msg_str1 = 'complete\n'
             driver = webdriver.PhantomJS(executable_path=settings.PHANTOMJS_PATH)
             driver.get(response.url)
             elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
@@ -135,8 +135,8 @@ class HanoverSpider(scrapy.Spider):
         with open(file_path, "r+") as f:
             old = f.read()
             f.seek(0)
-            if msg_str1:
-                f.write(msg_str1)
+            if self.msg_str1:
+                f.write(self.msg_str1)
             f.write(old)
             f.write(msg_str2)
             f.close()

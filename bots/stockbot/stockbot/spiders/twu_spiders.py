@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 class TwuSpider(scrapy.Spider):
     name = "twu_spider"
     sku_list = []
+    msg_str1 = 'complete\n'
 
     def __init__(self, *args, **kwargs):
         super(TwuSpider, self).__init__(*args, **kwargs)
@@ -52,7 +53,6 @@ class TwuSpider(scrapy.Spider):
             res.pop(1)
             res.pop(0)
             fields.pop(0)
-            msg_str1 = 'complete\n'
             msg_str2 = ''
             file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
             for val in res:
@@ -82,7 +82,7 @@ class TwuSpider(scrapy.Spider):
             with open(file_path, "r+") as f:
                 old = f.read()
                 f.seek(0)
-                f.write(msg_str1)
+                f.write(self.msg_str1)
                 f.write(old)
                 f.write(msg_str2)
                 f.close()
