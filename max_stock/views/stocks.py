@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os,json
-from django.contrib import auth
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -9,14 +8,16 @@ from maxlead_site.common.excel_world import read_excel_file1,read_excel_data,get
 from maxlead_site.views.app import App
 from maxlead import settings
 from max_stock.views import views
+from django.db.models import Count
 
 @csrf_exempt
 def index(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
-    keywords = request.GET.get('keywords','')
+    keywords = request.GET.get('keywords','').replace('amp;','')
     warehouse = request.GET.get('warehouse','')
+    sel_new = request.GET.get('sel_new','')
     stocks = WarehouseStocks.objects.all()
     if not user.user.is_superuser:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
@@ -25,18 +26,44 @@ def index(request):
         stocks = stocks.filter(sku__contains=keywords)
     if warehouse:
         stocks = stocks.filter(warehouse=warehouse)
-    for val in stocks:
-        val.is_same = 0
-        threshold_obj = Thresholds.objects.filter(sku=val.sku,warehouse=val.warehouse)
-        if threshold_obj and threshold_obj[0].threshold >= val.qty:
-            val.is_same = 1
-        val.created = val.created.strftime("%Y-%m-%d %H:%M:%S")
+    if sel_new:
+        stocks = stocks.filter(is_new=sel_new)
+    stocks = stocks.values('sku','warehouse').annotate(count=Count('sku'))
+    items = []
+    qty_old = 0
+    have_new = 0
+    for key,val in enumerate(stocks,0):
+        old = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=0)
+        new = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=1)
+        re = {
+            'sku':val['sku'],
+            'warehouse':val['warehouse'],
+            'is_same':0,
+            'is_new_type':0,
+            'qty_new':0,
+            'qty_old':0,
+            'created':'',
+        }
+        if new:
+            re.update({'qty_new':new[0].qty,'created':new[0].created.strftime("%Y-%m-%d %H:%M:%S")})
+            re.update({'is_new_type': 1})
+            have_new = 1
+        if old:
+            qty_old = old[0].qty
+            re.update({'qty_old':qty_old,'created':old[0].created.strftime("%Y-%m-%d %H:%M:%S")})
+
+        threshold_obj = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
+        if threshold_obj and threshold_obj[0].threshold >= qty_old:
+            re.update({'is_same':1})
+        items.append(re)
 
     data = {
-        'stock_list':stocks,
+        'stock_list':items,
         'user': user,
         'keywords': keywords,
         'warehouse': warehouse,
+        'sel_new': sel_new,
+        'have_new': have_new,
         'title': 'Inventory',
     }
     return render(request,"Stocks/stocks/index.html",data)
@@ -121,7 +148,7 @@ def checked_edit(request):
                 data = {
                     'user': user.user,
                     'fun': request.path,
-                    'description': 'Sku:%s,QTY covered %s.' % (res[0].sku, qty),
+                    'description': 'Sku:%s,QTY covered %s.' % (sku, qty),
                 }
             re_qty = qty
         else:
@@ -368,3 +395,73 @@ def check_all_new(request):
             if querylist:
                 WarehouseStocks.objects.bulk_create(querylist)
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfuly!'}),content_type='application/json')
+
+def covered_stocks(user,data,path):
+    create_obj = WarehouseStocks()
+    create_obj.id
+    create_obj.sku = data['sku'].replace('amp;','')
+    create_obj.warehouse = data['warehouse']
+    create_obj.created = data['date']
+    create_obj.qty = data['qty_new']
+    create_obj.is_new = 0
+    create_obj.save()
+    if not create_obj.id:
+        return {'code':0,'msg':'Failed!'}
+    data_log = {
+        'user': user,
+        'fun': path,
+        'description': 'Sku:%s,QTY covered by %s.' % (data['sku'], data['qty_new']),
+    }
+    views.save_logs(data_log)
+    obj = WarehouseStocks.objects.filter(sku=data['sku'], warehouse=data['warehouse']).exclude(id=create_obj.id).delete()
+    if obj:
+        return {'code':1,'msg':'Successfully!'}
+
+@csrf_exempt
+def covered_new(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        sku = request.POST.get('sku','')
+        warehouse = request.POST.get('warehouse','')
+        qty_new = request.POST.get('qty_new','')
+        date = request.POST.get('date','')
+        res = covered_stocks(user.user,{'sku':sku,'warehouse':warehouse,'qty_new':qty_new,'date':date},request.path)
+        return HttpResponse(json.dumps({'code': res['code'], 'msg': res['msg']}), content_type='application/json')
+
+@csrf_exempt
+def covered_new_all(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        data = request.POST.get('data','')
+        if data:
+            data = eval(data)
+            for val in data:
+                try:
+                    covered_stocks(user.user,val,request.path)
+                except:
+                    continue
+            return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfully!'}), content_type='application/json')
+
+@csrf_exempt
+def covered_give_up(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+
+    if request.method == 'POST':
+        data = request.POST.get('data','')
+        if data:
+            data = eval(data)
+            for val in data:
+                try:
+                    val['sku'] = val['sku'].replace('amp;','')
+                    obj = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=1)
+                    if obj:
+                        obj.delete()
+                except:
+                    continue
+            return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfully!'}), content_type='application/json')

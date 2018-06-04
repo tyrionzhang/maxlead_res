@@ -13,7 +13,7 @@
                 <div class="text-box">
                     <label>
                         <span>Warehouse:</span>
-                        <select name="warehouse" id="">
+                        <select name="warehouse">
                             <option value="">All</option>
                             <option value="EXL">EXL</option>
                             <option value="TWU">TWU</option>
@@ -21,6 +21,16 @@
                             <option value="ILL">ILL</option>
                             <option value="WA">WA</option>
                             <option value="EGO">EGO</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="text-box">
+                    <label>
+                        <span>Is New:</span>
+                        <select name="sel_new">
+                            <option value="">All</option>
+                            <option value="0">Old</option>
+                            <option value="1">New</option>
                         </select>
                     </label>
                 </div>
@@ -34,6 +44,14 @@
                 <div class="btn btn-blue">
                     <button id="inventory_import">Inventory Import</button>
                 </div>
+                {% if have_new %}
+                <div class="btn btn-blue">
+                    <button id="new_all_save">All Save</button>
+                </div>
+                <div class="btn btn-blue">
+                    <button id="new_give_up">Give Up</button>
+                </div>
+                {% endif %}
             </div>
             <div class="con-head-right">
                 <div class="btn btn-green">
@@ -51,14 +69,26 @@
                     <th>Sku</th>
                     <th>Warehouse</th>
                     <th>Qty</th>
+                    <th>Qty New</th>
                     <th>Date</th>
+                    {% if have_new %}
+                    <th>Fun</th>
+                    {% endif %}
                 </tr>
                 {% for val in stock_list %}
-                <tr class="tr-stock-blue{{ val.is_same }}">
+                <tr class="tr-stock-blue{{ val.is_same }} tr-stock{{ val.is_new_type }}">
                     <td>{{ val.sku }}</td>
                     <td>{{ val.warehouse }}</td>
-                    <td>{{ val.qty }}</td>
+                    <td>{{ val.qty_old }}</td>
+                    <td>{{ val.qty_new }}</td>
                     <td>{{ val.created }}</td>
+                {% if have_new %}
+                    <td>
+                        {% if val.is_new_type %}
+                        <a href="javascript:;" class="fun-btn btn-edit stock-check-edit">Covered</a>
+                        {% endif %}
+                    </td>
+                {% endif %}
                 </tr>
                 {% endfor %}
 
@@ -112,8 +142,80 @@
         $('#btn_export_stocks').on('click',function () {
             var keywords = $('input[name="keywords"]').val();
             var warehouse = $('select[name="warehouse"]').val();
-            var url = '/admin/max_stock/export_stocks/?keywords='+keywords+'&warehouse='+warehouse;
+            var sel_new = $('select[name="sel_new"]').val();
+            var url = '/admin/max_stock/export_stocks/?keywords='+keywords+'&warehouse='+warehouse+'&sel_new='+sel_new;
             window.location.href=url;
+        });
+
+        $('.stock-check-edit').on('click',function () {
+           var elem_tr = $(this).parents('tr');
+           var sku = elem_tr.children('td:eq(0)').html();
+           var warehouse = elem_tr.children('td:eq(1)').html();
+           var qty_new = elem_tr.children('td:eq(3)').html();
+           var date = elem_tr.children('td:eq(4)').html();
+           $.post('/admin/max_stock/covered_new/',{'sku':sku,'warehouse':warehouse,'qty_new':qty_new,'date':date},function (re) {
+               if(re.code==1){
+                   elem_tr.children('td:eq(2)').html(qty_new);
+                   elem_tr.removeClass('tr-stock1');
+               }
+               if(re.code==0){
+                   alert(re.msg);
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#new_all_save').on('click',function () {
+            var data = new Array();
+           $('.tr-stock1').each(function () {
+               var re = {
+                   'sku':$(this).children('td:eq(0)').html(),
+                   'warehouse':$(this).children('td:eq(1)').html(),
+                   'qty_new':$(this).children('td:eq(3)').html(),
+                   'date':$(this).children('td:eq(4)').html()
+               };
+               data.push(re);
+           });
+           $.post('/admin/max_stock/covered_new_all/',{'data':JSON.stringify(data)},function (re) {
+               if(re.code==1){
+                   alert(re.msg);
+                   window.location.reload();
+               }
+               if(re.code==0){
+                   alert(re.msg);
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#new_give_up').on('click',function () {
+            var data = new Array();
+           $('.tr-stock1').each(function () {
+               var re = {
+                   'sku':$(this).children('td:eq(0)').html(),
+                   'warehouse':$(this).children('td:eq(1)').html()
+               };
+               data.push(re);
+           });
+           $.post('/admin/max_stock/covered_give_up/',{'data':JSON.stringify(data)},function (re) {
+               if(re.code==1){
+                   alert(re.msg);
+                   window.location.reload();
+               }
+               if(re.code==0){
+                   alert(re.msg);
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
         });
     </script>
 {% endblock %}
