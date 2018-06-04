@@ -9,6 +9,7 @@ from maxlead_site.views.app import App
 from maxlead import settings
 from max_stock.views import views
 from django.db.models import Count
+from django.core.mail import send_mail
 
 @csrf_exempt
 def index(request):
@@ -377,6 +378,9 @@ def check_all_new(request):
         if data:
             data = eval(data)
             querylist = []
+            msgs = []
+            subject = 'Maxlead库存预警'
+            from_email = settings.EMAIL_HOST_USER
             for val in data:
                 val['sku'] = val['sku'].replace('amp;','')
                 try:
@@ -385,16 +389,38 @@ def check_all_new(request):
                         i = obj.update(qty=val['qty'])
                     else:
                         querylist.append(WarehouseStocks(sku=val['sku'],warehouse=val['warehouse'],qty=val['qty'],is_new=0))
+                    threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
+                    user = SkuUsers.objects.filter(sku=val['sku'])
+                    if threshold and threshold[0].threshold >= int(val['qty']):
+                        if user:
+                            msg = 'SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n' % (val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+                            msgs.append({'email':user[0].user.email,'msg':msg})
                     data_log = {
                         'user': user.user,
                         'fun': request.path,
-                        'description': 'Sku:%s,QTY covered %s.' % (val['sku'], val['qty']),
+                        'description': 'Sku:%s,QTY covered by %s.' % (val['sku'], val['qty']),
                     }
                     views.save_logs(data_log)
                 except:
                     continue
+
             if querylist:
                 WarehouseStocks.objects.bulk_create(querylist)
+            # 发送提示邮件
+            if msgs:
+                dict_msg = {}
+                all_msg = ''
+                for i,val in enumerate(msgs,0):
+                    msg_res_str = val['msg']
+                    for n,v in enumerate(msgs,0):
+                        if not i == n and v['email'] == val['email']:
+                            msg_res_str += v['msg']
+                    dict_msg.update({val['email']: msg_res_str})
+                for key in dict_msg:
+                    all_msg += dict_msg[key]
+                    send_mail(subject, dict_msg[key], from_email, [key], fail_silently=False)
+                send_mail(subject, all_msg, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
+
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfuly!'}),content_type='application/json')
 
 def covered_stocks(user,data,path):

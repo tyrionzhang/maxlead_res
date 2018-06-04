@@ -83,4 +83,5 @@ $(document).ready(function(){
 		$('.wrap-paper').addClass('hide');
 		$('.save-block-info').addClass('hide');
 	});
+	$('.tr-stock-blue1').attr('style','background-color: #db5461;');
 });

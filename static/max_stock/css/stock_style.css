@@ -134,8 +134,7 @@ body,ul{margin: 0;padding: 0;}
 #tr-head th {
 	height: 36px;
 }
-
-.tb-datas tr:nth-child(odd){background: white;}
+.tb-datas tr:nth-child(odd){background-color: white;}
 
 .fun-btn {
     display: inline-block;
@@ -207,9 +206,6 @@ body,ul{margin: 0;padding: 0;}
     background-color: #769e31;
 }
 .tr-stock1 td:nth-child(4){
-    background-color: #db5461;
-}
-.tr-stock-blue1 {
     background-color: #db5461;
 }
 #import_modal {
