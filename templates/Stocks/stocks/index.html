@@ -106,6 +106,7 @@
         $(document).ready(function(){
           $('input[name="keywords"]').val("{{ keywords }}");
           $('select[name="warehouse"]').val('{{ warehouse }}');
+          $('select[name="sel_new"]').val('{{ sel_new }}');
           $("form[name='userLogin']").submit(function(e){
             e.preventDefault();
           });

@@ -149,7 +149,7 @@ def checked_edit(request):
                 data = {
                     'user': user.user,
                     'fun': request.path,
-                    'description': 'Sku:%s,QTY covered %s.' % (sku, qty),
+                    'description': 'Sku:%s,QTY covered by %s.' % (sku, qty),
                 }
             re_qty = qty
         else:
