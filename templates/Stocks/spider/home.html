@@ -1,7 +1,35 @@
-{% extends "admin/base_site.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Run Spiders</title>
+</head>
+<body>
+{{ msg_str }}
 
-{% block content %}
+<script language="javascript">
+document.onkeydown = function(e){
+    e = window.event || e;
+    var keycode = e.keyCode || e.which;
+    console.log(e.keyCode);
+    if( keycode = 116){
+        if(window.event){// ie
+            try{e.keyCode = 0;}catch(e){}
+            e.returnValue = false;
+        }else{// ff
+            e.preventDefault();
+        }
+    }
+};
 
-爬虫已运行！
+//禁止鼠标右键菜单
+document.oncontextmenu = function(e){
+    return false;
+};
 
-{% endblock %}
+window.onbeforeunload = function (e) {
+    return (e || window.event).returnValue = '确认要离开当页面？！';
+};
+</script>
+</body>
+</html>

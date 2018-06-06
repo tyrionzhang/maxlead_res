@@ -3,13 +3,18 @@ body,ul{margin: 0;padding: 0;}
 .clearfix { *zoom: 1;}
 .clearfix:after{ content: ""; display: block; height: 0; visibility:hidden; clear: both;}
 #header{ width: 100%; min-width: 980px; height: 6%; min-height: 40px;margin: 0 auto; background: #101010;}
-.a-logout {
+.header-left {
     position: absolute;
     display: inline-block;
-    color: white;
-    float: right;
     right: 16px;
     top: 9px;
+}
+.header-left a {
+    color: white;
+    padding-right: 17px;
+}
+.header-left a:hover{
+    color: #ffce20;
 }
 #header h3 {
 	color: white;

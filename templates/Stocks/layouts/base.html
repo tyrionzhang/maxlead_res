@@ -23,7 +23,10 @@
 				<li>Ego</li>
 			</ul> -->
 			<h3>Welcome,<a href="javascript:;" style="text-decoration: none;color: white;" id="user_info">{{ user.user.username }}</a>!</h3>
-            <a href="/admin/max_stock/logout/" class="a-logout">Logout</a>
+            <div class="header-left">
+                <a href="javascript:;" class="a-run-spiders">Start Spiders</a>
+                <a href="/admin/max_stock/logout/" class="a-logout">Logout</a>
+            </div>
 		</div>
 		<div id="body" class="clearfix">
 			<div id="aside">
@@ -108,6 +111,12 @@
     </div>
         <script>
             $(document).ready(function(){
+                $('.a-run-spiders').on('click',function () {
+                    if(confirm('Runing spiders?')){
+                        $(this).attr('href','/admin/max_stock/stock_spiders?type=now')
+                    }
+                });
+
                 $('#user_info').on('click',function () {
                     $('.wrap-paper').removeClass('hide');
                     $('#save_userinfo').removeClass('hide');
