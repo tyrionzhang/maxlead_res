@@ -44,42 +44,53 @@ class ExlSpider(scrapy.Spider):
         a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
         if a_stock:
             a_stock[0].click()
-        a_ml = driver.find_elements_by_id('CustomerFacilityGrid_div-cell-0-0')
-        if a_ml:
-            a_ml[0].click()
-            time.sleep(10)
-        btn_runreport = driver.find_elements_by_id('btnRunRpt')
-        if btn_runreport:
-            btn_runreport[0].click()
-        iframe1 = driver.find_elements_by_id('ReportFrameStockStatusViewer')
-        if iframe1:
-            driver.switch_to.frame(iframe1[0])
-        iframe2 = driver.find_elements_by_id('report')
-        driver.switch_to.frame(iframe2[0])
-        time.sleep(30)
-        res = driver.find_elements_by_css_selector('.a383 tr')
-        res.pop(1)
-        res.pop(0)
-        res.pop()
-        for val in res:
-            item = WarehouseStocksItem()
-            tds = val.find_elements_by_tag_name('td')
-            if tds:
-                item['sku'] = tds[0].text
-                if item['sku'] in self.sku_list:
-                    item['warehouse'] = 'EXL'
-                    if tds[6].text and not tds[6].text == ' ':
-                        item['qty'] = tds[6].text
-                        item['qty'] = item['qty'].replace(',', '')
-                    else:
-                        item['qty'] = 0
-                    yield item
-                    threshold = Thresholds.objects.filter(sku=item['sku'],warehouse=item['warehouse'])
-                    user = SkuUsers.objects.filter(sku=item['sku'])
-                    if threshold and threshold[0].threshold >= int(item['qty']):
-                        if user:
-                            msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
-                                                    item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+        rows_res = driver.find_elements_by_id('CustomerFacilityGrid_div-rows')
+        list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
+        if list_rows:
+            length = len(list_rows)
+            for i in range(0, length):
+                if not i == 0:
+                    driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
+                    rows_res = driver.find_elements_by_id('CustomerFacilityGrid_div-rows')
+                    list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
+                warehouse_name = list_rows[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
+                if warehouse_name:
+                    warehouse_name = warehouse_name[0].text
+                list_rows[i].click()
+                btn_runreport = driver.find_elements_by_id('btnRunRpt')
+                if btn_runreport:
+                    btn_runreport[0].click()
+                iframe1 = driver.find_elements_by_id('ReportFrameStockStatusViewer')
+                if iframe1:
+                    driver.switch_to.frame(iframe1[0])
+                iframe2 = driver.find_elements_by_id('report')
+                driver.switch_to.frame(iframe2[0])
+                time.sleep(30)
+                res = driver.find_elements_by_css_selector('.a383 tr')
+                res.pop(1)
+                res.pop(0)
+                res.pop()
+                for val in res:
+                    item = WarehouseStocksItem()
+                    tds = val.find_elements_by_tag_name('td')
+                    if tds:
+                        item['sku'] = tds[0].text
+                        if item['sku'] in self.sku_list:
+                            item['warehouse'] = 'EXL'
+                            if warehouse_name == 'EGO':
+                                item['warehouse'] = 'EGO'
+                            if tds[6].text and not tds[6].text == ' ':
+                                item['qty'] = tds[6].text
+                                item['qty'] = item['qty'].replace(',', '')
+                            else:
+                                item['qty'] = 0
+                            yield item
+                            threshold = Thresholds.objects.filter(sku=item['sku'],warehouse=item['warehouse'])
+                            user = SkuUsers.objects.filter(sku=item['sku'])
+                            if threshold and threshold[0].threshold >= int(item['qty']):
+                                if user:
+                                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
+                                                            item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
         driver.quit()
 
         if not os.path.isfile(file_path):
