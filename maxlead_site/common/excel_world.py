@@ -5,7 +5,7 @@ from io import *
 import os,time,xlrd,csv,datetime
 from django.contrib.auth.models import User
 from maxlead_site.models import UserProfile
-from max_stock.models import SkuUsers
+from max_stock.models import SkuUsers,Thresholds
 from maxlead import settings
 
 def get_excel_file(self, data,fields,data_fields=[]):
@@ -244,6 +244,13 @@ def read_excel_file1(model,res,model_name):
                     user_name = table.cell_value(i + 1, 0,)
                     sku = table.cell_value(i + 1, 1,)
                     check = SkuUsers.objects.filter(user__username=user_name,sku=sku)
+                    if check:
+                        msg += '第%s行已存在。<br>' % (i + 1)
+                        continue
+                if model_name == 'stock_thresholds':
+                    sku = table.cell_value(i + 1, 0, )
+                    warehouse = table.cell_value(i + 1, 1, )
+                    check = Thresholds.objects.filter(sku=sku,warehouse=warehouse)
                     if check:
                         msg += '第%s行已存在。<br>' % (i + 1)
                         continue
