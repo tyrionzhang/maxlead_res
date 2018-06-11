@@ -74,9 +74,9 @@ class ExlSpider(scrapy.Spider):
                     if tds:
                         item['sku'] = tds[0].text
                         if item['sku'] in self.sku_list:
-                            item['warehouse'] = 'EXL'
-                            if warehouse_name == 'EGO':
-                                item['warehouse'] = 'EGO'
+                            item['warehouse'] = warehouse_name
+                            if warehouse_name == 'Exchange Logistics':
+                                item['warehouse'] = 'EXL'
                             if tds[6].text and not tds[6].text == ' ':
                                 item['qty'] = tds[6].text
                                 item['qty'] = item['qty'].replace(',', '')
