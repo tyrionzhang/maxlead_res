@@ -140,6 +140,7 @@
                 success: function(callback) {
                     $('#import_msg').append('Work is done!<br>');
                     $('#import_msg').append(callback.msg);
+                    $('#import_msg').append('<input type="button" id="user_sku_import" value="确定">');
                 }
             });
             return false;
@@ -162,6 +163,10 @@
                 },'json');
             }
 
+        });
+
+        $('#import_modal').on('click', '#user_sku_import', function () {
+            window.location.reload();
         });
     </script>
 {% endblock %}

@@ -5,6 +5,7 @@ from io import *
 import os,time,xlrd,csv,datetime
 from django.contrib.auth.models import User
 from maxlead_site.models import UserProfile
+from max_stock.models import SkuUsers
 from maxlead import settings
 
 def get_excel_file(self, data,fields,data_fields=[]):
@@ -239,6 +240,14 @@ def read_excel_file1(model,res,model_name):
         str2 = ''
         try:
             if i + 1 < nrows:
+                if model_name == 'sku_users':
+                    user_name = table.cell_value(i + 1, 0,)
+                    sku = table.cell_value(i + 1, 1,)
+                    check = SkuUsers.objects.filter(user__username=user_name,sku=sku)
+                    if check:
+                        msg += '第%s行已存在。<br>' % (i + 1)
+                        continue
+
                 for n,val in enumerate(fields,0):
                     if not n == 0:
                         a = '%s,'

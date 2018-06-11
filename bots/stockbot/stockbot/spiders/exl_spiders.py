@@ -49,10 +49,9 @@ class ExlSpider(scrapy.Spider):
         if list_rows:
             length = len(list_rows)
             for i in range(0, length):
-                if not i == 0:
-                    driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
-                    rows_res = driver.find_elements_by_id('CustomerFacilityGrid_div-rows')
-                    list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
+                driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
+                rows_res = driver.find_elements_by_id('CustomerFacilityGrid_div-rows')
+                list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
                 warehouse_name = list_rows[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
                 if warehouse_name:
                     warehouse_name = warehouse_name[0].text
@@ -65,7 +64,6 @@ class ExlSpider(scrapy.Spider):
                     driver.switch_to.frame(iframe1[0])
                 iframe2 = driver.find_elements_by_id('report')
                 driver.switch_to.frame(iframe2[0])
-                time.sleep(30)
                 res = driver.find_elements_by_css_selector('.a383 tr')
                 res.pop(1)
                 res.pop(0)

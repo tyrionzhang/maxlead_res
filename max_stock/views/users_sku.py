@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os,json
-from django.contrib import auth
 from django.shortcuts import render,HttpResponse
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -46,11 +45,13 @@ def save_sku(request):
         user_obj = User.objects.filter(id=user_id)
         if not user_obj:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'user error！'}), content_type='application/json')
-        sku_users_obj = SkuUsers()
-        sku_users_obj.id
-        sku_users_obj.user_id = user_id
-        sku_users_obj.sku = sku
-        sku_users_obj.save()
+        check = SkuUsers.objects.filter(user_id=user_id,sku=sku)
+        if not check:
+            sku_users_obj = SkuUsers()
+            sku_users_obj.id
+            sku_users_obj.user_id = user_id
+            sku_users_obj.sku = sku
+            sku_users_obj.save()
         return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
 
 @csrf_exempt
