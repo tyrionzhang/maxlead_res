@@ -222,7 +222,7 @@ def export_stocks(request):
             if qty:
                 re = {
                     'sku':val['sku'],
-                    'warehouse':val['sku'],
+                    'warehouse':val['warehouse'],
                     'qty':qty[0].qty,
                     'created':qty[0].created.strftime("%Y-%m-%d %H:%M:%S"),
                 }
