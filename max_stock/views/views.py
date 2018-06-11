@@ -41,9 +41,11 @@ class perform_command_que(threading.Thread):
         cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider'
         cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider'
         cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider'
+        # cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl1_spider'
         os.popen(cmd_str2)
         os.popen(cmd_str1)
         os.popen(cmd_str3)
+        # os.popen(cmd_str4)
         print('%s:%s finished!' % (time.time(), self.getName()))
         os.chdir(settings.ROOT_PATH)
 
@@ -74,10 +76,10 @@ def stock_spiders(request):
         reviews.join()
         msg_str = 'Spiders is runing!'
     else:
-        t = threading.Timer(60.0, run_command_queue)
+        t = threading.Timer(6.0, run_command_queue)
         # 持续运行，直到计划时间队列变成空为止
         t.start()
-        time_str = datetime.now() +  timedelta(seconds = 60)
+        time_str = datetime.now() +  timedelta(seconds = 6)
         msg_str = 'Spiders will be runing!The time:%s' % time_str
     return render(request, "Stocks/spider/home.html", {'msg_str':msg_str})
 
