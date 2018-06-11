@@ -253,9 +253,15 @@ def read_excel_file1(model,res,model_name):
                                 val_res = user_obj[0].id
                                 val.name = 'user_id'
                         if val.get_internal_type() == 'DateTimeField':
-                            val_res = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            if not val_res:
+                                val_res = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            else:
+                                val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
                         if val.get_internal_type() == 'DateField':
-                            val_res = datetime.datetime.now().strftime("%Y-%m-%d")
+                            if not val_res:
+                                val_res = datetime.datetime.now().strftime("%Y-%m-%d")
+                            else:
+                                val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
                         if val.get_internal_type() == 'IntegerField':
                             a1 = "%s,"
                         str1 += a % val.name
