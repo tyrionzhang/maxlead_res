@@ -201,26 +201,32 @@ def export_stocks(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords', '').replace('amp;','')
     warehouse = request.GET.get('warehouse', '')
+    sel_new = request.GET.get('sel_new', '')
     stocks = WarehouseStocks.objects.all()
     if not user.user.is_superuser:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
-        if skus:
-            stocks = stocks.filter(sku__in=skus)
+        stocks = stocks.filter(sku__in=skus)
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
     if warehouse:
         stocks = stocks.filter(warehouse=warehouse)
+    if not sel_new:
+        sel_new = 0
+    stocks = stocks.filter(is_new=sel_new)
+    stocks = stocks.values('sku', 'warehouse').annotate(count=Count('sku'), count2=Count('warehouse'))
 
     data = []
     if stocks:
         for val in stocks:
-            re = {
-                'sku':val.sku,
-                'warehouse':val.warehouse,
-                'qty':val.qty,
-                'created':val.created.strftime("%Y-%m-%d %H:%M:%S"),
-            }
-            data.append(re)
+            qty = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=sel_new)
+            if qty:
+                re = {
+                    'sku':val['sku'],
+                    'warehouse':val['sku'],
+                    'qty':qty[0].qty,
+                    'created':qty[0].created.strftime("%Y-%m-%d %H:%M:%S"),
+                }
+                data.append(re)
         fields = ['SKU','Warehouse','QTY','Created']
         data_fields = ['sku','warehouse','qty','created']
         return get_excel_file(request, data, fields, data_fields)
