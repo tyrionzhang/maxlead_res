@@ -236,12 +236,11 @@ def threshold(request):
     sku = request.GET.get('keywords','').replace('amp;','')
     warehouse = request.GET.get('warehouse','')
     list = Thresholds.objects.all()
-    if not user.user.is_superuser:
-        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
-        if skus:
-            list = list.filter(sku__in=skus)
     if sku:
         list = list.filter(sku__contains=sku)
+    if not user.user.is_superuser:
+        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
+        list = list.filter(sku__in=skus)
     if warehouse:
         list = list.filter(warehouse__contains=warehouse)
     # for val in list:
