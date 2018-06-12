@@ -92,7 +92,7 @@ def logs(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords', '').replace('amp;','')
-    res = StockLogs.objects.all()
+    res = StockLogs.objects.all().order_by('-created')
     if keywords:
         res = res.filter(Q(fun__contains=keywords)|Q(user__username__contains=keywords)|Q(description__contains=keywords))
     data = {

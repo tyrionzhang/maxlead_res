@@ -41,9 +41,11 @@
                 </div>
             </form>
             <div class="con-head-left">
+            {% if not have_new %}
                 <div class="btn btn-blue">
                     <button id="inventory_import">Inventory Import</button>
                 </div>
+            {% endif %}
                 {% if have_new %}
                 <div class="btn btn-blue">
                     <button id="new_all_save">All Save</button>
@@ -57,9 +59,11 @@
                 <div class="btn btn-green">
                     <button id="btn_export_stocks">Export</button>
                 </div>
+                {% if not have_new %}
                 <div class="btn btn-blue">
                     <button id="import_index">Import</button>
                 </div>
+                {% endif %}
             </div>
             <div class="clear"></div>
         </div>
