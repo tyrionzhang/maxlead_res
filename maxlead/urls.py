@@ -41,7 +41,7 @@ urlpatterns = [
     url(r'^admin/maxlead_site/run_command_queue/', max_views.run_command_queue),
     url(r'^admin/maxlead_site/back_upTable/', max_views.back_upTable),
     url(r'^admin/maxlead_site/test/', max_views.test1),
-    url(r'^.well-known/acme-challenge/(.+)/$', max_views.letsencrpyt),
+    # url(r'^.well-known/acme-challenge/(.+)/$', max_views.letsencrpyt),
     url(r'^admin/maxlead_site/user_info/', test_views.user_info),
     url(r'^admin/maxlead_site/login/', Logins.userLogin),
     url(r'^admin/maxlead_site/logout/', Logins.logout),
