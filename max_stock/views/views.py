@@ -98,4 +98,5 @@ def save_logs(data):
 
 def empty_data(request):
     WarehouseStocks.objects.filter().all().delete()
+    StockLogs.objects.filter().all().delete()
     return HttpResponse(request, 'Spiders is runing!Time:%s' % datetime.now())
