@@ -14,9 +14,13 @@ from django.http import HttpResponse
 # 第二个参数以某种人为的方式衡量时间
 schedule = sched.scheduler(time.time, time.sleep)
 
-def _set_user_sku():
+def _set_user_sku(request=None):
     sku_list = []
+    if request:
+        user = App.get_user_info(request)
     user_skus = SkuUsers.objects.filter().all()
+    if request and not user.user.is_superuser:
+        user_skus = user_skus.filter(user=user.user)
     if user_skus:
         for val in user_skus:
             sku_list.append(val.sku)
@@ -67,7 +71,7 @@ def stock_spiders(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     type = request.GET.get('type','')
     if type == 'now':
-        _set_user_sku()
+        _set_user_sku(request)
         q = queue.Queue()
 
         tname = 'stocks_done'
