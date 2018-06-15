@@ -29,7 +29,7 @@ def index(request):
         stocks = stocks.filter(warehouse=warehouse)
     if sel_new:
         stocks = stocks.filter(is_new=sel_new)
-    stocks = stocks.values('sku','warehouse').annotate(count=Count('sku'),count2=Count('warehouse'))
+    stocks = stocks.values('sku','warehouse').annotate(count=Count('sku'),count2=Count('warehouse')).order_by('-sku')
     items = []
     qty_old = 0
     have_new = 0
