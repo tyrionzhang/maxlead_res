@@ -80,10 +80,10 @@ def stock_spiders(request):
         reviews.join()
         msg_str = 'Spiders is runing!'
     else:
-        t = threading.Timer(6.0, run_command_queue)
+        t = threading.Timer(54000.0, run_command_queue)
         # 持续运行，直到计划时间队列变成空为止
         t.start()
-        time_str = datetime.now() +  timedelta(seconds = 6)
+        time_str = datetime.now() +  timedelta(seconds = 54000)
         msg_str = 'Spiders will be runing!The time:%s' % time_str
     return render(request, "Stocks/spider/home.html", {'msg_str':msg_str})
 
