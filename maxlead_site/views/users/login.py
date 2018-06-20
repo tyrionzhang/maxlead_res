@@ -242,7 +242,7 @@ class Logins:
         if user.role == 0:
             return HttpResponseRedirect("/admin/maxlead_site/index/")
         role_list = ['member', 'Leader', 'Admin']
-        user_list = UserProfile.objects.filter(state__gt=0 )
+        user_list = UserProfile.objects.filter(state__gt=0 ).exclude(role=99)
         if user.role == 1:
             user_list = user_list.filter(group=user.user)
 
