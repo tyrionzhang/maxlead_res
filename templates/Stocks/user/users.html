@@ -39,6 +39,7 @@
                 <tr>
                     <td>{{ val.user.username }}</td>
                     <td>{{ val.user.email }}</td>
+                    <td style="display: none">{{ val.stocks_role }}</td>
                     <td>{{ val.user.date_joined }}</td>
                     <td>
                         <a href="javascript:;" class="fun-btn btn-edit user-edit" data-id="{{ val.user.id }}">Edit</a>
@@ -57,6 +58,13 @@
 			<label class="lab-post-param">
 				<span>Username:</span>
 				<input type="text" name="username">
+			</label>
+            <label class="lab-post-param">
+				<span>Is Leader:</span>
+                    <select name="stocks_role">
+                        <option value="0">否</option>
+                        <option value="66">是</option>
+                    </select>
 			</label>
             <label class="lab-post-param">
 				<span>Password:</span>
@@ -106,6 +114,7 @@
             var data = {
               'username':$('input[name="username"]').val(),
               'password':$('input[name="password"]').val(),
+              'stocks_role':$('select[name="stocks_role"]').val(),
               'email':$('input[name="email"]').val(),
               'id':id
             };
@@ -129,12 +138,14 @@
         $('.user-edit').on('click',function () {
             var username = $(this).parents('tr').find('td:eq(0)').html();
             var email = $(this).parents('tr').find('td:eq(1)').html();
+            var stocks_role = $(this).parents('tr').find('td:eq(2)').html();
             var id = $(this).data('id');
             $('.wrap-paper').removeClass('hide');
             $('#save_user').removeClass('hide');
             $('#form_user').append('<input type="hidden" name="id" value="'+id+'">');
             $('input[name="username"]').val(username);
             $('input[name="email"]').val(email);
+            $('select[name="stocks_role"]').val(stocks_role);
         });
 
         $('#btn_export_stocks').on('click',function () {

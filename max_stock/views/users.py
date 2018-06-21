@@ -23,7 +23,7 @@ def user_list(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     res = []
     keywords = request.GET.get('keywords', '')
-    if user.user.is_superuser:
+    if user.user.is_superuser or user.stocks_role == 66:
         res = UserProfile.objects.filter(role=99)
         if keywords:
             res = res.filter(user__username__contains=keywords)
@@ -42,6 +42,7 @@ def user_save(request):
     if request.method == 'POST':
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
+        stocks_role = request.POST.get('stocks_role', '')
         id = request.POST.get('id', '')
         if not id:
             if not username or not password:
@@ -61,6 +62,7 @@ def user_save(request):
             user_file.id = user.userprofile.id
             user_file.user_id = user.id
             user_file.role = 99
+            user_file.stocks_role = stocks_role
             user_file.state = 1
             user_file.save()
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}),
@@ -81,7 +83,11 @@ def user_save(request):
                 update_fields.append('password')
             user.email = request.POST.get('email', '')
             user.id=id
-            re = user.save(update_fields=update_fields)
+            user.save(update_fields=update_fields)
+            obj = UserProfile.objects.filter(user_id=id)
+            if obj:
+                obj.update(stocks_role=stocks_role)
+
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}),
                         content_type='application/json')
 

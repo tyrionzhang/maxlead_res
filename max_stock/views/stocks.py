@@ -20,7 +20,7 @@ def index(request):
     warehouse = request.GET.get('warehouse','')
     sel_new = request.GET.get('sel_new','')
     stocks = WarehouseStocks.objects.all()
-    if not user.user.is_superuser:
+    if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         stocks = stocks.filter(sku__in=skus)
     if keywords:
@@ -203,7 +203,7 @@ def export_stocks(request):
     warehouse = request.GET.get('warehouse', '')
     sel_new = request.GET.get('sel_new', '')
     stocks = WarehouseStocks.objects.all()
-    if not user.user.is_superuser:
+    if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         stocks = stocks.filter(sku__in=skus)
     if keywords:
@@ -244,7 +244,7 @@ def threshold(request):
     list = Thresholds.objects.all()
     if sku:
         list = list.filter(sku__contains=sku)
-    if not user.user.is_superuser:
+    if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         list = list.filter(sku__in=skus)
     if warehouse:

@@ -8,6 +8,7 @@ class UserProfile(models.Model):
     group = models.ForeignKey('self',default=1,on_delete=models.CASCADE)
     state = models.IntegerField('State',default=1)
     role = models.IntegerField('Role',default=0)
+    stocks_role = models.IntegerField('Stocks Role',default=0)
     er_count = models.IntegerField(default=0)
     em_count = models.IntegerField(default=0)
     er_time = models.IntegerField(default=0)
