@@ -16,15 +16,17 @@ schedule = sched.scheduler(time.time, time.sleep)
 
 def _set_user_sku(request=None):
     sku_list = []
+    file_name = 'userSkus_txt.txt'
     if request:
         user = App.get_user_info(request)
     user_skus = SkuUsers.objects.filter().all()
     if request and not user.user.is_superuser:
         user_skus = user_skus.filter(user=user.user)
+        file_name = 'userSkus_txt_%s.txt' % user.user.username
     if user_skus:
         for val in user_skus:
             sku_list.append(val.sku)
-        file_path = os.path.join(settings.BASE_DIR, settings.THRESHOLD_TXT, 'userSkus_txt.txt')
+        file_path = os.path.join(settings.BASE_DIR, settings.THRESHOLD_TXT, file_name)
         with open(file_path, "w+") as f:
             sku_list = str(sku_list)
             f.write(sku_list)
@@ -32,19 +34,24 @@ def _set_user_sku(request=None):
     return True
 
 class perform_command_que(threading.Thread):
-    def __init__(self, t_name, queue):
+    def __init__(self, t_name, queue, request=None):
         threading.Thread.__init__(self,name=t_name)
         self.data = queue
         self.t_name = t_name
+        self.username = ''
+        if request:
+            user = App.get_user_info(request)
+            if not user.user.is_superuser:
+                self.username = user.user.username
 
     def run(self):
         work_path = settings.STOCHS_SPIDER_URL
         os.chdir(work_path)
         os.popen('scrapyd-deploy')
 
-        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider'
-        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider'
-        cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider'
+        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d username=%s' % self.username
+        cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d username=%s' % self.username
         # cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl1_spider'
         os.popen(cmd_str2)
         os.popen(cmd_str1)
@@ -75,15 +82,15 @@ def stock_spiders(request):
         q = queue.Queue()
 
         tname = 'stocks_done'
-        reviews = perform_command_que(tname, q)
+        reviews = perform_command_que(tname, q, request)
         reviews.start()
         reviews.join()
         msg_str = 'Spiders is runing!'
     else:
-        t = threading.Timer(54000.0, run_command_queue)
+        t = threading.Timer(1.0, run_command_queue)
         # 持续运行，直到计划时间队列变成空为止
         t.start()
-        time_str = datetime.now() +  timedelta(seconds = 54000)
+        time_str = datetime.now() +  timedelta(seconds = 1)
         msg_str = 'Spiders will be runing!The time:%s' % time_str
     return render(request, "Stocks/spider/home.html", {'msg_str':msg_str})
 

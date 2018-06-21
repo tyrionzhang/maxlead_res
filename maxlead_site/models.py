@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     group = models.ForeignKey('self',default=1,on_delete=models.CASCADE)
-    state = models.IntegerField('State',default=0)
+    state = models.IntegerField('State',default=1)
     role = models.IntegerField('Role',default=0)
     er_count = models.IntegerField(default=0)
     em_count = models.IntegerField(default=0)

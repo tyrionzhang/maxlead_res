@@ -14,9 +14,12 @@ class ExlSpider(scrapy.Spider):
     start_urls = ['https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}']
     sku_list = []
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, username=None, *args, **kwargs):
         super(ExlSpider, self).__init__(*args, **kwargs)
-        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'userSkus_txt.txt')
+        file_name = 'userSkus_txt.txt'
+        if username:
+            file_name = 'userSkus_txt_%s.txt' % username
+        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, file_name)
         with open(file_path, "r") as f:
             sku_list = f.read()
             f.close()

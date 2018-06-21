@@ -21,8 +21,7 @@ def sku_list(request):
         res = res.filter(Q(sku__contains=keywords) | Q(user__username__contains=keywords))
     user_list = User.objects.filter(userprofile__role=99)
     if not user.user.is_superuser:
-        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
-        res = res.filter(sku__in=skus)
+        res = res.filter(user_id=user.user.id)
         user_list = user_list.filter(id=user.user_id)
     data = {
         'data': res,
