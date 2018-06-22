@@ -59,7 +59,8 @@
 				<span>Username:</span>
 				<input type="text" name="username">
 			</label>
-            <label class="lab-post-param">
+
+            <label class="lab-post-param" {% if not user.user.is_superuser %} style="display: none" {% endif %}>
 				<span>Is Leader:</span>
                     <select name="stocks_role">
                         <option value="0">否</option>
