@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy,os,time
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
@@ -31,7 +32,10 @@ class HanoverSpider(scrapy.Spider):
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         msg_str2 = ''
-        driver = webdriver.PhantomJS(executable_path=settings.PHANTOMJS_PATH)
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH)
         driver.get(response.url)
         elem_code = driver.find_elements_by_id('WarehouseCode')
         elem_acode = driver.find_elements_by_id('AccountCode')
