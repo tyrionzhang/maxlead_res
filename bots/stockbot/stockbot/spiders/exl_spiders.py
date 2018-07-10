@@ -58,7 +58,6 @@ class ExlSpider(scrapy.Spider):
         list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
         if list_rows:
             length = len(list_rows)
-            print(length)
             for i in range(0, length):
                 if not i == 0:
                     driver.get(response.url)
@@ -109,6 +108,7 @@ class ExlSpider(scrapy.Spider):
                                 if user:
                                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
                                                             item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+        display.stop()
         driver.quit()
 
         if not os.path.isfile(file_path):
