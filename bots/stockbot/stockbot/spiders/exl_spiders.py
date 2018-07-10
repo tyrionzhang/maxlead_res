@@ -64,6 +64,7 @@ class ExlSpider(scrapy.Spider):
                     driver.get(response.url)
                     del a_reports, a_stock, rows_res, list_rows
                     a_reports = driver.find_elements_by_id('Menu_Reports_head')
+                    a_reports[0].click()
                     if a_reports:
                         a_reports[0].click()
                     a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
