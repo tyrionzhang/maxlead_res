@@ -61,17 +61,11 @@ class ExlSpider(scrapy.Spider):
             print(length)
             for i in range(0, length):
                 if not i == 0:
-                    driver.get('https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}')
-                    a_report = driver.find_elements_by_id('Menu_Reports_head')
-                    a_report[0].click()
-                    if a_reports:
-                        a_reports[0].click()
-                    a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
-                    if a_stock:
-                        a_stock[0].click()
-                    rows_res = driver.find_elements_by_id('CustomerFacilityGrid_div-rows')
-                    list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
-                warehouse_name = list_rows[0].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % 0)
+                    driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
+                    a_res = driver.find_elements_by_id('CustomerFacilityGrid_div-rows')
+                    del list_rows
+                    list_rows = a_res[0].find_elements_by_class_name('aw-text-normal')
+                warehouse_name = list_rows[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
                 if warehouse_name:
                     warehouse_name = warehouse_name[0].text
                 list_rows[i].click()
