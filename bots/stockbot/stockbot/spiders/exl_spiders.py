@@ -63,6 +63,7 @@ class ExlSpider(scrapy.Spider):
                 if not i == 0:
                     driver.get('https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}')
                     a_reports = driver.find_elements_by_id('Menu_Reports_head')
+                    a_reports[0].click()
                     if a_reports:
                         a_reports[0].click()
                     a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
