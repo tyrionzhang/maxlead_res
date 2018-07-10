@@ -65,8 +65,8 @@ class ExlSpider(scrapy.Spider):
                     a_report[0].click()
                     a_stocks = driver.find_elements_by_css_selector('#Menu_Reports a')
                     a_stocks[0].click()
-                    rows_re = driver.find_elements_by_id('CustomerFacilityGrid_div-rows')
-                    list_row_res = rows_re[0].find_elements_by_class_name('aw-text-normal')
+                    rows_re = driver.find_element_by_id('CustomerFacilityGrid_div-rows')
+                    list_row_res = rows_re.find_element_by_class_name('aw-text-normal')
                     warehouse_name = list_row_res[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
                 else:
                     warehouse_name = list_rows[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
