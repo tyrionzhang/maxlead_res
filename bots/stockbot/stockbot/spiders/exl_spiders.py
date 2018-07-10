@@ -33,7 +33,7 @@ class ExlSpider(scrapy.Spider):
         chrome_options = Options()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH)
+        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH, service_log_path=settings.LOG_PATH)
         driver.get(response.url)
         elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
         elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
