@@ -58,7 +58,7 @@ class ExlSpider(scrapy.Spider):
         list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
         if list_rows:
             length = len(list_rows)
-            for i in range(0, length):
+            for i in range(0, length-1):
                 if not i == 0:
                     driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
                     list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows .aw-text-normal')
@@ -66,7 +66,6 @@ class ExlSpider(scrapy.Spider):
                 if warehouse_name:
                     warehouse_name = warehouse_name[0].text
                 list_rows[i].click()
-                time.sleep(10)
                 btn_runreport = driver.find_elements_by_id('btnRunRpt')
                 if btn_runreport:
                     btn_runreport[0].click()
