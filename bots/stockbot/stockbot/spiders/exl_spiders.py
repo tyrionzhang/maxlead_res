@@ -60,17 +60,7 @@ class ExlSpider(scrapy.Spider):
             length = len(list_rows)
             for i in range(0, length):
                 if not i == 0:
-                    driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
-                    elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
-                    elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
-                    btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
-                    # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
-
-                    if elem_name:
-                        elem_name[0].send_keys('Maxlead_CS')
-                    if elem_pass:
-                        elem_pass[0].send_keys('2015dallas')
-                    btn_login[0].click()
+                    driver.get('https://secure-wms.com/PresentationTier/Default.aspx')
                     a_reports = driver.find_elements_by_id('Menu_Reports_head')
                     if a_reports:
                         a_reports[0].click()
