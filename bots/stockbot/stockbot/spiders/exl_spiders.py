@@ -61,6 +61,13 @@ class ExlSpider(scrapy.Spider):
             length = len(list_rows)
             for i in range(0, length):
                 if not i == 0:
+                    display.stop()
+                    from pyvirtualdisplay import Display
+                    display = Display(visible=0, size=(800, 800))
+                    display.start()
+                    chrome_options = Options()
+                    chrome_options.add_argument('-headless')
+                    chrome_options.add_argument('--disable-gpu')
                     driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
                     driver.implicitly_wait(100)
                     rows_re = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
