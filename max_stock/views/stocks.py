@@ -50,7 +50,7 @@ def index(request):
             re.update({'is_new_type': 1})
             have_new = 1
         if old:
-            if not new and not old[0].qty == 0:
+            if not new and not old[0].qty == 0 and have_new == 1:
                 re.update({'is_new_type': 1})
             qty_old = old[0].qty
             re.update({'qty_old':qty_old,'created':old[0].created.strftime("%Y-%m-%d %H:%M:%S")})
