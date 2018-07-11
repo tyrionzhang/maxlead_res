@@ -61,28 +61,10 @@ class ExlSpider(scrapy.Spider):
             for i in range(0, length):
                 if not i == 0:
                     driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
-                    logout = driver.find_elements_by_css_selector('#banner_fluff a:nth-child(4)')
-                    if logout:
-                        logout[0].click()
-                        elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
-                        elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
-                        btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
-                        # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
-
-                        if elem_name:
-                            elem_name[0].send_keys('Maxlead_CS')
-                        if elem_pass:
-                            elem_pass[0].send_keys('2015dallas')
-                        btn_login[0].click()
-                        a_reports = driver.find_elements_by_id('Menu_Reports_head')
-                        if a_reports:
-                            a_reports[0].click()
-                        a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
-                        if a_stock:
-                            a_stock[0].click()
-                        rows_res = driver.find_elements_by_id('CustomerFacilityGrid_div-rows')
-                        list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
-                        warehouse_name = list_rows[1].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % 1)
+                    rows_re = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
+                    rows_re.pop(0)
+                    rows_re.pop(-1)
+                    warehouse_name = rows_re[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
                 else:
                     warehouse_name = list_rows[0].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % 0)
                 if warehouse_name:
