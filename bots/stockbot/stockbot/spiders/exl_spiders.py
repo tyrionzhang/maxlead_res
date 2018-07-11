@@ -61,7 +61,26 @@ class ExlSpider(scrapy.Spider):
             for i in range(0, length):
                 if not i == 0:
                     driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
-                    elem_name = driver.find_element_by_id('Loginmodule1_UserName')
+                    logout = driver.find_elements_by_css_selector('#banner_fluff a:nth-child(4)')
+                    if logout:
+                        logout[0].click()
+                        driver.find_element_by_id('Loginmodule1_UserName')
+                        elems_name = driver.find_elements_by_id('Loginmodule1_UserName')
+                        elems_pass = driver.find_elements_by_id('Loginmodule1_Password')
+                        btn_logins = driver.find_elements_by_id('Loginmodule1_Submit1')
+                        # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
+
+                        if elems_name:
+                            elems_name[0].send_keys('Maxlead_CS')
+                        if elems_pass:
+                            elems_pass[0].send_keys('2015dallas')
+                        btn_logins[0].click()
+                        a_report = driver.find_elements_by_id('Menu_Reports_head')
+                        if a_report:
+                            a_report[0].click()
+                        a_stocks = driver.find_elements_by_css_selector('#Menu_Reports a')
+                        if a_stocks:
+                            a_stocks[0].click()
                     rows_re = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
                     rows_re.pop(0)
                     rows_re.pop(-1)
