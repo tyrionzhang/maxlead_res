@@ -68,14 +68,29 @@ class ExlSpider(scrapy.Spider):
                     chrome_options = Options()
                     chrome_options.add_argument('-headless')
                     chrome_options.add_argument('--disable-gpu')
-                    driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
-                    driver.implicitly_wait(100)
-                    rows_re = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
-                    rows_re.pop(0)
-                    rows_re.pop(-1)
-                    warehouse_name = rows_re[0].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
-                else:
-                    warehouse_name = list_rows[0].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % 0)
+                    driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
+                                              service_log_path=settings.LOG_PATH)
+                    driver.get(response.url)
+                    elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
+                    elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
+                    btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
+                    # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
+
+                    if elem_name:
+                        elem_name[0].send_keys('Maxlead_CS')
+                    if elem_pass:
+                        elem_pass[0].send_keys('2015dallas')
+                    btn_login[0].click()
+                    a_reports = driver.find_elements_by_id('Menu_Reports_head')
+                    if a_reports:
+                        a_reports[0].click()
+                    a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
+                    if a_stock:
+                        a_stock[0].click()
+                    list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
+                    list_rows.pop(0)
+                    list_rows.pop(-1)
+                warehouse_name = list_rows[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
                 if warehouse_name:
                     warehouse_name = warehouse_name[0].text
                 list_rows[i].click()
