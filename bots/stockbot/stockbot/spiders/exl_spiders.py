@@ -84,7 +84,7 @@ class ExlSpider(scrapy.Spider):
                         list_rows = rows_res[0].find_elements_by_class_name('aw-text-normal')
                         warehouse_name = list_rows[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
                 else:
-                    warehouse_name = list_rows[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
+                    warehouse_name = list_rows[1].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % 1)
                 if warehouse_name:
                     warehouse_name = warehouse_name[0].text
                 list_rows[i].click()
