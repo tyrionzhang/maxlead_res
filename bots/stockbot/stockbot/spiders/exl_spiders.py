@@ -66,7 +66,7 @@ class ExlSpider(scrapy.Spider):
                     rows_re = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
                     rows_re.pop(0)
                     rows_re.pop(-1)
-                    warehouse_name = rows_re[i].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
+                    warehouse_name = rows_re[0].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % i)
                 else:
                     warehouse_name = list_rows[0].find_elements_by_id('CustomerFacilityGrid_div-cell-1-%s' % 0)
                 if warehouse_name:
