@@ -61,6 +61,7 @@ class ExlSpider(scrapy.Spider):
             for i in range(0, length):
                 if not i == 0:
                     driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
+                    elem_name = driver.find_element_by_id('Loginmodule1_UserName')
                     rows_re = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
                     rows_re.pop(0)
                     rows_re.pop(-1)
