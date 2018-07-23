@@ -33,7 +33,7 @@ MENUS = [
     },
     {
         'name' : 'Setting',
-        'url' : '/admin/auto_email/setting/',
+        'url' : '/admin/setting/index/',
         'elem_id' : 'setting'
     },
     {
