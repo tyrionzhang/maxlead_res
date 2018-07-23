@@ -30,7 +30,14 @@ class WatcherSpider(scrapy.Spider):
     def parse(self, response):
         res_asin = response.url.split('/')
         check_winner = response.url.split('&')[-1]
-        driver = webdriver.PhantomJS(executable_path=settings.PHANTOMJS_PATH)
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 800))
+        display.start()
+        chrome_options = Options()
+        chrome_options.add_argument('-headless')
+        chrome_options.add_argument('--disable-gpu')
+        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
+                                  service_log_path=settings.LOG_PATH)
         driver.get(response.url)
         # img = Image.open(StringIO(base64.b64decode(driver.get_screenshot_as_base64())))
         dir_path = '%s/%s' % (settings.IMAGES_STORE, 'listing_watcher')
@@ -42,6 +49,7 @@ class WatcherSpider(scrapy.Spider):
         file_path = '%s/%s' % (dir_path, image_file_name)
         path_str = '%s/%s' % (dir_path1, image_file_name)
         driver.get_screenshot_as_file(file_path)
+        display.stop()
         driver.quit()
         if len(response.css('div.a-spacing-double-large div.olpOffer'))>1:
             for k,wa in enumerate(response.css('div.a-spacing-double-large div.olpOffer'),1):
