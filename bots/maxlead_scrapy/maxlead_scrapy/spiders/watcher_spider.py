@@ -5,6 +5,7 @@ from bots.maxlead_scrapy.maxlead_scrapy.items import ListingWacherItem
 from maxlead_site.models import UserAsins
 from django.db.models import Count
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from bots.maxlead_scrapy.maxlead_scrapy import settings
 
 
