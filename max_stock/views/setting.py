@@ -18,7 +18,7 @@ def index(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     user_id = request.GET.get('user_id', '')
     list = Menus.objects.all()
-    user_list = User.objects.filter(userprofile__role=99)
+    user_list = User.objects.filter()
     index_user = user_list[0]
     if user_id:
         index_user = User.objects.get(id=user_id)
@@ -166,7 +166,7 @@ def get_role_user(request):
         return HttpResponse(json.dumps({'code': 66}), content_type='application/json')
     if request.method == 'POST':
         role_code = request.POST.get('role_code', '')
-        user_list = User.objects.filter(userprofile__role=99)
+        user_list = User.objects.filter()
         if not user_list:
             return HttpResponse(json.dumps({'code': 0}), content_type='application/json')
         left_str = ''
@@ -189,7 +189,7 @@ def get_save_role_user(request):
         user_ids = request.POST.get('user_ids', '')
         if user_ids:
             user_obj = UserProfile.objects.filter(stocks_role=role_code)
-            user_obj.update(stocks_role=0)
+            user_obj.update(stocks_role='0')
             user_obj = UserProfile.objects.filter(user_id__in=eval(user_ids))
             if not user_obj:
                 return HttpResponse(json.dumps({'code': 0, 'msg': 'User is not exits!'}), content_type='application/json')
