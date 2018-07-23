@@ -29,6 +29,8 @@ from max_stock.views import views as stock_views
 from max_stock.views import users as stock_users
 from max_stock.views import users_sku as skus
 from max_stock.views import stocks
+from max_stock.views import auto_email
+from max_stock.views import setting
 from django.views import static
 from maxlead import settings
 
@@ -41,7 +43,7 @@ urlpatterns = [
     url(r'^admin/maxlead_site/run_command_queue/', max_views.run_command_queue),
     url(r'^admin/maxlead_site/back_upTable/', max_views.back_upTable),
     url(r'^admin/maxlead_site/test/', max_views.test1),
-    url(r'^.well-known/acme-challenge/(.+)/$', max_views.letsencrpyt),
+    # url(r'^.well-known/acme-challenge/(.+)/$', max_views.letsencrpyt),
     url(r'^admin/maxlead_site/user_info/', test_views.user_info),
     url(r'^admin/maxlead_site/login/', Logins.userLogin),
     url(r'^admin/maxlead_site/logout/', Logins.logout),
@@ -95,6 +97,7 @@ urlpatterns = [
 
     # urls of max_stock
     url('^admin/max_stock/stock_spiders/', stock_views.stock_spiders),
+    url('^admin/max_stock/test/', stock_views.test),
     url('^admin/max_stock/empty_data/', stock_views.empty_data),
     url('^admin/max_stock/login/', stock_users.userLogin),
     url('^admin/max_stock/user_list/', stock_users.user_list),
@@ -123,5 +126,16 @@ urlpatterns = [
     url('^admin/max_stock/import_sku/', skus.import_sku),
     url('^admin/max_stock/del_sku/', skus.del_sku),
     url('^admin/max_stock/logs/', skus.logs),
+    url('^admin/auto_email/code_index/', auto_email.code_index),
+    url('^admin/auto_email/code_save/', auto_email.code_save),
+    url('^admin/auto_email/orders/', auto_email.orders),
+    url('^admin/setting/index/', setting.index),
+    url('^admin/setting/update_menus/', setting.update_menus),
+    url('^admin/setting/add_role/', setting.add_role),
+    url('^admin/setting/change_role/', setting.change_role),
+    url('^admin/setting/get_role/', setting.get_role_by_user),
+    url('^admin/setting/get_menus/', setting.get_menus_by_role),
+    url('^admin/setting/get_role_user/', setting.get_role_user),
+    url('^admin/setting/get_save_role_user/', setting.get_save_role_user),
 ]
 
