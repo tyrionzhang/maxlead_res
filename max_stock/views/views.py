@@ -49,9 +49,9 @@ class perform_command_que(threading.Thread):
         os.chdir(work_path)
         os.popen('scrapyd-deploy')
 
-        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
-        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d username=%s' % self.username
-        cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d username=%s' % self.username
+        cmd_str2 = 'curl http://www.goldgg.cn:6800/schedule.json -d project=stockbot -d spider=twu_spider'
+        cmd_str1 = 'curl http://www.goldgg.cn:6800/schedule.json -d project=stockbot -d spider=hanover_spider'
+        cmd_str3 = 'curl http://www.goldgg.cn:6800/schedule.json -d project=stockbot -d spider=exl_spider'
         # cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl1_spider'
         os.popen(cmd_str2)
         os.popen(cmd_str1)
@@ -107,3 +107,12 @@ def empty_data(request):
     WarehouseStocks.objects.filter().all().delete()
     StockLogs.objects.filter().all().delete()
     return HttpResponse(request, 'Spiders is runing!Time:%s' % datetime.now())
+
+def test(request):
+    work_path = settings.STOCHS_SPIDER_URL
+    os.chdir(work_path)
+    os.popen('scrapyd-deploy')
+
+    cmd_str2_test = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=email_spider'
+    os.popen(cmd_str2_test)
+    return render(request, "Stocks/spider/home.html", {'msg_str': 'Done!'})

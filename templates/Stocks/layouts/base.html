@@ -35,15 +35,9 @@
 				</div>
 				<div class="menu">
 					<ul class="ul-menu">
-						<li id="reviews"><a href="/admin/max_stock/index/">Review Data</a></li>
-						<li id="thresholds"><a href="/admin/max_stock/threshold/">Threshold</a></li>
-                        {% if user.user.is_superuser %}
-						<li id="user_admin"><a href="/admin/max_stock/user_list/">UserAdmin</a></li>
-                        {% endif %}
-						<li id="users_sku"><a href="/admin/max_stock/users_sku/">UsersSku</a></li>
-                    {% if user.user.is_superuser %}
-						<li id="logs"><a href="/admin/max_stock/logs/">Logs</a></li>
-                        {% endif %}
+                        {% for val in user.menu_list %}
+						<li id="{{ val.elem_id }}"><a href="{{ val.url }}">{{ val.name }}</a></li>
+                        {% endfor %}
 					</ul>
 				</div>
 			</div>

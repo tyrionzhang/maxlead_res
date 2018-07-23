@@ -7,9 +7,13 @@
 
 import scrapy
 from scrapy_djangoitem import DjangoItem
-from max_stock.models import WarehouseStocks
+from max_stock.models import WarehouseStocks,OrderItems
 
 
 class WarehouseStocksItem(DjangoItem):
     # define the fields for your item here like:
     django_model = WarehouseStocks
+
+class OrderItemsItem(DjangoItem):
+    # define the fields for your item here like:
+    django_model = OrderItems
