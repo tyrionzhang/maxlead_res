@@ -32,7 +32,7 @@ class WatcherSpider(scrapy.Spider):
         res_asin = response.url.split('/')
         check_winner = response.url.split('&')[-1]
         from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
+        display = Display(visible=0, size=(800, 1600))
         display.start()
         chrome_options = Options()
         chrome_options.add_argument('-headless')
