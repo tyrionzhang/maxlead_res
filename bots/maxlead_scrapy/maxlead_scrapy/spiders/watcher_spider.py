@@ -49,7 +49,7 @@ class WatcherSpider(scrapy.Spider):
         image_file_name = '%s.png' % now_time
         file_path = '%s/%s' % (dir_path, image_file_name)
         path_str = '%s/%s' % (dir_path1, image_file_name)
-        driver.get_screenshot_as_file(file_path)
+        driver.save_screenshot(file_path)
         display.stop()
         driver.quit()
         if len(response.css('div.a-spacing-double-large div.olpOffer'))>1:
