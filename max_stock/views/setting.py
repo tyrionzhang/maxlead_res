@@ -172,7 +172,7 @@ def get_role_user(request):
         left_str = ''
         right_str = ''
         for val in user_list:
-            if val.userprofile.stocks_role == role_code and role_code:
+            if role_code and val.userprofile.stocks_role == role_code:
                 right_str += '<option value="%s">%s</option>' % (val.id, val.username)
             elif val.userprofile.stocks_role == '0' and not val.is_superuser:
                 left_str += '<option value="%s">%s</option>' % (val.id, val.username)
