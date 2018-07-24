@@ -1,4 +1,4 @@
-import os,sched
+import os,sched,calendar
 from datetime import *
 import queue
 import threading
@@ -13,6 +13,22 @@ from django.http import HttpResponse
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
 schedule = sched.scheduler(time.time, time.sleep)
+week_day = {
+    'monday':'MONDAY',
+    'tuesday':'TUESDAY',
+    'wednesday':'WEDNESDAY',
+    'thursday':'THURSDAY',
+    'saturday':'SATURDAY',
+    'sunday':'SUNDAY',
+}
+def getNextSaturday():
+    today = date.today()
+    oneday = timedelta(days = 1)
+    m1 = calendar.SATURDAY
+    while today.weekday() != m1:
+        today += oneday
+    re = today.strftime('%Y-%m-%d')
+    return re
 
 def _set_user_sku(request=None):
     sku_list = []
@@ -49,9 +65,9 @@ class perform_command_que(threading.Thread):
         os.chdir(work_path)
         os.popen('scrapyd-deploy')
 
-        cmd_str2 = 'curl http://www.goldgg.cn:6800/schedule.json -d project=stockbot -d spider=twu_spider'
-        cmd_str1 = 'curl http://www.goldgg.cn:6800/schedule.json -d project=stockbot -d spider=hanover_spider'
-        cmd_str3 = 'curl http://www.goldgg.cn:6800/schedule.json -d project=stockbot -d spider=exl_spider'
+        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d username=%s' % self.username
+        cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d username=%s' % self.username
         # cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl1_spider'
         os.popen(cmd_str2)
         os.popen(cmd_str1)
@@ -87,10 +103,14 @@ def stock_spiders(request):
         reviews.join()
         msg_str = 'Spiders is runing!'
     else:
-        t = threading.Timer(68400.0, run_command_queue)
+        time_saturday = '%s 05:00:00' % getNextSaturday()
+        time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M:%S')
+        time_now = datetime.now()
+        t_re = (time_saturday - time_now).seconds
+        t = threading.Timer(float('%.1f' % t_re), run_command_queue)
         # 持续运行，直到计划时间队列变成空为止
         t.start()
-        time_str = datetime.now() +  timedelta(seconds = 68400)
+        time_str = datetime.now() +  timedelta(seconds = t_re)
         msg_str = 'Spiders will be runing!The time:%s' % time_str
     return render(request, "Stocks/spider/home.html", {'msg_str':msg_str})
 
