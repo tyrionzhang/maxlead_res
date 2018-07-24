@@ -12,6 +12,18 @@
                 </div>
                 <div class="text-box">
                     <label>
+                        <span>Start Date:</span>
+                        <input type="date" name="start_date">
+                    </label>
+                </div>
+                <div class="text-box">
+                    <label>
+                        <span>End Date:</span>
+                        <input type="date" name="end_date">
+                    </label>
+                </div>
+                <div class="text-box">
+                    <label>
                         <span>Warehouse:</span>
                         <select name="warehouse">
                             <option value="">All</option>
@@ -40,6 +52,7 @@
                     </label>
                 </div>
             </form>
+            <div class="clear"></div>
             <div class="con-head-left">
             {% if not have_new %}
                 <div class="btn btn-blue">
@@ -114,6 +127,8 @@
         $(document).ready(function(){
           $('input[name="keywords"]').val("{{ keywords }}");
           $('select[name="warehouse"]').val('{{ warehouse }}');
+          $('input[name="start_date"]').val('{{ start_date }}');
+          $('input[name="end_date"]').val('{{ end_date }}');
           $('select[name="sel_new"]').val('{{ sel_new }}');
           $("form[name='userLogin']").submit(function(e){
             e.preventDefault();
@@ -153,7 +168,10 @@
             var keywords = $('input[name="keywords"]').val();
             var warehouse = $('select[name="warehouse"]').val();
             var sel_new = $('select[name="sel_new"]').val();
-            var url = '/admin/max_stock/export_stocks/?keywords='+keywords+'&warehouse='+warehouse+'&sel_new='+sel_new;
+            var start_date = $('input[name="start_date"]').val();
+            var end_date = $('input[name="end_date"]').val();
+            var url = '/admin/max_stock/export_stocks/?keywords='+keywords+'&warehouse='+warehouse+'&sel_new='
+                +sel_new+'&start_date='+start_date+'&end_date='+end_date;
             window.location.href=url;
         });
 
