@@ -99,8 +99,14 @@ class ListingSpider(scrapy.Spider):
                     val = re.sub(r"\n|\t",'',val.text)
                     item['feature'] += val + '\n'
 
-            des_res = re.sub("\n", ",", driver.find_elements_by_id('productDescription')[0].text.strip())
-            item['description'] = des_res
+            des_detail = ''
+            des_res = driver.find_elements_by_id('productDescription')
+            if not des_res:
+                des_res = driver.find_elements_by_css_selector('div.launchpad-module-brand-description-left div.launchpad-text-left-justify')
+            if des_res:
+                des_detail = re.sub("\n", ",", des_res[0].text.strip())
+
+            item['description'] = des_detail
 
             item['buy_box_res'] = []
             buyBoxs = driver.find_elements_by_css_selector('#merchant-info a')
