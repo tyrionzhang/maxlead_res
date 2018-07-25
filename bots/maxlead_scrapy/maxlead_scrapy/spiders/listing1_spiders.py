@@ -12,16 +12,16 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-class TestSpider(scrapy.Spider):
+class Linsting1Spider(scrapy.Spider):
 
-    name = "test_spider"
+    name = "listing1_spider"
     start_urls = []
     res = []
 
     def __init__(self, asin=None, user=None, *args, **kwargs):
         sr = random.randint(1,16)
         url = "https://www.amazon.com/dp/%s/ref=sr_1_%s?ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1"
-        super(TestSpider, self).__init__(*args, **kwargs)
+        super(Linsting1Spider, self).__init__(*args, **kwargs)
         if asin == '99':
             self.res = list(UserAsins.objects.filter(is_use=True, is_done=0).values('aid').annotate(count=Count('aid')))
         elif asin == '88':
