@@ -47,6 +47,8 @@ class ReviewSpider(scrapy.Spider):
         chrome_options.add_argument('--disable-gpu')
         driver = webdriver.Chrome(chrome_options=chrome_options)
         driver.get(response.url)
+        driver.implicitly_wait(100)
+        next_page = driver.find_elements_by_css_selector('li.a-last a')
         req_res = driver.find_elements_by_css_selector('div#cm_cr-review_list div.review')
         if check:
             item = AsinReviewsItem()
@@ -89,17 +91,17 @@ class ReviewSpider(scrapy.Spider):
             item['review_date'] = time.strftime("%Y-%m-%d", review_date)
             yield item
 
-        next_page = driver.find_elements_by_css_selector('li.a-last a')
         if next_page:
+            next_page = next_page[0].get_attribute('href')
             time.sleep(3 + random.randint(27, 57))
-            self.asin_id = next_page[0].text.split('/')[3][0:10]
-            next_page = next_page[0].text + '&mytype=maxlead'
-            next_page = response.urljoin(next_page)
+            self.asin_id = next_page.split('/')[3][0:10]
+            next_page = next_page + '&mytype=maxlead'
             yield scrapy.Request(next_page, callback=self.parse)
         else:
             re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
             if re:
                 re.update(is_done=1)
+        driver.quit()
 
     def parse_details(self, response):
         item = response.meta.get('item', None)

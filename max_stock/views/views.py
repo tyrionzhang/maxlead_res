@@ -103,9 +103,10 @@ def stock_spiders(request):
         reviews.join()
         msg_str = 'Spiders is runing!'
     else:
-        time_saturday = '%s 05:00:00' % getNextSaturday()
-        time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M:%S')
         time_now = datetime.now()
+        time_re = datetime.now() + timedelta(days = 1)
+        time_saturday = '%s 05:00:00' % time_re.strftime('%Y-%m-%d')
+        time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M:%S')
         t_re = (time_saturday - time_now).total_seconds()
         t = threading.Timer(float('%.1f' % int(t_re)), run_command_queue)
         # 持续运行，直到计划时间队列变成空为止
