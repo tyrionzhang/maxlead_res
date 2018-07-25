@@ -54,7 +54,8 @@ class UserAgent(UserAgentMiddleware):
             "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
             "Accept-Encoding": "gzip, deflate, br",
             "Referer": "https://www.baidu.com",
-            "Connection": "keep - alive"
+            "Connection": "keep - alive",
+            "Access-Control-Allow-Origin": "*"
         }
         ua = random.choice(self.user_agent_list)
         if ua:
@@ -65,6 +66,7 @@ class UserAgent(UserAgentMiddleware):
             request.headers.setdefault('Connection', headers['Connection'])
             request.headers.setdefault('Accept-Language', headers['Accept-Language'])
             request.headers.setdefault('Accept-Encoding', headers['Accept-Encoding'])
+            request.headers.setdefault('Access-Control-Allow-Origin', headers['Access-Control-Allow-Origin'])
 
 
 # class IPPOOLS(HttpProxyMiddleware):
