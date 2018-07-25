@@ -3,14 +3,14 @@
 import scrapy,time,os,re,datetime
 import random
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
 from django.utils import timezone
 from maxlead_site.common.common import get_asins
 from maxlead_site.models import UserProfile
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-
+from bots.stockbot.stockbot import settings
 
 class ListingSpider(scrapy.Spider):
 
