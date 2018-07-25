@@ -310,7 +310,7 @@ def run_command_queue(request):
     return render(request, 'spider/home.html')
 
 def test_spider(request):
-    work_path = settings.STOCHS_SPIDER_URL
+    work_path = settings.SPIDER_URL
     os.chdir(work_path)
     os.popen('scrapyd-deploy')
 
