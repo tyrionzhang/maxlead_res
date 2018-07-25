@@ -133,7 +133,6 @@ def test(request):
     os.chdir(work_path)
     os.popen('scrapyd-deploy')
 
-    # cmd_str2_test = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=email_spider'
-    cmd_str2_test = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=test_spider -d asin=%s' % 88
+    cmd_str2_test = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=email_spider'
     os.popen(cmd_str2_test)
     return render(request, "Stocks/spider/home.html", {'msg_str': 'Done!'})

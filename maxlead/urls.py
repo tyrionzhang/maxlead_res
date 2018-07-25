@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^download/(?P<path>.*)$', static.serve,{ 'document_root': settings.DOWNLOAD_URL }),
     url(r'^admin/maxlead_site/spiders2/', max_views.Spiders2),
     url(r'^admin/maxlead_site/spiders1/', max_views.Spiders1),
+    url(r'^admin/maxlead_site/test1/', max_views.test_spider),
     url(r'^admin/maxlead_site/run_command_queue/', max_views.run_command_queue),
     url(r'^admin/maxlead_site/back_upTable/', max_views.back_upTable),
     url(r'^admin/maxlead_site/test/', max_views.test1),
