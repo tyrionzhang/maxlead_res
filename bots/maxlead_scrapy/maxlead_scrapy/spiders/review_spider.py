@@ -94,7 +94,7 @@ class ReviewSpider(scrapy.Spider):
 
         if next_page:
             next_page = next_page[0].get_attribute('href')
-            time.sleep(3 + random.randint(27, 57))
+            time.sleep(3 + random.randint(3, 9))
             self.asin_id = next_page.split('/')[3][0:10]
             next_page = next_page + '&mytype=maxlead'
             yield scrapy.Request(next_page, callback=self.parse)
@@ -102,7 +102,6 @@ class ReviewSpider(scrapy.Spider):
             re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
             if re:
                 re.update(is_done=1)
-
         display.stop()
         driver.quit()
 

@@ -62,8 +62,8 @@ def perform_command1():
     return True
 
 def Spiders2(request):
-    schedule.enter(18000, 0, perform_command)
-    schedule.enter(21600, 0, perform_command1)
+    schedule.enter(1, 0, perform_command)
+    schedule.enter(1, 0, perform_command1)
     # 持续运行，直到计划时间队列变成空为止
     print('Spiders is runing!Time:%s' % datetime.now())
     schedule.run()
