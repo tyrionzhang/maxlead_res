@@ -97,6 +97,7 @@ class ReviewSpider(scrapy.Spider):
             yield item
 
         if next_page:
+            time.sleep(3 + random.randint(27, 30))
             next_page = next_page[0].get_attribute('href')
             time.sleep(3 + random.randint(3, 9))
             self.asin_id = next_page.split('/')[3][0:10]

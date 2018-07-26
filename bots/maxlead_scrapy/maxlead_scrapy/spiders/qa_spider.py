@@ -78,7 +78,7 @@ class QaSpider(scrapy.Spider):
             driver.implicitly_wait(30)
 
         if next_page:
-            time.sleep(3 + random.randint(3, 9))
+            time.sleep(3 + random.randint(27, 30))
             yield scrapy.Request(next_page[0].get_attribute('href'), callback=self.parse)
         else:
             re = Questions.objects.filter(asin=res_asin[6],created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))

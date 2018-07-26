@@ -250,7 +250,7 @@ class ListingSpider(scrapy.Spider):
                 if promotions:
                     item['promotion'] = promotions
             yield item
-            time.sleep(3 + random.randint(6, 10))
+            time.sleep(3 + random.randint(27, 30))
             res = UserAsins.objects.filter(aid=asin_id)
             if res:
                 res.update(is_done=1,listing_time=timezone.now())
