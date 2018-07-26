@@ -66,7 +66,11 @@ class ReviewSpider(scrapy.Spider):
             if total_review:
                 item['total_review'] = total_review[0].text.replace(',','')
             yield item
-        for review in req_res:
+        for i in range(0, len(req_res)):
+            driver.get(response.url)
+            driver.implicitly_wait(100)
+            elem_req = driver.find_elements_by_css_selector('div#cm_cr-review_list div.review')
+            review = elem_req[i]
             item = ReviewsItem()
             item['name'] =  review.find_element_by_css_selector('span.review-byline a.author').text
             item['asin'] = asin_id
