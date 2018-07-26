@@ -36,7 +36,7 @@ class HanoverSpider(scrapy.Spider):
         display = Display(visible=0, size=(800, 800))
         display.start()
         chrome_options = Options()
-        chrome_options.add_argument('-headless')
+        # chrome_options.add_argument('-headless')
         chrome_options.add_argument('--disable-gpu')
         driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH, service_log_path=settings.LOG_PATH)
         driver.get(response.url)
@@ -56,6 +56,8 @@ class HanoverSpider(scrapy.Spider):
             elem_pass[0].send_keys('1202HXML')
         btn_login[0].click()
         res = driver.find_elements_by_css_selector('#ViewManyListTable tr')
+        elem = driver.find_element_by_id('MetaData')
+        elem.click()
         res.pop(0)
         for val in res:
             item = WarehouseStocksItem()
