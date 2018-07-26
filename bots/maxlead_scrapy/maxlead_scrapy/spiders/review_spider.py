@@ -87,8 +87,8 @@ class ReviewSpider(scrapy.Spider):
                 for img_re in imgs:
                     item['image_urls'].append(img_re.get_attribute('src'))
 
-            vp = review.find_element_by_css_selector('div.review-format-strip .a-link-normal span').text
-            if vp is not None and vp == 'Verified Purchase':
+            vp = review.find_elements_by_css_selector('div.review-format-strip .a-link-normal span')
+            if vp and vp[0].text == 'Verified Purchase':
                 item['is_vp'] = 1
             else:
                 item['is_vp'] = 0

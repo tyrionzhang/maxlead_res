@@ -134,6 +134,8 @@ class ListingSpider(scrapy.Spider):
                 item['price'] = driver.find_elements_by_css_selector('tr#priceblock_dealprice_row span#priceblock_dealprice')
             if item['price']:
                 item['price'] = item['price'][0].text
+            else:
+                item['price'] = 0
 
             review = driver.find_elements_by_id('acrCustomerReviewText')
             item['total_review'] = 0
