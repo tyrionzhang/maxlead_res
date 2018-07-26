@@ -191,7 +191,7 @@ class Listing:
                             category_rank_re = category_rank.split('in')[0]
 
                     if len(listing) == 2:
-                        if listing[0].price and listing[1].price:
+                        if listing[0].price and listing[1].price and not listing[0].price == '[]' and not listing[1].price == '[]':
                             price2 = float(listing[0].price[1:]) - float(listing[1].price[1:])
                         else:
                             price2 = 0
