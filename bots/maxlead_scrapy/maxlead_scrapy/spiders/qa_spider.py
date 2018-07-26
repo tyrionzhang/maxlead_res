@@ -8,6 +8,7 @@ from maxlead_site.models import UserAsins
 from django.db.models import Count
 from bots.maxlead_scrapy.maxlead_scrapy.items import AnswersItem
 from maxlead_site.models import Questions
+from bots.stockbot.stockbot import settings
 
 class QaSpider(scrapy.Spider):
 
