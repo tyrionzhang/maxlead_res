@@ -43,6 +43,7 @@ class QaSpider(scrapy.Spider):
         driver.implicitly_wait(100)
         elem_qa = driver.find_elements_by_css_selector('div.askInlineWidget div.askTeaserQuestions>.a-spacing-base')
         for i in range(0, len(elem_qa)):
+            next_page = driver.find_elements_by_css_selector('div#askPaginationBar li.a-last a')
             elem_qa = driver.find_elements_by_css_selector('div.askInlineWidget div.askTeaserQuestions>.a-spacing-base')
             qa_a = elem_qa[i]
             qa_url = qa_a.find_element_by_css_selector('.a-spacing-base .a-link-normal')
@@ -76,7 +77,6 @@ class QaSpider(scrapy.Spider):
             driver.back()
             driver.implicitly_wait(30)
 
-        next_page = driver.find_elements_by_css_selector('div#askPaginationBar li.a-last a')
         if next_page:
             time.sleep(3 + random.randint(27, 30))
             yield scrapy.Request(next_page[0].get_attribute('href'), callback=self.parse)
