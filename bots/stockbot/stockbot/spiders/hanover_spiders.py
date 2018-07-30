@@ -56,6 +56,8 @@ class HanoverSpider(scrapy.Spider):
             elem_pass[0].send_keys('1202HXML')
         btn_login[0].click()
         res = driver.find_elements_by_css_selector('#ViewManyListTable tr')
+        elem = driver.find_element_by_id('MetaData')
+        elem.click()
         res.pop(0)
         for val in res:
             item = WarehouseStocksItem()
