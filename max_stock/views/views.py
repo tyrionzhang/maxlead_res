@@ -77,8 +77,12 @@ class perform_command_que(threading.Thread):
         os.chdir(settings.ROOT_PATH)
 
 def run_command_queue():
-    spiders_time = "%.1f" % settings.STOCHS_TIME
-    t = threading.Timer(float(spiders_time), run_command_queue)
+    time_now = datetime.now()
+    time_re = datetime.now() + timedelta(days=1)
+    time_saturday = '%s 05:00:00' % time_re.strftime('%Y-%m-%d')
+    time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M:%S')
+    t_re = (time_saturday - time_now).total_seconds()
+    schedule.enter(t_re, 0, run_command_queue)
     _set_user_sku()
     q = queue.Queue()
 
@@ -86,7 +90,6 @@ def run_command_queue():
     reviews = perform_command_que(tname, q)
     reviews.start()
     reviews.join()
-    t.start()
 
 def stock_spiders(request):
     user = App.get_user_info(request)
@@ -108,11 +111,12 @@ def stock_spiders(request):
         time_saturday = '%s 05:00:00' % time_re.strftime('%Y-%m-%d')
         time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M:%S')
         t_re = (time_saturday - time_now).total_seconds()
-        t = threading.Timer(float('%.1f' % int(t_re)), run_command_queue)
+        schedule.enter(t_re, 0, run_command_queue)
         # 持续运行，直到计划时间队列变成空为止
-        t.start()
         time_str = datetime.now() +  timedelta(seconds = int(t_re))
         msg_str = 'Spiders will be runing!The time:%s' % time_str
+        print(msg_str)
+        schedule.run()
     return render(request, "Stocks/spider/home.html", {'msg_str':msg_str})
 
 def save_logs(data):
