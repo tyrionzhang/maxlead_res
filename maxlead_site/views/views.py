@@ -20,8 +20,8 @@ schedule = sched.scheduler(time.time, time.sleep)
 
 def perform_command():
     # 安排inc秒后再次运行自己，即周期运行
-    review_time = settings.REVIEW_TIME
-    schedule.enter(review_time, 0, perform_command)
+    spiders_time = "%.1f" % settings.REVIEW_TIME
+    t = threading.Timer(float(spiders_time), perform_command)
 
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
@@ -39,12 +39,13 @@ def perform_command():
             os.popen(cmd_str4)
             os.popen(cmd_str)
         os.chdir(settings.ROOT_PATH)
+    t.start()
     return True
 
 def perform_command1():
     # 安排inc秒后再次运行自己，即周期运行
-    s_time = settings.SPIDER_TIME
-    schedule.enter(s_time, 0, perform_command1)
+    spiders_time = "%.1f" % settings.SPIDER_TIME
+    t = threading.Timer(float(spiders_time), perform_command1)
 
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
@@ -59,17 +60,17 @@ def perform_command1():
             os.popen(cmd_str2)
 
         os.chdir(settings.ROOT_PATH)
+    t.start()
     return True
 
 def Spiders2(request):
-    schedule.enter(36000, 0, perform_command)
-    schedule.enter(39600, 0, perform_command1)
+    t1 = threading.Timer(18000.0, perform_command)
+    t1.start()
+    t2 = threading.Timer(21600.0, perform_command1)
+    t2.start()
     # 持续运行，直到计划时间队列变成空为止
-    print('Spiders is runing!Time:%s' % datetime.now())
-    schedule.run()
-
-
-    return render(request, 'spider/home.html')
+    msg_str = 'Spiders is runing!Time:%s' % datetime.now()
+    return render(request, "Stocks/spider/home.html", {'msg_str': msg_str})
 
 def Spiders1(request):
     perform_command2()
