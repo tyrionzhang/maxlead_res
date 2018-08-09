@@ -40,7 +40,13 @@ MENUS = [
         'name' : 'Logs',
         'url' : '/admin/max_stock/logs/',
         'elem_id' : 'logs'
+    },
+    {
+        'name' : 'Email Temp',
+        'url' : '/admin/send_email/email_temps/',
+        'elem_id' : 'email_temp'
     }
+
 ]
 
 ROLES = [

@@ -31,6 +31,7 @@ from max_stock.views import users_sku as skus
 from max_stock.views import stocks
 from max_stock.views import auto_email
 from max_stock.views import setting
+from max_stock.views import order_email_temp as emailTmp
 from django.views import static
 from maxlead import settings
 
@@ -138,5 +139,9 @@ urlpatterns = [
     url('^admin/setting/get_menus/', setting.get_menus_by_role),
     url('^admin/setting/get_role_user/', setting.get_role_user),
     url('^admin/setting/get_save_role_user/', setting.get_save_role_user),
+    url('^admin/send_email/email_temps/', emailTmp.email_temps),
+    url('^admin/send_email/tmp_save/', emailTmp.tmp_save),
+    url('^admin/send_email/del_tmp/', emailTmp.del_tmp),
+    url('^admin/send_email/tmp_import/', emailTmp.tmp_import),
 ]
 

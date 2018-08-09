@@ -57,16 +57,20 @@ class OrderItems(models.Model):
     class Meta:
         db_table = 'order_items'
 
-class Templates(models.Model):
+class EmailTemplates(models.Model):
     sku = models.CharField('SKU', max_length=50)
+    keywords = models.CharField('Keywords', max_length=20, default=None)
+    title = models.CharField('Title', max_length=255)
     content = models.TextField('Content')
+    order_status = models.IntegerField('Order Status', default=0)
+    send_time = models.CharField('Send Time', max_length=20, default=None)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
-        db_table = 'templates'
+        db_table = 'email_templates'
 
 class Schedule(models.Model):
-    templates = models.ForeignKey(Templates, on_delete=models.CASCADE)
+    templates = models.ForeignKey(EmailTemplates, on_delete=models.CASCADE)
     sku = models.CharField('SKU', max_length=50)
     time_str = models.CharField('Time Str', max_length=50)
     created = models.DateTimeField('Create Date', auto_now_add=True)
@@ -83,6 +87,7 @@ class Roles(models.Model):
 
 class Menus(models.Model):
     name = models.CharField('Name', max_length=50)
+    parent_id = models.IntegerField('Parent', default=0)
     roles = models.ManyToManyField(Roles)
     url = models.CharField('Url', max_length=50)
     elem_id = models.CharField('ID', max_length=50)
