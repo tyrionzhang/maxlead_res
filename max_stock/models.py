@@ -49,10 +49,10 @@ class AmazonCode(models.Model):
 
 class OrderItems(models.Model):
     order_id = models.CharField('Order Id', max_length=225)
-    sku = models.CharField('SKU', max_length=50)
+    sku = models.CharField('SKU', max_length=225)
     order_status = models.CharField('Status', max_length=50)
     email = models.CharField('Email', max_length=225)
-    customer = models.CharField('Customer', max_length=50, default=None)
+    customer = models.CharField('Customer', max_length=225, default=None)
     is_email = models.IntegerField('Is Email', default=0)
     is_presale = models.IntegerField('Presale', default=0)
     payments_date = models.DateTimeField('Payments Date', default = timezone.now)
@@ -66,7 +66,7 @@ class OldOrderItems(models.Model):
     sku = models.CharField('SKU', max_length=50)
     order_status = models.CharField('Status', max_length=50)
     email = models.CharField('Email', max_length=225)
-    customer = models.CharField('Customer', max_length=50)
+    customer = models.CharField('Customer', max_length=225)
     is_email = models.IntegerField('Is Email', default=0)
     is_presale = models.IntegerField('Presale', default=1)
     payments_date= models.DateTimeField('Payments Date', null=True)
