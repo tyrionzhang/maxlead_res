@@ -17,6 +17,12 @@ class App:
         menus = Menus.objects.all()
         if not user.user.is_superuser and not user.stocks_role == 66:
             menus = menus.filter(roles__code=user.stocks_role)
+        if not user.other_email:
+            user.other_email = ''
+        if not user.email_pass:
+            user.email_pass = ''
+        if not user.smtp_server:
+            user.smtp_server = ''
         user.menu_list = menus
         return user
 

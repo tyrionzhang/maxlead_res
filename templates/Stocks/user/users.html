@@ -32,6 +32,8 @@
                 <tr id="tr-head">
                     <th>Username</th>
                     <th>Email</th>
+                    <th>other_email</th>
+                    <th>smtp_server</th>
                     <th>Date</th>
                     <th>Fun</th>
                 </tr>
@@ -40,6 +42,8 @@
                     <td>{{ val.user.username }}</td>
                     <td>{{ val.user.email }}</td>
                     <td style="display: none">{{ val.stocks_role }}</td>
+                    <td>{{ val.other_email }}</td>
+                    <td>{{ val.smtp_server }}</td>
                     <td>{{ val.user.date_joined }}</td>
                     <td>
                         <a href="javascript:;" class="fun-btn btn-edit user-edit" data-id="{{ val.user.id }}">Edit</a>
@@ -74,6 +78,18 @@
             <label class="lab-post-param">
 				<span>Email:</span>
 				<input type="text" name="email">
+			</label>
+            <label class="lab-post-param">
+				<span>Other Email:</span>
+				<input type="text" name="other_email">
+			</label>
+            <label class="lab-post-param">
+				<span>Email Pass:</span>
+				<input type="password" name="email_pass">
+			</label>
+            <label class="lab-post-param">
+				<span>Smtp Server:</span>
+				<input type="text" name="smtp_server">
 			</label>
 
 			<div>
@@ -115,6 +131,9 @@
             var data = {
               'username':$('input[name="username"]').val(),
               'password':$('input[name="password"]').val(),
+              'other_email':$('input[name="other_email"]').val(),
+              'email_pass':$('input[name="email_pass"]').val(),
+              'smtp_server':$('input[name="smtp_server"]').val(),
               'stocks_role':$('select[name="stocks_role"]').val(),
               'email':$('input[name="email"]').val(),
               'id':id
@@ -139,6 +158,8 @@
         $('.user-edit').on('click',function () {
             var username = $(this).parents('tr').find('td:eq(0)').html();
             var email = $(this).parents('tr').find('td:eq(1)').html();
+            var other_email = $(this).parents('tr').find('td:eq(3)').html();
+            var smtp_server = $(this).parents('tr').find('td:eq(4)').html();
             var stocks_role = $(this).parents('tr').find('td:eq(2)').html();
             var id = $(this).data('id');
             $('.wrap-paper').removeClass('hide');
@@ -146,6 +167,8 @@
             $('#form_user').append('<input type="hidden" name="id" value="'+id+'">');
             $('input[name="username"]').val(username);
             $('input[name="email"]').val(email);
+            $('input[name="other_email"]').val(other_email);
+            $('input[name="smtp_server"]').val(smtp_server);
             $('select[name="stocks_role"]').val(stocks_role);
         });
 

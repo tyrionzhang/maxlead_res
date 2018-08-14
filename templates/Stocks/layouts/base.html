@@ -97,6 +97,18 @@
 				<span>Email:</span>
 				<input type="text" name="email_info">
 			</label>
+            <label class="lab-post-param">
+				<span>Other Email:</span>
+				<input type="text" name="other_email_info">
+			</label>
+            <label class="lab-post-param">
+				<span>Email Pass:</span>
+				<input type="password" name="email_pass_info">
+			</label>
+            <label class="lab-post-param">
+				<span>Smtp Server:</span>
+				<input type="text" name="smtp_server_info">
+			</label>
             <input type="hidden" name="id_info" value="{{ user.user.id }}">
 			<div>
 				<input type="submit" value="Save" id="btn_user_info">
@@ -118,9 +130,13 @@
 
                     var username = '{{ user.user.username }}';
                     var email = '{{ user.user.email }}';
+                    var other_email = '{{ user.other_email }}';
+                    var smtp_server = '{{ user.smtp_server }}';
                     var id = {{ user.user.id }};
                     $('input[name="username_info"]').val(username);
                     $('input[name="email_info"]').val(email);
+                    $('input[name="other_email_info"]').val(other_email);
+                    $('input[name="smtp_server_info"]').val(smtp_server);
                 });
 
                 $('body').on('click','.wrap-paper' , function(){
@@ -134,6 +150,9 @@
                       'username':$('input[name="username_info"]').val(),
                       'password':$('input[name="password_info"]').val(),
                       'email':$('input[name="email_info"]').val(),
+                      'other_email':$('input[name="other_email_info"]').val(),
+                      'email_pass':$('input[name="email_pass_info"]').val(),
+                      'smtp_server':$('input[name="smtp_server_info"]').val(),
                       'id':id
                     };
                     if (!id){

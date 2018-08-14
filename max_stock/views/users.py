@@ -8,6 +8,7 @@ from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
 from maxlead_site.models import UserProfile
 from maxlead_site.common.excel_world import read_excel_file
+from maxlead_site.common import common
 from maxlead import settings
 
 @csrf_exempt
@@ -27,6 +28,11 @@ def user_list(request):
         res = UserProfile.objects.filter(role=99)
         if keywords:
             res = res.filter(user__username__contains=keywords)
+        for val in res:
+            if not val.other_email:
+                val.other_email = ''
+            if not val.smtp_server:
+                val.smtp_server = ''
     data = {
         'data':res,
         'title':"UserAdmin",
@@ -42,8 +48,14 @@ def user_save(request):
     if request.method == 'POST':
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
+        email = request.POST.get('email', '')
+        other_email = request.POST.get('other_email', '')
+        email_pass = request.POST.get('email_pass', '')
+        smtp_server = request.POST.get('smtp_server', '')
         stocks_role = request.POST.get('stocks_role', '')
         id = request.POST.get('id', '')
+        if email_pass:
+            email_pass = common.encrypt(16, email_pass)
         if not id:
             if not username or not password:
                 return HttpResponse(json.dumps({'code': 0, 'msg': u'Username/Password is empty！'}),
@@ -55,7 +67,7 @@ def user_save(request):
             user = User()
             user.username = username
             user.set_password(password)
-            user.email = request.POST.get('email', '')
+            user.email = email
             user.id
             user.save()
             user_file = UserProfile()
@@ -63,6 +75,9 @@ def user_save(request):
             user_file.user_id = user.id
             user_file.role = 99
             user_file.stocks_role = stocks_role
+            user_file.other_email = other_email
+            user_file.email_pass = email_pass
+            user_file.smtp_server = smtp_server
             user_file.state = 1
             user_file.save()
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}),
@@ -81,12 +96,12 @@ def user_save(request):
             if password:
                 user.set_password(password)
                 update_fields.append('password')
-            user.email = request.POST.get('email', '')
+            user.email = email
             user.id=id
             user.save(update_fields=update_fields)
             obj = UserProfile.objects.filter(user_id=id)
             if obj:
-                obj.update(stocks_role=stocks_role)
+                obj.update(stocks_role=stocks_role, other_email=other_email, email_pass=email_pass, smtp_server=smtp_server)
 
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}),
                         content_type='application/json')

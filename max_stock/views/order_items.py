@@ -16,6 +16,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.utils import parseaddr,formataddr
+from maxlead_site.common import common
 
 def _get_send_time(time_str):
     time_now = datetime.now()
@@ -34,6 +35,11 @@ def send_email_as_tmp(title, msg, from_email, email):
     from_addr = 'rudy.zhangwei@cdsht.cn'
     to_addr = email
     password = "Mc123456"
+    if from_email and from_email.email_pass:
+        if from_email.smtp_server:
+            smtp_server = from_email.smtp_server
+        from_addr = from_email.other_email
+        password = common.decrypt(16, from_email.email_pass)
 
     # 自定义处理邮件收发地址的显示内容
     def _format_addr(s):
@@ -53,6 +59,7 @@ def send_email_as_tmp(title, msg, from_email, email):
     server.login(from_addr, password)
     server.sendmail(from_addr, to_addr, msg.as_string())
     server.quit()
+    time.sleep(5)
     return True
 
 @csrf_exempt
@@ -145,10 +152,9 @@ def send_email(request):
                 else:
                     title = "After-sale Service for your recent order from Brandline (Amazon order: %s)" % val['order_id']
                 msg = tmps[0].content % val['buyer']
-                from_email = 'rudy.zhangwei@cdsht.cn'
                 time_re = _get_send_time(tmps[0].send_time)
-                tmp_res = [title, msg, from_email, 'swlxyztd@163.com']
-                t = threading.Timer(float('%.1f' % int(time_re)), send_email_as_tmp, tmp_res)
+                tmp_res = [title, msg, user, 'swlxyztd@163.com']
+                t = threading.Timer(float('%.1f' % int(1)), send_email_as_tmp, tmp_res)
                 t.start()
                 email_order_obj = OldOrderItems()
                 email_order_obj.id
