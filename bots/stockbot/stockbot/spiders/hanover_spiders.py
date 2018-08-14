@@ -55,31 +55,38 @@ class HanoverSpider(scrapy.Spider):
         if elem_pass:
             elem_pass[0].send_keys('1202HXML')
         btn_login[0].click()
-        res = driver.find_elements_by_css_selector('#ViewManyListTable tr')
-        elem = driver.find_element_by_id('MetaData')
-        elem.click()
-        res.pop(0)
-        for val in res:
-            item = WarehouseStocksItem()
-            td_re = val.find_elements_by_tag_name('td')
-            if td_re:
-                item['sku'] = td_re[0].text
-                if item['sku'] in self.sku_list:
-                    item['warehouse'] = 'Hanover'
-                    item['is_new'] = 1
-                    if td_re[2].text and not td_re[2].text == ' ':
-                        item['qty'] = td_re[2].text
-                        item['qty'] = item['qty'].replace(',','')
-                    else:
-                        item['qty'] = 0
-                    yield item
+        total_page = driver.find_elements_by_css_selector('#navigationTR nobr')[0].text
+        total_page = int(total_page.split(' ')[-1])
+        for i in range(total_page):
+            res = driver.find_elements_by_css_selector('#ViewManyListTable tr')
+            elem = driver.find_element_by_id('MetaData')
+            elem.click()
+            res.pop(0)
+            for val in res:
+                item = WarehouseStocksItem()
+                td_re = val.find_elements_by_tag_name('td')
+                if td_re:
+                    item['sku'] = td_re[0].text
+                    if item['sku'] in self.sku_list:
+                        item['warehouse'] = 'Hanover'
+                        item['is_new'] = 1
+                        if td_re[2].text and not td_re[2].text == ' ':
+                            item['qty'] = td_re[2].text
+                            item['qty'] = item['qty'].replace(',','')
+                        else:
+                            item['qty'] = 0
+                        yield item
 
-                    threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
-                    user = SkuUsers.objects.filter(sku=item['sku'])
-                    if threshold and threshold[0].threshold >= int(item['qty']):
-                        if user:
-                            msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % ( user[0].user.email,
-                                                    item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                        threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
+                        user = SkuUsers.objects.filter(sku=item['sku'])
+                        if threshold and threshold[0].threshold >= int(item['qty']):
+                            if user:
+                                msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % ( user[0].user.email,
+                                                        item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+            if i < total_page:
+                elem_next_page = driver.find_elements_by_id('Next')
+                if elem_next_page:
+                    elem_next_page[0].click()
         display.stop()
         driver.quit()
 
