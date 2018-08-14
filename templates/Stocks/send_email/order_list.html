@@ -227,6 +227,7 @@
            if (elem_tr.length == 0) {
                alert('请选择订单');
            }else {
+               $(this).attr('disabled', 'true');
               elem_tr.each(function () {
                   data.push({
                       'order_id' : $(this).children('td').eq(1).text(),
