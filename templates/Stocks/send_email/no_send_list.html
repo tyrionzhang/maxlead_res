@@ -1,0 +1,202 @@
+{% extends "Stocks/layouts/base.html" %}
+{% block container %}
+    <div id="main" data-name="no_send_list">
+        <div class="con-head">
+            <h1>{{ title }}</h1>
+            <form action="/admin/send_email/no_send_list/">
+                <div class="text-box">
+                    <label>
+                        <span>Search:</span>
+                        <input type="text" name="search_words" value="{{ keywords }}">
+                    </label>
+                </div>
+
+                <div class="text-box-btn">
+                    <label>
+                        <input type="submit" value="Search">
+                    </label>
+                </div>
+            </form>
+            <div class="clear"></div>
+            <div class="con-head-right">
+                <div class="btn btn-green">
+                    <button id="order_add">Add</button>
+                </div>
+                <div class="btn btn-blue">
+                    <button id="order_import">Import</button>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="con-body" style="height:800px;overflow:scroll;">
+            <table id="datas" class="tb-datas">
+                <tr id="tr-head">
+                    <th><input type="checkbox" id="check_all"></th>
+                    <th>SKU</th>
+                    <th>Fun</th>
+                </tr>
+                {% for val in list %}
+                <tr>
+                    <td><input type="checkbox" class="check_tr"></td>
+                    <td>{{ val.sku }}</td>
+                    <td>
+                        <a href="javascript:;" class="fun-btn btn-del tmp-del" data-id="{{ val.id }}">Del</a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+    <div class="save-threshold hide save-block-info" id="save_order">
+		<form action="" id="form_order">
+			<span class="btn-close">x</span>
+			<h2 style="margin: 0 0px 0 164px;">Presale Order</h2>
+			<div class="text-box" style="float: none;margin-left: 30px;width: 326px;">
+                <label class="lab-post-param">
+				    <span>SKU:</span>
+				    <input type="text" name="sku">
+			    </label>
+            </div>
+
+			<div>
+				<input type="submit" value="Save" id="btn_save">
+			</div>
+		</form>
+    </div>
+
+    <div class="hide" id="import_modal">
+        <form id="import_form" method="post" enctype="multipart/form-data">
+            <input type="file" name="myfile">
+            <input type="submit" value="Submit" id="btn_import_modal">
+        </form>
+        <div id="import_msg"></div>
+    </div>
+    <script>
+        $(document).ready(function(){
+          $('input[name="keywords"]').val('{{ keywords }}');
+
+          $('#check_all').on('click', function () {
+              var checked = $(this).prop('checked');
+              if (checked) {
+                  $('.check_tr').prop('checked', true);
+              }else {
+                  $('.check_tr').prop('checked', false);
+              }
+          });
+
+          $('#order_add').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#save_order').removeClass('hide');
+                $('#form_order')[0].reset();
+                $('#btn_save').removeAttr('disabled');
+            });
+
+          $('#order_import').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#import_modal').removeClass('hide');
+            });
+            $('body').on('click','.wrap-paper' , function(){
+                $('.wrap-paper').addClass('hide');
+                $('#import_modal').addClass('hide');
+                $('#save_order').addClass('hide');
+            });
+        });
+        $('#btn_save').on('click',function () {
+            var id = $('input[name="id"]').val();
+            var data = {
+              'sku':$('input[name="sku"]').val(),
+              'id':id
+            };
+            if (!id){
+                $(this).attr("disabled", true);
+            }
+            $.post('/admin/send_email/order_save/',data,function (re) {
+               if(re.code==0 || re.code==1){
+                   alert(re.msg);
+                   if(re.code==1){
+                       window.location.reload();
+                   }
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#btn_import_modal').on('click', function () {
+            var form_data = new FormData();
+            var file_info =$('input[name="myfile"]')[0].files[0];
+            form_data.append('myfile',file_info);
+            //if(file_info==undefined)暂且不许要判断是否有附件
+                //alert('你没有选择任何文件');
+                //return false
+            $.ajax({
+                url:'/admin/send_email/check_order_import/',
+                type:'POST',
+                data: form_data,
+                processData: false,  // tell jquery not to process the data
+                contentType: false, // tell jquery not to set contentType
+                success: function(callback) {
+                    $('#import_msg').append('Work is done!<br>');
+                    $('#import_msg').append(callback.msg);
+                    $('#import_msg').append('<input type="button" id="order_import" value="确定">');
+                }
+            });
+            return false;
+        });
+
+        $('.tmp-del').on('click', function () {
+            var id=$(this).data('id');
+            if (confirm('确定删除？')) {
+                $.post('/admin/send_email/del_check_order/',{'id':id},function (re) {
+                   if(re.code==0 || re.code==1){
+                       alert(re.msg);
+                       if(re.code==1){
+                           window.location.reload();
+                       }
+                   }
+                   if(re.code==66){
+                       window.location.href='/admin/max_stock/login/';
+                   }
+                   return false;
+                },'json');
+            }
+
+        });
+
+        $('#send_email').on('click', function () {
+           var elem_tr = $('.check_tr:checked').parents('tr');
+           var data = new Array();
+           if (elem_tr.length == 0) {
+               alert('请选择订单');
+           }else {
+              elem_tr.each(function () {
+                  data.push({
+                      'order_id' : $(this).children('td').eq(1).text(),
+                      'sku' : $(this).children('td').eq(2).text(),
+                      'email' : $(this).children('td').eq(3).text(),
+                      'buyer' : $(this).children('td').eq(4).text()
+                  });
+              });
+              $.post('/admin/send_email/send_email/',{'data':JSON.stringify(data)},function (re) {
+               if(re.code==0 || re.code==1){
+                   alert(re.msg);
+                   if(re.code==1){
+                       window.location.reload();
+                   }
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+           }
+        });
+
+        $('#import_modal').on('click', '#order_import', function () {
+            window.location.reload();
+        });
+    </script>
+{% endblock %}

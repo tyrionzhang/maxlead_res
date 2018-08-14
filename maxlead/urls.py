@@ -31,7 +31,7 @@ from max_stock.views import users_sku as skus
 from max_stock.views import stocks
 from max_stock.views import auto_email
 from max_stock.views import setting
-from max_stock.views import order_email_temp as emailTmp
+from max_stock.views import order_email_temp as emailTmp,order_items
 from django.views import static
 from maxlead import settings
 
@@ -143,5 +143,12 @@ urlpatterns = [
     url('^admin/send_email/tmp_save/', emailTmp.tmp_save),
     url('^admin/send_email/del_tmp/', emailTmp.del_tmp),
     url('^admin/send_email/tmp_import/', emailTmp.tmp_import),
+    url('^admin/send_email/order_list/', order_items.order_list),
+    url('^admin/send_email/order_save/', order_items.order_save),
+    url('^admin/send_email/order_import/', order_items.order_import),
+    url('^admin/send_email/send_email/', order_items.send_email),
+    url('^admin/send_email/no_send_list/', order_items.no_send_list),
+    url('^admin/send_email/check_order_import/', order_items.check_order_import),
+    url('^admin/send_email/del_check_order/', order_items.del_check_order),
 ]
 

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import django.utils.timezone as timezone
 
 # Create your models here.
 class Thresholds(models.Model):
@@ -50,12 +51,36 @@ class OrderItems(models.Model):
     order_id = models.CharField('Order Id', max_length=225)
     sku = models.CharField('SKU', max_length=50)
     order_status = models.CharField('Status', max_length=50)
-    email = models.CharField('Email', max_length=50)
+    email = models.CharField('Email', max_length=225)
+    customer = models.CharField('Customer', max_length=50, default=None)
     is_email = models.IntegerField('Is Email', default=0)
+    is_presale = models.IntegerField('Presale', default=0)
+    payments_date = models.DateTimeField('Payments Date', default = timezone.now)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
         db_table = 'order_items'
+
+class OldOrderItems(models.Model):
+    order_id = models.CharField('Order Id', max_length=225)
+    sku = models.CharField('SKU', max_length=50)
+    order_status = models.CharField('Status', max_length=50)
+    email = models.CharField('Email', max_length=225)
+    customer = models.CharField('Customer', max_length=50)
+    is_email = models.IntegerField('Is Email', default=0)
+    is_presale = models.IntegerField('Presale', default=1)
+    payments_date= models.DateTimeField('Payments Date', null=True)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'old_order_items'
+
+class NoSendRes(models.Model):
+    sku = models.CharField('SKU', max_length=50)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'no_send_res'
 
 class EmailTemplates(models.Model):
     sku = models.CharField('SKU', max_length=50)

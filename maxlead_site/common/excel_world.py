@@ -5,7 +5,7 @@ from io import *
 import os,time,xlrd,csv,datetime
 from django.contrib.auth.models import User
 from maxlead_site.models import UserProfile
-from max_stock.models import SkuUsers,Thresholds
+from max_stock.models import SkuUsers,Thresholds,OrderItems,NoSendRes
 from maxlead import settings
 
 def get_excel_file(self, data,fields,data_fields=[]):
@@ -238,59 +238,93 @@ def read_excel_file1(model,res,model_name):
     for i in range(nrows):
         str1 = ""
         str2 = ""
-        # try:
-        if i + 1 < nrows:
-            if model_name == 'sku_users':
-                user_name = table.cell_value(i + 1, 0,)
-                sku = table.cell_value(i + 1, 1,)
-                check = SkuUsers.objects.filter(user__username=user_name,sku=sku)
-                if check:
-                    msg += '第%s行已存在。<br>' % (i + 1)
-                    continue
-            if model_name == 'stock_thresholds':
-                sku = table.cell_value(i + 1, 0, )
-                warehouse = table.cell_value(i + 1, 1, )
-                check = Thresholds.objects.filter(sku=sku,warehouse=warehouse)
-                if check:
-                    msg += '第%s行已存在。<br>' % (i + 1)
-                    continue
+        try:
+            if i + 1 < nrows:
+                if model_name == 'sku_users':
+                    user_name = table.cell_value(i + 1, 0,)
+                    sku = table.cell_value(i + 1, 1,)
+                    check = SkuUsers.objects.filter(user__username=user_name,sku=sku)
+                    if check:
+                        msg += '第%s行已存在。<br>' % (i + 1)
+                        continue
+                if model_name == 'stock_thresholds':
+                    sku = table.cell_value(i + 1, 0, )
+                    warehouse = table.cell_value(i + 1, 1, )
+                    check = Thresholds.objects.filter(sku=sku,warehouse=warehouse)
+                    if check:
+                        msg += '第%s行已存在。<br>' % (i + 1)
+                        continue
 
-            for n,val in enumerate(fields,0):
-                if not n == 0:
-                    a = '%s,'
-                    a1 = "\'%s\',"
-                    val_res = table.cell_value(i + 1, n-1,)
-                    if n+1 == len(fields):
-                        a = '%s'
-                        a1 = "\'%s\'"
-                    if val.name == 'user_id' or val.name == 'user':
-                        user_obj = User.objects.filter(username=val_res)
-                        if user_obj:
-                            val_res = user_obj[0].id
-                            val.name = 'user_id'
-                    if val.name == 'send_time':
-                        val_res = xlrd.xldate.xldate_as_datetime(val_res, 0).strftime("%H:%M")
-                    if val.get_internal_type() == 'DateTimeField':
-                        if not val_res:
-                            val_res = datetime.datetime.now()
-                        else:
-                            val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
-                    if val.get_internal_type() == 'DateField':
-                        if not val_res:
-                            val_res = datetime.datetime.now().strftime("%Y-%m-%d")
-                        else:
-                            val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
-                    if val.get_internal_type() == 'IntegerField':
-                        a1 = "%s,"
-                    if val.get_internal_type() == 'TextField':
-                        val_res = val_res.replace("'","/")
-                    str1 += a % val.name
-                    str2 += a1  % val_res
-            sql = "insert into %s (%s) VALUES (%s)" % (model_name,str1,str2)
-            cursor.execute(sql)
-        # except:
-        #     msg += '第%s行添加有误。<br>' % (i+1)
-        #     continue
+                if model_name == 'no_send_res':
+                    sku = table.cell_value(i + 1, 0, )
+                    check = NoSendRes.objects.filter(sku=sku)
+                    if check:
+                        msg += '第%s行已存在。<br>' % (i + 1)
+                        continue
+
+                for n,val in enumerate(fields,0):
+                    if not n == 0:
+                        a = '%s,'
+                        a1 = "\'%s\',"
+                        val_res = table.cell_value(i + 1, n-1,)
+                        if n+1 == len(fields):
+                            a = '%s'
+                            a1 = "\'%s\'"
+                        if val.name == 'user_id' or val.name == 'user':
+                            user_obj = User.objects.filter(username=val_res)
+                            if user_obj:
+                                val_res = user_obj[0].id
+                                val.name = 'user_id'
+                        if val.name == 'send_time':
+                            val_res = xlrd.xldate.xldate_as_datetime(val_res, 0).strftime("%H:%M")
+                        if val.get_internal_type() == 'DateTimeField':
+                            if not val_res:
+                                val_res = datetime.datetime.now()
+                            else:
+                                val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
+                        if val.get_internal_type() == 'DateField':
+                            if not val_res:
+                                val_res = datetime.datetime.now().strftime("%Y-%m-%d")
+                            else:
+                                val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
+                        if val.get_internal_type() == 'IntegerField':
+                            a1 = "%s,"
+                        if val.get_internal_type() == 'TextField':
+                            val_res = val_res.replace("'","/")
+                        str1 += a % val.name
+                        str2 += a1  % val_res
+                sql = "insert into %s (%s) VALUES (%s)" % (model_name,str1,str2)
+                cursor.execute(sql)
+        except:
+            msg += '第%s行添加有误。<br>' % (i+1)
+            continue
+    return {'code': 1, 'msg': msg}
+
+def read_excel_for_orders(res):
+    fname = res
+    msg = ''
+    if not os.path.isfile(fname):
+        return {'code':0,'msg':'File is not found!'}
+    data = xlrd.open_workbook(fname)  # 打开fname文件
+    data.sheet_names()  # 获取xls文件中所有sheet的名称
+    table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+    nrows = table.nrows
+    for i in range(nrows):
+        try:
+            if i + 1 < nrows:
+                obj = OrderItems()
+                obj.id
+                obj.order_id = table.cell_value(i + 1, 0,)
+                obj.sku = table.cell_value(i + 1, 7,)
+                obj.order_status = 0
+                obj.email = table.cell_value(i + 1, 4,)
+                obj.customer = table.cell_value(i + 1, 5,)
+                obj.payments_date = table.cell_value(i + 1, 3,)
+                obj.save()
+
+        except:
+            msg += '第%s行添加有误。<br>' % (i+1)
+            continue
     return {'code': 1, 'msg': msg}
 
 def read_excel_data(model,res):

@@ -45,6 +45,16 @@ MENUS = [
         'name' : 'Email Temp',
         'url' : '/admin/send_email/email_temps/',
         'elem_id' : 'email_temp'
+    },
+    {
+        'name' : 'Order Items',
+        'url' : '/admin/send_email/order_list/',
+        'elem_id' : 'order_list'
+    },
+    {
+        'name' : 'Check Orders',
+        'url' : '/admin/send_email/no_send_list/',
+        'elem_id' : 'no_send_list'
     }
 
 ]
