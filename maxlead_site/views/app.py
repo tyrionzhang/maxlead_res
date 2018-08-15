@@ -11,6 +11,10 @@ class App:
     def get_user_info(self):
         os.chdir(settings.ROOT_PATH)
         menu_id = self.GET.get('menu_id')
+        if not menu_id:
+            obj = Menus.objects.filter(url=self.path, parent_id=0)
+            if obj:
+                menu_id = obj[0].id
         if self.user.id:
             user = UserProfile.objects.get(user_id=self.user.id)
         if not self.user.is_authenticated or user.state == 0:
