@@ -108,6 +108,7 @@ urlpatterns = [
     url('^admin/max_stock/users_del/', stock_users.users_del),
     url('^admin/max_stock/logout/', stock_users.logout),
     url('^admin/max_stock/index/', stocks.index),
+    url('^admin/max_stock/reviews/', stocks.index),
     url('^admin/max_stock/$', stocks.index),
     url('^admin/max_stock/stock_checked/', stocks.stock_checked),
     url('^admin/max_stock/checked_edit/', stocks.checked_edit),

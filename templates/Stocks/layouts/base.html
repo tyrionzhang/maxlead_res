@@ -10,6 +10,23 @@
         <link rel="stylesheet" href="/static/max_stock/css/stock_style.css" type="text/css">
         <script src="/static/max_stock/js/jquery-3.3.1.min.js"></script>
         <script src="/static/max_stock/js/stocks.js"></script>
+        <style>
+            .header-right {
+                position: absolute;
+                display: inline-block;
+                left: 195px;
+                top: 9px;
+            }
+            .header-right a {
+                color: white;
+                padding-right: 17px;
+                text-decoration: none;
+            }
+
+            .header-right a:hover {
+                color: #cccccc;
+            }
+        </style>
     </head>
     <body>
         <div class="wrapper">
@@ -23,6 +40,12 @@
 				<li>Ego</li>
 			</ul> -->
 			<h3>Welcome,<a href="javascript:;" style="text-decoration: none;color: white;" id="user_info">{{ user.user.username }}</a>!</h3>
+            <div class="header-right">
+                <a href="/admin/max_stock/index/?menu_id=-1" {% if user.index_menu_id == -1 %}style="color: #cccccc;"{% endif %}>Index</a>
+                {% for val in user.menu_list %}
+                    <a href="{{ val.url }}?menu_id={{ val.id }}" {% if user.index_menu_id == val.id %}style="color: #cccccc;"{% endif %}>{{ val.name }}</a>
+                {% endfor %}
+            </div>
             <div class="header-left">
                 <a href="javascript:;" class="a-run-spiders" target="_blank">Run Spiders</a>
                 <a href="/admin/max_stock/logout/" class="a-logout">Logout</a>
@@ -35,8 +58,8 @@
 				</div>
 				<div class="menu">
 					<ul class="ul-menu">
-                        {% for val in user.menu_list %}
-						<li id="{{ val.elem_id }}"><a href="{{ val.url }}">{{ val.name }}</a></li>
+                        {% for val in user.menu_child %}
+						<li id="{{ val.elem_id }}"><a href="{{ val.url }}?menu_id={{ user.index_menu_id }}">{{ val.name }}</a></li>
                         {% endfor %}
 					</ul>
 				</div>
