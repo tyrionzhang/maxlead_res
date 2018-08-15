@@ -2,12 +2,6 @@
 
 MENUS0 = [
     {
-        'name' : 'Index',
-        'url' : '/admin/max_stock/index/',
-        'elem_id' : 'Index',
-        'parent': 0
-    },
-    {
         'name' : 'Warehouse',
         'url' : '/admin/max_stock/reviews/',
         'elem_id' : 'reviews',
