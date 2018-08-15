@@ -55,6 +55,7 @@ class HanoverSpider(scrapy.Spider):
         if elem_pass:
             elem_pass[0].send_keys('1202HXML')
         btn_login[0].click()
+        driver.implicitly_wait(100)
         total_page = driver.find_elements_by_css_selector('#navigationTR nobr')[0].text
         total_page = int(total_page.split(' ')[-1])
         for i in range(total_page):
@@ -87,6 +88,7 @@ class HanoverSpider(scrapy.Spider):
                 elem_next_page = driver.find_elements_by_id('Next')
                 if elem_next_page:
                     elem_next_page[0].click()
+                    driver.implicitly_wait(100)
         display.stop()
         driver.quit()
 
