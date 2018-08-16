@@ -56,6 +56,7 @@ def send_email_as_tmp(title, msg, from_email, email):
     # 发送邮件
     server = smtplib.SMTP(smtp_server, 465)
     server.set_debuglevel(1)
+    server.starttls()
     server.login(from_addr, password)
     server.sendmail(from_addr, to_addr, msg.as_string())
     server.quit()
