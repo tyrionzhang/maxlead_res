@@ -31,10 +31,10 @@ def _get_send_time(time_str):
     return t_re
 
 def send_email_as_tmp(title, msg, from_email, email):
-    smtp_server = 'smtp.exmail.qq.com'
-    from_addr = 'rudy.zhangwei@cdsht.cn'
+    smtp_server = 'smtp.gmail.com'
+    from_addr = 'maxlead.us@gmail.com'
     to_addr = email
-    password = "Mc123456"
+    password = "FF04JEsNKsRgvd>j2ES68iA0"
     if from_email and from_email.email_pass:
         if from_email.smtp_server:
             smtp_server = from_email.smtp_server
