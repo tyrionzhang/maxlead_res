@@ -32,9 +32,9 @@ def _get_send_time(time_str):
 
 def send_email_as_tmp(title, msg, from_email, email):
     smtp_server = 'smtp.gmail.com'
-    from_addr = 'maxlead.us@gmail.com'
+    from_addr = 'swlxyztd@gmail.com'
     to_addr = email
-    password = "FF04JEsNKsRgvd>j2ES68iA0"
+    password = "075686zwd717."
     if from_email and from_email.email_pass:
         if from_email.smtp_server:
             smtp_server = from_email.smtp_server
