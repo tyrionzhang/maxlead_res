@@ -32,9 +32,9 @@ def _get_send_time(time_str):
 
 def send_email_as_tmp(title, msg, from_email, email):
     smtp_server = 'smtp.gmail.com'
-    from_addr = 'swlxyztd@gmail.com'
+    from_addr = 'maxlead.us@gmail.com'
     to_addr = email
-    password = "075686zwd717."
+    password = "nxtpinfcqitdcpzb"
     if from_email and from_email.email_pass:
         if from_email.smtp_server:
             smtp_server = from_email.smtp_server
@@ -161,7 +161,7 @@ def send_email(request):
                 time_re = _get_send_time(tmps[0].send_time)
                 time_re = int(time_re) + m_time
                 tmp_res = [title, msg, user, 'swlxyztd@163.com']
-                t = threading.Timer(float('%.1f' % 1), send_email_as_tmp, tmp_res)
+                t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
                 t.start()
                 email_order_obj = OldOrderItems()
                 email_order_obj.id
