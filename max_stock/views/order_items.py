@@ -161,7 +161,7 @@ def send_email(request):
                 time_re = _get_send_time(tmps[0].send_time)
                 time_re = int(time_re) + m_time
                 tmp_res = [title, msg, user, 'swlxyztd@163.com']
-                t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
+                t = threading.Timer(float('%.1f' % 1), send_email_as_tmp, tmp_res)
                 t.start()
                 email_order_obj = OldOrderItems()
                 email_order_obj.id
