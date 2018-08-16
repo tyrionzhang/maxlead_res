@@ -59,7 +59,6 @@ def send_email_as_tmp(title, msg, from_email, email):
     server.login(from_addr, password)
     server.sendmail(from_addr, to_addr, msg.as_string())
     server.quit()
-    time.sleep(5)
     return True
 
 @csrf_exempt
@@ -142,7 +141,9 @@ def send_email(request):
 
     if request.method == 'POST':
         data = request.POST.get('data')
-        for val in eval(data):
+        m_time = 0
+        list_data = eval(data)
+        for i,val in enumerate(list_data):
             orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
             tmps = EmailTemplates.objects.filter(sku=val['sku'])
             if orders and tmps:
@@ -152,9 +153,14 @@ def send_email(request):
                 else:
                     title = "After-sale Service for your recent order from Brandline (Amazon order: %s)" % val['order_id']
                 msg = tmps[0].content % val['buyer']
+                if not i == 0 and list_data[i - 1]['sku'] == list_data[i]['sku']:
+                    m_time += 5
+                if not i == 0 and not list_data[i - 1]['sku'] == list_data[i]['sku']:
+                    m_time = 0
                 time_re = _get_send_time(tmps[0].send_time)
+                time_re = int(time_re) + m_time
                 tmp_res = [title, msg, user, 'swlxyztd@163.com']
-                t = threading.Timer(float('%.1f' % int(time_re)), send_email_as_tmp, tmp_res)
+                t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
                 t.start()
                 email_order_obj = OldOrderItems()
                 email_order_obj.id
