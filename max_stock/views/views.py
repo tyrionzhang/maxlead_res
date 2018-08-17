@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from maxlead_site.views.app import App
 from maxlead import settings
-from max_stock.models import SkuUsers,StockLogs,WarehouseStocks
+from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates
 from django.http import HttpResponse
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
@@ -130,8 +130,9 @@ def save_logs(data):
     return True
 
 def empty_data(request):
-    WarehouseStocks.objects.filter().all().delete()
-    StockLogs.objects.filter().all().delete()
+    OrderItems.objects.filter().all().delete()
+    OldOrderItems.objects.filter().all().delete()
+    EmailTemplates.objects.filter().all().delete()
     return HttpResponse(request, 'Spiders is runing!Time:%s' % datetime.now())
 
 def test(request):
