@@ -84,11 +84,11 @@ class NoSendRes(models.Model):
 
 class EmailTemplates(models.Model):
     sku = models.CharField('SKU', max_length=50)
-    keywords = models.CharField('Keywords', max_length=20, default=None)
+    keywords = models.CharField('Keywords', max_length=255, default=None)
     title = models.CharField('Title', max_length=255)
     content = models.TextField('Content')
     order_status = models.IntegerField('Order Status', default=0)
-    send_time = models.CharField('Send Time', max_length=20, default=None)
+    send_time = models.CharField('Send Time', max_length=255, default=None)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
