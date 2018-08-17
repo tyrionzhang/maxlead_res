@@ -55,7 +55,7 @@ class OrderItems(models.Model):
     customer = models.CharField('Customer', max_length=225, default=None)
     is_email = models.IntegerField('Is Email', default=0)
     is_presale = models.IntegerField('Presale', default=0)
-    payments_date = models.DateTimeField('Payments Date', default = timezone.now)
+    payments_date = models.DateTimeField('Payments Date', null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:

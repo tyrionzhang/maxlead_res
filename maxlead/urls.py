@@ -151,5 +151,6 @@ urlpatterns = [
     url('^admin/send_email/no_send_list/', order_items.no_send_list),
     url('^admin/send_email/check_order_import/', order_items.check_order_import),
     url('^admin/send_email/del_check_order/', order_items.del_check_order),
+    url('^admin/send_email/orders_del/', order_items.orders_del),
 ]
 

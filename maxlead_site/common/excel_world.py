@@ -312,6 +312,7 @@ def read_excel_for_orders(res):
     for i in range(nrows):
         try:
             if i + 1 < nrows:
+                payments_date = table.cell_value(i + 1, 3,)
                 obj = OrderItems()
                 obj.id
                 obj.order_id = table.cell_value(i + 1, 0,)
@@ -319,7 +320,8 @@ def read_excel_for_orders(res):
                 obj.order_status = 0
                 obj.email = table.cell_value(i + 1, 4,)
                 obj.customer = table.cell_value(i + 1, 5,)
-                obj.payments_date = table.cell_value(i + 1, 3,)
+                if payments_date:
+                    obj.payments_date = table.cell_value(i + 1, 3,)
                 obj.save()
 
         except:

@@ -116,6 +116,20 @@ def order_save(request):
                 return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
 
 @csrf_exempt
+def orders_del(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        data = request.POST.get('data','')
+        obj = OrderItems.objects.filter(order_id__in=eval(data))
+        if obj:
+            re = obj.delete()
+            if not re:
+                return HttpResponse(json.dumps({'code': 0, 'msg': 'Work is Faild!'}), content_type='application/json')
+            return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
+
+@csrf_exempt
 def order_import(request):
     user = App.get_user_info(request)
     if not user:
