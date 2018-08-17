@@ -146,8 +146,9 @@ def send_email(request):
         list_data = eval(data)
         for i,val in enumerate(list_data):
             orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
+            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
             tmps = EmailTemplates.objects.filter(sku=val['sku'])
-            if orders and tmps:
+            if orders and tmps and not old_orders:
                 title = tmps[0].title
                 if title:
                     title = title % val['order_id']
@@ -166,13 +167,11 @@ def send_email(request):
                 email_order_obj = OldOrderItems()
                 email_order_obj.id
                 email_order_obj.order_id = val['order_id']
-                email_order_obj.email = val['email']
                 email_order_obj.sku = val['sku']
                 email_order_obj.payments_date = orders[0].payments_date
                 email_order_obj.is_presale = orders[0].is_presale
                 email_order_obj.is_email = 1
                 email_order_obj.order_status = orders[0].order_status
-                email_order_obj.customer = orders[0].customer
                 email_order_obj.save()
                 if email_order_obj.id:
                     orders.delete()
