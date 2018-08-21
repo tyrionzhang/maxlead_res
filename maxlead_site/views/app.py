@@ -13,6 +13,8 @@ class App:
         menu_id = self.GET.get('menu_id')
         if not menu_id:
             obj = Menus.objects.filter(url=self.path, parent_id=0)
+            if not obj:
+                menu_id = Menus.objects.filter(url=self.path)[0].parent_id
             if obj:
                 menu_id = obj[0].id
         if self.user.id:
