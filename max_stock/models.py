@@ -76,7 +76,10 @@ class OldOrderItems(models.Model):
         db_table = 'old_order_items'
 
 class NoSendRes(models.Model):
+    down_date = models.DateField('Date', auto_now_add=True, null=True)
+    order_id = models.CharField('Order Id', max_length=225, default='')
     sku = models.CharField('SKU', max_length=50)
+    status = models.CharField('Status', max_length=50, default='')
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:

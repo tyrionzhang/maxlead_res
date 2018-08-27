@@ -33,12 +33,16 @@
                 <tr id="tr-head">
                     <th><input type="checkbox" id="check_all"></th>
                     <th>SKU</th>
+                    <th>Order Id</th>
+                    <th>Transaction type</th>
                     <th>Fun</th>
                 </tr>
                 {% for val in list %}
                 <tr>
                     <td><input type="checkbox" class="check_tr"></td>
                     <td>{{ val.sku }}</td>
+                    <td>{{ val.order_id }}</td>
+                    <td>{{ val.status }}</td>
                     <td>
                         <a href="javascript:;" class="fun-btn btn-del tmp-del" data-id="{{ val.id }}">Del</a>
                     </td>
