@@ -19,6 +19,8 @@ def email_temps(request):
     send_time = request.GET.get('search_send_time','')
     order_status = request.GET.get('search_order_status','')
     list = EmailTemplates.objects.all()
+    if not user.user.is_superuser:
+        list = list.filter(user_id=user.user.id)
     if keywords:
         list = list.filter(Q(sku__contains=keywords)| Q(title__contains=keywords)| Q(content__contains=keywords))
     if send_time:
@@ -55,6 +57,7 @@ def tmp_save(request):
             obj.id
             obj.order_status = int(order_status)
             obj.sku = sku
+            obj.user_id = user.user.id
             obj.keywords = keywords
             obj.title = title
             obj.content = content
@@ -101,6 +104,6 @@ def tmp_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        res = read_excel_file1(EmailTemplates,file_path,'email_templates')
+        res = read_excel_file1(EmailTemplates,file_path,'email_templates',user=user.user_id)
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')

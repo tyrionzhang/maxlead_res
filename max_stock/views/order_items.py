@@ -7,11 +7,11 @@ import time
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from max_stock.models import OrderItems,OldOrderItems,EmailTemplates,NoSendRes
+from max_stock.models import OrderItems,OldOrderItems,EmailTemplates,NoSendRes,EmailContacts
 from maxlead_site.views.app import App
 from django.db.models import Q
 from maxlead import settings
-from maxlead_site.common.excel_world import read_excel_for_orders,read_excel_file1
+from maxlead_site.common.excel_world import read_excel_for_orders,read_excel_file1,read_csv_file
 from django.core.mail import send_mail
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
@@ -83,9 +83,12 @@ def order_list(request):
         is_presale = 0
     else:
         nosend_re1 = NoSendRes.objects.values_list('order_id').filter(status='Refund').exclude(order_id='')
-        list = OrderItems.objects.filter(is_email=0).exclude(Q(sku__in=nosend_re)|Q(order_id__in=nosend_re1))
+        contacts = EmailContacts.objects.values_list('email_address').filter(expired_time__gt=datetime.now())
+        list = OrderItems.objects.filter(is_email=0).exclude(Q(sku__in=nosend_re)|Q(order_id__in=nosend_re1)|Q(email__in=contacts))
         if is_presale:
             list = list.filter(is_presale=is_presale)
+    if not user.user.is_superuser:
+        list = list.filter(user_id=user.user.id)
     if keywords:
         list = list.filter(Q(order_id__contains=keywords)| Q(sku__contains=keywords)| Q(customer__contains=keywords))
     if payments_date:
@@ -113,6 +116,7 @@ def order_save(request):
         if not id:
             obj = NoSendRes()
             obj.id
+            obj.user_id = user.user_id
             obj.sku = sku
             obj.save()
             if obj.id:
@@ -147,7 +151,7 @@ def order_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        res = read_excel_for_orders(file_path)
+        res = read_excel_for_orders(file_path,user=user.user_id)
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 
@@ -202,6 +206,8 @@ def no_send_list(request):
 
     keywords = request.GET.get('search_words', '').replace('amp;', '')
     list = NoSendRes.objects.all()
+    if not user.user.is_superuser:
+        list = list.filter(user_id=user.user.id)
     if keywords:
         list = list.filter(Q(sku__contains=keywords)|Q(order_id__contains=keywords)|Q(status__contains=keywords))
 
@@ -228,7 +234,7 @@ def check_order_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        res = read_excel_file1(NoSendRes, file_path, 'no_send_res')
+        res = read_excel_file1(NoSendRes, file_path, 'no_send_res', user=user.user_id)
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 
@@ -246,48 +252,41 @@ def del_check_order(request):
         return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
 
 @csrf_exempt
+def contact_list(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+    keywords = request.GET.get('search_words','').replace('amp;','')
+    list = EmailContacts.objects.filter(expired_time__gt=datetime.now())
+    if keywords:
+        list = list.filter(Q(email_address__contains=keywords)|Q(email__contains=keywords))
+    data = {
+        'list': list,
+        'user': user,
+        'keywords': keywords,
+        'title': 'Email Contacts',
+    }
+    return render(request, "Stocks/send_email/contact_list.html", data)
+
+@csrf_exempt
 def update_emails(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
-
-    # pop3服务器地址
-    host = "pop.gmail.com"
-    # 用户名
-    username = "maxlead.us@gmail.com"
-    # 密码
-    password = "nxtpinfcqitdcpzb"
-    # if user.other_email:
-    #     if user.smtp_server:
-    #         pop3_server = from_email.smtp_server
-    #     username = user.other_email
-    #     password = common.decrypt(16, user.email_pass)
-    # 创建一个pop3对象，这个时候实际上已经连接上服务器了
-    pp = poplib.POP3_SSL(host, '995')
-    # 设置调试模式，可以看到与服务器的交互信息
-    pp.set_debuglevel(1)
-    # 向服务器发送用户名
-    pp.user(username)
-    # 向服务器发送密码
-    pp.pass_(password)
-    # 获取服务器上信件信息，返回是一个列表，第一项是一共有多上封邮件，第二项是共有多少字节
-    ret = pp.stat()
-    print(ret)
-    # 需要取出所有信件的头部，信件id是从1开始的。
-    for i in range(1, ret[0] + 1):
-        # 取出信件头部。注意：top指定的行数是以信件头为基数的，也就是说当取0行，
-        # 其实是返回头部信息，取1行其实是返回头部信息之外再多1行。
-        mlist = pp.top(i, 0)
-        print('line: %s' % len(mlist[1]))
-    # 列出服务器上邮件信息，这个会对每一封邮件都输出id和大小。不象stat输出的是总的统计信息
-    ret = pp.list()
-    print(ret)
-    # 取第一封邮件完整信息，在返回值里，是按行存储在down[1]的列表里的。down[0]是返回的状态信息
-    down = pp.retr(1)
-    print('lines: %s' % len(down))
-    # 输出邮件
-    for line in down[1]:
-        print(line)
-    # 退出
-    pp.quit()
-    return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
+    if request.method == 'POST':
+        myfile = request.FILES.get('myfile', '')
+        email = request.POST.get('email', '')
+        expired_time = request.POST.get('expired_time', '')
+        if not myfile:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}), content_type='application/json')
+        if not expired_time:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'Expired is empty!'}), content_type='application/json')
+        file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
+        f = open(file_path, 'wb')
+        for chunk in myfile.chunks():
+            f.write(chunk)
+        f.close()
+        expired_time = datetime.now() + timedelta(days = int(expired_time))
+        res = read_csv_file(EmailContacts, file_path, email=email, expired_time=expired_time)
+        os.remove(file_path)
+        return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')

@@ -80,6 +80,12 @@ MENUS = [
         'url' : '/admin/send_email/no_send_list/',
         'elem_id' : 'no_send_list',
         'parent' : 'Auto Email'
+    },
+    {
+        'name' : 'Contact List',
+        'url' : '/admin/send_email/contact_list/',
+        'elem_id' : 'contact_list',
+        'parent' : 'Auto Email'
     }
 
 ]

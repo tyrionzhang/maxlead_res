@@ -169,61 +169,34 @@ def read_excel_file(res,type=None):
             continue
     return {'code': 1, 'msg': msg}
 
-def read_csv_file(res):
+def read_csv_file(model,res,email=None, expired_time=None):
     fname = res
     if not os.path.isfile(fname):
         return {'code':0,'msg':'File is not found!'}
-    csv_files = csv.reader(open(res,'r'))
+    csv_files = csv.reader(open(res,'r', encoding='UTF-8'))
     msg = 'Work Is Done!<br>'
-    update_fields = ['username', 'email']
-    update_fields1 = ['state', 'role', 'group']
+    querysetlist = []
     for i,val in enumerate(csv_files,0):
         try:
             if i > 0:
-                user = User()
-                user.username = val[0]  # 获取第i行中第j列的值
-                user.set_password('123456')
-                update_fields.append('password')
-                user.email = val[1]
-                user.id
-                user.save()
-
-                if val[4]:
-                    group_obj = UserProfile.objects.filter(user__username=val[4])
-                else:
-                    group_obj = UserProfile.objects.filter(id=1)
-                roles = val[3]
-                status = val[2]
-
-                user_file = UserProfile()
-                user_file.id = user.userprofile.id
-                user_file.user_id = user.id
-
-                if roles == 'member':
-                    user_file.role = 0
-                elif roles == 'leader':
-                    user_file.role = 1
-                else:
-                    user_file.role = 2
-                if status == 'active':
-                    user_file.state = 1
-                else:
-                    user_file.state = 0
-                if roles == 'leader':
-                    user_file.group_id = user.userprofile.id
-                elif group_obj:
-                    user_file.group = group_obj[0]
-                else:
-                    user_file.group = UserProfile.objects.filter(id=1)[0]
-
-                user_file.save(update_fields=update_fields1)
+                email_address = val[30]
+                if not email_address:
+                    email_address = val[28]
+                if email_address and not email_address.find('myContacts') == -1:
+                    email_address = val[0]
+                checks = model.objects.filter(email_address=email_address, expired_time__gt=datetime.datetime.now())
+                if checks:
+                    continue
+                querysetlist.append(model(email_address=email_address,expired_time=expired_time,email=email))
         except:
             msg += '第%s行添加有误。<br>' % i
             continue
+    if querysetlist:
+        model.objects.bulk_create(querysetlist)
     return {'code': 1, 'msg': msg}
 
 
-def read_excel_file1(model,res,model_name):
+def read_excel_file1(model,res,model_name,user=None):
     from django.db import connection, transaction
     cursor = connection.cursor()
     fname = res
@@ -272,10 +245,14 @@ def read_excel_file1(model,res,model_name):
                         a = '%s'
                         a1 = "\'%s\'"
                     if val.name == 'user_id' or val.name == 'user':
-                        user_obj = User.objects.filter(username=val_res)
-                        if user_obj:
-                            val_res = user_obj[0].id
+                        if user:
+                            val_res = user
                             val.name = 'user_id'
+                        else:
+                            user_obj = User.objects.filter(username=val_res)
+                            if user_obj:
+                                val_res = user_obj[0].id
+                                val.name = 'user_id'
                     if val.name == 'send_time':
                         val_res = xlrd.xldate.xldate_as_datetime(val_res, 0).strftime("%H:%M")
                     if val.get_internal_type() == 'DateTimeField':
@@ -304,7 +281,7 @@ def read_excel_file1(model,res,model_name):
         #     continue
     return {'code': 1, 'msg': msg}
 
-def read_excel_for_orders(res):
+def read_excel_for_orders(res,user=None):
     fname = res
     msg = ''
     if not os.path.isfile(fname):
@@ -319,6 +296,8 @@ def read_excel_for_orders(res):
                 payments_date = table.cell_value(i + 1, 3,)
                 obj = OrderItems()
                 obj.id
+                if user:
+                    obj.user_id = user
                 obj.order_id = table.cell_value(i + 1, 0,)
                 obj.sku = table.cell_value(i + 1, 7,)
                 obj.order_status = 0

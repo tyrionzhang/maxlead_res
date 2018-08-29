@@ -48,6 +48,7 @@ class AmazonCode(models.Model):
         db_table = 'amazon_code'
 
 class OrderItems(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     order_id = models.CharField('Order Id', max_length=225)
     sku = models.CharField('SKU', max_length=225)
     order_status = models.CharField('Status', max_length=50)
@@ -62,6 +63,7 @@ class OrderItems(models.Model):
         db_table = 'order_items'
 
 class OldOrderItems(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     order_id = models.CharField('Order Id', max_length=225)
     sku = models.CharField('SKU', max_length=50)
     order_status = models.CharField('Status', max_length=50)
@@ -76,6 +78,7 @@ class OldOrderItems(models.Model):
         db_table = 'old_order_items'
 
 class NoSendRes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     down_date = models.DateField('Date', auto_now_add=True, null=True)
     order_id = models.CharField('Order Id', max_length=225, default='')
     sku = models.CharField('SKU', max_length=50)
@@ -86,6 +89,7 @@ class NoSendRes(models.Model):
         db_table = 'no_send_res'
 
 class EmailTemplates(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     sku = models.CharField('SKU', max_length=50)
     keywords = models.CharField('Keywords', max_length=255, default=None)
     title = models.CharField('Title', max_length=255)
@@ -123,5 +127,14 @@ class Menus(models.Model):
 
     class Meta:
         db_table = 'menus'
+
+class EmailContacts(models.Model):
+    email_address = models.CharField('Email Address', max_length=225)
+    email = models.CharField('Email', max_length=225)
+    expired_time = models.DateTimeField('Expired', null=True)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'email_contacts'
 
 

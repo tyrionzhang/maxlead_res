@@ -6,6 +6,6 @@ from scrapy import cmdline
 # asin = 'B00P17WZRS'
 # cmd = 'scrapy crawl {0} -a asin={1}'.format(name,asin)
 
-name = 'twu_spider'
+name = 'emcontacts_spider'
 cmd = 'scrapy crawl {0}'.format(name)
 cmdline.execute(cmd.split())

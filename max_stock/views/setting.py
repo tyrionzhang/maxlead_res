@@ -66,7 +66,6 @@ def update_menus(request):
     roles = update_res.ROLES
     querysetlist0 = []
     querysetlist = []
-    Menus.objects.all().delete()
     for val in  menus0:
         menu = Menus.objects.filter(name=val['name'],elem_id=val['elem_id'])
         if not menu:
