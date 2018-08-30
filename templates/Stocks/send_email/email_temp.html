@@ -1,5 +1,6 @@
 {% extends "Stocks/layouts/base.html" %}
 {% block container %}
+    <script src="/static/ckeditor/ckeditor.js"></script>
     <div id="main" data-name="email_temp">
         <div class="con-head">
             <h1>{{ title }}</h1>
@@ -97,7 +98,7 @@
                 </label>
                 <label class="lab-post-param">
                     <span>Content:</span>
-                    <textarea name="content" id="" cols="40" rows="10"></textarea>
+                    <textarea name="content" id="tmp_content" cols="40" rows="10" class="ckeditor"></textarea>
 			    </label>
 
             </div>
@@ -144,7 +145,7 @@
               'keywords':$('input[name="keywords"]').val(),
               'title':$('input[name="title"]').val(),
               'send_time':$('input[name="send_time"]').val(),
-              'content':$('textarea[name="content"]').val(),
+              'content':CKEDITOR.instances.tmp_content.getData(),
               'id':id
             };
             if (!id){
@@ -176,7 +177,8 @@
             $('input[name="keywords"]').val(el_tr.eq(1).html());
             $('input[name="title"]').val(el_tr.eq(2).html());
             $('input[name="send_time"]').val(el_tr.eq(4).html());
-            $('textarea[name="content"]').val($(this).data('content'));
+            CKEDITOR.instances.tmp_content.setData($(this).data('content'));
+            el_form.find('input[name="id"]').remove();
             el_form.append('<input type="hidden" name="id" value="'+$(this).data('id')+'">');
         });
 
