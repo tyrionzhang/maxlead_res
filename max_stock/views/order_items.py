@@ -171,7 +171,7 @@ def send_email(request):
             tmps = EmailTemplates.objects.filter(sku=val['sku'])
             if orders and tmps and not old_orders:
                 title = tmps[0].title
-                if title:
+                if title and not title.find('%s') == -1:
                     title = title % val['order_id']
                 else:
                     title = "After-sale Service for your recent order from Brandline (Amazon order: %s)" % val['order_id']
