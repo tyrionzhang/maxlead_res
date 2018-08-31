@@ -129,7 +129,12 @@ def orders_del(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
         data = request.POST.get('data','')
-        obj = OrderItems.objects.filter(order_id__in=eval(data))
+        is_email = request.POST.get('is_email','')
+        if is_email == '1':
+            obj = OldOrderItems.objects.filter(order_id__in=eval(data))
+        else:
+            obj = OrderItems.objects.filter(order_id__in=eval(data))
+
         if obj:
             re = obj.delete()
             if not re:

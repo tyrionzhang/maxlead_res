@@ -261,10 +261,11 @@
                    alert('请选择订单');
                }else {
                    $(this).attr('disabled', 'true');
+                   var is_email = $('select[name="search_is_email"]').val();
                   elem_tr.each(function () {
                       data.push($(this).children('td').eq(1).text());
                   });
-                  $.post('/admin/send_email/orders_del/',{'data':JSON.stringify(data)},function (re) {
+                  $.post('/admin/send_email/orders_del/',{'data':JSON.stringify(data), 'is_email':is_email},function (re) {
                    if(re.code==0 || re.code==1){
                        alert(re.msg);
                        if(re.code==1){
