@@ -244,7 +244,7 @@ def read_excel_file1(model,res,model_name,user=None):
                     val.name = 'user_id'
                     str1 += a % val.name
                     str2 += a1 % val_res
-                if not n == 0 and not n == 1:
+                elif not n == 0:
                     a = '%s,'
                     a1 = "\'%s\',"
                     val_res = table.cell_value(i + 1, n-2,)
