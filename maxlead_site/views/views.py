@@ -61,7 +61,8 @@ def Spiders2(request):
     t2 = threading.Timer(float('%.1f' % time_re), perform_command1)
     t2.start()
     # 持续运行，直到计划时间队列变成空为止
-    msg_str = 'Spiders is runing!Time:%s' % datetime.now()
+    date = datetime.now() + timedelta(seconds = time_re1)
+    msg_str = 'Spiders is runing!Time:%s' % date
     return render(request, "Stocks/spider/home.html", {'msg_str': msg_str})
 
 def Spiders1(request):
