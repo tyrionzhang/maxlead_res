@@ -36,6 +36,9 @@
                 <div class="btn btn-green">
                     <button id="user_add">Add</button>
                 </div>
+                <div class="btn btn-green">
+                    <button id="users_edit">Edit</button>
+                </div>
                 <div class="btn btn-blue">
                     <button id="tmp_import">Import</button>
                 </div>
@@ -45,6 +48,7 @@
         <div class="con-body">
             <table id="datas" class="tb-datas">
                 <tr id="tr-head">
+                    <th><input type="checkbox" id="check_all"></th>
                     <th>SKU</th>
                     <th>Keywords</th>
                     <th>Title</th>
@@ -54,6 +58,8 @@
                 </tr>
                 {% for val in list %}
                 <tr>
+                    <td><input type="checkbox" class="check_tr"></td>
+                    <td style="display: none">{{ val.id }}</td>
                     <td>{{ val.sku }}</td>
                     <td>{{ val.keywords }}</td>
                     <td>{{ val.title }}</td>
@@ -109,6 +115,42 @@
 		</form>
     </div>
 
+    <div class="save-threshold hide save-block-info" id="edit_tmp">
+		<form action="" id="form_edit_tmp">
+			<span class="btn-close">x</span>
+			<h2 style="margin: 0 0px 0 164px;">Templates</h2>
+			<div class="text-box" style="float: none;margin-left: 30px;width: 326px;">
+                <label class="lab-post-param">
+				    <span>Keywords:</span>
+				    <input type="text" name="edit_keywords">
+			    </label>
+                <label class="lab-post-param">
+                    <span>Title:</span>
+                    <input type="text" name="edit_title">
+			    </label>
+                <label class="lab-post-param">
+                    <span>Send Time:</span>
+                    <input type="time" name="edit_send_time">
+			    </label>
+                <label class="lab-post-param">
+                    <span>Order Status:</span>
+                    <select name="edit_order_status">
+                        <option value="0" selected>shipped</option>
+                    </select>
+                </label>
+                <label class="lab-post-param">
+                    <span>Content:</span>
+                    <textarea name="edit_content" id="edit_tmp_content" cols="40" rows="10"></textarea>
+			    </label>
+
+            </div>
+
+			<div>
+				<input type="submit" value="Save" id="btn_edit">
+			</div>
+		</form>
+    </div>
+
     <div class="hide" id="import_modal">
         <form id="import_form" method="post" enctype="multipart/form-data">
             <input type="file" name="myfile">
@@ -120,6 +162,13 @@
         window.onload = function()
         {
             CKEDITOR.replace( 'tmp_content',
+            { toolbar :
+                 [
+                    //原始码     加粗     斜体，     下划线      穿过线
+                    ['Source','Bold','Italic','Underline','Strike','Copy','Paste','PasteText','TextColor','BGColor']
+                ]
+            });
+             CKEDITOR.replace( 'edit_tmp_content',
             { toolbar :
                  [
                     //原始码     加粗     斜体，     下划线      穿过线
@@ -151,7 +200,68 @@
     {#         ]#}
     {#    }#}
     {#);#}
+
         $(document).ready(function(){
+            $('#check_all').on('click', function () {
+                  var checked = $(this).prop('checked');
+                  if (checked) {
+                      $('.check_tr').prop('checked', true);
+                  }else {
+                      $('.check_tr').prop('checked', false);
+                  }
+            });
+
+            $('#users_edit').on('click', function () {
+                var elem_tr = $('.check_tr:checked').parents('tr');
+                var data = new Array();
+                if (elem_tr.length == 0) {
+                   alert('请选择模板!');
+                }else {
+                    $('.wrap-paper').removeClass('hide');
+                    $('#edit_tmp').removeClass('hide');
+                    $('#form_edit_tmp')[0].reset();
+                    $('#btn_edit').removeAttr('disabled');
+                }
+            });
+
+            $('#btn_edit').on('click', function () {
+                var elem_tr = $('.check_tr:checked').parents('tr');
+                var data = new Array();
+                if (elem_tr.length == 0) {
+                   alert('请选择模板!');
+                }else {
+                    $(this).attr('disabled', 'true');
+                    var status = $('select[name="edit_order_status"]').val();
+                    var keywords = $('input[name="edit_keywords"]').val();
+                    var title = $('input[name="edit_title"]').val();
+                    var send_time = $('input[name="edit_send_time"]').val();
+                    var content = CKEDITOR.instances.edit_tmp_content.getData();
+                    elem_tr.each(function () {
+                        data.push($(this).children('td').eq(1).text());
+                    });
+                    var datas = {
+                        'data':  JSON.stringify(data),
+                        'keywords':keywords,
+                        'title':title,
+                        'send_time':send_time,
+                        'status':status,
+                        'content':content
+                    };
+                    $.post('/admin/send_email/branch_edit_tmp/',datas,function (re) {
+                    if(re.code==0 || re.code==1){
+                        alert(re.msg);
+                        if(re.code==1){
+                            window.location.reload();
+                         }
+                   }
+                   if(re.code==66){
+                       window.location.href='/admin/max_stock/login/';
+                   }
+                },'json');
+                return false;
+               }
+            });
+
           $('input[name="keywords"]').val('{{ keywords }}');
 
           $('#user_add').on('click',function () {

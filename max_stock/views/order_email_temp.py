@@ -75,6 +75,49 @@ def tmp_save(request):
                 return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
 
 @csrf_exempt
+def branch_edit_tmp(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+
+    if request.method == 'POST':
+        ids = eval(request.POST.get('data',''))
+        keywords = request.POST.get('keywords','')
+        title = request.POST.get('title','')
+        send_time = request.POST.get('send_time','')
+        status = request.POST.get('status','')
+        content = request.POST.get('content','')
+        update_fields = []
+        if keywords:
+            update_fields.append('keywords')
+        if title:
+            update_fields.append('title')
+        if send_time:
+            update_fields.append('send_time')
+        if status:
+            update_fields.append('order_status')
+        if content:
+            update_fields.append('content')
+        for val in ids:
+            try:
+                obj = EmailTemplates()
+                obj.id = int(val)
+                if keywords:
+                    obj.keywords = keywords
+                if title:
+                    obj.title = title
+                if send_time:
+                    obj.send_time = send_time
+                if status:
+                    obj.order_status = status
+                if content:
+                    obj.content = content
+                obj.save(update_fields=update_fields)
+            except:
+                continue
+        return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
+
+@csrf_exempt
 def del_tmp(request):
     user = App.get_user_info(request)
     if not user:

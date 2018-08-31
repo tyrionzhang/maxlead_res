@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import *
 from django.db.models import Count
 from maxlead_site.models import UserAsins,UserProfile
 from maxlead_site.common.npextractor import NPExtractor
@@ -125,3 +126,15 @@ def decrypt(key, s):
         return b.decode("utf-8")
     except:
         return "failed"
+
+def get_send_time(time_str):
+    time_now = datetime.now()
+    time_saturday = time_now.strftime('%Y-%m-%d ') + time_str
+    time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M')
+    t_re = (time_saturday - time_now).total_seconds()
+    if t_re < 0:
+        time_re = datetime.now() + timedelta(days=1)
+        time_saturday = time_re.strftime('%Y-%m-%d ') + time_str
+        time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M')
+        t_re = (time_saturday - time_now).total_seconds()
+    return t_re

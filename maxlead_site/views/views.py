@@ -9,6 +9,7 @@ from django.shortcuts import render
 from maxlead import settings
 from maxlead_site.common.user_secuirty import UserSecuirty
 from maxlead_site.common.excel_world import read_csv_file
+from maxlead_site.common.common import get_send_time
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from maxlead_site.models import UserAsins,AsinReviews,Reviews,AsinReviewsBackcup,ReviewsBackcup,Questions,QuestionsBackcup
@@ -53,9 +54,11 @@ def perform_command1():
     return True
 
 def Spiders2(request):
-    t1 = threading.Timer(18000.0, perform_command)
+    time_re = int(get_send_time('22:00'))
+    time_re1 = time_re - 3600
+    t1 = threading.Timer(float('%.1f' % time_re1), perform_command)
     t1.start()
-    t2 = threading.Timer(21600.0, perform_command1)
+    t2 = threading.Timer(float('%.1f' % time_re), perform_command1)
     t2.start()
     # 持续运行，直到计划时间队列变成空为止
     msg_str = 'Spiders is runing!Time:%s' % datetime.now()
