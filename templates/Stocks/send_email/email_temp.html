@@ -316,11 +316,11 @@
             $('#save_tmp').removeClass('hide');
             el_form[0].reset();
             $('#btn_save').removeAttr('disabled');
-            $('select[name="order_status"]').val(el_tr.eq(3).html());
-            $('input[name="sku"]').val(el_tr.eq(0).html());
-            $('input[name="keywords"]').val(el_tr.eq(1).html());
-            $('input[name="title"]').val(el_tr.eq(2).html());
-            $('input[name="send_time"]').val(el_tr.eq(4).html());
+            $('select[name="order_status"]').val(el_tr.eq(5).html());
+            $('input[name="sku"]').val(el_tr.eq(2).html());
+            $('input[name="keywords"]').val(el_tr.eq(3).html());
+            $('input[name="title"]').val(el_tr.eq(4).html());
+            $('input[name="send_time"]').val(el_tr.eq(6).html());
             CKEDITOR.instances.tmp_content.setData($(this).data('content'));
             el_form.find('input[name="id"]').remove();
             el_form.append('<input type="hidden" name="id" value="'+$(this).data('id')+'">');
