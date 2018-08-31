@@ -222,58 +222,63 @@
         });
 
         $('#send_email').on('click', function () {
-           var elem_tr = $('.check_tr:checked').parents('tr');
-           var data = new Array();
-           if (elem_tr.length == 0) {
-               alert('请选择订单');
-           }else {
-               $(this).attr('disabled', 'true');
-              elem_tr.each(function () {
-                  data.push({
-                      'order_id' : $(this).children('td').eq(1).text(),
-                      'sku' : $(this).children('td').eq(2).text(),
-                      'email' : $(this).children('td').eq(3).text(),
-                      'buyer' : $(this).children('td').eq(4).text()
+            if(confirm('确认发送邮件？')){
+                var elem_tr = $('.check_tr:checked').parents('tr');
+               var data = new Array();
+               if (elem_tr.length == 0) {
+                   alert('请选择订单');
+               }else {
+                   $(this).attr('disabled', 'true');
+                  elem_tr.each(function () {
+                      data.push({
+                          'order_id' : $(this).children('td').eq(1).text(),
+                          'sku' : $(this).children('td').eq(2).text(),
+                          'email' : $(this).children('td').eq(3).text(),
+                          'buyer' : $(this).children('td').eq(4).text()
+                      });
                   });
-              });
-              $.post('/admin/send_email/send_email/',{'data':JSON.stringify(data)},function (re) {
-               if(re.code==0 || re.code==1){
-                   alert(re.msg);
-                   if(re.code==1){
-                       window.location.reload();
+                  $.post('/admin/send_email/send_email/',{'data':JSON.stringify(data)},function (re) {
+                   if(re.code==0 || re.code==1){
+                       alert(re.msg);
+                       if(re.code==1){
+                           window.location.reload();
+                       }
                    }
+                   if(re.code==66){
+                       window.location.href='/admin/max_stock/login/';
+                   }
+                },'json');
+                return false;
                }
-               if(re.code==66){
-                   window.location.href='/admin/max_stock/login/';
-               }
-            },'json');
-            return false;
-           }
+            }
         });
 
         $('#del_send_email').on('click', function () {
-           var elem_tr = $('.check_tr:checked').parents('tr');
-           var data = new Array();
-           if (elem_tr.length == 0) {
-               alert('请选择订单');
-           }else {
-               $(this).attr('disabled', 'true');
-              elem_tr.each(function () {
-                  data.push($(this).children('td').eq(1).text());
-              });
-              $.post('/admin/send_email/orders_del/',{'data':JSON.stringify(data)},function (re) {
-               if(re.code==0 || re.code==1){
-                   alert(re.msg);
-                   if(re.code==1){
-                       window.location.reload();
+            if(confirm('确认删除？')){
+                var elem_tr = $('.check_tr:checked').parents('tr');
+               var data = new Array();
+               if (elem_tr.length == 0) {
+                   alert('请选择订单');
+               }else {
+                   $(this).attr('disabled', 'true');
+                  elem_tr.each(function () {
+                      data.push($(this).children('td').eq(1).text());
+                  });
+                  $.post('/admin/send_email/orders_del/',{'data':JSON.stringify(data)},function (re) {
+                   if(re.code==0 || re.code==1){
+                       alert(re.msg);
+                       if(re.code==1){
+                           window.location.reload();
+                       }
                    }
+                   if(re.code==66){
+                       window.location.href='/admin/max_stock/login/';
+                   }
+                },'json');
+                return false;
                }
-               if(re.code==66){
-                   window.location.href='/admin/max_stock/login/';
-               }
-            },'json');
-            return false;
-           }
+            }
+
         });
 
         $('#import_modal').on('click', '#order_import', function () {
