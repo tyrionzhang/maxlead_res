@@ -32,7 +32,7 @@ def _get_send_time(time_str):
         t_re = (time_saturday - time_now).total_seconds()
     return t_re
 
-def send_email_as_tmp(title, msg, from_email, email):
+def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payments_date, is_presale, order_status, user_id):
     smtp_server = 'smtp.gmail.com'
     from_addr = 'maxlead.us@gmail.com'
     to_addr = email
@@ -60,8 +60,29 @@ def send_email_as_tmp(title, msg, from_email, email):
     server.set_debuglevel(1)
     server.starttls()
     server.login(from_addr, password)
-    server.sendmail(from_addr, to_addr, msg.as_string())
-    server.quit()
+    try:
+        server.sendmail(from_addr, to_addr, msg.as_string())
+    except Exception as e:
+        print(e)
+        email_order_obj = OrderItems()
+        email_order_obj.id
+        email_order_obj.user_id = user_id
+        email_order_obj.order_id = order_id
+        email_order_obj.sku = sku
+        email_order_obj.payments_date = payments_date
+        email_order_obj.is_presale = is_presale
+        email_order_obj.customer = buyer
+        email_order_obj.email = to_addr
+        email_order_obj.is_email = 0
+        email_order_obj.send_date = datetime.now()
+        email_order_obj.order_status = order_status
+        email_order_obj.save()
+        if email_order_obj.id:
+            old_obj = OldOrderItems.objects.filter(order_id=order_id)
+            if old_obj:
+                old_obj.delete()
+    finally:
+        server.quit()
     return True
 
 @csrf_exempt
@@ -180,23 +201,30 @@ def send_email(request):
                     title = title % val['order_id']
                 else:
                     title = "After-sale Service for your recent order from Brandline (Amazon order: %s)" % val['order_id']
-                msg = tmps[0].content % val['buyer']
+                if tmps[0].content and tmps[0].content.find('%s') == -1:
+                    msg = tmps[0].content
+                else:
+                    msg = tmps[0].content % val['buyer']
                 if not i == 0 and list_data[i - 1]['sku'] == list_data[i]['sku']:
                     m_time += 5
                 if not i == 0 and not list_data[i - 1]['sku'] == list_data[i]['sku']:
                     m_time = 0
                 time_re = _get_send_time(tmps[0].send_time)
                 time_re = int(time_re) + m_time
-                tmp_res = [title, msg, user, val['email']]
+                tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
+                           orders[0].is_presale, orders[0].order_status, user.user_id]
+                time_re = 1
                 t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
                 t.start()
                 email_order_obj = OldOrderItems()
                 email_order_obj.id
+                email_order_obj.user_id = user.user_id
                 email_order_obj.order_id = val['order_id']
                 email_order_obj.sku = val['sku']
                 email_order_obj.payments_date = orders[0].payments_date
                 email_order_obj.is_presale = orders[0].is_presale
                 email_order_obj.is_email = 1
+                email_order_obj.send_date = datetime.now()
                 email_order_obj.order_status = orders[0].order_status
                 email_order_obj.save()
                 if email_order_obj.id:

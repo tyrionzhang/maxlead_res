@@ -66,6 +66,7 @@
                     <th>Buyer Email</th>
                     <th>Buyer</th>
                     <th>Payments Date</th>
+                    <th>Send Date</th>
                     <th>Fun</th>
                 </tr>
                 {% for val in list %}
@@ -76,6 +77,7 @@
                     <td>{{ val.email }}</td>
                     <td>{{ val.customer }}</td>
                     <td>{% if val.payments_date %}{{ val.payments_date }}{% endif %}</td>
+                    <td>{% if val.send_date %}{{ val.send_date }}{% endif %}</td>
                     <td>
                         {% if val.is_presale == 1 %}
                         <a href="javascript:;" class="fun-btn btn-del tmp-del" data-id="{{ val.id }}">Del</a>
@@ -187,6 +189,11 @@
             //if(file_info==undefined)暂且不许要判断是否有附件
                 //alert('你没有选择任何文件');
                 //return false
+            $('#import_msg').html('');
+            $(".wrap-paper").css("z-index","3000");
+            $('.wrap').removeClass('hide');
+            $('.wrap-k-line').removeClass('hide');
+            $(this).attr("disabled", true);
             $.ajax({
                 url:'/admin/send_email/order_import/',
                 type:'POST',
@@ -194,8 +201,12 @@
                 processData: false,  // tell jquery not to process the data
                 contentType: false, // tell jquery not to set contentType
                 success: function(callback) {
+                    $(".wrap-paper").css("z-index","999");
+                    $('.wrap').addClass('hide');
+                    $('.wrap-k-line').addClass('hide');
+                    $('#btn_import_modal').removeAttr('disabled');
                     $('#import_msg').append('Work is done!<br>');
-                    $('#import_msg').append(callback.msg);
+                    $('#import_msg').append(callback.msg+'<br>');
                     $('#import_msg').append('<input type="button" id="order_import" value="确定">');
                 }
             });
@@ -237,6 +248,8 @@
                           'buyer' : $(this).children('td').eq(4).text()
                       });
                   });
+                   $('.wrap').removeClass('hide');
+                   $('.wrap-k-line').removeClass('hide');
                   $.post('/admin/send_email/send_email/',{'data':JSON.stringify(data)},function (re) {
                    if(re.code==0 || re.code==1){
                        alert(re.msg);
@@ -265,6 +278,8 @@
                   elem_tr.each(function () {
                       data.push($(this).children('td').eq(1).text());
                   });
+                  $('.wrap').removeClass('hide');
+                  $('.wrap-k-line').removeClass('hide');
                   $.post('/admin/send_email/orders_del/',{'data':JSON.stringify(data), 'is_email':is_email},function (re) {
                    if(re.code==0 || re.code==1){
                        alert(re.msg);

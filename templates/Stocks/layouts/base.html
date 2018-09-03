@@ -26,6 +26,81 @@
             .header-right a:hover {
                 color: #cccccc;
             }
+
+            .wrap-k-line {
+                position: fixed;
+                background-color: black;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                opacity: 0.5;
+                z-index: 9998;
+            }
+            .wrap {
+                position: absolute;
+                opacity: 1;
+                padding: 9px;
+                top: 31%;
+                left: 50%;
+                z-index: 9999;
+            }
+
+            .color-E .k-line{
+                background-color: #0f74a8;
+            }
+
+            .k-line {
+                display: inline-block;
+                width: 15px;
+                height: 15px;
+                border-radius: 15px;
+                margin-top: 20px;
+            }
+
+            @keyframes k-loadingE {
+                0% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                30% {
+                    transform: translateY(0);
+                    opacity: .3;
+                }
+                50% {
+                    transform: translateY(-20px);
+                    opacity:  .8;
+                }
+                70% {
+                    transform: translateY(3px);
+                    opacity:  .8;
+                }
+                85% {
+                    transform: translateY(-3px);
+                    opacity:  .8;
+                }
+                100% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            .k-lineE-1 {
+                animation: k-loadingE 1.5s 0s infinite;
+            }
+            .k-lineE-2 {
+                animation: k-loadingE 1.5s 0.3s infinite;
+            }
+            .k-lineE-3 {
+                animation: k-loadingE 1.5s 0.6s infinite;
+            }
+            .k-lineE-4 {
+                animation: k-loadingE 1.5s 0.9s infinite;
+            }
+            .k-lineE-5 {
+                animation: k-loadingE 1.5s 1.2s infinite;
+            }
+
         </style>
     </head>
     <body>
@@ -137,6 +212,15 @@
 				<input type="submit" value="Save" id="btn_user_info">
 			</div>
 		</form>
+    </div>
+
+    <div class="wrap-k-line hide"></div>
+    <div class="wrap color-E hide">
+        <div class="k-line k-lineE-1"></div>
+        <div class="k-line k-lineE-2"></div>
+        <div class="k-line k-lineE-3"></div>
+        <div class="k-line k-lineE-4"></div>
+        <div class="k-line k-lineE-5"></div>
     </div>
         <script>
             $(document).ready(function(){

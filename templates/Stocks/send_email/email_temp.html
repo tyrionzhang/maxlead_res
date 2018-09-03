@@ -156,7 +156,8 @@
             <input type="file" name="myfile">
             <input type="submit" value="Submit" id="btn_import_modal">
         </form>
-        <div id="import_msg"></div>
+        <div id="import_msg">
+        </div>
     </div>
     <script>
         window.onload = function()
@@ -333,6 +334,10 @@
             //if(file_info==undefined)暂且不许要判断是否有附件
                 //alert('你没有选择任何文件');
                 //return false
+            $('#import_msg').html('');
+            $(".wrap-paper").css("z-index","3000");
+            $('.wrap').removeClass('hide');
+            $('.wrap-k-line').removeClass('hide');
             $.ajax({
                 url:'/admin/send_email/tmp_import/',
                 type:'POST',
@@ -340,8 +345,12 @@
                 processData: false,  // tell jquery not to process the data
                 contentType: false, // tell jquery not to set contentType
                 success: function(callback) {
+                    $(".wrap-paper").css("z-index","999");
+                    $('.wrap').addClass('hide');
+                    $('.wrap-k-line').addClass('hide');
+                    $('#btn_import_modal').removeAttr('disabled');
                     $('#import_msg').append('Work is done!<br>');
-                    $('#import_msg').append(callback.msg);
+                    $('#import_msg').append(callback.msg+'<br>');
                     $('#import_msg').append('<input type="button" id="tmp_import" value="确定">');
                 }
             });

@@ -57,6 +57,7 @@ class OrderItems(models.Model):
     is_email = models.IntegerField('Is Email', default=0)
     is_presale = models.IntegerField('Presale', default=0)
     payments_date = models.DateTimeField('Payments Date', null=True)
+    send_date = models.DateTimeField('Send Date', null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
@@ -72,6 +73,7 @@ class OldOrderItems(models.Model):
     is_email = models.IntegerField('Is Email', default=0)
     is_presale = models.IntegerField('Presale', default=1)
     payments_date= models.DateTimeField('Payments Date', null=True)
+    send_date = models.DateTimeField('Send Date', null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
