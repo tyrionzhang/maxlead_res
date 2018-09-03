@@ -247,7 +247,10 @@ def read_excel_file1(model,res,model_name,user=None):
                 elif not n == 0:
                     a = '%s,'
                     a1 = "\'%s\',"
-                    val_res = table.cell_value(i + 1, n-2,)
+                    if user:
+                        val_res = table.cell_value(i + 1, n-2,)
+                    else:
+                        val_res = table.cell_value(i + 1, n - 1, )
                     if n+1 == len(fields):
                         a = '%s'
                         a1 = "\'%s\'"
