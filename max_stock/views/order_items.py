@@ -100,6 +100,8 @@ def order_list(request):
     keywords = request.GET.get('search_words','').replace('amp;','')
     is_email = request.GET.get('search_is_email','')
     is_presale = request.GET.get('search_is_presale','')
+    start_date = request.GET.get('search_start_date','')
+    end_date = request.GET.get('search_end_date','')
     payments_date = request.GET.get('search_payments_date','')
     nosend_re  = NoSendRes.objects.values_list('sku').filter(order_id='', status='')
 
@@ -107,7 +109,9 @@ def order_list(request):
         list = OrderItems.objects.filter(is_email=0, sku__in=nosend_re)
         is_email = 0
     elif (is_email and is_email == '1'):
-        list = OldOrderItems.objects.filter(is_email=1)
+        if not start_date:
+            start_date = (datetime.now() + timedelta(days=-5)).strftime("%Y-%m-%d")
+        list = OldOrderItems.objects.filter(is_email=1, created__gte=start_date)
         is_presale = 0
     else:
         nosend_re1 = NoSendRes.objects.values_list('order_id').filter(status='Refund').exclude(order_id='')
@@ -119,6 +123,10 @@ def order_list(request):
         list = list.filter(user_id=user.user.id)
     if keywords:
         list = list.filter(Q(order_id__contains=keywords)| Q(sku__contains=keywords)| Q(customer__contains=keywords))
+    if start_date:
+        list = list.filter(created__gte=start_date)
+    if end_date:
+        list = list.filter(created__lte=end_date)
     if payments_date:
         list = list.filter(payments_date__contains=payments_date)
 
@@ -129,6 +137,8 @@ def order_list(request):
         'is_email': is_email,
         'is_presale': is_presale,
         'payments_date': payments_date,
+        'start_date': start_date,
+        'end_date': end_date,
         'title': 'Order Items',
     }
     return render(request, "Stocks/send_email/order_list.html", data)

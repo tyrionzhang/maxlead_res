@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os,json
 from django.shortcuts import render,HttpResponse
+from datetime import *
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.db.models import Q
@@ -91,11 +92,22 @@ def logs(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords', '').replace('amp;','')
-    res = StockLogs.objects.all().order_by('-created')
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
+    if not start_date:
+        start_date = (datetime.now() + timedelta(days = -5)).strftime("%Y-%m-%d")
+    res = StockLogs.objects.filter(created__gte=start_date).order_by('-created')
     if keywords:
         res = res.filter(Q(fun__contains=keywords)|Q(user__username__contains=keywords)|Q(description__contains=keywords))
+    if start_date:
+        res = res.filter(created__gte=start_date)
+    if end_date:
+        res = res.filter(created__lte=end_date)
     data = {
         'data': res,
+        'keywords': keywords,
+        'end_date': end_date,
+        'start_date': start_date,
         'title': "Logs",
         'user': user,
     }
