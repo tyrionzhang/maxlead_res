@@ -140,12 +140,18 @@ def order_save(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
         id = request.POST.get('id','')
+        order_id = request.POST.get('order_id','')
+        status = request.POST.get('status','')
         sku = request.POST.get('sku','').replace('amp;','')
+        if not sku:
+            return HttpResponse(json.dumps({'code': 1, 'msg': 'Sku is empty!'}), content_type='application/json')
         if not id:
             obj = NoSendRes()
             obj.id
             obj.user_id = user.user_id
             obj.sku = sku
+            obj.order_id = order_id
+            obj.status = status
             obj.save()
             if obj.id:
                 return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
@@ -329,3 +335,18 @@ def update_emails(request):
         res = read_csv_file(EmailContacts, file_path, email=email, expired_time=expired_time)
         os.remove(file_path)
         return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
+
+@csrf_exempt
+def batch_del_ocheck(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        ids = eval(request.POST.get('data',''))
+        if not ids:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'请选择要删除的模板！'}), content_type='application/json')
+        obj = NoSendRes.objects.filter(id__in=ids)
+        if not obj:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'请求的数据不存在！'}), content_type='application/json')
+        obj.delete()
+        return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
