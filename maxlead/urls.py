@@ -143,6 +143,7 @@ urlpatterns = [
     url('^admin/send_email/email_temps/', emailTmp.email_temps),
     url('^admin/send_email/tmp_save/', emailTmp.tmp_save),
     url('^admin/send_email/del_tmp/', emailTmp.del_tmp),
+    url('^admin/send_email/batch_del_tmp/', emailTmp.batch_del_tmp),
     url('^admin/send_email/branch_edit_tmp/', emailTmp.branch_edit_tmp),
     url('^admin/send_email/tmp_import/', emailTmp.tmp_import),
     url('^admin/send_email/order_list/', order_items.order_list),

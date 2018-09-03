@@ -7,7 +7,7 @@ import time
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from max_stock.models import OrderItems,OldOrderItems,EmailTemplates,NoSendRes,EmailContacts
+from max_stock.models import OrderItems,OldOrderItems,EmailTemplates,NoSendRes,EmailContacts,StockLogs
 from maxlead_site.views.app import App
 from django.db.models import Q
 from maxlead import settings
@@ -32,7 +32,7 @@ def _get_send_time(time_str):
         t_re = (time_saturday - time_now).total_seconds()
     return t_re
 
-def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payments_date, is_presale, order_status, user_id):
+def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payments_date, is_presale, order_status, user_id, request_path):
     smtp_server = 'smtp.gmail.com'
     from_addr = 'maxlead.us@gmail.com'
     to_addr = email
@@ -77,6 +77,13 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
         email_order_obj.send_date = datetime.now()
         email_order_obj.order_status = order_status
         email_order_obj.save()
+        log_obj = StockLogs()
+        log_obj.id
+        log_obj.user_id = user_id
+        log_obj.fun = request_path
+        log_obj.description = 'Order_id:%s,Error:%s' % (order_id, e)
+        log_obj.save()
+
         if email_order_obj.id:
             old_obj = OldOrderItems.objects.filter(order_id=order_id)
             if old_obj:
@@ -212,8 +219,7 @@ def send_email(request):
                 time_re = _get_send_time(tmps[0].send_time)
                 time_re = int(time_re) + m_time
                 tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
-                           orders[0].is_presale, orders[0].order_status, user.user_id]
-                time_re = 1
+                           orders[0].is_presale, orders[0].order_status, user.user_id, request.path]
                 t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
                 t.start()
                 email_order_obj = OldOrderItems()
