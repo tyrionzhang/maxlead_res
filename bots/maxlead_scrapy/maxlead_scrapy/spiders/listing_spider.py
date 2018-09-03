@@ -3,14 +3,12 @@
 import scrapy,time,os,re,datetime
 import random
 from bots.maxlead_scrapy.maxlead_scrapy.items import ListingsItem
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from maxlead_site.models import UserAsins,Listings
 from django.db.models import Count
 from django.utils import timezone
 from maxlead_site.common.common import get_asins
 from maxlead_site.models import UserProfile
-from bots.stockbot.stockbot import settings
+
 
 class ListingSpider(scrapy.Spider):
 
@@ -46,19 +44,9 @@ class ListingSpider(scrapy.Spider):
         res_asin = response.url.split('/')
         asin_id = res_asin[4]
         item = ListingsItem()
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
-        chrome_options = Options()
-        chrome_options.add_argument('-headless')
-        chrome_options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH, service_log_path=settings.LOG_PATH)
-        driver.get(response.url)
-        driver.implicitly_wait(30)
-        item['title'] = driver.find_elements_by_id('productTitle')
+        item['title'] = response.css('span#productTitle::text').extract_first()
         if not item['title']:
-            item['title'] = driver.find_elements_by_css_selector('div#titleSection span#productTitle')
-        item['title'] = item['title'][0].text
+            item['title'] = response.css('div#titleSection span#productTitle::text').extract_first()
         print('Title is:%s' % item['title'])
         if item['title']:
             for val in self.res:
@@ -73,142 +61,130 @@ class ListingSpider(scrapy.Spider):
             item['title'] = item['title'].replace('\n','').strip()
             item['asin'] = asin_id
             item['answered'] = ''
-            qac = driver.find_elements_by_css_selector('a.askATFLink span')
+            qac = response.css('a.askATFLink span::text').extract_first()
             if qac:
-                item['answered'] = qac[0].text.replace('\n','').strip().split(' answered')[0]
-            item['brand'] = driver.find_elements_by_id('brand')
+                item['answered'] = qac.replace('\n','').strip().split(' answered')[0]
+            item['brand'] = response.css('a#brand::text').extract_first()
             if not item['brand']:
-                item['brand'] = driver.find_elements_by_id('bylineInfo')
+                item['brand'] = response.css('#bylineInfo::text').extract_first()
             if item['brand']:
-                item['brand'] = item['brand'][0].text.replace('\n','').strip()
+                item['brand'] = item['brand'].replace('\n','').strip()
             item['shipping'] = response.css('span#price-shipping-message b::text').extract_first()
-            item['shipping'] = driver.find_elements_by_css_selector('span#price-shipping-message b')
             if not item['shipping']:
-                item['shipping'] = driver.find_elements_by_id('creturns-policy-anchor-text')
+                item['shipping'] = response.css('a#creturns-policy-anchor-text::text').extract_first()
             if item['shipping']:
-                item['shipping'] = item['shipping'][0].text.replace('\n','').strip()
+                item['shipping'] = item['shipping'].replace('\n','').strip()
             else:
                 item['shipping'] = ''
-            prime = driver.find_elements_by_css_selector('span#primeUpsellPopover i')
+            prime = response.css('span#primeUpsellPopover i').extract_first()
             if prime:
                 item['prime'] = 1
             item['feature'] = ''
-            des_li = driver.find_elements_by_css_selector('div#feature-bullets li span.a-list-item')
+            des_li = response.css('div#feature-bullets li span.a-list-item::text').extract()
             if des_li:
                 for val in des_li:
-                    val = re.sub(r"\n|\t",'',val.text)
+                    val = re.sub(r"\n|\t",'',val)
                     item['feature'] += val + '\n'
 
-            des_detail = ''
-            des_res = driver.find_elements_by_id('productDescription')
-            if not des_res:
-                des_res = driver.find_elements_by_css_selector('div.launchpad-module-brand-description-left div.launchpad-text-left-justify')
-            if des_res:
-                des_detail = re.sub("\n", ",", des_res[0].text.strip())
-
-            item['description'] = des_detail
+            des_res = re.sub("\n", ",",
+                              response.css("div#productDescription").xpath("string(p)").extract_first(default="").strip())
+            item['description'] = des_res
 
             item['buy_box_res'] = []
-            buyBoxs = driver.find_elements_by_css_selector('#merchant-info a')
-            if buyBoxs:
-                item['buy_box_link'] = 'https://www.amazon.com%s' % buyBoxs[0].get_attribute('href')
+            buyBoxs = response.css('#merchant-info a::text').extract()
+            buyBox_link = response.css('#merchant-info a::attr(href)').extract()
+            if buyBox_link:
+                item['buy_box_link'] = 'https://www.amazon.com%s' % buyBox_link[0]
             if not buyBoxs:
-                buyBoxs_re = driver.find_elements_by_id('availability-brief')
-                if buyBoxs_re:
-                    buyBoxs_re = buyBoxs_re[0].find_elements_by_xpath('span[2]')
-                if buyBoxs_re:
-                    buyBoxs = re.sub("\n", ",",buyBoxs_re[0].text.strip())
+                buyBoxs = re.sub("\n", ",",
+                              response.css("div#availability-brief").xpath("string(span[2])").extract_first(default="").strip())
                 if buyBoxs:
                     a = buyBoxs.split('sold by')
                     if len(a)>2:
                         buyBoxs = a[1].split('and')
             if buyBoxs:
                 for v in buyBoxs:
-                    item['buy_box_res'].append(v.text)
+                    item['buy_box_res'].append(v)
             if 'Brandline' in item['buy_box_res']:
                 item['buy_box'] = 'Ours'
             else:
                 item['buy_box'] = 'Others'
-            item['price'] = driver.find_elements_by_css_selector('tr#priceblock_ourprice_row span#priceblock_ourprice')
+            item['price'] = response.css('tr#priceblock_ourprice_row span#priceblock_ourprice::text').extract_first()
             if not item['price']:
-                item['price'] = driver.find_elements_by_css_selector('tr#priceblock_dealprice_row span#priceblock_dealprice')
-            if item['price']:
-                item['price'] = item['price'][0].text
-            else:
-                item['price'] = 0
+                item['price'] = response.css('tr#priceblock_dealprice_row span#priceblock_dealprice::text').extract_first()
 
-            review = driver.find_elements_by_id('acrCustomerReviewText')
+            review = response.css('span#acrCustomerReviewText::text').extract_first()
             item['total_review'] = 0
             if review:
-                item['total_review'] = review[0].text.split(' ')[0].replace(',','')
-            qa = driver.find_elements_by_css_selector('a#askATFLink span')
+                item['total_review'] = review.split(' ')[0].replace(',','')
+            qa = response.css('a#askATFLink span::text').extract_first()
             item['total_qa'] = 0
             if qa:
-                item['total_qa'] = qa[0].text.replace('\n','').strip().split(' ')[0].replace(',','')
-            score = driver.find_elements_by_id('acrPopover')
+                item['total_qa'] = qa.replace('\n','').strip().split(' ')[0].replace(',','')
+            score = response.css('span#acrPopover::attr("title")').extract_first()
             item['rvw_score'] = 0
             if score:
-                item['rvw_score'] = score[0].get_attribute('title').split(' ')[0]
-            category_rank1 = driver.find_elements_by_id('SalesRank')
-            category_rank2 = driver.find_elements_by_css_selector('tr#SalesRank td.value')
+                item['rvw_score'] = score.split(' ')[0]
+            category_rank1 = response.css('li#SalesRank::text').extract()
+            category_rank2 = response.css('tr#SalesRank td.value::text').extract()
             item['category_rank'] = ''
             if category_rank1:
-                item['category_rank'] = category_rank1[0].text.replace('\n','').split(' (')[0]
-                rank_list = driver.find_elements_by_css_selector('ul.zg_hrsr li.zg_hrsr_item')
+                item['category_rank'] = category_rank1[1].replace('\n','').split(' (')[0]
+                rank_list = response.css('ul.zg_hrsr li.zg_hrsr_item')
                 if rank_list:
                     rank_list_item = ''
                     for res in rank_list:
-                        rank_list_item += '|'+ res.find_element_by_class_name('zg_hrsr_rank').text+' in '
-                        for i,val in enumerate(res.find_elements_by_tag_name('a'),1):
-                            if i == len(res.find_elements_by_tag_name('a')):
-                                rank_list_item += val.text
+                        rank_list_item += '|'+res.css('span.zg_hrsr_rank::text').extract_first()+' in '
+                        for i,val in enumerate(res.css('a::text').extract(),1):
+                            if i == len(res.css('a::text').extract()):
+                                rank_list_item += val
                             else:
-                                rank_list_item+=val.text +' > '
+                                rank_list_item+=val +' > '
 
                     item['category_rank'] = item['category_rank']+rank_list_item
             elif category_rank2:
-                item['category_rank'] = category_rank2[0].text.replace('\n', '').split(' (')[0]
-                rank_list = driver.find_elements_by_css_selector('ul.zg_hrsr li.zg_hrsr_item')
+                item['category_rank'] = category_rank2[0].replace('\n', '').split(' (')[0]
+                rank_list = response.css('ul.zg_hrsr li.zg_hrsr_item')
                 if rank_list:
                     rank_list_item = ''
                     for res in rank_list:
-                        rank_list_item += '|' + res.find_element_by_class_name('zg_hrsr_rank').text + ' in '
-                        for i, val in enumerate(res.find_elements_by_tag_name('a'), 1):
-                            if i == len(res.find_elements_by_tag_name('a')):
-                                rank_list_item += val.text
+                        rank_list_item += '|' + res.css('span.zg_hrsr_rank::text').extract_first() + ' in '
+                        for i, val in enumerate(res.css('a::text').extract(), 1):
+                            if i == len(res.css('a::text').extract()):
+                                rank_list_item += val
                             else:
-                                rank_list_item += val.text + ' > '
+                                rank_list_item += val + ' > '
 
                     item['category_rank'] = item['category_rank'] + rank_list_item
             else:
-                th_el = driver.find_elements_by_css_selector('table#productDetails_detailBullets_sections1 tr')
+                th_el = response.css('table#productDetails_detailBullets_sections1 tr')
                 if th_el:
                     for val in th_el:
-                        th_str = val.find_elements_by_tag_name('th')[0].text
+                        th_str = val.css('th::text').extract_first()
                         if th_str and th_str.replace('\n', '').strip() == 'Best Sellers Rank':
-                            rank_el = val.find_elements_by_css_selector('td span span')
+                            rank_el = val.css('td span span::text').extract()
                             if rank_el:
-                                item['category_rank'] = rank_el[0].text.split(' (')[0]
-                                rank_span = val.find_elements_by_css_selector('td span span')
+                                item['category_rank'] = rank_el[0].split(' (')[0]
+                                rank_span = val.css('td span span')
                                 for n, rank_a in enumerate(rank_span, 0):
                                     if not n == 0:
-                                        a = rank_a.find_elements_by_tag_name('a')
+                                        a = rank_a.css('a::text').extract()
                                         for s, val in enumerate(a, 1):
                                             if s == len(a):
-                                                item['category_rank'] += val.text
+                                                item['category_rank'] += val
                                             elif s == 1:
-                                                item['category_rank'] += '|' + rank_el[1].text + val.text + ' > '
+                                                item['category_rank'] += '|' + rank_el[2] + val + ' > '
                                             else:
-                                                item['category_rank'] += val.text + ' > '
+                                                item['category_rank'] += val + ' > '
 
             item['inventory'] = 0
             item['image_urls'] = []
-            img_el = driver.find_elements_by_css_selector('div#altImages ul.a-unordered-list li.item')
+            img_el = response.css('div#altImages ul.a-unordered-list li.item')
             if not img_el:
-                img_el = driver.find_elements_by_css_selector('ol.a-carousel li.a-carousel-card')
-                res = img_el[0].find_element_by_css_selector('span.a-declarative img').get_attribute('src')
+                img_el = response.css('ol.a-carousel li.a-carousel-card')
+                res = img_el[0].css('span.a-declarative img::attr("src")').extract_first()
             else:
-                res = img_el[0].find_element_by_css_selector('span.a-button-text img').get_attribute('src')
+                res = img_el[0].css('span.a-button-text img::attr("src")').extract_first()
             if res:
                 name_res = os.path.basename(res).split('._')
                 filename = name_res[0] + name_res[1].split('_')[-1]
@@ -227,34 +203,30 @@ class ListingSpider(scrapy.Spider):
                             item['image_date'] = listing.image_date
                     else:
                         item['image_date'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-            with_deal1 = driver.find_elements_by_css_selector('tr#priceblock_dealprice_row td.a-span12 span')
-            with_deal2 = driver.find_elements_by_css_selector('tr#priceblock_dealprice_row a#creturns-policy-anchor-text')
+            with_deal1 = response.css('tr#priceblock_dealprice_row td.a-span12 span::text').extract_first()
+            with_deal2 = response.css('tr#priceblock_dealprice_row a#creturns-policy-anchor-text::text').extract_first()
             item['lightning_deal'] = ''
             if with_deal1:
-                item['lightning_deal'] += with_deal1[0].text
+                item['lightning_deal'] += with_deal1
                 if with_deal2:
-                    item['lightning_deal'] += '&'+with_deal2[0].text.replace('\n', '').strip()
-            deal = driver.find_elements_by_css_selector('div#deal_availability span')
+                    item['lightning_deal'] += '&'+with_deal2.replace('\n', '').strip()
+            deal = response.css('div#deal_availability span::text').extract()
             if deal:
                 deals = ''
                 for v in deal:
-                    deals += v[0].text
+                    deals += v
                 item['lightning_deal'] += deals
 
-            promotion = driver.find_elements_by_css_selector('div#quickPromoBucketContent li')
+            promotion = response.css('div#quickPromoBucketContent li::text').extract()
             if promotion:
                 promotions = ''
                 for v in promotion:
-                    if v.text.replace('\n','').strip():
-                        promotions += v.text
+                    if v.replace('\n','').strip():
+                        promotions += v
                 if promotions:
                     item['promotion'] = promotions
             yield item
-            time.sleep(3 + random.randint(27, 30))
+            time.sleep(3 + random.randint(117, 177))
             res = UserAsins.objects.filter(aid=asin_id)
             if res:
                 res.update(is_done=1,listing_time=timezone.now())
-        display.stop()
-        driver.quit()
-
-

@@ -2,13 +2,10 @@
 
 import scrapy,time,datetime
 import random
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
 from maxlead_site.models import UserAsins,AsinReviews
 from scrapy import log
 from django.db.models import Count
-from bots.stockbot.stockbot import settings
 
 
 class ReviewSpider(scrapy.Spider):
@@ -39,76 +36,55 @@ class ReviewSpider(scrapy.Spider):
         else:
             check = 1
             asin_id = res_asin[4]
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
-        chrome_options = Options()
-        chrome_options.add_argument('-headless')
-        chrome_options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
-                                  service_log_path=settings.LOG_PATH)
-        driver.get(response.url)
-        driver.implicitly_wait(100)
-        req_res = driver.find_elements_by_css_selector('div#cm_cr-review_list div.review')
+        req_res = response.css('div#cm_cr-review_list div.review')
         if check:
             item = AsinReviewsItem()
             item['aid'] = asin_id
-            item['avg_score'] = 0
-            avg_score = driver.find_elements_by_css_selector('div.averageStarRatingNumerical span.arp-rating-out-of-text')
-            if not avg_score:
-                avg_score = driver.find_elements_by_css_selector('i.averageStarRating span')
-            if avg_score:
-                item['avg_score'] = avg_score[0].text[0: 3]
-            total_review = driver.find_elements_by_css_selector('div.averageStarRatingIconAndCount span.totalReviewCount')
-            if not total_review:
-                total_review = driver.find_elements_by_class_name('totalReviewCount')
-            if total_review:
-                item['total_review'] = total_review[0].text.replace(',','')
-            yield item
-        for i in range(0, len(req_res)):
-            driver.get(response.url)
-            driver.implicitly_wait(100)
-            elem_req = driver.find_elements_by_css_selector('div#cm_cr-review_list div.review')
-            review = elem_req[i]
-            item = ReviewsItem()
-            item['name'] =  review.find_element_by_css_selector('span.review-byline a.author').text
-            item['asin'] = asin_id
-            item['title'] = review.find_element_by_class_name('review-title').text
-            item['content'] = review.find_element_by_class_name('review-text').text
-            item['review_link'] = review.find_element_by_class_name('review-title').get_attribute('href')
-            item['score'] = review.find_element_by_xpath(".//*[@class='a-link-normal']").get_attribute('title')[0:1]
-            variation = review.find_elements_by_css_selector('div.review-format-strip a.a-color-secondary')
-            if variation:
-                item['variation'] = variation[0].text
-            item['image_urls'] = []
-            imgs = review.find_elements_by_css_selector('div.review-image-container img.review-image-tile')
-            if imgs:
-                for img_re in imgs:
-                    item['image_urls'].append(img_re.get_attribute('src'))
+            item['avg_score'] = response.css('div.averageStarRatingNumerical span.arp-rating-out-of-text::text').extract_first()
+            if not item['avg_score']:
+                item['avg_score'] = response.css('i.averageStarRating span::text').extract_first()
+            if item['avg_score']:
+                item['avg_score'] = item['avg_score'][0: 3]
+            item['total_review'] = response.css('div.averageStarRatingIconAndCount span.totalReviewCount::text').extract_first()
 
-            vp = review.find_elements_by_css_selector('div.review-format-strip .a-link-normal span')
-            if vp and vp[0].text == 'Verified Purchase':
+            if not item['total_review']:
+                item['total_review'] = response.css('span.totalReviewCount::text').extract_first()
+            if item['total_review']:
+                item['total_review'] = item['total_review'].replace(',','')
+            yield item
+        for review in req_res:
+            item = ReviewsItem()
+            item['name'] = review.css('span.review-byline a.author::text').extract_first()
+            item['asin'] = asin_id
+            item['title'] = review.css('a.review-title::text').extract_first()
+            item['content'] = review.css('span.review-text::text').extract_first()
+            item['review_link'] = "https://www.amazon.com" + review.css('a.review-title::attr("href")').extract_first()
+            item['score'] = review.css('i.review-rating span::text').extract_first()[0:1]
+            item['variation'] = review.css('div.review-format-strip a.a-color-secondary::text').extract_first()
+            item['image_urls'] = []
+            for img_re in review.css('div.review-image-container img.review-image-tile::attr("data-src")').extract():
+                item['image_urls'].append(img_re)
+
+            vp = review.css('div.review-format-strip .a-link-normal span::text').extract_first()
+            if vp is not None and vp == 'Verified Purchase':
                 item['is_vp'] = 1
             else:
                 item['is_vp'] = 0
-            review_date = time.strptime(review.find_element_by_class_name('review-date').text[3:40],"%B %d, %Y")
+            review_date = time.strptime(review.css('span.review-date::text').extract_first()[3:40],"%B %d, %Y")
             item['review_date'] = time.strftime("%Y-%m-%d", review_date)
             yield item
 
-        next_page = driver.find_elements_by_css_selector('li.a-last a')
-        if next_page:
-            time.sleep(3 + random.randint(27, 30))
-            next_page = next_page[0].get_attribute('href')
-            time.sleep(3 + random.randint(3, 9))
+        next_page = response.css('li.a-last a::attr("href")').extract_first()
+        if next_page is not None:
+            time.sleep(3 + random.randint(27, 57))
             self.asin_id = next_page.split('/')[3][0:10]
-            next_page = next_page + '&mytype=maxlead'
+            next_page = next_page + '&pageSize=50&mytype=maxlead'
+            next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse)
         else:
             re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
             if re:
                 re.update(is_done=1)
-        display.stop()
-        driver.quit()
 
     def parse_details(self, response):
         item = response.meta.get('item', None)
