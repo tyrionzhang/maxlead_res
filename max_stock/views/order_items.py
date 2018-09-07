@@ -90,6 +90,7 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
                 old_obj.delete()
     finally:
         server.quit()
+        time.sleep(3 + random.randint(27, 66))
     return True
 
 @csrf_exempt
