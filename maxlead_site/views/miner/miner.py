@@ -318,7 +318,7 @@ class Miner:
                             'created'
                         ]
             else:
-                reviews_check = AsinReviews.objects.filter(aid=aid_li, is_done=0, created__icontains=ob_time)
+                reviews_check = AsinReviews.objects.filter(aid__in=aid_li, is_done=0, created__icontains=ob_time)
                 if reviews_check:
                     reviews_is_done = 0
                 reviews_a = AsinReviews.objects.filter(aid__in=aid_li,created__icontains=ob_time)

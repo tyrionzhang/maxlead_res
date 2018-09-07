@@ -60,12 +60,16 @@ class ReviewSpider(scrapy.Spider):
             item['content'] = review.css('span.review-text::text').extract_first()
             item['review_link'] = "https://www.amazon.com" + review.css('a.review-title::attr("href")').extract_first()
             item['score'] = review.css('i.review-rating span::text').extract_first()[0:1]
-            item['variation'] = review.css('div.review-format-strip a.a-color-secondary::text').extract_first()
+            item['variation'] = review.css('div.review-format-strip span.cr-widget-AsinVariation::text').extract_first()
+            if item['variation']:
+                item['variation'] = item['variation'].replace('\n','')
             item['image_urls'] = []
             for img_re in review.css('div.review-image-container img.review-image-tile::attr("data-src")').extract():
                 item['image_urls'].append(img_re)
 
             vp = review.css('div.review-format-strip .a-link-normal span::text').extract_first()
+            if not vp:
+                vp = review.css('div.review-format-strip span.a-declarative span::text').extract_first()
             if vp is not None and vp == 'Verified Purchase':
                 item['is_vp'] = 1
             else:
