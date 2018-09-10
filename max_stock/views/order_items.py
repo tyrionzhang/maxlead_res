@@ -345,7 +345,7 @@ def update_emails(request):
         expired_time = datetime.now() + timedelta(days = int(expired_time))
         res = read_csv_file(EmailContacts, file_path, email=email, expired_time=expired_time)
         os.remove(file_path)
-        return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
+        return HttpResponse(json.dumps(res), content_type='application/json')
 
 @csrf_exempt
 def batch_del_ocheck(request):
