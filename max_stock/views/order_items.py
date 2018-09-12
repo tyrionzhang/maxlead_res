@@ -90,7 +90,6 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
                 old_obj.delete()
     finally:
         server.quit()
-        time.sleep(3 + random.randint(27, 66))
     return True
 
 @csrf_exempt
@@ -235,6 +234,7 @@ def send_email(request):
                     m_time = 0
                 time_re = _get_send_time(tmps[0].send_time)
                 time_re = int(time_re) + m_time
+                time_re = time_re + (3 + random.randint(27, 57))
                 tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
                            orders[0].is_presale, orders[0].order_status, user.user_id, request.path]
                 t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
