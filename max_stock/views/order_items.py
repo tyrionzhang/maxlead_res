@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import os,json,threading,smtplib,random
-import sys, string
-import poplib
 from datetime import *
 import time
 from django.shortcuts import render,HttpResponse
@@ -12,11 +10,8 @@ from maxlead_site.views.app import App
 from django.db.models import Q
 from maxlead import settings
 from maxlead_site.common.excel_world import read_excel_for_orders,read_excel_file1,read_csv_file
-from django.core.mail import send_mail
 from email.header import Header
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
 from email.utils import parseaddr,formataddr
 from maxlead_site.common import common
 
@@ -32,10 +27,70 @@ def _get_send_time(time_str):
         t_re = (time_saturday - time_now).total_seconds()
     return t_re
 
-def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payments_date, is_presale, order_status, user_id, request_path):
+# def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payments_date, is_presale, order_status, user_id, request_path):
+#     smtp_server = 'smtp.gmail.com'
+#     from_addr = 'maxlead.us@gmail.com'
+#     to_addr = email
+#     password = "nxtpinfcqitdcpzb"
+#     if from_email and from_email.email_pass:
+#         if from_email.smtp_server:
+#             smtp_server = from_email.smtp_server
+#         from_addr = from_email.other_email
+#         password = common.decrypt(16, from_email.email_pass)
+#
+#     # 自定义处理邮件收发地址的显示内容
+#     def _format_addr(s):
+#         name, addr = parseaddr(s)
+#         # 将邮件的name转换成utf-8格式，addr如果是unicode，则转换utf-8输出，否则直接输出addr
+#         return formataddr((Header(name, 'utf-8').encode(), addr))
+#
+#     msg = MIMEText(msg, 'html', 'utf-8')
+#     # 邮件对象
+#     msg['From'] = _format_addr('<%s>' % from_addr)
+#     msg['to'] = _format_addr('<%s>' % to_addr)
+#     msg['Subject'] = Header(title, 'utf-8').encode()
+#     msg['date'] = time.strftime("%a,%d %b %Y %H:%M:%S %z")
+#     # 发送邮件
+#     server = smtplib.SMTP(smtp_server, 587)
+#     server.set_debuglevel(1)
+#     server.starttls()
+#     server.login(from_addr, password)
+#     try:
+#         server.sendmail(from_addr, to_addr, msg.as_string())
+#     except Exception as e:
+#         print(e)
+#         email_order_obj = OrderItems()
+#         email_order_obj.id
+#         email_order_obj.user_id = user_id
+#         email_order_obj.order_id = order_id
+#         email_order_obj.sku = sku
+#         email_order_obj.payments_date = payments_date
+#         email_order_obj.is_presale = is_presale
+#         email_order_obj.customer = buyer
+#         email_order_obj.email = to_addr
+#         email_order_obj.is_email = 0
+#         email_order_obj.send_date = datetime.now()
+#         email_order_obj.order_status = order_status
+#         email_order_obj.save()
+#         log_obj = StockLogs()
+#         log_obj.id
+#         log_obj.user_id = user_id
+#         log_obj.fun = request_path
+#         log_obj.description = 'Order_id:%s,Error:%s' % (order_id, e)
+#         log_obj.save()
+#
+#         if email_order_obj.id:
+#             old_obj = OldOrderItems.objects.filter(order_id=order_id)
+#             if old_obj:
+#                 old_obj.delete()
+#     finally:
+#         server.quit()
+#     return True
+
+def send_email_as_tmp(title, sku, from_email, content, order_li, request_path):
     smtp_server = 'smtp.gmail.com'
     from_addr = 'maxlead.us@gmail.com'
-    to_addr = email
+
     password = "nxtpinfcqitdcpzb"
     if from_email and from_email.email_pass:
         if from_email.smtp_server:
@@ -49,47 +104,56 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
         # 将邮件的name转换成utf-8格式，addr如果是unicode，则转换utf-8输出，否则直接输出addr
         return formataddr((Header(name, 'utf-8').encode(), addr))
 
-    msg = MIMEText(msg, 'html', 'utf-8')
-    # 邮件对象
-    msg['From'] = _format_addr('<%s>' % from_addr)
-    msg['to'] = _format_addr('<%s>' % to_addr)
-    msg['Subject'] = Header(title, 'utf-8').encode()
-    msg['date'] = time.strftime("%a,%d %b %Y %H:%M:%S %z")
-    # 发送邮件
     server = smtplib.SMTP(smtp_server, 587)
     server.set_debuglevel(1)
     server.starttls()
     server.login(from_addr, password)
-    try:
-        server.sendmail(from_addr, to_addr, msg.as_string())
-    except Exception as e:
-        print(e)
-        email_order_obj = OrderItems()
-        email_order_obj.id
-        email_order_obj.user_id = user_id
-        email_order_obj.order_id = order_id
-        email_order_obj.sku = sku
-        email_order_obj.payments_date = payments_date
-        email_order_obj.is_presale = is_presale
-        email_order_obj.customer = buyer
-        email_order_obj.email = to_addr
-        email_order_obj.is_email = 0
-        email_order_obj.send_date = datetime.now()
-        email_order_obj.order_status = order_status
-        email_order_obj.save()
-        log_obj = StockLogs()
-        log_obj.id
-        log_obj.user_id = user_id
-        log_obj.fun = request_path
-        log_obj.description = 'Order_id:%s,Error:%s' % (order_id, e)
-        log_obj.save()
 
-        if email_order_obj.id:
-            old_obj = OldOrderItems.objects.filter(order_id=order_id)
-            if old_obj:
-                old_obj.delete()
-    finally:
-        server.quit()
+    for val in order_li:
+        if val['sku'] == sku:
+            msg = content
+            to_addr = val['email']
+            to_addr = 'rudy.zhangwei@cdsht.cn'
+            if not msg.find('%s') == -1:
+                msg = msg % val['buyer']
+            if not title.find('%s') == -1:
+                title = title % val['order_id']
+            msg = MIMEText(msg, 'html', 'utf-8')
+            # 邮件对象
+            msg['From'] = _format_addr('<%s>' % from_addr)
+            msg['to'] = _format_addr('<%s>' % to_addr)
+            msg['Subject'] = Header(title, 'utf-8').encode()
+            msg['date'] = time.strftime("%a,%d %b %Y %H:%M:%S %z")
+            try:
+                server.sendmail(from_addr, to_addr, msg.as_string())
+            except Exception as e:
+                print(e)
+                email_order_obj = OrderItems()
+                email_order_obj.id
+                email_order_obj.user_id = from_email.user_id
+                email_order_obj.order_id = val['order_id']
+                email_order_obj.sku = val['sku']
+                email_order_obj.payments_date = val['payments_date']
+                email_order_obj.is_presale = val['is_presale']
+                email_order_obj.customer = val['buyer']
+                email_order_obj.email = to_addr
+                email_order_obj.is_email = 0
+                email_order_obj.send_date = datetime.now()
+                email_order_obj.order_status = val['order_status']
+                email_order_obj.save()
+                log_obj = StockLogs()
+                log_obj.id
+                log_obj.user_id = from_email.user_id
+                log_obj.fun = request_path
+                log_obj.description = 'Order_id:%s,Error:%s' % (val['order_id'], e)
+                log_obj.save()
+
+                if email_order_obj.id:
+                    old_obj = OldOrderItems.objects.filter(order_id=val['order_id'])
+                    if old_obj:
+                        old_obj.delete()
+            time.sleep(3 + random.randint(27, 60))
+    server.quit()
     return True
 
 @csrf_exempt
@@ -204,55 +268,55 @@ def order_import(request):
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 
-@csrf_exempt
-def send_email(request):
-    user = App.get_user_info(request)
-    if not user:
-        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
-
-    if request.method == 'POST':
-        data = request.POST.get('data')
-        m_time = 0
-        list_data = eval(data)
-        for i,val in enumerate(list_data):
-            orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
-            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
-            tmps = EmailTemplates.objects.filter(sku=val['sku'])
-            if orders and tmps and not old_orders:
-                title = tmps[0].title
-                if title and not title.find('%s') == -1:
-                    title = title % val['order_id']
-                else:
-                    title = "After-sale Service for your recent order from Brandline (Amazon order: %s)" % val['order_id']
-                if tmps[0].content and tmps[0].content.find('%s') == -1:
-                    msg = tmps[0].content
-                else:
-                    msg = tmps[0].content % val['buyer']
-                if not i == 0 and list_data[i - 1]['sku'] == list_data[i]['sku']:
-                    m_time += 5
-                if not i == 0 and not list_data[i - 1]['sku'] == list_data[i]['sku']:
-                    m_time = 0
-                time_re = _get_send_time(tmps[0].send_time)
-                time_re = int(time_re) + m_time
-                time_re = time_re + (3 + random.randint(27, 57))
-                tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
-                           orders[0].is_presale, orders[0].order_status, user.user_id, request.path]
-                t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
-                t.start()
-                email_order_obj = OldOrderItems()
-                email_order_obj.id
-                email_order_obj.user_id = user.user_id
-                email_order_obj.order_id = val['order_id']
-                email_order_obj.sku = val['sku']
-                email_order_obj.payments_date = orders[0].payments_date
-                email_order_obj.is_presale = orders[0].is_presale
-                email_order_obj.is_email = 1
-                email_order_obj.send_date = datetime.now()
-                email_order_obj.order_status = orders[0].order_status
-                email_order_obj.save()
-                if email_order_obj.id:
-                    orders.delete()
-        return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
+# @csrf_exempt
+# def send_email(request):
+#     user = App.get_user_info(request)
+#     if not user:
+#         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+#
+#     if request.method == 'POST':
+#         data = request.POST.get('data')
+#         m_time = 0
+#         list_data = eval(data)
+#         for i,val in enumerate(list_data):
+#             orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
+#             old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
+#             tmps = EmailTemplates.objects.filter(sku=val['sku'])
+#             if orders and tmps and not old_orders:
+#                 title = tmps[0].title
+#                 if title and not title.find('%s') == -1:
+#                     title = title % val['order_id']
+#                 else:
+#                     title = "After-sale Service for your recent order from Brandline (Amazon order: %s)" % val['order_id']
+#                 if tmps[0].content and tmps[0].content.find('%s') == -1:
+#                     msg = tmps[0].content
+#                 else:
+#                     msg = tmps[0].content % val['buyer']
+#                 if not i == 0 and list_data[i - 1]['sku'] == list_data[i]['sku']:
+#                     m_time += 5
+#                 if not i == 0 and not list_data[i - 1]['sku'] == list_data[i]['sku']:
+#                     m_time = 0
+#                 time_re = _get_send_time(tmps[0].send_time)
+#                 time_re = int(time_re) + m_time
+#                 time_re = time_re + (3 + random.randint(27, 57))
+#                 tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
+#                            orders[0].is_presale, orders[0].order_status, user.user_id, request.path]
+#                 t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
+#                 t.start()
+#                 email_order_obj = OldOrderItems()
+#                 email_order_obj.id
+#                 email_order_obj.user_id = user.user_id
+#                 email_order_obj.order_id = val['order_id']
+#                 email_order_obj.sku = val['sku']
+#                 email_order_obj.payments_date = orders[0].payments_date
+#                 email_order_obj.is_presale = orders[0].is_presale
+#                 email_order_obj.is_email = 1
+#                 email_order_obj.send_date = datetime.now()
+#                 email_order_obj.order_status = orders[0].order_status
+#                 email_order_obj.save()
+#                 if email_order_obj.id:
+#                     orders.delete()
+#         return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
 
 @csrf_exempt
 def no_send_list(request):
@@ -361,3 +425,57 @@ def batch_del_ocheck(request):
             return HttpResponse(json.dumps({'code': 0, 'msg': u'请求的数据不存在！'}), content_type='application/json')
         obj.delete()
         return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
+
+@csrf_exempt
+def send_email(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        m_time = 0
+        list_data = eval(data)
+        sku_li = []
+        order_li = []
+        for i,val in enumerate(list_data):
+            if val['sku'] not in sku_li:
+                sku_li.append(val['sku'])
+            orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
+            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
+            tmps = EmailTemplates.objects.filter(sku=val['sku'])
+            if orders and tmps and not old_orders:
+                order_li.append({
+                   'email':val['email'],
+                   'user_id':user.user_id,
+                   'order_id':val['order_id'],
+                   'sku':val['sku'],
+                   'buyer':val['buyer'],
+                   'payments_date':orders[0].payments_date,
+                   'is_presale':orders[0].is_presale,
+                   'order_status':orders[0].order_status
+                })
+                # email_order_obj = OldOrderItems()
+                # email_order_obj.id
+                # email_order_obj.user_id = user.user_id
+                # email_order_obj.order_id = val['order_id']
+                # email_order_obj.sku = val['sku']
+                # email_order_obj.payments_date = orders[0].payments_date
+                # email_order_obj.is_presale = orders[0].is_presale
+                # email_order_obj.is_email = 1
+                # email_order_obj.send_date = datetime.now()
+                # email_order_obj.order_status = orders[0].order_status
+                # email_order_obj.save()
+                # if email_order_obj.id:
+                #     orders.delete()
+        tmp_li = EmailTemplates.objects.filter(sku__in=sku_li)
+        if tmp_li:
+            for v in tmp_li:
+                time_re = _get_send_time(v.send_time)
+                time_re = int(time_re) + m_time
+                time_re = 1
+                time_re = time_re + (3 + random.randint(27, 57))
+                tmp_res = [v.title, v.sku, user, v.content,order_li, request.path]
+                t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
+                t.start()
+        return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
