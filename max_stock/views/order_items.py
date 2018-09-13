@@ -15,6 +15,9 @@ from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import parseaddr,formataddr
 from maxlead_site.common import common
+import sched
+
+schedule = sched.scheduler(time.time, time.sleep)
 
 def _get_send_time(time_str):
     time_now = datetime.now()
@@ -387,6 +390,10 @@ class perform_command_que1(threading.Thread):
 
     def run(self):
         if self.order_li:
-            tmp_res = [self.title, self.user, self.content, self.order_li, self.request_path]
-            t = threading.Timer(float('%.1f' % self.time_re), send_email_as_tmp, tmp_res)
-            t.start()
+            # tmp_res = [self.title, self.user, self.content, self.order_li, self.request_path]
+            schedule.enter(1, 0, send_email_as_tmp, (self.title, self.user, self.content, self.order_li, self.request_path))
+            schedule.run()
+
+            print(time.time())
+            # t = threading.Timer(float('%.1f' % self.time_re), send_email_as_tmp, tmp_res)
+            # t.start()
