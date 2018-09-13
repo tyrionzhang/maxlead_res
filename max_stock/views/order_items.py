@@ -362,10 +362,11 @@ def send_email(request):
         if tmp_li:
             for v in tmp_li:
                 order_li_child = []
-                for val in order_li:
-                    check1 = "%s-%s" % (v.sku, val['sku'])
+                for i,val in enumerate(order_li,1):
+                    check1 = "%s-%s" % (v.sku, val['order_id'])
                     if val['sku_order'] == check1:
                         order_li_child.append(val)
+                        del order_li[i]
                 time_re = _get_send_time(v.send_time)
                 time_re = int(time_re) + m_time
                 time_re = 1
