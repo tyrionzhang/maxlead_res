@@ -2,6 +2,7 @@
 import os,json,threading,smtplib,random
 from datetime import *
 import time
+import queue
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -360,11 +361,32 @@ def send_email(request):
 
         tmp_li = EmailTemplates.objects.filter(sku__in=sku_li)
         if tmp_li:
+            q = queue.Queue()
             for v in tmp_li:
-                time_re = _get_send_time(v.send_time) + (3 + random.randint(27, 100))
+                time_re = _get_send_time(v.send_time) + (3 + random.randint(27, 60))
+                time_re = 3 + random.randint(27, 60)
                 m_time = m_time + int(time_re)
                 if order_li_re[v.sku]:
-                    tmp_res = [v.title, user, v.content, order_li_re[v.sku], request.path]
-                    t = threading.Timer(float('%.1f' % m_time), send_email_as_tmp, tmp_res)
-                    t.start()
+                    rname = "task-%s" % v.sku
+                    task = perform_command_que1(rname, q, m_time, v.title, user, v.content, order_li_re[v.sku], request.path)
+                    task.start()
+                    task.join()
         return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
+
+class perform_command_que1(threading.Thread):
+    def __init__(self, t_name, queue, time_re, title, user, content, order_li, request_path):
+        threading.Thread.__init__(self, name=t_name)
+        self.data = queue
+        self.t_name = t_name
+        self.title = title
+        self.user = user
+        self.content = content
+        self.order_li = order_li
+        self.request_path = request_path
+        self.time_re = time_re
+
+    def run(self):
+        if self.order_li:
+            tmp_res = [self.title, self.user, self.content, self.order_li, self.request_path]
+            t = threading.Timer(float('%.1f' % self.time_re), send_email_as_tmp, tmp_res)
+            t.start()
