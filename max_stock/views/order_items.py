@@ -364,7 +364,7 @@ def send_email(request):
                 time_re = _get_send_time(v.send_time)
                 time_re = int(time_re) + m_time
                 time_re = 1
-                time_re = time_re + (3 + random.randint(27, 57))
+                time_re = time_re + (3 + random.randint(27, 100))
                 if order_li_re[v.sku]:
                     tmp_res = [v.title, user, v.content, v.sku, order_li_re, request.path]
                     t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
