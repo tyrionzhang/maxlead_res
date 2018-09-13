@@ -440,16 +440,16 @@ def send_email(request):
         for i,val in enumerate(list_data):
             if val['sku'] not in sku_li:
                 sku_li.append(val['sku'])
-            orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
-            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
+            orders = OrderItems.objects.filter(order_id=val['order_id'], sku=val['sku'], is_email=0)
+            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'], sku=val['sku'])
             tmps = EmailTemplates.objects.filter(sku=val['sku'])
             if orders and tmps and not old_orders:
                 order_li.append({
-                   'email':val['email'],
+                   'email':orders[0].email,
                    'user_id':user.user_id,
-                   'order_id':val['order_id'],
-                   'sku':val['sku'],
-                   'buyer':val['buyer'],
+                   'order_id':orders[0].order_id,
+                   'sku':tmps[0].sku,
+                   'buyer':orders[0].customer,
                    'payments_date':orders[0].payments_date,
                    'is_presale':orders[0].is_presale,
                    'order_status':orders[0].order_status
@@ -474,7 +474,7 @@ def send_email(request):
                 time_re = int(time_re) + m_time
                 time_re = 1
                 time_re = time_re + (3 + random.randint(27, 57))
-                tmp_res = [v.title, v.sku, user, v.content,order_li, request.path]
+                tmp_res = [v.title, v.sku, user, v.content, order_li, request.path]
                 t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
                 t.start()
         return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
