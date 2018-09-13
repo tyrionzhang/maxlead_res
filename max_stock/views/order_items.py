@@ -333,11 +333,13 @@ def send_email(request):
             old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
             tmps = EmailTemplates.objects.filter(sku=val['sku'])
             if orders and tmps and not old_orders:
+                sku_order = "%s-%s" % (orders[0].sku, orders[0].order_id)
                 order_li.append({
                    'email':orders[0].email,
                    'user_id':user.user_id,
                    'order_id':orders[0].order_id,
-                   'sku':tmps[0].sku,
+                   'sku':orders[0].sku,
+                   'sku_order':sku_order,
                    'buyer':orders[0].customer,
                    'payments_date':orders[0].payments_date,
                    'is_presale':orders[0].is_presale,
@@ -361,7 +363,8 @@ def send_email(request):
             for v in tmp_li:
                 order_li_child = []
                 for val in order_li:
-                    if val['sku'] == v.sku:
+                    check1 = "%s-%s" % (v.sku, val['sku'])
+                    if val['sku_order'] == check1:
                         order_li_child.append(val)
                 time_re = _get_send_time(v.send_time)
                 time_re = int(time_re) + m_time
