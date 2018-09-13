@@ -27,7 +27,7 @@ def _get_send_time(time_str):
         t_re = (time_saturday - time_now).total_seconds()
     return t_re
 
-def send_email_as_tmp(title, from_email, content, order_li, request_path):
+def send_email_as_tmp(title, from_email, content, sku, order_li, request_path):
     smtp_server = 'smtp.gmail.com'
     from_addr = 'maxlead.us@gmail.com'
 
@@ -43,7 +43,7 @@ def send_email_as_tmp(title, from_email, content, order_li, request_path):
         name, addr = parseaddr(s)
         # 将邮件的name转换成utf-8格式，addr如果是unicode，则转换utf-8输出，否则直接输出addr
         return formataddr((Header(name, 'utf-8').encode(), addr))
-    for val in order_li:
+    for val in order_li[sku]:
         time.sleep(3 + random.randint(27, 60))
         server = smtplib.SMTP(smtp_server, 587)
         server.set_debuglevel(1)
@@ -366,7 +366,7 @@ def send_email(request):
                 time_re = 1
                 time_re = time_re + (3 + random.randint(27, 57))
                 if order_li_re[v.sku]:
-                    tmp_res = [v.title, user, v.content, order_li_re[v.sku], request.path]
+                    tmp_res = [v.title, user, v.content, v.sku, order_li_re, request.path]
                     t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
                     t.start()
         return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
