@@ -103,14 +103,12 @@ def send_email_as_tmp(title, sku, from_email, content, order_li, request_path):
         name, addr = parseaddr(s)
         # 将邮件的name转换成utf-8格式，addr如果是unicode，则转换utf-8输出，否则直接输出addr
         return formataddr((Header(name, 'utf-8').encode(), addr))
-
-    server = smtplib.SMTP(smtp_server, 587)
-    server.set_debuglevel(1)
-    server.starttls()
-    server.login(from_addr, password)
-
     for val in order_li:
         if val['sku'] == sku:
+            server = smtplib.SMTP(smtp_server, 587)
+            server.set_debuglevel(1)
+            server.starttls()
+            server.login(from_addr, password)
             msg = content
             to_addr = val['email']
             to_addr = 'rudy.zhangwei@cdsht.cn'
@@ -152,8 +150,9 @@ def send_email_as_tmp(title, sku, from_email, content, order_li, request_path):
                     old_obj = OldOrderItems.objects.filter(order_id=val['order_id'])
                     if old_obj:
                         old_obj.delete()
+            finally:
+                server.quit()
             time.sleep(3 + random.randint(27, 60))
-    server.quit()
     return True
 
 @csrf_exempt
