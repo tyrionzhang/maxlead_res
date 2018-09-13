@@ -329,8 +329,8 @@ def send_email(request):
         for i,val in enumerate(list_data):
             if val['sku'] not in sku_li:
                 sku_li.append(val['sku'])
-            orders = OrderItems.objects.filter(order_id=val['order_id'], sku=val['sku'], is_email=0)
-            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'], sku=val['sku'])
+            orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
+            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
             tmps = EmailTemplates.objects.filter(sku=val['sku'])
             if orders and tmps and not old_orders:
                 order_li.append({
@@ -346,8 +346,8 @@ def send_email(request):
                 # email_order_obj = OldOrderItems()
                 # email_order_obj.id
                 # email_order_obj.user_id = user.user_id
-                # email_order_obj.order_id = val['order_id']
-                # email_order_obj.sku = val['sku']
+                # email_order_obj.order_id = orders[0].order_id
+                # email_order_obj.sku = tmps[0].sku
                 # email_order_obj.payments_date = orders[0].payments_date
                 # email_order_obj.is_presale = orders[0].is_presale
                 # email_order_obj.is_email = 1
