@@ -325,21 +325,20 @@ def send_email(request):
         m_time = 0
         list_data = eval(data)
         sku_li = []
-        order_li = []
+        order_li_re = {}
         for i,val in enumerate(list_data):
             if val['sku'] not in sku_li:
                 sku_li.append(val['sku'])
+                order_li_re.update({val['sku']:[]})
             orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
             old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
             tmps = EmailTemplates.objects.filter(sku=val['sku'])
             if orders and tmps and not old_orders:
-                sku_order = "%s-%s" % (orders[0].sku, orders[0].order_id)
-                order_li.append({
+                order_li_re[orders[0].sku].append({
                    'email':orders[0].email,
                    'user_id':user.user_id,
                    'order_id':orders[0].order_id,
                    'sku':orders[0].sku,
-                   'sku_order':sku_order,
                    'buyer':orders[0].customer,
                    'payments_date':orders[0].payments_date,
                    'is_presale':orders[0].is_presale,
@@ -349,7 +348,7 @@ def send_email(request):
                 # email_order_obj.id
                 # email_order_obj.user_id = user.user_id
                 # email_order_obj.order_id = orders[0].order_id
-                # email_order_obj.sku = tmps[0].sku
+                # email_order_obj.sku = orders[0].sku
                 # email_order_obj.payments_date = orders[0].payments_date
                 # email_order_obj.is_presale = orders[0].is_presale
                 # email_order_obj.is_email = 1
@@ -358,20 +357,16 @@ def send_email(request):
                 # email_order_obj.save()
                 # if email_order_obj.id:
                 #     orders.delete()
+
         tmp_li = EmailTemplates.objects.filter(sku__in=sku_li)
         if tmp_li:
             for v in tmp_li:
-                order_li_child = []
-                for i,val in enumerate(order_li,1):
-                    check1 = "%s-%s" % (v.sku, val['order_id'])
-                    if val['sku_order'] == check1:
-                        order_li_child.append(val)
-                        del order_li[i]
                 time_re = _get_send_time(v.send_time)
                 time_re = int(time_re) + m_time
                 time_re = 1
                 time_re = time_re + (3 + random.randint(27, 57))
-                tmp_res = [v.title, user, v.content, order_li_child, request.path]
-                t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
-                t.start()
+                if order_li_re[v.sku]:
+                    tmp_res = [v.title, user, v.content, order_li_re[v.sku], request.path]
+                    t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
+                    t.start()
         return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
