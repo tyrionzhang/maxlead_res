@@ -44,6 +44,7 @@ def send_email_as_tmp(title, from_email, content, order_li, request_path):
         # 将邮件的name转换成utf-8格式，addr如果是unicode，则转换utf-8输出，否则直接输出addr
         return formataddr((Header(name, 'utf-8').encode(), addr))
     for val in order_li:
+        time.sleep(3 + random.randint(27, 60))
         server = smtplib.SMTP(smtp_server, 587)
         server.set_debuglevel(1)
         server.starttls()
