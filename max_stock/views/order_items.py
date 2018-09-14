@@ -36,7 +36,6 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
     smtp_server = 'smtp.gmail.com'
     from_addr = 'maxlead.us@gmail.com'
     to_addr = email
-    to_addr = 'rudy.zhangwei@cdsht.cn'
     password = "nxtpinfcqitdcpzb"
     if from_email and from_email.email_pass:
         if from_email.smtp_server:
@@ -234,7 +233,6 @@ def send_email(request):
                 if not i == 0 and not list_data[i - 1]['sku'] == list_data[i]['sku']:
                     m_time += 0
                 time_re = _get_send_time(tmps[0].send_time)
-                time_re = 1
                 m_time = int(time_re) + m_time
                 m_time = m_time + (3 + random.randint(7, 57))
                 tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
