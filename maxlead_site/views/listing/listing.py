@@ -191,9 +191,12 @@ class Listing:
                             category_rank_re = category_rank.split('in')[0]
 
                     if len(listing) == 2:
-                        if listing[0].price and listing[1].price and not listing[0].price == '[]' and not listing[1].price == '[]':
-                            price2 = float(listing[0].price[1:]) - float(listing[1].price[1:])
-                        else:
+                        try:
+                            if listing[0].price and listing[1].price and not listing[0].price == '[]' and not listing[1].price == '[]':
+                                price2 = float(listing[0].price[1:]) - float(listing[1].price[1:])
+                            else:
+                                price2 = 0
+                        except:
                             price2 = 0
                         total_review2 = int(listing[0].total_review) - int(listing[1].total_review)
                         rvw_score2 = round(float(listing[0].rvw_score) - float(listing[1].rvw_score),2)
