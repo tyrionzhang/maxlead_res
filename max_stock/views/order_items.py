@@ -55,12 +55,12 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
     msg['to'] = _format_addr('<%s>' % to_addr)
     msg['Subject'] = Header(title, 'utf-8').encode()
     msg['date'] = time.strftime("%a,%d %b %Y %H:%M:%S %z")
-    # 发送邮件
-    server = smtplib.SMTP(smtp_server, 587)
-    server.set_debuglevel(1)
-    server.starttls()
-    server.login(from_addr, password)
     try:
+        # 发送邮件
+        server = smtplib.SMTP(smtp_server, 587)
+        server.set_debuglevel(1)
+        server.starttls()
+        server.login(from_addr, password)
         server.sendmail(from_addr, to_addr, msg.as_string())
     except Exception as e:
         print(e)
