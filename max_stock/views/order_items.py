@@ -227,7 +227,7 @@ def send_email(request):
                     msg = tmps[0].content
                 else:
                     msg = tmps[0].content % val['buyer']
-                    m_time += (3 + random.randint(7, 20))
+                m_time += (3 + random.randint(7, 20))
                 time_re = _get_send_time(tmps[0].send_time)
                 time_re = int(time_re) + m_time
                 tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
