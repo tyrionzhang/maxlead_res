@@ -121,7 +121,7 @@ def order_list(request):
     if not user.user.is_superuser:
         list = list.filter(user_id=user.user.id)
     if keywords:
-        list = list.filter(Q(order_id__contains=keywords)| Q(sku__contains=keywords)| Q(customer__contains=keywords))
+        list = list.filter(Q(order_id__contains=keywords)| Q(sku__contains=keywords)| Q(customer__contains=keywords)| Q(email__contains=keywords))
     if start_date:
         list = list.filter(created__gte=start_date)
     if end_date:
