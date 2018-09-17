@@ -62,6 +62,7 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
         server.starttls()
         server.login(from_addr, password)
         server.sendmail(from_addr, to_addr, msg.as_string())
+        server.quit()
     except Exception as e:
         print(e)
         email_order_obj = OrderItems()
@@ -88,8 +89,6 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
             old_obj = OldOrderItems.objects.filter(order_id=order_id)
             if old_obj:
                 old_obj.delete()
-    finally:
-        server.quit()
     return True
 
 @csrf_exempt
