@@ -231,7 +231,6 @@ def send_email(request):
                     msg = tmps[0].content % val['buyer']
                 m_time += (3 + random.randint(7, 20))
                 time_re = _get_send_time(tmps[0].send_time, m_time=m_time)
-                print(time_re)
                 tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
                            orders[0].is_presale, orders[0].order_status, user.user_id, request.path]
                 t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
