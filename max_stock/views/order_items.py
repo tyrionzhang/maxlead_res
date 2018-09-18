@@ -20,7 +20,7 @@ from email.mime.base import MIMEBase
 from email.utils import parseaddr,formataddr
 from maxlead_site.common import common
 
-def _get_send_time(time_str):
+def _get_send_time(time_str, m_time=None):
     time_now = datetime.now()
     time_saturday = time_now.strftime('%Y-%m-%d ') + time_str
     time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M')
@@ -30,6 +30,8 @@ def _get_send_time(time_str):
         time_saturday = time_re.strftime('%Y-%m-%d ') + time_str
         time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M')
         t_re = (time_saturday - time_now).total_seconds()
+    if m_time:
+        t_re = int(t_re) + m_time
     return t_re
 
 def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payments_date, is_presale, order_status, user_id, request_path):
@@ -228,8 +230,8 @@ def send_email(request):
                 else:
                     msg = tmps[0].content % val['buyer']
                 m_time += (3 + random.randint(7, 20))
-                time_re = _get_send_time(tmps[0].send_time)
-                time_re = int(time_re) + m_time
+                time_re = _get_send_time(tmps[0].send_time, m_time=m_time)
+                print(time_re)
                 tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
                            orders[0].is_presale, orders[0].order_status, user.user_id, request.path]
                 t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
