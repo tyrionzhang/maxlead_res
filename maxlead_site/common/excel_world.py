@@ -179,14 +179,23 @@ def read_csv_file(model,res,email=None, expired_time=None):
     for i,val in enumerate(csv_files,0):
         try:
             if i > 0:
-                email_address = val[30]
+                email_address = val[28]
+                if not email_address:
+                    email_address = val[30]
                 if not email_address:
                     email_address = val[28]
                 if email_address and not email_address.find('myContacts') == -1:
                     email_address = val[0]
+                mail_add_num = email_address.find('+')
+                if email_address and not email_address.find('marketplace.amazon.com') == -1 and not mail_add_num == -1:
+                    email_address = "%s@marketplace.amazon.com" % email_address[0:mail_add_num]
+
                 checks = model.objects.filter(email_address=email_address, expired_time__gt=datetime.datetime.now())
                 if checks:
                     continue
+                checks2 = model.objects.filter(email_address=email_address, expired_time__lt=datetime.datetime.now())
+                if checks2:
+                    checks2.delete()
                 querysetlist.append(model(email_address=email_address,expired_time=expired_time,email=email))
         except:
             msg += '第%s行添加有误。<br>' % i

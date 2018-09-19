@@ -117,7 +117,16 @@ def order_list(request):
     else:
         nosend_re1 = NoSendRes.objects.values_list('order_id').filter(status='Refund').exclude(order_id='')
         contacts = EmailContacts.objects.values_list('email_address').filter(expired_time__gt=datetime.now())
-        list = OrderItems.objects.filter(is_email=0).exclude(Q(sku__in=nosend_re)|Q(order_id__in=nosend_re1)|Q(email__in=contacts))
+        list = OrderItems.objects.filter(is_email=0)
+        if nosend_re:
+            list = list.exclude(sku__in=nosend_re)
+        if nosend_re1:
+            list = list.exclude(order_id__in=nosend_re1)
+        if contacts:
+            check_contacts = []
+            for val in contacts:
+                check_contacts.append(val[0].strip())
+            list = list.exclude(email__in=check_contacts)
         if is_presale:
             list = list.filter(is_presale=is_presale)
     if not user.user.is_superuser:
