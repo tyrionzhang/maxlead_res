@@ -157,5 +157,6 @@ urlpatterns = [
     url('^admin/send_email/contact_list/', order_items.contact_list),
     url('^admin/send_email/update_emails/', order_items.update_emails),
     url('^admin/send_email/batch_del_ocheck/', order_items.batch_del_ocheck),
+    url('^admin/send_email/batch_del_contact/', order_items.batch_del_contact),
 ]
 

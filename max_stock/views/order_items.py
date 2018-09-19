@@ -360,8 +360,23 @@ def batch_del_ocheck(request):
     if request.method == 'POST':
         ids = eval(request.POST.get('data',''))
         if not ids:
-            return HttpResponse(json.dumps({'code': 0, 'msg': u'请选择要删除的模板！'}), content_type='application/json')
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'请选择要删除数据！'}), content_type='application/json')
         obj = NoSendRes.objects.filter(id__in=ids)
+        if not obj:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'请求的数据不存在！'}), content_type='application/json')
+        obj.delete()
+        return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
+
+@csrf_exempt
+def batch_del_contact(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        ids = eval(request.POST.get('data',''))
+        if not ids:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'请选择要删除数据！'}), content_type='application/json')
+        obj = EmailContacts.objects.filter(id__in=ids)
         if not obj:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'请求的数据不存在！'}), content_type='application/json')
         obj.delete()

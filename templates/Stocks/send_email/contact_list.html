@@ -22,6 +22,9 @@
 {#                <div class="btn btn-green">#}
 {#                    <button id="order_add">Add</button>#}
 {#                </div>#}
+                <div class="btn btn-green">
+                    <button id="batch_del_ocheck">Del</button>
+                </div>
                 <div class="btn btn-blue">
                     <button id="order_import">Import</button>
                 </div>
@@ -38,7 +41,7 @@
                 </tr>
                 {% for val in list %}
                 <tr>
-                    <td><input type="checkbox" class="check_tr"></td>
+                    <td data-id="{{ val.id }}"><input type="checkbox" class="check_tr"></td>
                     <td>{{ val.email_address }}</td>
                     <td>{{ val.email }}</td>
                     <td>{{ val.expired_time }}</td>
@@ -139,6 +142,38 @@
                 },'json');
             }
 
+        });
+
+        $('#batch_del_ocheck').on('click', function () {
+            var elem_tr = $('.check_tr:checked').parents('tr');
+            var data = new Array();
+            if (elem_tr.length == 0) {
+               alert('请选择contact!');
+            }else {
+                if(confirm('确认删除Contact？')){
+                    $(this).attr('disabled', 'true');
+                    elem_tr.each(function () {
+                        data.push($(this).children('td').eq(0).data('id'));
+                    });
+                    var datas = {
+                        'data':  JSON.stringify(data)
+                    };
+                    $('.wrap').removeClass('hide');
+                    $('.wrap-k-line').removeClass('hide');
+                    $.post('/admin/send_email/batch_del_contact/',datas,function (re) {
+                    if(re.code==0 || re.code==1){
+                            alert(re.msg);
+                            if(re.code==1){
+                                window.location.reload();
+                             }
+                       }
+                       if(re.code==66){
+                           window.location.href='/admin/max_stock/login/';
+                       }
+                    },'json');
+                    return false;
+                }
+           }
         });
 
         $('#import_modal').on('click', '#order_import', function () {
