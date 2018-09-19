@@ -318,7 +318,7 @@ def contact_list(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('search_words','').replace('amp;','')
-    list = EmailContacts.objects.filter(expired_time__gt=datetime.now())
+    list = EmailContacts.objects.filter(expired_time__gt=datetime.now()).order_by('-id', '-expired_time')
     if keywords:
         list = list.filter(Q(email_address__contains=keywords)|Q(email__contains=keywords))
     data = {
