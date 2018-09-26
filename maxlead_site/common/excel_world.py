@@ -190,6 +190,7 @@ def read_csv_file(model,res,email=None, expired_time=None):
                 if email_address and not email_address.find('marketplace.amazon.com') == -1 and not mail_add_num == -1:
                     email_address = "%s@marketplace.amazon.com" % email_address[0:mail_add_num]
 
+                email_address = email_address.strip()
                 checks = model.objects.filter(email_address=email_address, expired_time__gt=datetime.datetime.now())
                 if checks:
                     continue
@@ -240,6 +241,7 @@ def read_excel_file1(model,res,model_name,user=None):
             if model_name == 'no_send_res':
                 order_id = table.cell_value(i + 1, 1, )
                 sku = table.cell_value(i + 1, 2, )
+                sku = sku.strip()
                 check = NoSendRes.objects.filter(sku=sku, order_id=order_id)
                 if check:
                     msg += '第%s行已存在。<br>' % (i + 1)
@@ -313,8 +315,8 @@ def read_excel_for_orders(res,user=None):
                 obj.id
                 if user:
                     obj.user_id = user
-                obj.order_id = table.cell_value(i + 1, 0,)
-                obj.sku = table.cell_value(i + 1, 7,)
+                obj.order_id = table.cell_value(i + 1, 0,).strip()
+                obj.sku = table.cell_value(i + 1, 7,).strip()
                 obj.order_status = 0
                 obj.email = table.cell_value(i + 1, 4,)
                 obj.customer = table.cell_value(i + 1, 5,)

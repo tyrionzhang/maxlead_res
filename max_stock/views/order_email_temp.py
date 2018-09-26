@@ -52,6 +52,7 @@ def tmp_save(request):
         send_time = request.POST.get('send_time','')
         order_status = request.POST.get('order_status','')
         content = request.POST.get('content','')
+        sku = sku.strip()
         if not id:
             obj = EmailTemplates()
             obj.id
