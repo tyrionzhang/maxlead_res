@@ -72,8 +72,7 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
         email_order_obj.user_id = user_id
         email_order_obj.order_id = order_id
         email_order_obj.sku = sku
-        if not from_email.customer_num == 1:
-            email_order_obj.customer_num = from_email.customer_num
+        email_order_obj.customer_num = from_email.customer_num
         email_order_obj.payments_date = payments_date
         email_order_obj.is_presale = is_presale
         email_order_obj.customer = buyer
@@ -238,10 +237,9 @@ def send_email(request):
             tmps = EmailTemplates.objects.filter(sku=val['sku'], customer_num=customer_num)
             if orders and tmps and not old_orders:
                 title = tmps[0].title
-                if title and not title.find('%s') == -1:
-                    title = title % val['order_id']
-                else:
-                    title = "After-sale Service for your recent order from Brandline (Amazon order: %s)" % val['order_id']
+                if title:
+                    if not title.find('%s') == -1:
+                        title = title % val['order_id']
                 if tmps[0].content and tmps[0].content.find('%s') == -1:
                     msg = tmps[0].content
                 else:
