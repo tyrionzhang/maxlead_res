@@ -133,9 +133,16 @@
 				</div>
 				<div class="menu">
 					<ul class="ul-menu">
+                    {% if not user.menu_child_type == 0 %}
+                        <li id="email_temp"><a href="/admin/send_email/email_temps/?menu_id={{ user.index_menu_id }}">Email Temp</a></li>
+                        <li id="order_list"><a href="/admin/send_email/order_list/?menu_id={{ user.index_menu_id }}">Order Items</a></li>
+                        <li id="no_send_list"><a href="/admin/send_email/no_send_list/?menu_id={{ user.index_menu_id }}">Check Orders</a></li>
+                        <li id="contact_list"><a href="/admin/send_email/contact_list/?menu_id={{ user.index_menu_id }}">Contact List</a></li>
+                    {% else %}
                         {% for val in user.menu_child %}
 						<li id="{{ val.elem_id }}"><a href="{{ val.url }}?menu_id={{ user.index_menu_id }}">{{ val.name }}</a></li>
                         {% endfor %}
+                    {% endif %}
 					</ul>
 				</div>
 			</div>

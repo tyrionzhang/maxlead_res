@@ -51,6 +51,7 @@ class OrderItems(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     order_id = models.CharField('Order Id', max_length=225)
     sku = models.CharField('SKU', max_length=225)
+    customer_num = models.IntegerField('Customer Num', default=0)
     order_status = models.CharField('Status', max_length=50)
     email = models.CharField('Email', max_length=225)
     customer = models.CharField('Customer', max_length=225, default=None)
@@ -67,6 +68,7 @@ class OldOrderItems(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     order_id = models.CharField('Order Id', max_length=225)
     sku = models.CharField('SKU', max_length=50)
+    customer_num = models.IntegerField('Customer Num', default=0)
     order_status = models.CharField('Status', max_length=50)
     email = models.CharField('Email', max_length=225)
     customer = models.CharField('Customer', max_length=225)
@@ -81,6 +83,7 @@ class OldOrderItems(models.Model):
 
 class NoSendRes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    customer_num = models.IntegerField('Customer Num', default=0)
     down_date = models.DateField('Date', auto_now_add=True, null=True)
     order_id = models.CharField('Order Id', max_length=225, default='')
     sku = models.CharField('SKU', max_length=50)
@@ -92,6 +95,7 @@ class NoSendRes(models.Model):
 
 class EmailTemplates(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    customer_num = models.IntegerField('Customer Num', default=0)
     sku = models.CharField('SKU', max_length=50)
     keywords = models.CharField('Keywords', max_length=255, default=None)
     title = models.CharField('Title', max_length=255)
@@ -133,6 +137,7 @@ class Menus(models.Model):
 class EmailContacts(models.Model):
     email_address = models.CharField('Email Address', max_length=225)
     email = models.CharField('Email', max_length=225)
+    customer_num = models.IntegerField('Customer Num', default=0)
     expired_time = models.DateTimeField('Expired', null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 

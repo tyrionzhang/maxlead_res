@@ -99,6 +99,7 @@
             form_data.append('myfile',file_info);
             form_data.append('email',email);
             form_data.append('expired_time',expired_time);
+            form_data.append('customer_num',{{ user.menu_child_type }});
             //if(file_info==undefined)暂且不许要判断是否有附件
                 //alert('你没有选择任何文件');
                 //return false

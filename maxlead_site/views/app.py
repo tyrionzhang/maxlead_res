@@ -37,8 +37,13 @@ class App:
         if not user.smtp_server:
             user.smtp_server = ''
         user.menu_list = menus
+        user.menu_child_type = 0
         if menu_id:
+            menu_obj = Menus.objects.get(id=menu_id)
             user.menu_child = menu_child
+            user.menu_parent_id = menu_id
+            if menu_obj.name == 'Auto Email2':
+                user.menu_child_type = 22
             user.index_menu_id = int(menu_id)
         return user
 

@@ -3,7 +3,7 @@
     <div id="main" data-name="order_list">
         <div class="con-head">
             <h1>{{ title }}</h1>
-            <form action="/admin/send_email/order_list/">
+            <form action="/admin/send_email/order_list{% if not user.menu_child_type == 0 %}2{% endif %}/">
                 <div class="text-box">
                     <label>
                         <span>Search:</span>
@@ -199,6 +199,7 @@
             var form_data = new FormData();
             var file_info =$('input[name="myfile"]')[0].files[0];
             form_data.append('myfile',file_info);
+            form_data.append('customer_num',{{ user.menu_child_type }});
             //if(file_info==undefined)暂且不许要判断是否有附件
                 //alert('你没有选择任何文件');
                 //return false
@@ -253,6 +254,7 @@
                    alert('请选择订单');
                }else {
                    $(this).attr('disabled', 'true');
+                   var customer_num = {{ user.menu_child_type }};
                   elem_tr.each(function () {
                       data.push({
                           'order_id' : $(this).children('td').eq(1).text(),
@@ -263,7 +265,7 @@
                   });
                    $('.wrap').removeClass('hide');
                    $('.wrap-k-line').removeClass('hide');
-                  $.post('/admin/send_email/send_email/',{'data':JSON.stringify(data)},function (re) {
+                  $.post('/admin/send_email/send_email/',{'data':JSON.stringify(data),'customer_num':customer_num},function (re) {
                    if(re.code==0 || re.code==1){
                        alert(re.msg);
                        if(re.code==1){
@@ -288,12 +290,13 @@
                }else {
                    $(this).attr('disabled', 'true');
                    var is_email = $('select[name="search_is_email"]').val();
+                   var customer_num = {{ user.menu_child_type }};
                   elem_tr.each(function () {
                       data.push($(this).children('td').eq(1).text());
                   });
                   $('.wrap').removeClass('hide');
                   $('.wrap-k-line').removeClass('hide');
-                  $.post('/admin/send_email/orders_del/',{'data':JSON.stringify(data), 'is_email':is_email},function (re) {
+                  $.post('/admin/send_email/orders_del/',{'data':JSON.stringify(data), 'is_email':is_email, 'customer_num':customer_num},function (re) {
                    if(re.code==0 || re.code==1){
                        alert(re.msg);
                        if(re.code==1){

@@ -18,7 +18,7 @@ def email_temps(request):
     keywords = request.GET.get('search_words','').replace('amp;','')
     send_time = request.GET.get('search_send_time','')
     order_status = request.GET.get('search_order_status','')
-    list = EmailTemplates.objects.all()
+    list = EmailTemplates.objects.filter(customer_num=user.menu_child_type)
     if not user.user.is_superuser:
         list = list.filter(user_id=user.user.id)
     if keywords:
@@ -48,6 +48,7 @@ def tmp_save(request):
         id = request.POST.get('id','')
         sku = request.POST.get('sku','').replace('amp;','')
         title = request.POST.get('title','')
+        customer_num = request.POST.get('customer_num','')
         keywords = request.POST.get('keywords','')
         send_time = request.POST.get('send_time','')
         order_status = request.POST.get('order_status','')
@@ -58,6 +59,7 @@ def tmp_save(request):
             obj.id
             obj.order_status = int(order_status)
             obj.sku = sku
+            obj.customer_num = customer_num
             obj.user_id = user.user.id
             obj.keywords = keywords
             obj.title = title
@@ -71,7 +73,7 @@ def tmp_save(request):
             re = EmailTemplates.objects.filter(id=id)
             if not re:
                 return HttpResponse(json.dumps({'code': 0, 'msg': 'Template is not exits!'}), content_type='application/json')
-            i = re.update(sku=sku,title=title,content=content,send_time=send_time,order_status=order_status,keywords=keywords)
+            i = re.update(sku=sku,title=title,content=content,send_time=send_time,order_status=order_status,keywords=keywords,customer_num=customer_num)
             if i:
                 return HttpResponse(json.dumps({'code': 1, 'msg': 'Work is Done!'}), content_type='application/json')
 
@@ -141,6 +143,7 @@ def tmp_import(request):
 
     if request.method == 'POST':
         myfile = request.FILES.get('myfile','')
+        customer_num = request.POST.get('customer_num','')
         if not myfile:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}),content_type='application/json')
         file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
@@ -148,7 +151,7 @@ def tmp_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        res = read_excel_file1(EmailTemplates,file_path,'email_templates',user=user.user_id)
+        res = read_excel_file1(EmailTemplates,file_path,'email_templates',user=user.user_id,customer_num=customer_num)
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 

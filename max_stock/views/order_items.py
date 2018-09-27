@@ -72,6 +72,8 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
         email_order_obj.user_id = user_id
         email_order_obj.order_id = order_id
         email_order_obj.sku = sku
+        if not from_email.customer_num == 1:
+            email_order_obj.customer_num = from_email.customer_num
         email_order_obj.payments_date = payments_date
         email_order_obj.is_presale = is_presale
         email_order_obj.customer = buyer
@@ -104,20 +106,20 @@ def order_list(request):
     start_date = request.GET.get('search_start_date','')
     end_date = request.GET.get('search_end_date','')
     payments_date = request.GET.get('search_payments_date','')
-    nosend_re  = NoSendRes.objects.values_list('sku').filter(order_id='', status='')
+    nosend_re  = NoSendRes.objects.values_list('sku').filter(order_id='', customer_num=user.menu_child_type, status='')
 
     if (is_presale and is_presale=='1'):
-        list = OrderItems.objects.filter(is_email=0, sku__in=nosend_re)
+        list = OrderItems.objects.filter(is_email=0,customer_num=user.menu_child_type, sku__in=nosend_re)
         is_email = 0
     elif (is_email and is_email == '1'):
         if not start_date:
             start_date = (datetime.now() + timedelta(days=-5)).strftime("%Y-%m-%d")
-        list = OldOrderItems.objects.filter(is_email=1, created__gte=start_date)
+        list = OldOrderItems.objects.filter(is_email=1, customer_num=user.menu_child_type, created__gte=start_date)
         is_presale = 0
     else:
-        nosend_re1 = NoSendRes.objects.values_list('order_id').filter(status='Refund').exclude(order_id='')
-        contacts = EmailContacts.objects.values_list('email_address').filter(expired_time__gt=datetime.now())
-        list = OrderItems.objects.filter(is_email=0)
+        nosend_re1 = NoSendRes.objects.values_list('order_id').filter(status='Refund',customer_num=user.menu_child_type).exclude(order_id='')
+        contacts = EmailContacts.objects.values_list('email_address').filter(expired_time__gt=datetime.now(),customer_num=user.menu_child_type)
+        list = OrderItems.objects.filter(is_email=0,customer_num=user.menu_child_type)
         if nosend_re:
             list = list.exclude(sku__in=nosend_re)
         if nosend_re1:
@@ -162,6 +164,7 @@ def order_save(request):
         id = request.POST.get('id','')
         order_id = request.POST.get('order_id','')
         status = request.POST.get('status','')
+        customer_num = request.POST.get('customer_num','')
         sku = request.POST.get('sku','').replace('amp;','')
         if not sku:
             return HttpResponse(json.dumps({'code': 1, 'msg': 'Sku is empty!'}), content_type='application/json')
@@ -170,6 +173,7 @@ def order_save(request):
             obj.id
             obj.user_id = user.user_id
             obj.sku = sku
+            obj.customer_num = int(customer_num)
             obj.order_id = order_id
             obj.status = status
             obj.save()
@@ -184,11 +188,12 @@ def orders_del(request):
     if request.method == 'POST':
         data = request.POST.get('data','')
         is_email = request.POST.get('is_email','')
+        customer_num = request.POST.get('customer_num','')
         if is_email == '1':
             obj = OldOrderItems.objects.filter(order_id__in=eval(data))
         else:
             obj = OrderItems.objects.filter(order_id__in=eval(data))
-
+        obj = obj.filter(customer_num=int(customer_num))
         if obj:
             re = obj.delete()
             if not re:
@@ -203,6 +208,7 @@ def order_import(request):
 
     if request.method == 'POST':
         myfile = request.FILES.get('myfile','')
+        customer_num = request.POST.get('customer_num', '')
         if not myfile:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}),content_type='application/json')
         file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
@@ -210,7 +216,7 @@ def order_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        res = read_excel_for_orders(file_path,user=user.user_id)
+        res = read_excel_for_orders(file_path,user=user.user_id, customer_num=int(customer_num))
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 
@@ -222,12 +228,14 @@ def send_email(request):
 
     if request.method == 'POST':
         data = request.POST.get('data')
+        customer_num = request.POST.get('customer_num','')
         m_time = 0
         list_data = eval(data)
+        user.customer_num = customer_num
         for i,val in enumerate(list_data):
-            orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0)
-            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'])
-            tmps = EmailTemplates.objects.filter(sku=val['sku'])
+            orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0, customer_num=customer_num)
+            old_orders = OldOrderItems.objects.filter(order_id=val['order_id'], customer_num=customer_num)
+            tmps = EmailTemplates.objects.filter(sku=val['sku'], customer_num=customer_num)
             if orders and tmps and not old_orders:
                 title = tmps[0].title
                 if title and not title.find('%s') == -1:
@@ -249,6 +257,7 @@ def send_email(request):
                 email_order_obj.user_id = user.user_id
                 email_order_obj.order_id = val['order_id']
                 email_order_obj.sku = val['sku']
+                email_order_obj.customer_num = customer_num
                 email_order_obj.email = val['email']
                 email_order_obj.payments_date = orders[0].payments_date
                 email_order_obj.is_presale = orders[0].is_presale
@@ -267,7 +276,7 @@ def no_send_list(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
 
     keywords = request.GET.get('search_words', '').replace('amp;', '')
-    list = NoSendRes.objects.all()
+    list = NoSendRes.objects.filter(customer_num=user.menu_child_type)
     if not user.user.is_superuser:
         list = list.filter(user_id=user.user.id)
     if keywords:
@@ -289,6 +298,7 @@ def check_order_import(request):
 
     if request.method == 'POST':
         myfile = request.FILES.get('myfile','')
+        customer_num = request.POST.get('customer_num','')
         if not myfile:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}),content_type='application/json')
         file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
@@ -296,7 +306,7 @@ def check_order_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        res = read_excel_file1(NoSendRes, file_path, 'no_send_res', user=user.user_id)
+        res = read_excel_file1(NoSendRes, file_path, 'no_send_res', user=user.user_id, customer_num=customer_num)
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 
@@ -319,7 +329,7 @@ def contact_list(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('search_words','').replace('amp;','')
-    list = EmailContacts.objects.filter(expired_time__gt=datetime.now()).order_by('-id', '-expired_time')
+    list = EmailContacts.objects.filter(expired_time__gt=datetime.now(),customer_num=user.menu_child_type).order_by('-id', '-expired_time')
     if keywords:
         list = list.filter(Q(email_address__contains=keywords)|Q(email__contains=keywords))
     data = {
@@ -339,6 +349,7 @@ def update_emails(request):
         myfile = request.FILES.get('myfile', '')
         email = request.POST.get('email', '')
         expired_time = request.POST.get('expired_time', '')
+        customer_num = request.POST.get('customer_num', '')
         if not myfile:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}), content_type='application/json')
         if not expired_time:
@@ -349,7 +360,7 @@ def update_emails(request):
             f.write(chunk)
         f.close()
         expired_time = datetime.now() + timedelta(days = int(expired_time))
-        res = read_csv_file(EmailContacts, file_path, email=email, expired_time=expired_time)
+        res = read_csv_file(EmailContacts, file_path, email=email, expired_time=expired_time, customer_num=int(customer_num))
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 

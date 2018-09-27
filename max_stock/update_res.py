@@ -14,6 +14,12 @@ MENUS0 = [
         'parent': 0,
     },
     {
+        'name' : 'Auto Email2',
+        'url' : '/admin/send_email/order_list2/',
+        'elem_id' : 'order_list2',
+        'parent': 0,
+    },
+    {
         'name' : 'Settings',
         'url' : '/admin/setting/index/',
         'elem_id' : 'setting',

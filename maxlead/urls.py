@@ -147,6 +147,7 @@ urlpatterns = [
     url('^admin/send_email/branch_edit_tmp/', emailTmp.branch_edit_tmp),
     url('^admin/send_email/tmp_import/', emailTmp.tmp_import),
     url('^admin/send_email/order_list/', order_items.order_list),
+    url('^admin/send_email/order_list2/', order_items.order_list),
     url('^admin/send_email/order_save/', order_items.order_save),
     url('^admin/send_email/order_import/', order_items.order_import),
     url('^admin/send_email/send_email/', order_items.send_email),

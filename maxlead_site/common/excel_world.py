@@ -169,7 +169,7 @@ def read_excel_file(res,type=None):
             continue
     return {'code': 1, 'msg': msg}
 
-def read_csv_file(model,res,email=None, expired_time=None):
+def read_csv_file(model,res,email=None, expired_time=None, customer_num=None):
     fname = res
     if not os.path.isfile(fname):
         return {'code':0,'msg':'File is not found!'}
@@ -197,7 +197,7 @@ def read_csv_file(model,res,email=None, expired_time=None):
                 checks2 = model.objects.filter(email_address=email_address, expired_time__lt=datetime.datetime.now())
                 if checks2:
                     checks2.delete()
-                querysetlist.append(model(email_address=email_address,expired_time=expired_time,email=email))
+                querysetlist.append(model(email_address=email_address,expired_time=expired_time,email=email,customer_num=customer_num))
         except:
             msg += '第%s行添加有误。<br>' % i
             continue
@@ -206,7 +206,7 @@ def read_csv_file(model,res,email=None, expired_time=None):
     return {'code': 1, 'msg': msg}
 
 
-def read_excel_file1(model,res,model_name,user=None):
+def read_excel_file1(model,res,model_name,user=None,customer_num=None):
     from django.db import connection, transaction
     cursor = connection.cursor()
     fname = res
@@ -255,11 +255,19 @@ def read_excel_file1(model,res,model_name,user=None):
                     val.name = 'user_id'
                     str1 += a % val.name
                     str2 += a1 % val_res
+                elif customer_num and n == 2:
+                    a = '%s,'
+                    a1 = "\'%s\',"
+                    str1 += a % 'customer_num'
+                    str2 += a1 % customer_num
                 elif not n == 0:
                     a = '%s,'
                     a1 = "\'%s\',"
                     if user:
-                        val_res = table.cell_value(i + 1, n-2,)
+                        if customer_num:
+                            val_res = table.cell_value(i + 1, n - 3, )
+                        else:
+                            val_res = table.cell_value(i + 1, n-2,)
                     else:
                         val_res = table.cell_value(i + 1, n - 1, )
                     if n+1 == len(fields):
@@ -298,7 +306,7 @@ def read_excel_file1(model,res,model_name,user=None):
         #     continue
     return {'code': 1, 'msg': msg}
 
-def read_excel_for_orders(res,user=None):
+def read_excel_for_orders(res,user=None,customer_num=None):
     fname = res
     msg = ''
     if not os.path.isfile(fname):
@@ -315,6 +323,7 @@ def read_excel_for_orders(res,user=None):
                 obj.id
                 if user:
                     obj.user_id = user
+                obj.customer_num = customer_num
                 obj.order_id = table.cell_value(i + 1, 0,).strip()
                 obj.sku = table.cell_value(i + 1, 7,).strip()
                 obj.order_status = 0
