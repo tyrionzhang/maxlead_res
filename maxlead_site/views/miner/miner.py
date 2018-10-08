@@ -267,7 +267,7 @@ class Miner:
                 aid_li.append(aid)
 
             if val.type == 1:
-                qa_check = Questions.objects.filter(asin__in=aid_li, is_done=0, created__icontains=ob_time)
+                qa_check = Questions.objects.filter(asin__in=aid_li, is_done=0)
                 if qa_check:
                     qa_is_done = 0
                 qa = Questions.objects.filter(asin__in=aid_li,created__icontains=ob_time)
@@ -318,7 +318,7 @@ class Miner:
                             'created'
                         ]
             else:
-                reviews_check = AsinReviews.objects.filter(aid__in=aid_li, is_done=0, created__icontains=ob_time)
+                reviews_check = AsinReviews.objects.filter(aid__in=aid_li, is_done=0)
                 if reviews_check:
                     reviews_is_done = 0
                 reviews_a = AsinReviews.objects.filter(aid__in=aid_li,created__icontains=ob_time)
