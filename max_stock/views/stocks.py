@@ -25,7 +25,7 @@ def index(request):
     if not start_date:
         start_date = datetime.now() - timedelta(days = 3)
         start_date = start_date.strftime('%Y-%m-%d')
-    stocks = WarehouseStocks.objects.filter(created__gte=start_date)
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('warehouse','qty','-sku')
     if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         stocks = stocks.filter(sku__in=skus)
@@ -39,7 +39,7 @@ def index(request):
         stocks = stocks.filter(warehouse=warehouse)
     if sel_new:
         stocks = stocks.filter(is_new=sel_new)
-    stocks = stocks.values('sku','warehouse').annotate(count=Count('sku'),count2=Count('warehouse')).order_by('-sku', 'warehouse')
+    stocks = stocks.values('sku','warehouse').annotate(count=Count('sku'),count2=Count('warehouse'))
     items = []
     qty_old = 0
     have_new = 0
