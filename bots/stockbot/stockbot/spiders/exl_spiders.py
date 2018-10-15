@@ -112,21 +112,20 @@ class ExlSpider(scrapy.Spider):
                     tds = val.find_elements_by_tag_name('td')
                     if tds:
                         item['sku'] = tds[0].text
-                        if item['sku'] in self.sku_list:
-                            item['warehouse'] = warehouse_name
-                            if warehouse_name == 'Exchange Logistics':
-                                item['warehouse'] = 'EXL'
-                            if tds[6].text and not tds[6].text == ' ':
-                                item['qty'] = tds[6].text
-                                item['qty'] = item['qty'].replace(',', '')
-                            else:
-                                item['qty'] = 0
-                            yield item
-                            threshold = Thresholds.objects.filter(sku=item['sku'],warehouse=item['warehouse'])
-                            user = SkuUsers.objects.filter(sku=item['sku'])
-                            if threshold and threshold[0].threshold >= int(item['qty']):
-                                if user:
-                                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
+                        item['warehouse'] = warehouse_name
+                        if warehouse_name == 'Exchange Logistics':
+                            item['warehouse'] = 'EXL'
+                        if tds[6].text and not tds[6].text == ' ':
+                            item['qty'] = tds[6].text
+                            item['qty'] = item['qty'].replace(',', '')
+                        else:
+                            item['qty'] = 0
+                        yield item
+                        threshold = Thresholds.objects.filter(sku=item['sku'],warehouse=item['warehouse'])
+                        user = SkuUsers.objects.filter(sku=item['sku'])
+                        if threshold and threshold[0].threshold >= int(item['qty']):
+                            if user:
+                                msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
                                                             item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
         display.stop()
         driver.quit()

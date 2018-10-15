@@ -63,21 +63,20 @@ class TwuSpider(scrapy.Spider):
                 items = val.css('td::text').extract()
                 if items:
                     item['sku'] = items[0]
-                    if item['sku'] in self.sku_list:
-                        item['warehouse'] = 'TWU'
-                        item['is_new'] = 1
-                        if items[11] and not items[11] == ' ':
-                            item['qty'] = items[11]
-                            item['qty'] = item['qty'].replace(',', '')
-                        else:
-                            item['qty'] = 0
-                        yield item
-                        threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
-                        user = SkuUsers.objects.filter(sku=item['sku'])
-                        if threshold and threshold[0].threshold >= int(item['qty']):
-                            if user:
-                                msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
-                                                    item['sku'], item['warehouse'],item['qty'], threshold[0].threshold)
+                    item['warehouse'] = 'TWU'
+                    item['is_new'] = 1
+                    if items[11] and not items[11] == ' ':
+                        item['qty'] = items[11]
+                        item['qty'] = item['qty'].replace(',', '')
+                    else:
+                        item['qty'] = 0
+                    yield item
+                    threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
+                    user = SkuUsers.objects.filter(sku=item['sku'])
+                    if threshold and threshold[0].threshold >= int(item['qty']):
+                        if user:
+                            msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
+                                                item['sku'], item['warehouse'],item['qty'], threshold[0].threshold)
 
             if not os.path.isfile(file_path):
                 with open(file_path, "w+") as f:

@@ -101,6 +101,8 @@ def user_save(request):
             user.save(update_fields=update_fields)
             obj = UserProfile.objects.filter(user_id=id)
             if obj:
+                if not stocks_role:
+                    stocks_role = obj[0].stocks_role
                 obj.update(stocks_role=stocks_role, other_email=other_email, email_pass=email_pass, smtp_server=smtp_server)
 
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}),
