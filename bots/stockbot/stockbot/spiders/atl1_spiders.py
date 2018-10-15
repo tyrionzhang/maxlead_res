@@ -8,8 +8,8 @@ from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import Thresholds,SkuUsers
 from django.core.mail import send_mail
 
-class AtlSpider(scrapy.Spider):
-    name = "alt_spider"
+class Atl1Spider(scrapy.Spider):
+    name = "atl1_spider"
     sku_list = []
     msg_str1 = 'complete\n'
     start_urls = [
