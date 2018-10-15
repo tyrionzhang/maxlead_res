@@ -33,8 +33,9 @@ def index(request):
         stocks = stocks.filter(created__lte=end_date)
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
-    if warehouse:
-        stocks = stocks.filter(warehouse=warehouse)
+    if not warehouse:
+        warehouse = 'EXL'
+    stocks = stocks.filter(warehouse=warehouse)
     if sel_new:
         stocks = stocks.filter(is_new=sel_new)
     stocks = stocks.values('sku','warehouse').annotate(count=Count('sku'),count2=Count('warehouse')).order_by('-sku')
