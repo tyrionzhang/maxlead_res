@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import scrapy,os,time
+import scrapy,os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
-from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
+from max_stock.models import Thresholds,SkuUsers
 from django.core.mail import send_mail
 
 class AtlSpider(scrapy.Spider):
