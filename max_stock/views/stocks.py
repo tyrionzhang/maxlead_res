@@ -220,7 +220,7 @@ def export_stocks(request):
         stocks = stocks.filter(sku__in=skus)
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
-    if warehouse:
+    if not warehouse == 'all':
         stocks = stocks.filter(warehouse=warehouse)
     if not sel_new:
         sel_new = 0
