@@ -214,7 +214,17 @@ def export_stocks(request):
     keywords = request.GET.get('keywords', '').replace('amp;','')
     warehouse = request.GET.get('warehouse', '')
     sel_new = request.GET.get('sel_new', '')
-    stocks = WarehouseStocks.objects.all()
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
+    if not start_date:
+        start_date = datetime.now() - timedelta(days = 3)
+        start_date = start_date.strftime('%Y-%m-%d')
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date)
+    if not user.user.is_superuser and not user.stocks_role == 66:
+        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
+        stocks = stocks.filter(sku__in=skus)
+    if end_date:
+        stocks = stocks.filter(created__lte=end_date)
     if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         stocks = stocks.filter(sku__in=skus)
