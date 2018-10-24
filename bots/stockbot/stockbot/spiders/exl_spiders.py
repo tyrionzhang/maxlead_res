@@ -78,9 +78,9 @@ class ExlSpider(scrapy.Spider):
                     # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
 
                     if elem_name:
-                        elem_name[0].send_keys('Maxlead_CS')
+                        elem_name[0].send_keys('Intybot')
                     if elem_pass:
-                        elem_pass[0].send_keys('2015dallas')
+                        elem_pass[0].send_keys('7G1#AJjX')
                     btn_login[0].click()
                     a_reports = driver.find_elements_by_id('Menu_Reports_head')
                     if a_reports:
