@@ -279,7 +279,10 @@ def read_excel_file1(model,res,model_name,user=None,customer_num=None):
                             val_res = user_obj[0].id
                             val.name = 'user_id'
                     if val.name == 'send_time':
-                        val_res = xlrd.xldate.xldate_as_datetime(val_res, 0).strftime("%H:%M")
+                        try:
+                            val_res = xlrd.xldate.xldate_as_datetime(val_res, 0).strftime("%H:%M")
+                        except:
+                            pass
                     if val.get_internal_type() == 'DateTimeField':
                         if not val_res:
                             val_res = datetime.datetime.now()

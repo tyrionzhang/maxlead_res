@@ -8,14 +8,14 @@
                 <div class="text-box">
                     <label>
                         <span>Search:</span>
-                        <input type="text" name="search_words">
+                        <input type="text" name="search_words" value="{{ keywords }}">
                         <input type="hidden" name="menu_id" value="{{ user.menu_parent_id }}">
                     </label>
                 </div>
                 <div class="text-box">
                     <label>
                         <span>Start Date:</span>
-                        <input type="time" name="search_send_time">
+                        <input type="time" name="search_send_time" value="{{ send_time }}">
                     </label>
                 </div>
                 <div class="text-box">
@@ -45,6 +45,9 @@
                 </div>
                 <div class="btn btn-blue">
                     <button id="tmp_import">Import</button>
+                </div>
+                <div class="btn btn-green">
+                    <button id="tmp_export">Export</button>
                 </div>
             </div>
             <div class="clear"></div>
@@ -412,6 +415,16 @@
                     return false;
                 }
            }
+        });
+
+        $('#tmp_export').on('click',function () {
+            var keywords = $('input[name="search_words"]').val();
+            var send_time = $('input[name="search_send_time"]').val();
+            var order_status = $('select[name="search_order_status"]').val();
+            var menu_id = $('input[name="menu_id"]').val();
+            var url = '/admin/send_email/tmp_export/?keywords='+keywords+'&send_time='+send_time+'&order_status='+
+                order_status+'&menu_id='+menu_id;
+            window.location.href=url;
         });
 
         $('#import_modal').on('click', '#tmp_import', function () {

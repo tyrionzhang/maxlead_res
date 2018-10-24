@@ -8,7 +8,7 @@ from max_stock.models import EmailTemplates
 from maxlead_site.views.app import App
 from django.db.models import Q
 from maxlead import settings
-from maxlead_site.common.excel_world import read_excel_file1
+from maxlead_site.common.excel_world import read_excel_file1,get_excel_file
 
 @csrf_exempt
 def email_temps(request):
@@ -169,3 +169,41 @@ def batch_del_tmp(request):
             return HttpResponse(json.dumps({'code': 0, 'msg': u'请求的数据不存在！'}), content_type='application/json')
         obj.delete()
         return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
+
+@csrf_exempt
+def tmp_export(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+    keywords = request.GET.get('keywords', '').replace('amp;', '')
+    send_time = request.GET.get('send_time', '')
+    order_status = request.GET.get('order_status', '')
+    list = EmailTemplates.objects.filter(customer_num=user.menu_child_type)
+    if not user.user.is_superuser:
+        list = list.filter(user_id=user.user.id)
+    if keywords:
+        list = list.filter(Q(sku__contains=keywords) | Q(title__contains=keywords) | Q(content__contains=keywords))
+    if send_time:
+        list = list.filter(send_time=send_time)
+    if order_status:
+        list = list.filter(order_status=order_status)
+
+    data = []
+    if list:
+        for val in list:
+            re = {
+                'sku':val.sku,
+                'keywords':val.keywords,
+                'title':val.title,
+                'content':val.content,
+                'order_status':val.order_status,
+                'send_time':val.send_time,
+                'created':''
+            }
+            data.append(re)
+
+        fields = ['SKU','Keywords','Title','Content','Order Status','Send Time','Created']
+        data_fields = ['sku','keywords','title','content','order_status','send_time','created']
+        return get_excel_file(request, data, fields, data_fields)
+    else:
+        return HttpResponse('没有数据~~')
