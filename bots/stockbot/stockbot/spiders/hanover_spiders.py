@@ -70,8 +70,8 @@ class HanoverSpider(scrapy.Spider):
                     item['sku'] = td_re[0].text
                     item['warehouse'] = 'Hanover'
                     item['is_new'] = 1
-                    if td_re[2].text and not td_re[2].text == ' ':
-                        item['qty'] = td_re[2].text
+                    if td_re[3].text and not td_re[3].text == ' ':
+                        item['qty'] = td_re[3].text
                         item['qty'] = item['qty'].replace(',','')
                     else:
                         item['qty'] = 0
