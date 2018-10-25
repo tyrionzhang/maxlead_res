@@ -119,6 +119,8 @@ class ExlSpider(scrapy.Spider):
                             item['warehouse'] = warehouse_name
                             if warehouse_name == 'Exchange Logistics':
                                 item['warehouse'] = 'EXL'
+                            if warehouse_name == 'Tradeforce Dayton':
+                                item['warehouse'] = 'TFD'
                             if tds[6].text and not tds[6].text == ' ':
                                 item['qty'] = tds[6].text
                                 item['qty'] = item['qty'].replace(',', '')
