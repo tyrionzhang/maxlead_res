@@ -41,8 +41,6 @@ class Logins:
                 auth.login(self, user)
                 self.session.set_expiry(604800) # 登陆状态生命
                 commons.loger(description='用户登陆正常',user=user,name='用户登陆')
-                if type == 'stock' or user_file[0].role == 99:
-                    return HttpResponse(json.dumps({'code': 99, 'msg': u'用户登陆正常!'}), content_type='application/json')
                 return HttpResponse(json.dumps({'code': 1, 'msg': u'用户登陆正常!'}),content_type='application/json')
             else:
                 if user_file[0].em_count >= 5:
