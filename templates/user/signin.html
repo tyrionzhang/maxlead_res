@@ -39,7 +39,7 @@
                       'password':$('input[name="password"]').val()
                     };
                     $.post('/admin/maxlead_site/login/',data,function (re) {
-                       if(re.code==0){
+                       if(re.code==0 || re.code==99 ){
                            alert(re.msg);
                        }
                        if(re.code==1){
