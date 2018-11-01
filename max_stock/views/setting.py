@@ -183,7 +183,7 @@ def get_role_user(request):
         for val in user_list:
             if role_code and val.userprofile.stocks_role == role_code:
                 right_str += '<option value="%s">%s</option>' % (val.id, val.username)
-            elif val.userprofile.stocks_role == '0' and not val.is_superuser:
+            elif (val.userprofile.stocks_role == '0' or not val.userprofile.stocks_role) and not val.is_superuser:
                 left_str += '<option value="%s">%s</option>' % (val.id, val.username)
         data = {'right_str': right_str, 'left_str': left_str}
         return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
