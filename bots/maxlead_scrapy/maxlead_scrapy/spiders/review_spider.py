@@ -54,13 +54,15 @@ class ReviewSpider(scrapy.Spider):
             yield item
         for review in req_res:
             item = ReviewsItem()
-            item['name'] = review.css('span.review-byline a.author::text').extract_first()
+            item['name'] = review.css('div.a-profile-content span.a-profile-name::text').extract_first()
             item['asin'] = asin_id
             item['title'] = review.css('a.review-title::text').extract_first()
             item['content'] = review.css('span.review-text::text').extract_first()
             item['review_link'] = "https://www.amazon.com" + review.css('a.review-title::attr("href")').extract_first()
             item['score'] = review.css('i.review-rating span::text').extract_first()[0:1]
             item['variation'] = review.css('div.review-format-strip span.cr-widget-AsinVariation::text').extract_first()
+            if not item['variation']:
+                item['variation'] = review.css('div.review-format-strip a.a-color-secondary::text').extract_first()
             if item['variation']:
                 item['variation'] = item['variation'].replace('\n','')
             item['image_urls'] = []
@@ -74,7 +76,10 @@ class ReviewSpider(scrapy.Spider):
                 item['is_vp'] = 1
             else:
                 item['is_vp'] = 0
-            review_date = time.strptime(review.css('span.review-date::text').extract_first()[3:40],"%B %d, %Y")
+            try:
+                review_date = time.strptime(review.css('span.review-date::text').extract_first()[3:40],"%B %d, %Y")
+            except:
+                review_date = time.strptime(review.css('span.review-date::text').extract_first(), "%B %d, %Y")
             item['review_date'] = time.strftime("%Y-%m-%d", review_date)
             yield item
 
