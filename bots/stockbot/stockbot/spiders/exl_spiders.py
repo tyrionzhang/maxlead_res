@@ -153,7 +153,8 @@ class ExlSpider(scrapy.Spider):
             msg1 = f.readline()
             msg2 = f.readline()
             msg3 = f.readline()
-            if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n':
+            msg4 = f.readline()
+            if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n':
                 msg_line = f.read()
                 if msg_line:
                     msg_line = msg_line.split('|')
