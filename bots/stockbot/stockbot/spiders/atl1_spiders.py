@@ -31,11 +31,11 @@ class Atl1Spider(scrapy.Spider):
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         msg_str2 = ''
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
+        # from pyvirtualdisplay import Display
+        # display = Display(visible=0, size=(800, 800))
+        # display.start()
         chrome_options = Options()
-        chrome_options.add_argument('-headless')
+        # chrome_options.add_argument('-headless')
         chrome_options.add_argument('--disable-gpu')
         driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH, service_log_path=settings.LOG_PATH)
         driver.get(response.url)
@@ -51,7 +51,7 @@ class Atl1Spider(scrapy.Spider):
         driver.implicitly_wait(100)
         data_page_el = driver.find_elements_by_css_selector('a[title="库存管理"]')
         if data_page_el:
-            data_page_el[0].click()
+            driver.get('http://us.hipacking.com/member/instock/stock.html')
             driver.implicitly_wait(100)
             total_page = driver.find_elements_by_css_selector('.nav-list-wrapper span:nth-child(2)>b')[0].text
             total_page = int(total_page)
@@ -85,7 +85,7 @@ class Atl1Spider(scrapy.Spider):
                         elem_next_page[0].click()
                         driver.implicitly_wait(100)
 
-        display.stop()
+        # display.stop()
         driver.quit()
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
