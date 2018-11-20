@@ -7,8 +7,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from maxlead_site.views.app import App
 from maxlead import settings
+from maxlead_site.models import UserProfile
 from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates
 from django.http import HttpResponse
+from max_stock.views.stocks import covered_stocks
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
@@ -78,13 +80,13 @@ class perform_command_que(threading.Thread):
         os.chdir(settings.ROOT_PATH)
 
 def run_command_queue():
-    time_now = datetime.now()
-    time_re = datetime.now() + timedelta(days=1)
-    time_saturday = '%s 05:00:00' % time_re.strftime('%Y-%m-%d')
-    time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M:%S')
-    t_re = (time_saturday - time_now).total_seconds()
-    spiders_time = "%.1f" % t_re
-    t = threading.Timer(float(spiders_time), run_command_queue)
+    # time_now = datetime.now()
+    # time_re = datetime.now() + timedelta(days=1)
+    # time_saturday = '%s 05:00:00' % time_re.strftime('%Y-%m-%d')
+    # time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M:%S')
+    # t_re = (time_saturday - time_now).total_seconds()
+    # spiders_time = "%.1f" % t_re
+    t = threading.Timer(86400.0, run_command_queue)
     _set_user_sku()
     q = queue.Queue()
 
@@ -117,6 +119,12 @@ def stock_spiders(request):
         t = threading.Timer(float('%.1f' % int(t_re)), run_command_queue)
         # 持续运行，直到计划时间队列变成空为止
         t.start()
+        time_save_stocks = '%s 06:00:00' % time_re.strftime('%Y-%m-%d')
+        time_save_stocks = datetime.strptime(time_save_stocks, '%Y-%m-%d %H:%M:%S')
+        t_re = (time_save_stocks - time_now).total_seconds()
+        save_stocks_t = threading.Timer(float('%.1f' % int(t_re)), task_save_stocks)
+        # 持续运行，直到计划时间队列变成空为止
+        save_stocks_t.start()
         time_str = datetime.now() +  timedelta(seconds = int(t_re))
         msg_str = 'Spiders will be runing!The time:%s' % time_str
     return render(request, "Stocks/spider/home.html", {'msg_str':msg_str})
@@ -144,3 +152,21 @@ def test(request):
     cmd_str2_test = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=email_spider'
     os.popen(cmd_str2_test)
     return render(request, "Stocks/spider/home.html", {'msg_str': 'Done!'})
+
+def task_save_stocks():
+    t = threading.Timer(86400.0, task_save_stocks)
+    stocks = WarehouseStocks.objects.filter(is_new=1)
+    user = UserProfile.objects.get(user_id=1)
+    for val in stocks:
+        re = {}
+        re.update({
+            'sku' : val.sku,
+            'warehouse' : val.warehouse,
+            'qty' : val.qty,
+            'date' : val.created
+        })
+        try:
+            covered_stocks(user.user, re, 'Auto save.')
+        except:
+            continue
+    t.start()
