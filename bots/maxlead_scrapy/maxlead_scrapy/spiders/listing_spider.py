@@ -32,7 +32,7 @@ class ListingSpider(scrapy.Spider):
                                                         exclude(listing_time__icontains=datetime.datetime.now().strftime("%Y-%m-%d")).
                                                         values('aid').annotate(count=Count('aid')))
         else:
-            asin_li = asin.split('|')
+            asin_li = asin.split(',')
             self.res = list(UserAsins.objects.filter(aid__in=asin_li,is_use=True).values('aid').annotate(count=Count('aid')))
         if self.res:
             for v in self.res:

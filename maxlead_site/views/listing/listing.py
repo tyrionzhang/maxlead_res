@@ -26,7 +26,7 @@ class Listing:
         aid_li = ''
         for val in asins:
             checks = UserAsins.objects.filter(aid=val)
-            aid_li += '%s|' % val
+            aid_li += '%s,' % val
             if len(checks) == 1:
                 cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val
                 cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val
