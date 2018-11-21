@@ -25,8 +25,12 @@ class WatcherSpider(scrapy.Spider):
                     urls = url1 % asins['aid']
                     self.start_urls.append(urls)
         else:
-            urls = url1 % asin
-            self.start_urls.append(urls)
+            asin_li = asin.split(',')
+            self.res = list(UserAsins.objects.filter(aid__in=asin_li, is_use=True).values('aid').annotate(count=Count('aid')))
+            if self.res:
+                for v in self.res:
+                    urls1 = url1 % v['aid']
+                    self.start_urls.append(urls1)
 
     def parse(self, response):
         res_asin = response.url.split('/')
