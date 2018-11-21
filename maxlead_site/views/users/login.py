@@ -81,10 +81,10 @@ class Logins:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'邮箱有误'}),
                                 content_type='application/json')
 
-        url = '%s/admin/maxlead_site/reset_pass?key_words=%s&did=%s'
+        url = '<a herf="%s/admin/maxlead_site/reset_pass?key_words=%s&did=%s" target=_blank>%s/admin/maxlead_site/reset_pass?key_words=%s&did=%s</a>'
         key_words = Prpcrypt.encrypt(self,text=username + '||' + email)
         now_time = int(time.time())
-        urls = url % (settings.ROOT_URL,key_words,Prpcrypt.encrypt(self,text=str(now_time)))
+        urls = url % (settings.ROOT_URL,key_words,Prpcrypt.encrypt(self,text=str(now_time)),settings.ROOT_URL,key_words,Prpcrypt.encrypt(self,text=str(now_time)))
         subject = 'Maxlead账户密码找回'
         msg = '''
 %s，您好！
