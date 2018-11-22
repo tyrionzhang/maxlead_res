@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
 import os,threading
 import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "maxlead.settings")
+os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 from django.core.wsgi import get_wsgi_application
 from maxlead_site.views.views import download_listings,get_send_time,perform_command,perform_command1
