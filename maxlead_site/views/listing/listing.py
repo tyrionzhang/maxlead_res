@@ -450,4 +450,3 @@ class Listing:
             'last_check'
         ]
         return get_excel_file(self,data,fields,data_fields)
-

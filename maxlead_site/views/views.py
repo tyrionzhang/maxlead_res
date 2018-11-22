@@ -312,3 +312,28 @@ def test_spider(request):
     os.popen(cmd_str2_test)
     return render(request, "Stocks/spider/home.html", {'msg_str': 'Done!'})
 
+def download_listings():
+    t = threading.Timer(86400.0, download_listings)
+    res = Listings.objects.values('asin').annotate(count=Count('asin')).filter(brand='')
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    os.system('scrapyd-deploy')
+    aid_li = ''
+    for val in res:
+        val['asin'] = val['asin'].strip()
+        if val:
+            aid_li += '%s,' % val['asin']
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['asin']
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val['asin']
+            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val['asin']
+            os.system(cmd_str)
+            os.system(cmd_str2)
+            os.system(cmd_str3)
+    if aid_li:
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % aid_li
+        cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % aid_li
+        os.system(cmd_str1)
+        os.system(cmd_str4)
+    os.chdir(settings.ROOT_PATH)
+    t.start()
+    return True
