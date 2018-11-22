@@ -37,7 +37,7 @@ class ListingSpider(scrapy.Spider):
         if self.res:
             for v in self.res:
                 if not re.search(r'-',v['aid']):
-                    urls1 = url % (v['aid'], sr, int(time.time()), sr, v['aid'])
+                    urls1 = url % (v['aid'].strip(), sr, int(time.time()), sr, v['aid'].strip())
                     self.start_urls.append(urls1)
 
     def parse(self, response):

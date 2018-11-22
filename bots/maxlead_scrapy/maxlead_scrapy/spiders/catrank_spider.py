@@ -33,26 +33,26 @@ class CatrankSpider(scrapy.Spider):
             if asins['keywords1']:
                 keywords1 = asins['keywords1'].split(',')
                 for val in keywords1:
-                    url_k = url % (val, asins['aid'])
+                    url_k = url % (val, asins['aid'].strip())
                     start_urls.append(url_k)
                     if asins['cat1']:
-                        url_c = url1 % (asins['cat1'], val, val, int(time.time()), asins['aid'])
+                        url_c = url1 % (asins['cat1'], val, val, int(time.time()), asins['aid'].strip())
                         start_urls.append(url_c)
             if asins['keywords2']:
                 keywords2 = asins['keywords2'].split(',')
                 for val in keywords2:
-                    url_k = url % (val, asins['aid'])
+                    url_k = url % (val, asins['aid'].strip())
                     start_urls.append(url_k)
                     if asins['cat2']:
-                        url_c = url1 % (asins['cat2'], val, val, int(time.time()), asins['aid'])
+                        url_c = url1 % (asins['cat2'], val, val, int(time.time()), asins['aid'].strip())
                         start_urls.append(url_c)
             if asins['keywords3']:
                 keywords3 = asins['keywords3'].split(',')
                 for val in keywords3:
-                    url_k = url % (val, asins['aid'])
+                    url_k = url % (val, asins['aid'].strip())
                     start_urls.append(url_k)
                     if asins['cat3']:
-                        url_c = url1 % (asins['cat3'], val, val, int(time.time()), asins['aid'])
+                        url_c = url1 % (asins['cat3'], val, val, int(time.time()), asins['aid'].strip())
                         start_urls.append(url_c)
         return start_urls
 

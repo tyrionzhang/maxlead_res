@@ -22,14 +22,14 @@ class WatcherSpider(scrapy.Spider):
             if self.res:
                 for re in self.res:
                     asins = UserAsins.objects.values('aid','review_watcher','listing_watcher','sku','ownership').filter(aid=re['aid'])[0]
-                    urls = url1 % asins['aid']
+                    urls = url1 % asins['aid'].strip()
                     self.start_urls.append(urls)
         else:
             asin_li = asin.split(',')
             self.res = list(UserAsins.objects.filter(aid__in=asin_li, is_use=True).values('aid').annotate(count=Count('aid')))
             if self.res:
                 for v in self.res:
-                    urls1 = url1 % v['aid']
+                    urls1 = url1 % v['aid'].strip()
                     self.start_urls.append(urls1)
 
     def parse(self, response):

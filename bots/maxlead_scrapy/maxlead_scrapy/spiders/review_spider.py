@@ -21,10 +21,10 @@ class ReviewSpider(scrapy.Spider):
             res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
             if res:
                 for re in list(res):
-                    asin = urls % re['aid']
+                    asin = urls % re['aid'].strip()
                     self.start_urls.append(asin)
         else:
-            urls1 = urls % asin
+            urls1 = urls % asin.strip()
             self.start_urls.append(urls1)
 
     def parse(self, response):
