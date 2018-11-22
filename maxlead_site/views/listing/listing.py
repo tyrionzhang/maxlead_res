@@ -316,6 +316,7 @@ class Listing:
                 userAsin_obj = UserAsins.objects.filter(id__in=eval(ids)).all()
                 if newSKU:
                     for i, val in enumerate(newASIN, 0):
+                        val = val.strip()
                         userAsin = UserAsins.objects.filter(aid=val).all()
                         userAsin.update(sku=newSKU[i])
                 if userAsin_obj:
