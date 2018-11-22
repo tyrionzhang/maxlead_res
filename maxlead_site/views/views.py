@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os,sched
 from datetime import *
 import time
