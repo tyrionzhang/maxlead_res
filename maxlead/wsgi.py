@@ -9,13 +9,12 @@ https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
 """
 
 import os,threading
-
-from django.core.wsgi import get_wsgi_application
-from maxlead_site.views.views import download_listings,get_send_time,perform_command,perform_command1
 import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "UserAdmin.settings")
 django.setup()
+from django.core.wsgi import get_wsgi_application
+from maxlead_site.views.views import download_listings,get_send_time,perform_command,perform_command1
 
 p = os.popen('scrapyd')
 print(p)
