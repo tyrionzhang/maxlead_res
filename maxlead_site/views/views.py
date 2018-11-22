@@ -3,16 +3,14 @@ from datetime import *
 import time,re
 import queue
 import threading
-import operator
 from django.db.models import Count
 from django.shortcuts import render
 from maxlead import settings
-from maxlead_site.common.excel_world import read_csv_file
-from maxlead_site.common.common import get_send_time
-from django.http import HttpResponseRedirect
+from maxlead_res.maxlead_site.common.excel_world import read_csv_file
+from maxlead_res.maxlead_site.common.common import get_send_time
 from django.http import HttpResponse
-from maxlead_site.models import UserAsins,AsinReviews,Reviews,AsinReviewsBackcup,ReviewsBackcup,Questions,QuestionsBackcup
-from maxlead_site.models import Answers,AnswersBackcup,ListingWacherBackcup,ListingWacher,Listings,ListingsBackcup,CategoryRank,CategoryRankBackcup
+from maxlead_res.maxlead_site.models import UserAsins,AsinReviews,Reviews,AsinReviewsBackcup,ReviewsBackcup,Questions,QuestionsBackcup
+from maxlead_res.maxlead_site.models import Answers,AnswersBackcup,ListingWacherBackcup,ListingWacher,Listings,ListingsBackcup,CategoryRank,CategoryRankBackcup
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
