@@ -12,7 +12,10 @@ from maxlead_site.common.common import get_send_time
 from django.http import HttpResponse
 from maxlead_site.models import UserAsins,AsinReviews,Reviews,AsinReviewsBackcup,ReviewsBackcup,Questions,QuestionsBackcup
 from maxlead_site.models import Answers,AnswersBackcup,ListingWacherBackcup,ListingWacher,Listings,ListingsBackcup,CategoryRank,CategoryRankBackcup
+import django
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "UserAdmin.settings")
+django.setup()
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
 schedule = sched.scheduler(time.time, time.sleep)
