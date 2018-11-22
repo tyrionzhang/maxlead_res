@@ -5,7 +5,7 @@ from io import *
 import os,time,xlrd,csv,datetime
 from django.contrib.auth.models import User
 from maxlead_site.models import UserProfile
-from max_stock.models import SkuUsers,Thresholds,OrderItems,NoSendRes
+from max_stock.models import SkuUsers,Thresholds,OrderItems,NoSendRes,OldOrderItems
 from maxlead import settings
 
 def get_excel_file(self, data,fields,data_fields=[]):
@@ -322,19 +322,22 @@ def read_excel_for_orders(res,user=None,customer_num=None):
         try:
             if i + 1 < nrows:
                 payments_date = table.cell_value(i + 1, 3,)
-                obj = OrderItems()
-                obj.id
-                if user:
-                    obj.user_id = user
-                obj.customer_num = customer_num
-                obj.order_id = table.cell_value(i + 1, 0,).strip()
-                obj.sku = table.cell_value(i + 1, 7,).strip()
-                obj.order_status = 0
-                obj.email = table.cell_value(i + 1, 4,)
-                obj.customer = table.cell_value(i + 1, 5,)
-                if payments_date:
-                    obj.payments_date = table.cell_value(i + 1, 3,)
-                obj.save()
+                order_id = table.cell_value(i + 1, 0,).strip()
+                checks = OldOrderItems.objects.filter(order_id=order_id)
+                if not checks:
+                    obj = OrderItems()
+                    obj.id
+                    if user:
+                        obj.user_id = user
+                    obj.customer_num = customer_num
+                    obj.order_id = order_id
+                    obj.sku = table.cell_value(i + 1, 7,).strip()
+                    obj.order_status = 0
+                    obj.email = table.cell_value(i + 1, 4,)
+                    obj.customer = table.cell_value(i + 1, 5,)
+                    if payments_date:
+                        obj.payments_date = table.cell_value(i + 1, 3,)
+                    obj.save()
 
         except:
             msg += '第%s行添加有误。<br>' % (i+1)
