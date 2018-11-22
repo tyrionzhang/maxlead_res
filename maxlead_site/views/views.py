@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import os,sched
-import django
-os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
-django.setup()
 from datetime import *
 import time
 import queue
