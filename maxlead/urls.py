@@ -32,6 +32,10 @@ from max_stock.views import setting
 from max_stock.views import order_email_temp as emailTmp,order_items
 from django.views import static
 from maxlead import settings
+import django,os
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "UserAdmin.settings")
+django.setup()
 
 urlpatterns = [
     # url(r'^admin/warehouse/spider/', warehouse_views.home),
