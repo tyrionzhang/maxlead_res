@@ -312,6 +312,7 @@ def send_email(request):
                 email_order_obj.sku = val['sku']
                 email_order_obj.customer_num = customer_num
                 email_order_obj.email = val['email']
+                email_order_obj.customer = val['buyer']
                 email_order_obj.payments_date = orders[0].payments_date
                 email_order_obj.is_presale = orders[0].is_presale
                 email_order_obj.is_email = 1
