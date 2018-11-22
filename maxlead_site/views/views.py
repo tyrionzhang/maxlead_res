@@ -7,7 +7,6 @@ import operator
 from django.db.models import Count
 from django.shortcuts import render
 from maxlead import settings
-from maxlead_site.common.user_secuirty import UserSecuirty
 from maxlead_site.common.excel_world import read_csv_file
 from maxlead_site.common.common import get_send_time
 from django.http import HttpResponseRedirect
@@ -90,22 +89,6 @@ def perform_command2():
             os.popen(cmd_str4)
         os.chdir(settings.ROOT_PATH)
     return True
-
-class test(UserSecuirty):
-
-    def __init__(self):
-        UserSecuirty.user_secuity(self)
-
-
-    def user_info(self):
-        UserSecuirty.user_secuity(self)
-        if self.user_info:
-            url = '/admin/login/?next=/%s' % re.sub(r'https?://[^/]+?/','',self.get_raw_uri())
-            return HttpResponseRedirect(url)
-
-        return render(self, 'spider/home.html')
-
-    # user_info = staff_member_required(user_info)
 
 def test1(request):
     try:

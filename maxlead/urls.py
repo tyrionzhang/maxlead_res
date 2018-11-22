@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from maxlead_site.views import views as max_views
-from maxlead_site.views.views import test as test_views
 from maxlead_site.views.users.login import Logins
 from maxlead_site.views.index.index import Index
 from maxlead_site.views.listing.listing import Listing
@@ -46,7 +45,6 @@ urlpatterns = [
     url(r'^admin/maxlead_site/back_upTable/', max_views.back_upTable),
     url(r'^admin/maxlead_site/test/', max_views.test1),
     # url(r'^.well-known/acme-challenge/(.+)/$', max_views.letsencrpyt),
-    url(r'^admin/maxlead_site/user_info/', test_views.user_info),
     url(r'^admin/maxlead_site/login/', Logins.userLogin),
     url(r'^admin/maxlead_site/logout/', Logins.logout),
     url(r'^admin/maxlead_site/forget_pass/', Logins.forget_password_for_email),
