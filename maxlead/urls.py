@@ -13,8 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-import os
-import django
 from django.conf.urls import url
 from maxlead_site.views import views as max_views
 from maxlead_site.views.users.login import Logins
@@ -34,8 +32,6 @@ from max_stock.views import setting
 from max_stock.views import order_email_temp as emailTmp,order_items
 from django.views import static
 from maxlead import settings
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "UserAdmin.settings")
-django.setup()
 
 urlpatterns = [
     # url(r'^admin/warehouse/spider/', warehouse_views.home),

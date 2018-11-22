@@ -8,10 +8,12 @@ For more information on this file, see
 https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
 """
 
-import os,threading
+import os,threading,django
 
 from django.core.wsgi import get_wsgi_application
 from maxlead_site.views.views import download_listings,get_send_time,perform_command,perform_command1
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "UserAdmin.settings")
+django.setup()
 
 p = os.popen('scrapyd')
 print(p)
