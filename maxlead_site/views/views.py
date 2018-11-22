@@ -7,6 +7,7 @@ import operator
 from django.db.models import Count
 from django.shortcuts import render
 from maxlead import settings
+from maxlead_site.common.user_secuirty import UserSecuirty
 from maxlead_site.common.excel_world import read_csv_file
 from maxlead_site.common.common import get_send_time
 from django.http import HttpResponseRedirect
