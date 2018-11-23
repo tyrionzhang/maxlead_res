@@ -294,20 +294,23 @@ def test_spider(request):
     os.popen(cmd_str2_test)
     return render(request, "Stocks/spider/home.html", {'msg_str': 'Done!'})
 
+def update_listing(request):
+    download_listings()
+    return render(request, "Stocks/spider/home.html", {'msg_str': "Done!"})
 def download_listings():
     t = threading.Timer(86400.0, download_listings)
-    res = Listings.objects.values('asin').annotate(count=Count('asin')).filter(brand='')
+    res = UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=True, is_done=0)
     work_path = settings.SPIDER_URL
     os.chdir(work_path)
     os.system('scrapyd-deploy')
     aid_li = ''
     for val in res:
-        val['asin'] = val['asin'].strip()
+        val['aid'] = val['aid'].strip()
         if val:
-            aid_li += '%s,' % val['asin']
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['asin']
-            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val['asin']
-            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val['asin']
+            aid_li += '%s,' % val['aid']
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['aid']
+            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val['aid']
+            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val['aid']
             os.system(cmd_str)
             os.system(cmd_str2)
             os.system(cmd_str3)

@@ -7,6 +7,16 @@ from django.contrib.auth.models import User
 from maxlead_site.models import UserProfile
 from max_stock.models import SkuUsers,Thresholds,OrderItems,NoSendRes,OldOrderItems
 from maxlead import settings
+from chardet import detect
+
+
+def handleEncoding(original_file):
+    with open(original_file, 'rb+') as fp:
+        content = fp.read()
+        encoding = detect(content)['encoding']
+        content = content.decode(encoding).encode('utf8')
+        fp.seek(0)
+        fp.write(content)
 
 def get_excel_file(self, data,fields,data_fields=[]):
 
@@ -173,34 +183,38 @@ def read_csv_file(model,res,email=None, expired_time=None, customer_num=None):
     fname = res
     if not os.path.isfile(fname):
         return {'code':0,'msg':'File is not found!'}
+    handleEncoding(res)
     csv_files = csv.reader(open(res,'r', encoding='UTF-8'))
     msg = 'Work Is Done!<br>'
     querysetlist = []
-    for i,val in enumerate(csv_files,0):
-        try:
-            if i > 0:
-                email_address = val[28]
-                if not email_address:
-                    email_address = val[30]
-                if not email_address:
+    try:
+        for i,val in enumerate(csv_files,0):
+            try:
+                if i > 0:
                     email_address = val[28]
-                if email_address and not email_address.find('myContacts') == -1:
-                    email_address = val[0]
-                mail_add_num = email_address.find('+')
-                if email_address and not email_address.find('marketplace.amazon.com') == -1 and not mail_add_num == -1:
-                    email_address = "%s@marketplace.amazon.com" % email_address[0:mail_add_num]
+                    if not email_address:
+                        email_address = val[30]
+                    if not email_address:
+                        email_address = val[28]
+                    if email_address and not email_address.find('myContacts') == -1:
+                        email_address = val[0]
+                    mail_add_num = email_address.find('+')
+                    if email_address and not email_address.find('marketplace.amazon.com') == -1 and not mail_add_num == -1:
+                        email_address = "%s@marketplace.amazon.com" % email_address[0:mail_add_num]
 
-                email_address = email_address.strip()
-                checks = model.objects.filter(email_address=email_address, expired_time__gt=datetime.datetime.now())
-                if checks:
-                    continue
-                checks2 = model.objects.filter(email_address=email_address, expired_time__lt=datetime.datetime.now())
-                if checks2:
-                    checks2.delete()
-                querysetlist.append(model(email_address=email_address,expired_time=expired_time,email=email,customer_num=customer_num))
-        except:
-            msg += '第%s行添加有误。<br>' % i
-            continue
+                    email_address = email_address.strip()
+                    checks = model.objects.filter(email_address=email_address, expired_time__gt=datetime.datetime.now())
+                    if checks:
+                        continue
+                    checks2 = model.objects.filter(email_address=email_address, expired_time__lt=datetime.datetime.now())
+                    if checks2:
+                        checks2.delete()
+                    querysetlist.append(model(email_address=email_address,expired_time=expired_time,email=email,customer_num=customer_num))
+            except:
+                msg += '第%s行添加有误。<br>' % i
+                continue
+    except:
+        pass
     if querysetlist:
         model.objects.bulk_create(querysetlist)
     return {'code': 1, 'msg': msg}
@@ -221,92 +235,92 @@ def read_excel_file1(model,res,model_name,user=None,customer_num=None):
     for i in range(nrows):
         str1 = ""
         str2 = ""
-        # try:
-        if i + 1 < nrows:
-            if model_name == 'sku_users':
-                user_name = table.cell_value(i + 1, 0,)
-                sku = table.cell_value(i + 1, 1,)
-                check = SkuUsers.objects.filter(user__username=user_name,sku=sku)
-                if check:
-                    msg += '第%s行已存在。<br>' % (i + 1)
-                    continue
-            if model_name == 'stock_thresholds':
-                sku = table.cell_value(i + 1, 0, )
-                warehouse = table.cell_value(i + 1, 1, )
-                check = Thresholds.objects.filter(sku=sku,warehouse=warehouse)
-                if check:
-                    msg += '第%s行已存在。<br>' % (i + 1)
-                    continue
+        try:
+            if i + 1 < nrows:
+                if model_name == 'sku_users':
+                    user_name = table.cell_value(i + 1, 0,)
+                    sku = table.cell_value(i + 1, 1,)
+                    check = SkuUsers.objects.filter(user__username=user_name,sku=sku)
+                    if check:
+                        msg += '第%s行已存在。<br>' % (i + 1)
+                        continue
+                if model_name == 'stock_thresholds':
+                    sku = table.cell_value(i + 1, 0, )
+                    warehouse = table.cell_value(i + 1, 1, )
+                    check = Thresholds.objects.filter(sku=sku,warehouse=warehouse)
+                    if check:
+                        msg += '第%s行已存在。<br>' % (i + 1)
+                        continue
 
-            if model_name == 'no_send_res':
-                order_id = table.cell_value(i + 1, 1, )
-                sku = table.cell_value(i + 1, 2, )
-                sku = sku.strip()
-                check = NoSendRes.objects.filter(sku=sku, order_id=order_id)
-                if check:
-                    msg += '第%s行已存在。<br>' % (i + 1)
-                    continue
+                if model_name == 'no_send_res':
+                    order_id = table.cell_value(i + 1, 1, )
+                    sku = table.cell_value(i + 1, 2, )
+                    sku = sku.strip()
+                    check = NoSendRes.objects.filter(sku=sku, order_id=order_id)
+                    if check:
+                        msg += '第%s行已存在。<br>' % (i + 1)
+                        continue
 
-            for n,val in enumerate(fields,0):
-                if n == 1 and user:
-                    a = '%s,'
-                    a1 = "\'%s\',"
-                    val_res = user
-                    val.name = 'user_id'
-                    str1 += a % val.name
-                    str2 += a1 % val_res
-                elif customer_num and n == 2:
-                    a = '%s,'
-                    a1 = "\'%s\',"
-                    str1 += a % 'customer_num'
-                    str2 += a1 % customer_num
-                elif not n == 0:
-                    a = '%s,'
-                    a1 = "\'%s\',"
-                    if user:
-                        if customer_num:
-                            val_res = table.cell_value(i + 1, n - 3, )
+                for n,val in enumerate(fields,0):
+                    if n == 1 and user:
+                        a = '%s,'
+                        a1 = "\'%s\',"
+                        val_res = user
+                        val.name = 'user_id'
+                        str1 += a % val.name
+                        str2 += a1 % val_res
+                    elif customer_num and n == 2:
+                        a = '%s,'
+                        a1 = "\'%s\',"
+                        str1 += a % 'customer_num'
+                        str2 += a1 % customer_num
+                    elif not n == 0:
+                        a = '%s,'
+                        a1 = "\'%s\',"
+                        if user:
+                            if customer_num:
+                                val_res = table.cell_value(i + 1, n - 3, )
+                            else:
+                                val_res = table.cell_value(i + 1, n-2,)
                         else:
-                            val_res = table.cell_value(i + 1, n-2,)
-                    else:
-                        val_res = table.cell_value(i + 1, n - 1, )
-                    if n+1 == len(fields):
-                        a = '%s'
-                        a1 = "\'%s\'"
-                    if val.name == 'user_id' or val.name == 'user':
-                        user_obj = User.objects.filter(username=val_res)
-                        if user_obj:
-                            val_res = user_obj[0].id
-                            val.name = 'user_id'
-                    if val.name == 'send_time':
-                        try:
-                            val_res = xlrd.xldate.xldate_as_datetime(val_res, 0).strftime("%H:%M")
-                        except:
-                            pass
-                    if val.get_internal_type() == 'DateTimeField':
-                        if not val_res:
-                            val_res = datetime.datetime.now()
-                        else:
-                            if model_name == 'no_send_res':
+                            val_res = table.cell_value(i + 1, n - 1, )
+                        if n+1 == len(fields):
+                            a = '%s'
+                            a1 = "\'%s\'"
+                        if val.name == 'user_id' or val.name == 'user':
+                            user_obj = User.objects.filter(username=val_res)
+                            if user_obj:
+                                val_res = user_obj[0].id
+                                val.name = 'user_id'
+                        if val.name == 'send_time':
+                            try:
+                                val_res = xlrd.xldate.xldate_as_datetime(val_res, 0).strftime("%H:%M")
+                            except:
+                                pass
+                        if val.get_internal_type() == 'DateTimeField':
+                            if not val_res:
                                 val_res = datetime.datetime.now()
                             else:
+                                if model_name == 'no_send_res':
+                                    val_res = datetime.datetime.now()
+                                else:
+                                    val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
+                        if val.get_internal_type() == 'DateField':
+                            if not val_res:
+                                val_res = datetime.datetime.now().strftime("%Y-%m-%d")
+                            else:
                                 val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
-                    if val.get_internal_type() == 'DateField':
-                        if not val_res:
-                            val_res = datetime.datetime.now().strftime("%Y-%m-%d")
-                        else:
-                            val_res = xlrd.xldate.xldate_as_datetime(val_res, 0)
-                    if val.get_internal_type() == 'IntegerField':
-                        a1 = "%s,"
-                    if val.get_internal_type() == 'TextField':
-                        val_res = val_res.replace("'","/")
-                    str1 += a % val.name
-                    str2 += a1  % val_res
-            sql = "insert into %s (%s) VALUES (%s)" % (model_name,str1,str2)
-            cursor.execute(sql)
-        # except:
-        #     msg += '第%s行添加有误。<br>' % (i+1)
-        #     continue
+                        if val.get_internal_type() == 'IntegerField':
+                            a1 = "%s,"
+                        if val.get_internal_type() == 'TextField':
+                            val_res = val_res.replace("'","/")
+                        str1 += a % val.name
+                        str2 += a1  % val_res
+                sql = "insert into %s (%s) VALUES (%s)" % (model_name,str1,str2)
+                cursor.execute(sql)
+        except:
+            msg += '第%s行添加有误。<br>' % (i+1)
+            continue
     return {'code': 1, 'msg': msg}
 
 def read_excel_for_orders(res,user=None,customer_num=None):

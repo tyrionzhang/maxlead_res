@@ -25,8 +25,8 @@ class Listing:
         os.system('scrapyd-deploy')
         aid_li = ''
         for val in asins:
+            checks = UserAsins.objects.filter(aid__contains=val)
             val = val.strip()
-            checks = UserAsins.objects.filter(aid=val)
             if val:
                 aid_li += '%s,' % val
                 if len(checks) == 1:
@@ -289,7 +289,7 @@ class Listing:
             querysetlist = []
             if not ids:
                 for i,asin in enumerate(newASIN,0):
-                    asin.strip()
+                    asin = asin.strip()
                     userAsin = UserAsins()
                     check = UserAsins.objects.filter(aid=asin,user_id=user.user.id).all()
                     if not check:
