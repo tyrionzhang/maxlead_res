@@ -308,15 +308,15 @@ def download_listings():
         val['aid'] = val['aid'].strip()
         if val:
             aid_li += '%s,' % val['aid']
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % val['aid']
-            cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % val['aid']
-            cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % val['aid']
-            os.system(cmd_str)
-            os.system(cmd_str2)
-            os.system(cmd_str3)
     if aid_li:
         cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=listing_spider -d asin=%s' % aid_li
         cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=watcher_spider -d asin=%s' % aid_li
+        cmd_str = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=review_spider -d asin=%s' % aid_li
+        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=catrank_spider -d asin=%s' % aid_li
+        cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=qa_spider -d asin=%s' % aid_li
+        os.system(cmd_str)
+        os.system(cmd_str2)
+        os.system(cmd_str3)
         os.system(cmd_str1)
         os.system(cmd_str4)
     os.chdir(settings.ROOT_PATH)

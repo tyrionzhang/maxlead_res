@@ -22,8 +22,13 @@ class QaSpider(scrapy.Spider):
                     asin = urls % re['aid'].strip()
                     self.start_urls.append(asin)
         else:
-            urls1 = urls % asin.strip()
-            self.start_urls.append(urls1)
+            asin_li = asin.split(',')
+            self.res = list(
+                UserAsins.objects.filter(aid__in=asin_li, is_use=True).values('aid').annotate(count=Count('aid')))
+            if self.res:
+                for v in self.res:
+                    urls1 = urls % v['aid'].strip()
+                    self.start_urls.append(urls1)
 
 
     def parse(self, response):

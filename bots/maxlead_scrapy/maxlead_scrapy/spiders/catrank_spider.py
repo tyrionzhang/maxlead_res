@@ -19,9 +19,14 @@ class CatrankSpider(scrapy.Spider):
             if res:
                 self.start_urls = self._get_urls(res)
         else:
-            asins = []
-            asins.append({'aid': asin})
-            self.start_urls = self._get_urls(asins)
+            asin_li = asin.split(',')
+            self.res = list(
+                UserAsins.objects.filter(aid__in=asin_li, is_use=True).values('aid').annotate(count=Count('aid')))
+            if self.res:
+                asins = []
+                for v in self.res:
+                    asins.append({'aid': v['aid'].strip()})
+                self.start_urls = self._get_urls(asins)
 
     def _get_urls(self, asins):
         start_urls = []
