@@ -466,7 +466,7 @@ def covered_stocks(user,data,path):
         'description': 'Sku:%s,QTY covered by %s.' % (create_obj.sku, data['qty_new']),
     }
     views.save_logs(data_log)
-    obj = WarehouseStocks.objects.filter(sku=create_obj.sku, warehouse=data['warehouse']).exclude(id=create_obj.id).delete()
+    obj = WarehouseStocks.objects.filter(sku=create_obj.sku, warehouse=data['warehouse'], is_new=1).delete()
     if obj:
         return {'code':1,'msg':'Successfully!'}
 
