@@ -305,7 +305,6 @@ def download_listings():
     os.system('scrapyd-deploy')
     aid_li = ''
     for val in res:
-        val['aid'] = val['aid'].strip()
         if val:
             aid_li += '%s,' % val['aid']
     if aid_li:

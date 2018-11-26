@@ -25,7 +25,7 @@ def index(request):
     if not start_date:
         start_date = datetime.now() - timedelta(days = 3)
         start_date = start_date.strftime('%Y-%m-%d')
-    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('warehouse','-sku','qty')
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku','-qty')
     if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         stocks = stocks.filter(sku__in=skus)
@@ -455,7 +455,6 @@ def covered_stocks(user,data,path):
     create_obj.id
     create_obj.sku = data['sku'].replace('amp;','')
     create_obj.warehouse = data['warehouse']
-    create_obj.created = data['date']
     create_obj.qty = data['qty_new']
     create_obj.is_new = 0
     create_obj.save()
@@ -467,7 +466,9 @@ def covered_stocks(user,data,path):
         'description': 'Sku:%s,QTY covered by %s.' % (create_obj.sku, data['qty_new']),
     }
     views.save_logs(data_log)
-    return {'code':1,'msg':'Successfully!'}
+    obj = WarehouseStocks.objects.filter(sku=create_obj.sku, warehouse=data['warehouse']).exclude(id=create_obj.id).delete()
+    if obj:
+        return {'code':1,'msg':'Successfully!'}
 
 @csrf_exempt
 def covered_new(request):
@@ -478,8 +479,7 @@ def covered_new(request):
         sku = request.POST.get('sku','').replace('amp;','')
         warehouse = request.POST.get('warehouse','')
         qty_new = request.POST.get('qty_new','')
-        date = request.POST.get('date','')
-        res = covered_stocks(user.user,{'sku':sku,'warehouse':warehouse,'qty_new':qty_new,'date':date},request.path)
+        res = covered_stocks(user.user,{'sku':sku,'warehouse':warehouse,'qty_new':qty_new},request.path)
         return HttpResponse(json.dumps({'code': res['code'], 'msg': res['msg']}), content_type='application/json')
 
 @csrf_exempt
