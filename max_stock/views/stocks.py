@@ -489,7 +489,7 @@ def covered_new_all(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
         data = request.POST.get('data','')
-        WarehouseStocks.objects.all().delete()
+        WarehouseStocks.objects.filter(is_new=0).delete()
         if data:
             data = eval(data)
             for val in data:
