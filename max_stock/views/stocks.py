@@ -25,7 +25,7 @@ def index(request):
     if not start_date:
         start_date = datetime.now() - timedelta(days = 3)
         start_date = start_date.strftime('%Y-%m-%d')
-    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('warehouse','-sku','qty')
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku','-qty')
     if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         stocks = stocks.filter(sku__in=skus)
@@ -39,35 +39,68 @@ def index(request):
         stocks = stocks.filter(warehouse=warehouse)
     if sel_new:
         stocks = stocks.filter(is_new=sel_new)
-    stocks = stocks.values('sku','warehouse').annotate(count=Count('sku'),count2=Count('warehouse'))
+    select_data = {"d": """date_trunc('day', created)"""}
+    stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     items = []
     qty_old = 0
     have_new = 0
-    for key,val in enumerate(stocks,0):
-        old = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=0)
-        new = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=1)
+    d_list = []
+    for value in stocks:
+        if not d_list or not value in d_list:
+            d_list.append(value)
+
+    for key,val in enumerate(d_list,0):
         re = {
-            'sku':val['sku'],
-            'warehouse':val['warehouse'],
-            'is_same':0,
-            'is_new_type':0,
-            'qty_new':0,
-            'qty_old':0,
-            'created':'',
+            'sku': val['sku'],
+            'exl':'0',
+            'twu':'0',
+            'ego':'0',
+            'tfd':'0',
+            'hanover':'0',
+            'atl':'0'
         }
-        if new:
-            re.update({'qty_new':new[0].qty,'created':new[0].created.strftime("%Y-%m-%d %H:%M:%S")})
-            re.update({'is_new_type': 1})
-            have_new = 1
-        if old:
-            qty_old = old[0].qty
-            re.update({'qty_old':qty_old,'created':old[0].created.strftime("%Y-%m-%d %H:%M:%S")})
-
-        threshold_obj = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
-        if threshold_obj and threshold_obj[0].threshold >= qty_old:
-            re.update({'is_same':1})
+        obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
+        sum = 0
+        for v in obj:
+            if v.warehouse == 'EXL':
+                re.update({'exl':v.qty})
+                sum += int(v.qty)
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if threshold_obj and threshold_obj[0].threshold >= qty_old:
+                    re.update({'is_same': 1})
+            elif v.warehouse == 'TWU':
+                re.update({'twu':v.qty})
+                sum += int(v.qty)
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if threshold_obj and threshold_obj[0].threshold >= qty_old:
+                    re.update({'is_same': 1})
+            elif v.warehouse == 'EGO':
+                re.update({'ego':v.qty})
+                sum += int(v.qty)
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if threshold_obj and threshold_obj[0].threshold >= qty_old:
+                    re.update({'is_same': 1})
+            elif v.warehouse == 'TFD':
+                re.update({'tfd':v.qty})
+                sum += int(v.qty)
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if threshold_obj and threshold_obj[0].threshold >= qty_old:
+                    re.update({'is_same': 1})
+            elif v.warehouse == 'Hanover':
+                re.update({'hanover':v.qty})
+                sum += int(v.qty)
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if threshold_obj and threshold_obj[0].threshold >= qty_old:
+                    re.update({'is_same': 1})
+            else:
+                re.update({'atl': v.qty})
+                sum += int(v.qty)
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if threshold_obj and threshold_obj[0].threshold >= qty_old:
+                    re.update({'is_same': 1})
+            date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
+        re.update({'sum': sum, 'date':date_re})
         items.append(re)
-
     data = {
         'stock_list':items,
         'user': user,
@@ -455,7 +488,6 @@ def covered_stocks(user,data,path):
     create_obj.id
     create_obj.sku = data['sku'].replace('amp;','')
     create_obj.warehouse = data['warehouse']
-    create_obj.created = data['date']
     create_obj.qty = data['qty_new']
     create_obj.is_new = 0
     create_obj.save()
@@ -467,7 +499,7 @@ def covered_stocks(user,data,path):
         'description': 'Sku:%s,QTY covered by %s.' % (create_obj.sku, data['qty_new']),
     }
     views.save_logs(data_log)
-    obj = WarehouseStocks.objects.filter(sku=create_obj.sku, warehouse=data['warehouse']).exclude(id=create_obj.id).delete()
+    obj = WarehouseStocks.objects.filter(sku=create_obj.sku, warehouse=data['warehouse'], is_new=1).delete()
     if obj:
         return {'code':1,'msg':'Successfully!'}
 
@@ -480,8 +512,7 @@ def covered_new(request):
         sku = request.POST.get('sku','').replace('amp;','')
         warehouse = request.POST.get('warehouse','')
         qty_new = request.POST.get('qty_new','')
-        date = request.POST.get('date','')
-        res = covered_stocks(user.user,{'sku':sku,'warehouse':warehouse,'qty_new':qty_new,'date':date},request.path)
+        res = covered_stocks(user.user,{'sku':sku,'warehouse':warehouse,'qty_new':qty_new},request.path)
         return HttpResponse(json.dumps({'code': res['code'], 'msg': res['msg']}), content_type='application/json')
 
 @csrf_exempt
