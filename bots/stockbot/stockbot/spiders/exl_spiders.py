@@ -14,7 +14,7 @@ class ExlSpider(scrapy.Spider):
     msg_str1 = 'complete\n'
     start_urls = ['https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}']
     sku_list = []
-    stock_names = ['M&L','Match Land']
+    stock_names = ['M&L','Match Land','Parts']
 
     # def __init__(self, username=None, *args, **kwargs):
     #     super(ExlSpider, self).__init__(*args, **kwargs)
