@@ -32,6 +32,7 @@ class QaSpider(scrapy.Spider):
 
 
     def parse(self, response):
+        time.sleep(3 + random.randint(27, 57))
         res_asin = response.url.split('/')
         for qa_a in response.css('div.askInlineWidget div.askTeaserQuestions>.a-spacing-base'):
             qa_url = qa_a.css('.a-spacing-base .a-link-normal::attr("href")').extract_first()
@@ -52,7 +53,6 @@ class QaSpider(scrapy.Spider):
 
         next_page = response.css('div#askPaginationBar li.a-last a::attr("href")').extract_first()
         if next_page is not None:
-            time.sleep(3 + random.randint(27, 57))
             next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse)
         else:

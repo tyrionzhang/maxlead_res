@@ -62,6 +62,7 @@ class CatrankSpider(scrapy.Spider):
         return start_urls
 
     def parse(self, response):
+        time.sleep(3 + random.randint(27, 57))
         url = urllib.parse.unquote(response.url)
         res_asin = url.split('asin=')
         field_keywords = url.split('field-keywords=')
@@ -96,7 +97,6 @@ class CatrankSpider(scrapy.Spider):
         if not self.check:
             next_page = response.css('a#pagnNextLink ::attr("href")').extract_first()
             if next_page is not None:
-                time.sleep(3 + random.randint(27, 57))
                 page = next_page.split('page=')
                 page = page[1].split('&')[0]
                 if int(page)<=20:
