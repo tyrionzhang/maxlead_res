@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy,os
+from datetime import *
 from scrapy.http import Request, FormRequest
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
@@ -11,17 +12,17 @@ class TwuSpider(scrapy.Spider):
     sku_list = []
     msg_str1 = 'complete\n'
 
-    def __init__(self, username=None, *args, **kwargs):
-        super(TwuSpider, self).__init__(*args, **kwargs)
-        file_name = 'userSkus_txt.txt'
-        if username:
-            file_name = 'userSkus_txt_%s.txt' % username
-        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, file_name)
-        with open(file_path, "r") as f:
-            sku_list = f.read()
-            f.close()
-        if sku_list:
-            self.sku_list = eval(sku_list)
+    # def __init__(self, username=None, *args, **kwargs):
+    #     super(TwuSpider, self).__init__(*args, **kwargs)
+    #     file_name = 'userSkus_txt.txt'
+    #     if username:
+    #         file_name = 'userSkus_txt_%s.txt' % username
+    #     file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, file_name)
+    #     with open(file_path, "r") as f:
+    #         sku_list = f.read()
+    #         f.close()
+    #     if sku_list:
+    #         self.sku_list = eval(sku_list)
 
     def start_requests(self):
         return [Request("http://www.thewarehouseusadata.com/maxlead/inventory.php", meta={'cookiejar': 1}, callback=self.post_login)]
@@ -64,12 +65,23 @@ class TwuSpider(scrapy.Spider):
                 if items:
                     item['sku'] = items[0]
                     item['warehouse'] = 'TWU'
-                    item['is_new'] = 1
+                    item['is_new'] = 0
                     if items[11] and not items[11] == ' ':
                         item['qty'] = items[11]
                         item['qty'] = item['qty'].replace(',', '')
                     else:
                         item['qty'] = 0
+                    date_now = datetime.now()
+                    date0 = date_now.strftime('%Y-%m-%d')
+                    obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
+                                                         created__contains=date0)
+                    date1 = date_now - timedelta(days=1)
+                    obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
+                                                          created__contains=date1.strftime('%Y-%m-%d'))
+                    if obj1:
+                        item['qty1'] = int(item['qty']) - obj1[0].qty
+                    if obj:
+                        obj.delete()
                     yield item
                     threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
                     user = SkuUsers.objects.filter(sku=item['sku'])

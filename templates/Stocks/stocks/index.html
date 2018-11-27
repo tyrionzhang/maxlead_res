@@ -86,11 +86,13 @@
             <table id="datas" class="tb-datas">
                 <tr id="tr-head">
                     <th>Sku</th>
-                    <th>Warehouse</th>
-                    <th>Qty</th>
-                {% if have_new %}
-                    <th>Qty New</th>
-                {% endif %}
+                    <th>EXL</th>
+                    <th>TWU</th>
+                    <th>EGO</th>
+                    <th>TFD</th>
+                    <th>Hanover</th>
+                    <th>ATL</th>
+                    <th>SUM</th>
                     <th>Date</th>
                     {% if have_new %}
                     <th>Fun</th>
@@ -99,12 +101,14 @@
                 {% for val in stock_list %}
                 <tr class="tr-stock-blue{{ val.is_same }} tr-stock{{ val.is_new_type }}">
                     <td>{{ val.sku }}</td>
-                    <td>{{ val.warehouse }}</td>
-                    <td>{{ val.qty_old }}</td>
-                {% if have_new %}
-                    <td>{{ val.qty_new }}</td>
-                {% endif %}
-                    <td>{{ val.created }}</td>
+                    <td>{{ val.exl }}</td>
+                    <td>{{ val.twu }}</td>
+                    <td>{{ val.ego }}</td>
+                    <td>{{ val.tfd }}</td>
+                    <td>{{ val.hanover }}</td>
+                    <td>{{ val.atl }}</td>
+                    <td>{{ val.sum }}</td>
+                    <td>{{ val.date }}</td>
                 {% if have_new %}
                     <td>
                         {% if val.is_new_type %}
