@@ -42,7 +42,6 @@ def index(request):
     select_data = {"d": """date_trunc('day', created)"""}
     stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     items = []
-    qty_old = 0
     have_new = 0
     d_list = []
     for value in stocks:
@@ -52,52 +51,52 @@ def index(request):
     for key,val in enumerate(d_list,0):
         re = {
             'sku': val['sku'],
-            'exl':'0',
-            'twu':'0',
-            'ego':'0',
-            'tfd':'0',
-            'hanover':'0',
-            'atl':'0'
+            'exl':{'qty':0,'is_same':0},
+            'twu':{'qty':0,'is_same':0},
+            'ego':{'qty':0,'is_same':0},
+            'tfd':{'qty':0,'is_same':0},
+            'hanover':{'qty':0,'is_same':0},
+            'atl':{'qty':0,'is_same':0}
         }
         obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
         sum = 0
         for v in obj:
             if v.warehouse == 'EXL':
-                re.update({'exl':v.qty})
+                re['exl'].update({'qty':v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
-                if threshold_obj and threshold_obj[0].threshold >= qty_old:
-                    re.update({'is_same': 1})
+                if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                    re['exl'].update({'is_same':1})
             elif v.warehouse == 'TWU':
-                re.update({'twu':v.qty})
+                re['twu'].update({'qty':v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
-                if threshold_obj and threshold_obj[0].threshold >= qty_old:
-                    re.update({'is_same': 1})
+                if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                    re['twu'].update({'is_same':1})
             elif v.warehouse == 'EGO':
-                re.update({'ego':v.qty})
+                re['ego'].update({'qty':v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
-                if threshold_obj and threshold_obj[0].threshold >= qty_old:
-                    re.update({'is_same': 1})
+                if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                    re['ego'].update({'is_same':1})
             elif v.warehouse == 'TFD':
-                re.update({'tfd':v.qty})
+                re['tfd'].update({'qty':v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
-                if threshold_obj and threshold_obj[0].threshold >= qty_old:
-                    re.update({'is_same': 1})
+                if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                    re['tfd'].update({'is_same':1})
             elif v.warehouse == 'Hanover':
-                re.update({'hanover':v.qty})
+                re['hanover'].update({'qty':v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
-                if threshold_obj and threshold_obj[0].threshold >= qty_old:
-                    re.update({'is_same': 1})
+                if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                    re['hanover'].update({'is_same':1})
             else:
-                re.update({'atl': v.qty})
+                re['atl'].update({'qty':v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
-                if threshold_obj and threshold_obj[0].threshold >= qty_old:
-                    re.update({'is_same': 1})
+                if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                    re['atl'].update({'is_same':1})
             date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
         re.update({'sum': sum, 'date':date_re})
         items.append(re)
@@ -252,38 +251,65 @@ def export_stocks(request):
     if not start_date:
         start_date = datetime.now() - timedelta(days = 3)
         start_date = start_date.strftime('%Y-%m-%d')
-    stocks = WarehouseStocks.objects.filter(created__gte=start_date)
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku', '-qty')
     if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         stocks = stocks.filter(sku__in=skus)
     if end_date:
         stocks = stocks.filter(created__lte=end_date)
-    if not user.user.is_superuser and not user.stocks_role == 66:
-        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
-        stocks = stocks.filter(sku__in=skus)
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
+    if not warehouse:
+        warehouse = 'EXL'
     if not warehouse == 'all':
         stocks = stocks.filter(warehouse=warehouse)
-    if not sel_new:
-        sel_new = 0
-    stocks = stocks.filter(is_new=sel_new)
-    stocks = stocks.values('sku', 'warehouse').annotate(count=Count('sku'), count2=Count('warehouse'))
-
+    if sel_new:
+        stocks = stocks.filter(is_new=sel_new)
+    select_data = {"d": """date_trunc('day', created)"""}
+    stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     data = []
-    if stocks:
-        for val in stocks:
-            qty = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=sel_new)
-            if qty:
-                re = {
-                    'sku':val['sku'],
-                    'warehouse':val['warehouse'],
-                    'qty':qty[0].qty,
-                    'created':qty[0].created.strftime("%Y-%m-%d %H:%M:%S"),
-                }
-                data.append(re)
-        fields = ['SKU','Warehouse','QTY','Created']
-        data_fields = ['sku','warehouse','qty','created']
+    d_list = []
+    for value in stocks:
+        if not d_list or not value in d_list:
+            d_list.append(value)
+
+    for key, val in enumerate(d_list, 0):
+        re = {
+            'sku': val['sku'],
+            'exl': '0',
+            'twu': '0',
+            'ego': '0',
+            'tfd': '0',
+            'hanover': '0',
+            'atl': '0'
+        }
+        obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
+        sum = 0
+        for v in obj:
+            if v.warehouse == 'EXL':
+                re.update({'exl': v.qty})
+                sum += int(v.qty)
+            elif v.warehouse == 'TWU':
+                re.update({'twu': v.qty})
+                sum += int(v.qty)
+            elif v.warehouse == 'EGO':
+                re.update({'ego': v.qty})
+                sum += int(v.qty)
+            elif v.warehouse == 'TFD':
+                re.update({'tfd': v.qty})
+                sum += int(v.qty)
+            elif v.warehouse == 'Hanover':
+                re.update({'hanover': v.qty})
+                sum += int(v.qty)
+            else:
+                re.update({'atl': v.qty})
+                sum += int(v.qty)
+            date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
+        re.update({'sum': sum, 'date': date_re})
+        data.append(re)
+    if data:
+        fields = ['SKU','EXL','TWU','EGO','TFD','Hanover','ATL','SUM','Created']
+        data_fields = ['sku','exl','twu','ego','tfd','hanover','atl','sum','date']
         return get_excel_file(request, data, fields, data_fields)
     else:
         return HttpResponse('没有数据~~')
