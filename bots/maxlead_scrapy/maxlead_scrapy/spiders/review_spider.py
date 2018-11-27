@@ -23,6 +23,12 @@ class ReviewSpider(scrapy.Spider):
                 for re in list(res):
                     asin = urls % re['aid'].strip()
                     self.start_urls.append(asin)
+        elif asin == '77':
+            self.res =list( UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=True, is_done=0))
+            if self.res:
+                for v in self.res:
+                    urls1 = urls % v['aid'].strip()
+                    self.start_urls.append(urls1)
         else:
             asin_li = asin.split(',')
             self.res = list(
