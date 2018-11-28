@@ -23,7 +23,7 @@ class CatrankSpider(scrapy.Spider):
             if self.res:
                 asins = []
                 for v in self.res:
-                    asins.append({'aid': v['aid'].strip()})
+                    asins.append({'aid': v['aid']})
                 self.start_urls = self._get_urls(asins)
         else:
             asin_li = asin.split(',')

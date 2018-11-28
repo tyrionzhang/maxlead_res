@@ -34,7 +34,7 @@ def index(request):
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
     if not warehouse:
-        warehouse = 'EXL'
+        warehouse = 'TWU'
     if not warehouse == 'all':
         stocks = stocks.filter(warehouse=warehouse)
     if sel_new:
