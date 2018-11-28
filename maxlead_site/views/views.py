@@ -317,3 +317,14 @@ def download_listings():
     os.chdir(settings.ROOT_PATH)
     t.start()
     return True
+
+def debug(request):
+    res = UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=True, is_done=0)
+    for val in res:
+        obj = UserAsins.objects.filter(aid=val['aid'])
+        if obj:
+            obj.update(aid=val['aid'].strip())
+        aid_listing = Listings.objects.filter(asin=val['aid'].strip())
+        if aid_listing:
+            obj.update(is_done=1)
+    return render(request, "Stocks/spider/home.html", {'msg_str': "Done!"})
