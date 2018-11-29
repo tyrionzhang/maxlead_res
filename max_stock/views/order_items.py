@@ -195,6 +195,13 @@ def order_list(request):
         list = list.filter(created__lte=end_date)
     if payments_date:
         list = list.filter(payments_date__contains=payments_date)
+    tmps = EmailTemplates.objects.filter(customer_num=user.menu_child_type)
+    if not user.user.is_superuser:
+        tmps = tmps.filter(user_id=user.user.id)
+    tmp_list = []
+    for val in tmps:
+        tmp_list.append(val.sku)
+    list = list.filter(sku__in=tmp_list)
 
     data = {
         'list': list,
@@ -286,10 +293,15 @@ def send_email(request):
         m_time = 0
         list_data = eval(data)
         user.customer_num = customer_num
+
         for i,val in enumerate(list_data):
             orders = OrderItems.objects.filter(order_id=val['order_id'], is_email=0, customer_num=customer_num)
             old_orders = OldOrderItems.objects.filter(order_id=val['order_id'], customer_num=customer_num)
             tmps = EmailTemplates.objects.filter(sku=val['sku'], customer_num=customer_num)
+            if not user.user.is_superuser:
+                tmps = tmps.filter(user_id=user.user.id)
+                orders = orders.filter(user_id=user.user.id)
+                old_orders = old_orders.filter(user_id=user.user.id)
             if orders and tmps and not old_orders:
                 title = tmps[0].title
                 if title:
