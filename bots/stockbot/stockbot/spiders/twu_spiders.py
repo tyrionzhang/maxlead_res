@@ -79,7 +79,7 @@ class TwuSpider(scrapy.Spider):
                     obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
                                                           created__contains=date1.strftime('%Y-%m-%d'))
                     if obj1:
-                        item['qty1'] = int(item['qty']) - obj1[0].qty
+                        item['qty1'] = obj1[0].qty - int(item['qty'])
                     if obj:
                         obj.delete()
                     yield item

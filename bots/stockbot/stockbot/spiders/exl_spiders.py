@@ -32,11 +32,11 @@ class ExlSpider(scrapy.Spider):
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         msg_str2 = ''
-        # from pyvirtualdisplay import Display
-        # display = Display(visible=0, size=(800, 800))
-        # display.start()
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 800))
+        display.start()
         chrome_options = Options()
-        # chrome_options.add_argument('-headless')
+        chrome_options.add_argument('-headless')
         chrome_options.add_argument('--disable-gpu')
         driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH, service_log_path=settings.LOG_PATH)
         driver.get(response.url)
@@ -64,12 +64,12 @@ class ExlSpider(scrapy.Spider):
             length = len(list_rows)
             for i in range(0, length):
                 if not i == 0:
-                    # display.stop()
-                    # from pyvirtualdisplay import Display
-                    # display = Display(visible=0, size=(800, 800))
-                    # display.start()
+                    display.stop()
+                    from pyvirtualdisplay import Display
+                    display = Display(visible=0, size=(800, 800))
+                    display.start()
                     chrome_options = Options()
-                    # chrome_options.add_argument('-headless')
+                    chrome_options.add_argument('-headless')
                     chrome_options.add_argument('--disable-gpu')
                     driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
                                               service_log_path=settings.LOG_PATH)
@@ -138,7 +138,7 @@ class ExlSpider(scrapy.Spider):
                             obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
                                                                   created__contains=date1.strftime('%Y-%m-%d'))
                             if obj1:
-                                item['qty1'] = int(item['qty']) - obj1[0].qty
+                                item['qty1'] = obj1[0].qty - int(item['qty'])
                             if obj:
                                 obj.delete()
                             yield item
@@ -148,7 +148,7 @@ class ExlSpider(scrapy.Spider):
                                 if user:
                                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
                                                                 item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
-        # display.stop()
+        display.stop()
         driver.quit()
 
         if not os.path.isfile(file_path):
