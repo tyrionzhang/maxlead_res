@@ -95,6 +95,7 @@ def run_command_queue():
     reviews.start()
     reviews.join()
     t.start()
+    pass
 
 def stock_spiders(request):
     user = App.get_user_info(request)
@@ -170,3 +171,4 @@ def task_save_stocks():
         except:
             continue
     t.start()
+    pass

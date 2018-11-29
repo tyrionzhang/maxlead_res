@@ -33,7 +33,7 @@ def perform_command():
     os.popen(cmd_str)
     os.chdir(settings.ROOT_PATH)
     t.start()
-    return True
+    pass
 
 def perform_command1():
     # 安排inc秒后再次运行自己，即周期运行
@@ -49,7 +49,7 @@ def perform_command1():
     os.popen(cmd_str2)
     os.chdir(settings.ROOT_PATH)
     t.start()
-    return True
+    pass
 
 def Spiders2(request):
     time_re = int(get_send_time('23:00'))
@@ -316,7 +316,7 @@ def download_listings():
         os.system(cmd_str4)
     os.chdir(settings.ROOT_PATH)
     t.start()
-    return True
+    pass
 
 def debug(request):
     res = UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=True, is_done=0)
