@@ -34,6 +34,12 @@ MENUS = [
         'parent' : 'Warehouse'
     },
     {
+        'name' : 'Sales Data',
+        'url' : '/admin/max_stock/sales_vol/',
+        'elem_id' : 'sales_vol',
+        'parent' : 'Warehouse'
+    },
+    {
         'name' : 'Threshold',
         'url' : '/admin/max_stock/threshold/',
         'elem_id' : 'thresholds',

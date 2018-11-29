@@ -108,6 +108,7 @@ urlpatterns = [
     url('^admin/max_stock/reviews/', stocks.index),
     url('^admin/max_stock/$', stocks.index),
     url('^admin/max_stock/stock_checked/', stocks.stock_checked),
+    url('^admin/max_stock/sales_vol/', stocks.sales_vol),
     url('^admin/max_stock/checked_edit/', stocks.checked_edit),
     url('^admin/max_stock/checked_batch_edit/', stocks.checked_batch_edit),
     url('^admin/max_stock/export_stocks/', stocks.export_stocks),

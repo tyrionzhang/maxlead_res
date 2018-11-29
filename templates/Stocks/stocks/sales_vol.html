@@ -1,0 +1,251 @@
+{% extends "Stocks/layouts/base.html" %}
+{% block container %}
+    <div id="main" data-name="sales_vol">
+        <div class="con-head">
+            <h1>{{ title }}</h1>
+            <form action="/admin/max_stock/sales_vol/">
+                <div class="text-box">
+                    <label>
+                        <span>Search:</span>
+                        <input type="text" name="keywords">
+                    </label>
+                </div>
+                <div class="text-box">
+                    <label>
+                        <span>Start Date:</span>
+                        <input type="date" name="start_date">
+                    </label>
+                </div>
+                <div class="text-box">
+                    <label>
+                        <span>End Date:</span>
+                        <input type="date" name="end_date">
+                    </label>
+                </div>
+                <div class="text-box">
+                    <label>
+                        <span>Warehouse:</span>
+                        <select name="warehouse">
+                            <option value="all">All</option>
+                            <option value="EXL">EXL</option>
+                            <option value="TWU">TWU</option>
+                            <option value="Hanover">Hanover</option>
+                            <option value="ILL">ILL</option>
+                            <option value="WA">WA</option>
+                            <option value="EGO">EGO</option>
+                            <option value="ATL-1">ATL-1</option>
+                            <option value="TFD">TFD</option>
+                        </select>
+                    </label>
+                </div>
+{#                <div class="text-box">#}
+{#                    <label>#}
+{#                        <span>Is New:</span>#}
+{#                        <select name="sel_new">#}
+{#                            <option value="">All</option>#}
+{#                            <option value="0">Old</option>#}
+{#                            <option value="1">New</option>#}
+{#                        </select>#}
+{#                    </label>#}
+{#                </div>#}
+                <div class="text-box-btn">
+                    <label>
+                        <input type="submit" value="Search">
+                    </label>
+                </div>
+            </form>
+            <div class="clear"></div>
+            <div class="con-head-left">
+            {% if not have_new %}
+                <div class="btn btn-blue">
+                    <button id="inventory_import">Inventory Import</button>
+                </div>
+            {% endif %}
+                {% if have_new %}
+                <div class="btn btn-blue">
+                    <button id="new_all_save">All Save</button>
+                </div>
+                <div class="btn btn-blue">
+                    <button id="new_give_up">Give Up</button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="con-head-right">
+                <div class="btn btn-green">
+                    <button id="btn_export_stocks">Export</button>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="con-body">
+            <table id="datas" class="tb-datas">
+                <tr id="tr-head">
+                    <th>Sku</th>
+                    <th>EXL</th>
+                    <th>TWU</th>
+                    <th>EGO</th>
+                    <th>TFD</th>
+                    <th>Hanover</th>
+                    <th>ATL</th>
+                    <th>SUM</th>
+                    <th>Date</th>
+                    {% if have_new %}
+                    <th>Fun</th>
+                    {% endif %}
+
+                </tr>
+                {% for val in stock_list %}
+                <tr>
+                    <td>{{ val.sku }}</td>
+                    <td class="tr-stock-blue{{ val.exl.is_same }}">{{ val.exl }}</td>
+                    <td class="tr-stock-blue{{ val.twu.is_same }}">{{ val.twu }}</td>
+                    <td class="tr-stock-blue{{ val.ego.is_same }}">{{ val.ego }}</td>
+                    <td class="tr-stock-blue{{ val.tfd.is_same }}">{{ val.tfd }}</td>
+                    <td class="tr-stock-blue{{ val.hanover.is_same }}">{{ val.hanover }}</td>
+                    <td class="tr-stock-blue{{ val.atl.is_same }}">{{ val.atl }}</td>
+                    <td>{{ val.sum }}</td>
+                    <td>{{ val.date }}</td>
+                {% if have_new %}
+                    <td>
+                        {% if val.is_new_type %}
+                        <a href="javascript:;" class="fun-btn btn-edit stock-check-edit">Covered</a>
+                        {% endif %}
+                    </td>
+                {% endif %}
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+    <div class="hide" id="import_modal">
+        <form id="import_form" action="/admin/max_stock/stock_checked/" method="post" enctype="multipart/form-data">
+            <input type="file" name="myfile">
+            <input type="submit" value="Submit" id="btn_import_modal">
+        </form>
+        <div id="import_msg"></div>
+    </div>
+    <script>
+        $(document).ready(function(){
+          $('input[name="keywords"]').val("{{ keywords }}");
+          $('select[name="warehouse"]').val('{{ warehouse }}');
+          $('input[name="start_date"]').val('{{ start_date }}');
+          $('input[name="end_date"]').val('{{ end_date }}');
+          $('select[name="sel_new"]').val('{{ sel_new }}');
+          $("form[name='userLogin']").submit(function(e){
+            e.preventDefault();
+          });
+          $('#import_index').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#import_modal').removeClass('hide');
+                $('input[name="type"]').remove();
+            });
+          $('#inventory_import').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#import_modal').removeClass('hide');
+                $('#import_form').append('<input type="hidden" name="type" value="new">');
+            });
+            $('body').on('click','.wrap-paper' , function(){
+                $('.wrap-paper').addClass('hide');
+                $('#import_modal').addClass('hide');
+            });
+        });
+        $('#btn_login').on('click',function () {
+            var data = {
+              'username':$('input[name="username"]').val(),
+              'password':$('input[name="password"]').val()
+            };
+            $.post('/admin/maxlead_site/login/',data,function (re) {
+               if(re.code==0){
+                   alert(re.msg);
+               }
+               if(re.code==99){
+                   window.location.href='/admin/max_stock/index/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#btn_export_stocks').on('click',function () {
+            var keywords = $('input[name="keywords"]').val();
+            var warehouse = $('select[name="warehouse"]').val();
+            var sel_new = $('select[name="sel_new"]').val();
+            var start_date = $('input[name="start_date"]').val();
+            var end_date = $('input[name="end_date"]').val();
+            var url = '/admin/max_stock/export_stocks/?keywords='+keywords+'&warehouse='+warehouse+'&sel_new='
+                +sel_new+'&start_date='+start_date+'&end_date='+end_date;
+            window.location.href=url;
+        });
+
+        $('.stock-check-edit').on('click',function () {
+           var elem_tr = $(this).parents('tr');
+           var sku = elem_tr.children('td:eq(0)').html();
+           var warehouse = elem_tr.children('td:eq(1)').html();
+           var qty_new = elem_tr.children('td:eq(3)').html();
+           var date = elem_tr.children('td:eq(4)').html();
+           $.post('/admin/max_stock/covered_new/',{'sku':sku,'warehouse':warehouse,'qty_new':qty_new,'date':date},function (re) {
+               if(re.code==1){
+                   elem_tr.children('td:eq(2)').html(qty_new);
+                   elem_tr.removeClass('tr-stock1');
+               }
+               if(re.code==0){
+                   alert(re.msg);
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#new_all_save').on('click',function () {
+            var data = new Array();
+           $('.tr-stock1').each(function () {
+               var re = {
+                   'sku':$(this).children('td:eq(0)').html(),
+                   'warehouse':$(this).children('td:eq(1)').html(),
+                   'qty_new':$(this).children('td:eq(3)').html(),
+                   'date':$(this).children('td:eq(4)').html()
+               };
+               data.push(re);
+           });
+           $.post('/admin/max_stock/covered_new_all/',{'data':JSON.stringify(data)},function (re) {
+               if(re.code==1){
+                   alert(re.msg);
+                   window.location.reload();
+               }
+               if(re.code==0){
+                   alert(re.msg);
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#new_give_up').on('click',function () {
+            var data = new Array();
+           $('.tr-stock1').each(function () {
+               var re = {
+                   'sku':$(this).children('td:eq(0)').html(),
+                   'warehouse':$(this).children('td:eq(1)').html()
+               };
+               data.push(re);
+           });
+           $.post('/admin/max_stock/covered_give_up/',{'data':JSON.stringify(data)},function (re) {
+               if(re.code==1){
+                   alert(re.msg);
+                   window.location.reload();
+               }
+               if(re.code==0){
+                   alert(re.msg);
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+    </script>
+{% endblock %}
