@@ -19,7 +19,7 @@ from max_stock.views.views import run_command_queue,task_save_stocks
 
 p = os.popen('scrapyd')
 print(p)
-time_re1 = int(get_send_time('04:00'))
+time_re1 = int(get_send_time('09:45'))
 time_re2 = time_re1 - 3600
 t1 = threading.Timer(float('%.1f' % time_re2), download_listings)
 t1.start()
@@ -31,7 +31,7 @@ t2.start()
 t3 = threading.Timer(float('%.1f' % time_re3), perform_command1)
 t3.start()
 
-time_re5 = int(get_send_time('05:00'))
+time_re5 = int(get_send_time('09:40'))
 time_re6 = time_re5 + 3600
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
 t4.start()
