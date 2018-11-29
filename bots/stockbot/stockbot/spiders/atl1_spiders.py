@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import scrapy,os
+from datetime import *
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
-from max_stock.models import Thresholds,SkuUsers
+from max_stock.models import Thresholds,SkuUsers,WarehouseStocks
 from django.core.mail import send_mail
 
 class Atl1Spider(scrapy.Spider):
@@ -31,11 +32,11 @@ class Atl1Spider(scrapy.Spider):
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         msg_str2 = ''
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
+        # from pyvirtualdisplay import Display
+        # display = Display(visible=0, size=(800, 800))
+        # display.start()
         chrome_options = Options()
-        chrome_options.add_argument('-headless')
+        # chrome_options.add_argument('-headless')
         chrome_options.add_argument('--disable-gpu')
         driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH, service_log_path=settings.LOG_PATH)
         driver.get(response.url)
@@ -64,12 +65,21 @@ class Atl1Spider(scrapy.Spider):
                     if td_re:
                         item['sku'] = td_re[3].text
                         item['warehouse'] = td_re[1].text
-                        item['is_new'] = 1
+                        item['is_new'] = 0
                         if td_re[11].text and not td_re[11].text == ' ':
                             item['qty'] = td_re[11].text
                             item['qty'] = item['qty'].replace(',', '')
                         else:
                             item['qty'] = 0
+                        date_now = datetime.now()
+                        date0 = date_now.strftime('%Y-%m-%d')
+                        obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'], created__contains=date0)
+                        date1 = date_now - timedelta(days=1)
+                        obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'], created__contains=date1.strftime('%Y-%m-%d'))
+                        if obj1:
+                            item['qty1'] = int(item['qty']) - obj1[0].qty
+                        if obj:
+                            obj.delete()
                         yield item
 
                         threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
@@ -85,7 +95,7 @@ class Atl1Spider(scrapy.Spider):
                         elem_next_page[0].click()
                         driver.implicitly_wait(100)
 
-        display.stop()
+        # display.stop()
         driver.quit()
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:

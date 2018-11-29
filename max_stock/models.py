@@ -16,6 +16,7 @@ class WarehouseStocks(models.Model):
     sku = models.CharField('Sku',max_length=225)
     warehouse = models.CharField('Warehouse', max_length=225)
     qty = models.IntegerField('Qty', default=0)
+    qty1 = models.IntegerField('Qty1', default=0)
     is_new = models.IntegerField('Is New', default=1)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
@@ -135,6 +136,7 @@ class Menus(models.Model):
         db_table = 'menus'
 
 class EmailContacts(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     email_address = models.CharField('Email Address', max_length=225)
     email = models.CharField('Email', max_length=225)
     customer_num = models.IntegerField('Customer Num', default=0)

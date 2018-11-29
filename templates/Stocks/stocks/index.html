@@ -38,16 +38,16 @@
                         </select>
                     </label>
                 </div>
-                <div class="text-box">
-                    <label>
-                        <span>Is New:</span>
-                        <select name="sel_new">
-                            <option value="">All</option>
-                            <option value="0">Old</option>
-                            <option value="1">New</option>
-                        </select>
-                    </label>
-                </div>
+{#                <div class="text-box">#}
+{#                    <label>#}
+{#                        <span>Is New:</span>#}
+{#                        <select name="sel_new">#}
+{#                            <option value="">All</option>#}
+{#                            <option value="0">Old</option>#}
+{#                            <option value="1">New</option>#}
+{#                        </select>#}
+{#                    </label>#}
+{#                </div>#}
                 <div class="text-box-btn">
                     <label>
                         <input type="submit" value="Search">
@@ -86,25 +86,29 @@
             <table id="datas" class="tb-datas">
                 <tr id="tr-head">
                     <th>Sku</th>
-                    <th>Warehouse</th>
-                    <th>Qty</th>
-                {% if have_new %}
-                    <th>Qty New</th>
-                {% endif %}
+                    <th>EXL</th>
+                    <th>TWU</th>
+                    <th>EGO</th>
+                    <th>TFD</th>
+                    <th>Hanover</th>
+                    <th>ATL</th>
+                    <th>SUM</th>
                     <th>Date</th>
                     {% if have_new %}
                     <th>Fun</th>
                     {% endif %}
                 </tr>
                 {% for val in stock_list %}
-                <tr class="tr-stock-blue{{ val.is_same }} tr-stock{{ val.is_new_type }}">
+                <tr>
                     <td>{{ val.sku }}</td>
-                    <td>{{ val.warehouse }}</td>
-                    <td>{{ val.qty_old }}</td>
-                {% if have_new %}
-                    <td>{{ val.qty_new }}</td>
-                {% endif %}
-                    <td>{{ val.created }}</td>
+                    <td class="tr-stock-blue{{ val.exl.is_same }}">{{ val.exl.qty }}</td>
+                    <td class="tr-stock-blue{{ val.twu.is_same }}">{{ val.twu.qty }}</td>
+                    <td class="tr-stock-blue{{ val.ego.is_same }}">{{ val.ego.qty }}</td>
+                    <td class="tr-stock-blue{{ val.tfd.is_same }}">{{ val.tfd.qty }}</td>
+                    <td class="tr-stock-blue{{ val.hanover.is_same }}">{{ val.hanover.qty }}</td>
+                    <td class="tr-stock-blue{{ val.atl.is_same }}">{{ val.atl.qty }}</td>
+                    <td>{{ val.sum }}</td>
+                    <td>{{ val.date }}</td>
                 {% if have_new %}
                     <td>
                         {% if val.is_new_type %}

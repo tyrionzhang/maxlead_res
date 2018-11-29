@@ -110,7 +110,7 @@ def stock_spiders(request):
         reviews = perform_command_que(tname, q, request)
         reviews.start()
         reviews.join()
-        msg_str = 'Spiders is runing!'
+        msg_str = u'爬虫已运行，大概需要10分钟。'
     else:
         time_now = datetime.now()
         time_re = datetime.now() + timedelta(days = 1)
