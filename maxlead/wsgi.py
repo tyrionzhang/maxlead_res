@@ -23,12 +23,12 @@ time_re1 = int(get_send_time('19:05'))
 t1 = threading.Timer(float('%.1f' % time_re1), download_listings)
 t1.start()
 
-time_re3 = int(get_send_time('23:00'))
-time_re4 = time_re3 - 3600
-t2 = threading.Timer(float('%.1f' % time_re4), perform_command)
-t2.start()
-t3 = threading.Timer(float('%.1f' % time_re3), perform_command1)
-t3.start()
+# time_re3 = int(get_send_time('23:00'))
+# time_re4 = time_re3 - 3600
+# t2 = threading.Timer(float('%.1f' % time_re4), perform_command)
+# t2.start()
+# t3 = threading.Timer(float('%.1f' % time_re3), perform_command1)
+# t3.start()
 
 time_re5 = int(get_send_time('05:00'))
 time_re6 = time_re5 + 1800
