@@ -515,6 +515,7 @@ def covered_stocks(user,data,path):
     create_obj.sku = data['sku'].replace('amp;','')
     create_obj.warehouse = data['warehouse']
     create_obj.qty = data['qty_new']
+    create_obj.qty1 = data['qty1']
     create_obj.is_new = 0
     create_obj.save()
     if not create_obj.id:

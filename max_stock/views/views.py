@@ -163,7 +163,8 @@ def task_save_stocks():
         re.update({
             'sku' : val.sku,
             'warehouse' : val.warehouse,
-            'qty' : val.qty,
+            'qty_new' : val.qty,
+            'qty1' : val.qty1,
             'date' : val.created
         })
         try:

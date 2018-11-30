@@ -31,11 +31,11 @@ t1.start()
 # t3.start()
 
 time_re5 = int(get_send_time('05:00'))
-time_re6 = time_re5 + 1800
+# time_re6 = time_re5 + 1800
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
 t4.start()
-t5 = threading.Timer(float('%.1f' % time_re6), task_save_stocks)
-t5.start()
+# t5 = threading.Timer(float('%.1f' % time_re6), task_save_stocks)
+# t5.start()
 
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "maxlead.settings")
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
