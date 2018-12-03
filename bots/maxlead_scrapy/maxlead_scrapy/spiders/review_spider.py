@@ -31,15 +31,11 @@ class ReviewSpider(scrapy.Spider):
                     self.start_urls.append(urls1)
         else:
             asin_li = asin.split(',')
-            self.res = list(
-                UserAsins.objects.filter(aid__in=asin_li, is_use=True).values('aid').annotate(count=Count('aid')))
-            if self.res:
-                for v in self.res:
-                    urls1 = urls % v['aid'].strip()
-                    self.start_urls.append(urls1)
+            for v in asin_li:
+                urls1 = urls % v.strip()
+                self.start_urls.append(urls1)
 
     def parse(self, response):
-        time.sleep(3 + random.randint(27, 57))
         str = response.url[-7:]
         res_asin = response.url.split('/')
         if str == 'maxlead':
@@ -52,11 +48,13 @@ class ReviewSpider(scrapy.Spider):
         if check:
             item = AsinReviewsItem()
             item['aid'] = asin_id
+            item['avg_score'] = 0
             item['avg_score'] = response.css('div.averageStarRatingNumerical span.arp-rating-out-of-text::text').extract_first()
             if not item['avg_score']:
                 item['avg_score'] = response.css('i.averageStarRating span::text').extract_first()
             if item['avg_score']:
                 item['avg_score'] = item['avg_score'][0: 3]
+            item['total_review'] = 0
             item['total_review'] = response.css('div.averageStarRatingIconAndCount span.totalReviewCount::text').extract_first()
 
             if not item['total_review']:

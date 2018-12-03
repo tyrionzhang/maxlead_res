@@ -69,7 +69,6 @@ class CatrankSpider(scrapy.Spider):
         return start_urls
 
     def parse(self, response):
-        time.sleep(3 + random.randint(27, 57))
         url = urllib.parse.unquote(response.url)
         res_asin = url.split('asin=')
         field_keywords = url.split('field-keywords=')

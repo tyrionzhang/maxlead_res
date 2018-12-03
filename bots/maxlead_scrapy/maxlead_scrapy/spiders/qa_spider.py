@@ -29,16 +29,12 @@ class QaSpider(scrapy.Spider):
                     self.start_urls.append(urls1)
         else:
             asin_li = asin.split(',')
-            self.res = list(
-                UserAsins.objects.filter(aid__in=asin_li, is_use=True).values('aid').annotate(count=Count('aid')))
-            if self.res:
-                for v in self.res:
-                    urls1 = urls % v['aid'].strip()
-                    self.start_urls.append(urls1)
+            for v in asin_li:
+                urls1 = urls % v.strip()
+                self.start_urls.append(urls1)
 
 
     def parse(self, response):
-        time.sleep(3 + random.randint(27, 57))
         res_asin = response.url.split('/')
         for qa_a in response.css('div.askInlineWidget div.askTeaserQuestions>.a-spacing-base'):
             qa_url = qa_a.css('.a-spacing-base .a-link-normal::attr("href")').extract_first()

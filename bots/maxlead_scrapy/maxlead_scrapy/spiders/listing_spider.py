@@ -35,7 +35,8 @@ class ListingSpider(scrapy.Spider):
             self.res =list( UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=True, is_done=0))
         else:
             asin_li = asin.split(',')
-            self.res = list(UserAsins.objects.filter(aid__in=asin_li,is_use=True).values('aid').annotate(count=Count('aid')))
+            for v in asin_li:
+                self.res.append({'aid':v})
         if self.res:
             for v in self.res:
                 if not re.search(r'-',v['aid']):
@@ -43,7 +44,6 @@ class ListingSpider(scrapy.Spider):
                     self.start_urls.append(urls1)
 
     def parse(self, response):
-        time.sleep(3 + random.randint(30, 57))
         res_asin = response.url.split('/')
         asin_id = res_asin[4]
         item = ListingsItem()
