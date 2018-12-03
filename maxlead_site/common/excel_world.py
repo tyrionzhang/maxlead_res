@@ -179,7 +179,7 @@ def read_excel_file(res,type=None):
             continue
     return {'code': 1, 'msg': msg}
 
-def read_csv_file(model,res,email=None, expired_time=None, customer_num=None):
+def read_csv_file(model,res,user, email=None, expired_time=None, customer_num=None):
     fname = res
     if not os.path.isfile(fname):
         return {'code':0,'msg':'File is not found!'}
@@ -209,7 +209,7 @@ def read_csv_file(model,res,email=None, expired_time=None, customer_num=None):
                     checks2 = model.objects.filter(email_address=email_address, expired_time__lt=datetime.datetime.now())
                     if checks2:
                         checks2.delete()
-                    querysetlist.append(model(email_address=email_address,expired_time=expired_time,email=email,customer_num=customer_num))
+                    querysetlist.append(model(email_address=email_address,user_id=user.user.id, expired_time=expired_time,email=email,customer_num=customer_num))
             except:
                 msg += '第%s行添加有误。<br>' % i
                 continue
