@@ -606,6 +606,7 @@ def sales_vol(request):
     stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     items = []
     d_list = []
+    sales_date = []
     for value in stocks:
         if not d_list or not value in d_list:
             d_list.append(value)
@@ -621,30 +622,50 @@ def sales_vol(request):
             'atl': 0,
             'sum': 0
         }
-        obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
+        contain_date = val['d'].strftime('%Y-%m-%d')
+        obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=contain_date)
         sum = 0
+        sakes_check = 0
         for v in obj:
             if v.warehouse == 'EXL':
                 re['exl'] = v.qty1
                 sum += int(v.qty1)
+                if v.qty1 < 0:
+                    sakes_check = 1
             elif v.warehouse == 'TWU':
                 re['twu'] = v.qty1
                 sum += int(v.qty1)
+                if v.qty1 < 0:
+                    sakes_check = 1
             elif v.warehouse == 'EGO':
                 re['ego'] = v.qty1
                 sum += int(v.qty1)
+                if v.qty1 < 0:
+                    sakes_check = 1
             elif v.warehouse == 'TFD':
                 re['tfd'] = v.qty1
                 sum += int(v.qty1)
+                if v.qty1 < 0:
+                    sakes_check = 1
             elif v.warehouse == 'Hanover':
                 re['hanover'] = v.qty1
                 sum += int(v.qty1)
+                if v.qty1 < 0:
+                    sakes_check = 1
             else:
                 re['atl'] = v.qty1
                 sum += int(v.qty1)
+                if v.qty1 < 0:
+                    sakes_check = 1
             date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
         re.update({'sum': sum, 'date': date_re})
         items.append(re)
+        if sakes_check and contain_date not in sales_date:
+            sales_date.append(contain_date)
+    sales_msg = False
+    if sales_date:
+        str_date = ','.join(sales_date)
+        sales_msg = u'%s有补货，请添加或上传补货信息。' % str_date
     data = {
         'stock_list': items,
         'user': user,
@@ -652,6 +673,117 @@ def sales_vol(request):
         'warehouse': warehouse,
         'start_date': start_date,
         'end_date': end_date,
+        'menu_id': user.menu_parent_id,
+        'sales_msg': sales_msg,
         'title': 'Sales Data',
     }
     return render(request, "Stocks/stocks/sales_vol.html", data)
+
+@csrf_exempt
+def stock_sales(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+    data = []
+    if request.method == 'POST':
+        myfile = request.FILES.get('myfile','')
+        file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
+        f = open(file_path, 'wb')
+        for chunk in myfile.chunks():
+            f.write(chunk)
+        f.close()
+        res = read_excel_data(1, file_path)
+        if res:
+            for val in res:
+                val['date'] = val['date'].strftime('%Y-%m-%d')
+                re1 = {
+                    'sku' : val['sku'],
+                    'exl' : 0,
+                    'twu' : 0,
+                    'ego' : 0,
+                    'tfd' : 0,
+                    'hanover' : 0,
+                    'atl' : 0,
+                    'date' : val['date'],
+                    'error' : ''
+                }
+                re = WarehouseStocks.objects.filter(sku=val['sku'],created__contains=val['date'], qty1__lt=0)
+                if re:
+                    for v in re:
+                        qty1_str = u'%s补货%s'
+                        if v.warehouse == 'EXL':
+                            re1.update({'exl' : qty1_str % (v.qty1, val['exl'])})
+                        elif v.warehouse == 'TWU':
+                            re1.update({'twu' : qty1_str % (v.qty1, val['twu'])})
+                        elif v.warehouse == 'EGO':
+                            re1.update({'ego' : qty1_str % (v.qty1, val['ego'])})
+                        elif v.warehouse == 'TFD':
+                            re1.update({'tfd' : qty1_str % (v.qty1, val['tfd'])})
+                        elif v.warehouse == 'Hanover':
+                            re1.update({'hanover' : qty1_str % (v.qty1, val['hanover'])})
+                        else:
+                            re1.update({'atl': qty1_str % (v.qty1, val['atl'])})
+                else:
+                    re1.update({'error' : u'没有补货。'})
+                data.append(re1)
+            os.remove(file_path)
+        data = {
+            'list':data,
+            'user': user,
+            'title': 'Stock Sales',
+        }
+    return render(request, "Stocks/stocks/stock_sales.html", data)
+
+@csrf_exempt
+def save_sales(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        data = request.POST.get('data','')
+        msg = '操作成功！\n'
+        if data:
+            data = eval(data)
+            for i,val in enumerate(data,1):
+                try:
+                    if not val['exl'] == '0':
+                        sales = val['exl'].split('补货')
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='EXL', created__contains=val['date'], qty1__lt=0)
+                        if re:
+                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                    if not val['twu'] == '0':
+                        sales = val['twu'].split('补货')
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='TWU',
+                                                            created__contains=val['date'], qty1__lt=0)
+                        if re:
+                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                    if not val['ego'] == '0':
+                        sales = val['ego'].split('补货')
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='EGO',
+                                                            created__contains=val['date'], qty1__lt=0)
+                        if re:
+                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                    if not val['tfd'] == '0':
+                        sales = val['tfd'].split('补货')
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='TFD',
+                                                            created__contains=val['date'], qty1__lt=0)
+                        if re:
+                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                    if not val['hanover'] == '0':
+                        sales = val['hanover'].split('补货')
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='Hanover',
+                                                            created__contains=val['date'], qty1__lt=0)
+                        if re:
+                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                    if not val['atl'] == '0':
+                        sales = val['atl'].split('补货')
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL-1',
+                                                            created__contains=val['date'], qty1__lt=0)
+                        if re:
+                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                except:
+                    msg += "第%s行修改有误！\n" % i
+                    continue
+
+        return HttpResponse(json.dumps({'code': 1, 'msg': msg}), content_type='application/json')
+

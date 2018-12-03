@@ -366,24 +366,38 @@ def read_excel_data(model,res):
         data.sheet_names()  # 获取xls文件中所有sheet的名称
         table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
         nrows = table.nrows
-        fields = model._meta.fields
+        if not model == 1:
+            fields = model._meta.fields
         for i in range(nrows):
             re_v = {}
             if i + 1 < nrows:
-                for n,val in enumerate(fields,0):
-                    if not n == 0:
-                        re_val = table.cell_value(i + 1, n-1,)
-                        if val.get_internal_type() == 'CharField':
-                            re_val = re_val.strip()
-                        if val.get_internal_type() == 'DateTimeField':
-                            re_val = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        if val.get_internal_type() == 'DateField':
-                            re_val = datetime.datetime.now().strftime("%Y-%m-%d")
-                        if val.get_internal_type() == 'IntegerField':
-                            if not re_val:
-                                re_val = val.default
-                            else:
-                                re_val = int(re_val)
-                        re_v.update({val.name:re_val})
-                re_data.append(re_v)
+                if not model == 1:
+                    for n,val in enumerate(fields,0):
+                        if not n == 0:
+                            re_val = table.cell_value(i + 1, n-1,)
+                            if val.get_internal_type() == 'CharField':
+                                re_val = re_val.strip()
+                            if val.get_internal_type() == 'DateTimeField':
+                                re_val = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            if val.get_internal_type() == 'DateField':
+                                re_val = datetime.datetime.now().strftime("%Y-%m-%d")
+                            if val.get_internal_type() == 'IntegerField':
+                                if not re_val:
+                                    re_val = val.default
+                                else:
+                                    re_val = int(re_val)
+                            re_v.update({val.name:re_val})
+                    re_data.append(re_v)
+                else:
+                    re_v.update({
+                        'sku' : table.cell_value(i + 1, 0,),
+                        'exl' : int(table.cell_value(i + 1, 1,)),
+                        'twu' : int(table.cell_value(i + 1, 2,)),
+                        'ego' : int(table.cell_value(i + 1, 3,)),
+                        'tfd' : int(table.cell_value(i + 1, 4,)),
+                        'hanover' : int(table.cell_value(i + 1, 5,)),
+                        'atl' : int(table.cell_value(i + 1, 6,)),
+                        'date' : xlrd.xldate.xldate_as_datetime(table.cell_value(i + 1, 7,), 0)
+                    })
+                    re_data.append(re_v)
     return re_data
