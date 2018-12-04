@@ -111,6 +111,7 @@ urlpatterns = [
     url('^admin/max_stock/sales_vol/', stocks.sales_vol),
     url('^admin/max_stock/stock_sales/', stocks.stock_sales),
     url('^admin/max_stock/save_sales/', stocks.save_sales),
+    url('^admin/max_stock/ajax_save_sales/', stocks.ajax_save_sales),
     url('^admin/max_stock/checked_edit/', stocks.checked_edit),
     url('^admin/max_stock/checked_batch_edit/', stocks.checked_batch_edit),
     url('^admin/max_stock/export_stocks/', stocks.export_stocks),

@@ -12,6 +12,14 @@ from max_stock.views import views
 from django.db.models import Count
 from django.core.mail import send_mail
 
+warehouse= {
+    'exl' : 'EXL',
+    'twu' : 'TWU',
+    'ego' : 'EGO',
+    'tfd' : 'TFD',
+    'hanover' : 'Hanover',
+    'atl' : 'ATL-1'
+}
 @csrf_exempt
 def index(request):
     user = App.get_user_info(request)
@@ -245,7 +253,6 @@ def export_stocks(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords', '').replace('amp;','')
     warehouse = request.GET.get('warehouse', '')
-    sel_new = request.GET.get('sel_new', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
     if not start_date:
@@ -263,8 +270,6 @@ def export_stocks(request):
         warehouse = 'EXL'
     if not warehouse == 'all':
         stocks = stocks.filter(warehouse=warehouse)
-    if sel_new:
-        stocks = stocks.filter(is_new=sel_new)
     select_data = {"d": """date_trunc('day', created)"""}
     stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     data = []
@@ -786,4 +791,21 @@ def save_sales(request):
                     continue
 
         return HttpResponse(json.dumps({'code': 1, 'msg': msg}), content_type='application/json')
+
+@csrf_exempt
+def ajax_save_sales(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+
+    if request.method == 'POST':
+        data = request.POST.get('data','')
+        if data:
+            for val in eval(data):
+                obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=warehouse[val['warehouse']], created__contains=val['date'][:10],
+                                                     qty1__lt=0)
+                if obj:
+                    obj.update(qty1=obj[0].qty1 + int(val['num']))
+    return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfuly!'}), content_type='application/json')
+
 
