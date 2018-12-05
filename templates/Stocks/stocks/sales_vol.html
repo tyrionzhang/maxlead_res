@@ -98,7 +98,7 @@
                     <th>Fun</th>
                 </tr>
                 {% for val in stock_list %}
-                <tr>
+                <tr class="tr-stock-blue{{ val.is_sales }}">
                     <td>{{ val.sku }}</td>
                     <td class="tr-stock-blue sales_num">
                         <span>{{ val.exl }}</span>
@@ -227,6 +227,8 @@
                        }
                    }
                    el_tr.children('td').eq(7).html(qty1_sum+sum);
+                   el_tr.removeClass('tr-stock-blue1');
+                   el_tr.removeAttr("style");
                }
                if(re.code==0){
                    alert(re.msg);

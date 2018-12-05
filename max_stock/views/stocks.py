@@ -595,7 +595,7 @@ def sales_vol(request):
     if not start_date:
         start_date = datetime.now() - timedelta(days=3)
         start_date = start_date.strftime('%Y-%m-%d')
-    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku', '-qty')
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('qty1', 'sku' )
     if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         stocks = stocks.filter(sku__in=skus)
@@ -664,6 +664,8 @@ def sales_vol(request):
                     sakes_check = 1
             date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
         re.update({'sum': sum, 'date': date_re})
+        if sakes_check:
+            re.update({'is_sales': 1})
         items.append(re)
         if sakes_check and contain_date not in sales_date:
             sales_date.append(contain_date)
