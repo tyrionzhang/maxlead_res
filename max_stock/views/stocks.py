@@ -117,6 +117,7 @@ def index(request):
         'have_new': have_new,
         'start_date': start_date,
         'end_date': end_date,
+        'menu_id': user.menu_parent_id,
         'title': 'Inventory',
     }
     return render(request,"Stocks/stocks/index.html",data)
@@ -140,6 +141,11 @@ def stock_checked(request):
             for val in res:
                 re1 = {}
                 re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'])
+                if re:
+                    try:
+                        re = re.filter(created__contains=val['created'][:10])
+                    except:
+                        re = re.filter(created__contains=datetime.now().strftime("%Y-%m-%d"))
                 is_same = ''
                 if re:
                     if not re[0].qty == val['qty']:
