@@ -173,3 +173,11 @@ def task_save_stocks():
             continue
     t.start()
     pass
+
+
+def help_page(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+
+    return render(request, "Stocks/users_sku/help_page.html")

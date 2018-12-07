@@ -1,0 +1,232 @@
+{% extends "Stocks/layouts/login_base.html" %}
+{% block container %}
+<style>
+    .con-body-help{
+        margin-right: auto;
+        margin-left: auto;
+        min-height: 600px;
+        max-width: 960px;
+        padding: 20px;
+        background: #dff1ff;
+    }
+.title {
+    width: 100px;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+#tabs {
+    overflow: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+#tabs li {
+    float: left;
+    margin: 0;
+}
+li a {
+    position: relative;
+    background: #ddd;
+    padding: 10px 50px;
+    float: left;
+    text-decoration: none;
+    color: #444;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .4);
+}
+
+ .current a{
+    outline: 0;
+    background: #fff;
+     z-index: 4;
+}
+.hoverItem a{
+    background: #AAC8B9;
+}
+#content {
+    background: #fff;
+    padding: 10px 50px;
+    height: 63%;
+    position: relative;
+    border-radius: 0 5px 5px 5px;
+    box-shadow: 0 -2px 3px -2px rgba(0, 0, 0, .5);
+    opacity: 20;
+}
+#content p {
+    font-size: 17px;
+    color: #0f74a8;
+    line-height: 20px;
+}
+#content a {
+    text-decoration-line: none;
+}
+.item{
+    display: none;
+}
+
+.show{
+    display: block;
+}
+nav a {
+  display: block;
+}
+summary {
+  cursor: pointer;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+.des-content span{
+    font-size: 15px;
+    margin-left:25px;
+    color: #2f4036;
+}
+.des-content em {
+    color:#0076cb;
+}
+</style>
+<div class="con-body-help tab-contain">
+    <div class="title"><h3>使用帮助</h3></div>
+    <hr>
+    <ul id="tabs">
+      <li class="current"><a href="#" title="Warehouse">库存管理(Warehouse)</a></li>
+      <li><a href="#" title="AutoEmail">售后邮件(Auto Email)</a></li>
+      <li><a href="#" title="Temps">导入文件模板</a></li>
+    </ul>
+    <!-- 对应显示内容 -->
+    <div id="content">
+      <div id="Warehouse" class="item show">
+          <p>一，左上角欢迎词后跟用户名，点击用户名可修改用户名/密码/邮箱等信息</p>
+          <p>二，右上角连接Run Spiders：拉取库存信息</p>
+          <p>
+              三，<b>菜单Review Data</b><a href="http://staffx.pro/admin/max_stock/index/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt="">
+                </a></p>
+                <div class="des-content">
+                    <span>->查看库存信息，可通过关键字/仓库名/时间筛选，低库存会标红显示</span>
+                    <br><span>->按钮<em>Inventory Import</em>，手动导入库存数据，确认无误后，点击<em>All Aave</em>或<em>Covered</em>保存数据</span>
+                    <br><span>->按钮<em>Import</em>，导入减库存信息，确认无误后，点击<em>All Edit</em>/<em>Edit</em>保存(保存数据为原数字减导入数字)</span>
+                    <br><span>->按钮<em>Export</em>，导出库存信息</span>
+                </div>
+          <p>四，<b>菜单Threshold</b><a href="http://staffx.pro/admin/max_stock/threshold/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->库存预警数据列表，可通过关键字/仓库名筛选，库存低于预警值会发送邮件通知（发送到用户邮箱）</span>
+              <br><span>->按钮<em>Add</em>，单条添加预警数据</span>
+              <br><span>->按钮<em>Import</em>，批量导入预警信息</span>
+              <br><span>->列表里的<em>Edit</em>和<em>Del</em>分别作单条修改和单条删除用</span>
+          </div>
+          <p>五，<b>菜单UserSku</b><a href="http://staffx.pro/admin/max_stock/users_sku/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->用户sku列表，添加用户自己需要管理库存的sku，可关键字筛选</span>
+              <br><span>->按钮<em>Add</em>，单条添加</span>
+              <br><span>->列表里的<em>DEL</em>为单条删除按钮</span>
+          </div>
+          <p>六，<b>菜单Sales Data</b><a href="http://staffx.pro/admin/max_stock/sales_vol/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->销量查询，可通过关键字/仓库名/时间来筛选，需要补货的会红底色显示</span>
+              <br><span>->按钮<em>Import</em>，批量导入补货信息</span>
+              <br><span>->列表里的<em>Edit</em>可单条修改补货信息，单击需要修改的仓库下的数字，在输入框填入数字，保存信息为原数字+输入的数字（原数字为负值才会修改）</span>
+          </div>
+          <p>七，<b>菜单UserAdmin</b><a href="http://staffx.pro/admin/max_stock/user_list/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->用户管理</span>
+              <br><span>->按钮<em>Add</em>，单条添加</span>
+              <br><span>->列表里的<em>Edit</em>和<em>Del</em>分别作单条修改和单条删除用</span>
+          </div>
+          <p>八，<b>菜单Logs</b><a href="http://staffx.pro/admin/max_stock/logs/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->日志管理</span>
+          </div>
+      </div>
+      <div id="AutoEmail" class="item">
+        <p>一，左上角欢迎词后跟用户名，点击用户名可修改用户名/密码/邮箱等信息</p>
+          <p>二，<b>菜单Email Temp</b><a href="http://staffx.pro/admin/send_email/email_temps/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->邮件模板列表，模板中的用户昵称和订单号用%s代替</span>
+            <br><span>->按钮<em>Add</em>，单条添加</span>
+            <br><span>->按钮<em>Import</em>，批量导入</span>
+            <br><span>->按钮<em>Export</em>，数据导出</span>
+            <br><span>-><em>Edit</em>和<em>Del</em>分别作为批量修改和删除按钮</span>
+            <br><span>->列表里的<em>Edit</em>和<em>Del</em>分别作为单条修改和删除按钮</span>
+          </div>
+          <p>三，<b>菜单Order Items</b><a href="http://staffx.pro/admin/send_email/order_list/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->订单列表，其中筛选项Is Email为是/否发送邮件，筛选项Presale为是/否为预售订单</span>
+            <br><span>->按钮<em>Send Email</em>，选择需要发送邮件的订单，然后再单击Send Email即可。未发送成功的会返回到列表</span>
+            <br><span>->按钮<em>Del</em>，批量删除</span>
+            <br><span>->按钮<em>Import</em>，批量导入</span>
+          </div>
+          <p>四，<b>菜单Check Orders</b><a href="http://staffx.pro/admin/send_email/no_send_list/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->不需要发送的订单和预售sku列表</span>
+            <br><span>->按钮<em>add</em>，单条添加</span>
+            <br><span>->按钮<em>Del</em>，批量删除</span>
+            <br><span>->按钮<em>Import</em>，批量导入</span>
+            <br><span>->列表里的<em>Del</em>，单条删除</span>
+          </div>
+          <p>五，<b>菜单Contact List</b><a href="http://staffx.pro/admin/send_email/contact_list/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span>->不需要发送邮件的邮箱地址列表</span>
+            <br><span>->按钮<em>Del</em>，批量删除</span>
+            <br><span>->按钮<em>Import</em>，批量导入</span>
+          </div>
+      </div>
+      <div id="Temps" class="item">
+       <p>一，<b>库存管理导入模板</b><a href="http://staffx.pro/admin/max_stock/index/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span><a href="/static/max_stock/my_files/inventory.xlsx">新建库存和减库存模板</a></span>
+            <br><span><a href="/static/max_stock/my_files/stocks_sales.xlsx">补货模板</a></span>
+            <br><span><a href="/static/max_stock/my_files/threshold.xlsx">库存阈值模板</a></span>
+            <br><span><a href="/static/max_stock/my_files/user_sku.xlsx">用户sku模板</a></span>
+          </div>
+      <p>二，<b>自动邮件导入模板</b><a href="http://staffx.pro/admin/send_email/order_list/" target="_blank">
+                    <img width="17" src="/static/max_stock/img/_blank-a.png" alt=""></a>
+          </p>
+          <div class="des-content">
+            <span><a href="/static/max_stock/my_files/email_tmp.xlsx">邮件模板</a></span>
+          </div>
+    </div>
+</div>
+<script>
+$(function(){
+     $('#tabs a').click(function(e) {
+          e.preventDefault();
+          $('#tabs li').removeClass("current").removeClass("hoverItem");
+          $(this).parent().addClass("current");
+          $("#content div").removeClass("show");
+          $('#' + $(this).attr('title')).addClass('show');
+      });
+
+     $('#tabs a').hover(function(){
+        if(!$(this).parent().hasClass("current")){
+          $(this).parent().addClass("hoverItem");
+        }
+     },function(){
+        $(this).parent().removeClass("hoverItem");
+     });
+  });
+</script>
+{% endblock %}
