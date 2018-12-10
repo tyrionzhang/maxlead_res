@@ -16,26 +16,26 @@ class WatcherSpider(scrapy.Spider):
     res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
 
     def __init__(self, asin=None, *args, **kwargs):
-        url1 = "https://www.amazon.com/gp/offer-listing/%s/ref=dp_olp_all_mbc?ie=UTF8&condition=new&th=1&psc=1"
+        url1 = "https://www.amazon.com/gp/offer-listing/%s/ref=dp_olp_all_mbc?ie=UTF8&condition=new&th=1&psc=1&qid=%s"
         super(WatcherSpider, self).__init__(*args, **kwargs)
         if asin == '88':
             if self.res:
                 for re in self.res:
                     asins = UserAsins.objects.values('aid','review_watcher','listing_watcher','sku','ownership').filter(aid=re['aid'])[0]
-                    urls = url1 % asins['aid'].strip()
+                    urls = url1 % (asins['aid'].strip(), int(time.time()))
                     self.start_urls.append(urls)
         elif asin == '77':
             self.res =list( UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=True, is_done=0))
             if self.res:
                 for v in self.res:
-                    urls1 = url1 % v['aid'].strip()
+                    urls1 = url1 % (v['aid'].strip(), int(time.time()))
                     self.start_urls.append(urls1)
         else:
             asin_li = asin.split(',')
             self.res = list(UserAsins.objects.filter(aid__in=asin_li, is_use=True).values('aid').annotate(count=Count('aid')))
             if self.res:
                 for v in self.res:
-                    urls1 = url1 % v['aid'].strip()
+                    urls1 = url1 % (v['aid'].strip(), int(time.time()))
                     self.start_urls.append(urls1)
 
     def parse(self, response):

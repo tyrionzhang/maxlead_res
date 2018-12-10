@@ -15,24 +15,24 @@ class ReviewSpider(scrapy.Spider):
     asin_id = ''
 
     def __init__(self, asin=None, *args, **kwargs):
-        urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&pageSize=50&th=1&psc=1"
+        urls = "https://www.amazon.com/product-reviews/%s/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&pageSize=50&th=1&psc=1&qid=%s"
         super(ReviewSpider, self).__init__(*args, **kwargs)
         if asin == '88':
             res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
             if res:
                 for re in list(res):
-                    asin = urls % re['aid'].strip()
+                    asin = urls % (re['aid'].strip(), int(time.time()))
                     self.start_urls.append(asin)
         elif asin == '77':
             self.res =list( UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=True, is_done=0))
             if self.res:
                 for v in self.res:
-                    urls1 = urls % v['aid'].strip()
+                    urls1 = urls % (v['aid'].strip(), int(time.time()))
                     self.start_urls.append(urls1)
         else:
             asin_li = asin.split(',')
             for v in asin_li:
-                urls1 = urls % v.strip()
+                urls1 = urls % (v.strip(), int(time.time()))
                 self.start_urls.append(urls1)
 
     def parse(self, response):

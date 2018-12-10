@@ -53,13 +53,16 @@ class UserAgent(UserAgentMiddleware):
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
             "Accept-Encoding": "gzip, deflate, br",
-            "Referer": "https://www.baidu.com",
+            "Referer": "https://www.google.com/",
             "Connection": "keep - alive",
             "Access-Control-Allow-Origin": "*"
         }
         ua = random.choice(self.user_agent_list)
         if ua:
+            res_asin = request.url.split('qid=')
+            asin_id = res_asin[1][:10]
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
+            request.meta.setdefault('keywords', asin_id)
             request.headers.setdefault('User-Agent', ua)
             request.headers.setdefault('Accept', headers['Accept'])
             request.headers.setdefault('Referer', headers['Referer'])
