@@ -315,7 +315,7 @@ def send_email(request):
                 time_re = _get_send_time(tmps[0].send_time, m_time=m_time)
                 tmp_res = [title, msg, user, val['email'], val['order_id'], val['sku'], val['buyer'], orders[0].payments_date,
                            orders[0].is_presale, orders[0].order_status, user.user_id, request.path]
-                t = threading.Timer(1.0, send_email_as_tmp, tmp_res)
+                t = threading.Timer(float('%.1f' % time_re), send_email_as_tmp, tmp_res)
                 t.start()
                 email_order_obj = OldOrderItems()
                 email_order_obj.id
@@ -428,7 +428,7 @@ def update_emails(request):
             f.write(chunk)
         f.close()
         expired_time = datetime.now() + timedelta(days = int(expired_time))
-        res = read_csv_file(EmailContacts, file_path, user, email=email, expired_time=expired_time, customer_num=int(customer_num))
+        res = read_csv_file(EmailContacts, user, file_path, email=email, expired_time=expired_time, customer_num=int(customer_num))
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 
