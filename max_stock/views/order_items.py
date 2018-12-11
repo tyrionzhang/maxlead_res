@@ -122,31 +122,31 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
     server.quit()
 # except Exception as e:
 #     print(e)
-    email_order_obj = OrderItems()
-    email_order_obj.id
-    email_order_obj.user_id = user_id
-    email_order_obj.order_id = order_id
-    email_order_obj.sku = sku
-    email_order_obj.customer_num = from_email.customer_num
-    email_order_obj.payments_date = payments_date
-    email_order_obj.is_presale = is_presale
-    email_order_obj.customer = buyer
-    email_order_obj.email = to_addr
-    email_order_obj.is_email = 0
-    email_order_obj.send_date = datetime.now()
-    email_order_obj.order_status = order_status
-    email_order_obj.save()
-    log_obj = StockLogs()
-    log_obj.id
-    log_obj.user_id = user_id
-    log_obj.fun = request_path
-    log_obj.description = 'Order_id:%s,Error:%s' % (order_id, e)
-    log_obj.save()
-
-    if email_order_obj.id:
-        old_obj = OldOrderItems.objects.filter(order_id=order_id)
-        if old_obj:
-            old_obj.delete()
+#     email_order_obj = OrderItems()
+#     email_order_obj.id
+#     email_order_obj.user_id = user_id
+#     email_order_obj.order_id = order_id
+#     email_order_obj.sku = sku
+#     email_order_obj.customer_num = from_email.customer_num
+#     email_order_obj.payments_date = payments_date
+#     email_order_obj.is_presale = is_presale
+#     email_order_obj.customer = buyer
+#     email_order_obj.email = to_addr
+#     email_order_obj.is_email = 0
+#     email_order_obj.send_date = datetime.now()
+#     email_order_obj.order_status = order_status
+#     email_order_obj.save()
+#     log_obj = StockLogs()
+#     log_obj.id
+#     log_obj.user_id = user_id
+#     log_obj.fun = request_path
+#     log_obj.description = 'Order_id:%s,Error:%s' % (order_id, e)
+#     log_obj.save()
+#
+#     if email_order_obj.id:
+    old_obj = OldOrderItems.objects.filter(order_id=order_id)
+    if old_obj:
+        old_obj.delete()
     return True
 
 @csrf_exempt
