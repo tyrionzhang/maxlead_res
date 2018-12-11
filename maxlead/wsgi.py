@@ -23,7 +23,7 @@ print(p)
 # t1 = threading.Timer(float('%.1f' % time_re1), download_listings)
 # t1.start()
 
-time_re3 = int(get_send_time('21:00'))
+time_re3 = int(get_send_time('06:40'))
 time_re4 = time_re3 - 3600
 t2 = threading.Timer(float('%.1f' % time_re4), perform_command)
 t2.start()
