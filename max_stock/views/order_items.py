@@ -428,7 +428,7 @@ def update_emails(request):
             f.write(chunk)
         f.close()
         expired_time = datetime.now() + timedelta(days = int(expired_time))
-        res = read_csv_file(EmailContacts, user, file_path, email=email, expired_time=expired_time, customer_num=int(customer_num))
+        res = read_csv_file(EmailContacts, file_path, user, email=email, expired_time=expired_time, customer_num=int(customer_num))
         os.remove(file_path)
         return HttpResponse(json.dumps(res), content_type='application/json')
 
