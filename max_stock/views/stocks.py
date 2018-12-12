@@ -141,11 +141,13 @@ def stock_checked(request):
             for val in res:
                 re1 = {}
                 re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'])
+                date_str = datetime.now().strftime("%Y-%m-%d")
                 if re:
                     try:
                         re = re.filter(created__contains=val['created'][:10])
+                        date_str = val['created'][:10]
                     except:
-                        re = re.filter(created__contains=datetime.now().strftime("%Y-%m-%d"))
+                        re = re.filter(created__contains=date_str)
                 is_same = ''
                 if re:
                     if not re[0].qty == val['qty']:
@@ -163,6 +165,7 @@ def stock_checked(request):
                     'qty_old':qty_old,
                     'qty_new':val['qty'],
                     'is_same':is_same,
+                    'date':date_str,
                 })
                 if type == 'new':
                     re1.update({'type':type})
@@ -184,6 +187,7 @@ def checked_edit(request):
     if request.method == 'POST':
         id = int(request.POST.get('id',''))
         qty = request.POST.get('qty','')
+        date_str = request.POST.get('date_str','')
         sku = request.POST.get('sku','').replace('amp;','')
         warehouse = request.POST.get('warehouse','')
         type = request.POST.get('type','')
@@ -195,11 +199,15 @@ def checked_edit(request):
             if id:
                 i = res.update(qty=qty)
             else:
+                check = WarehouseStocks.objects.filter(sku=sku, warehouse=warehouse, created__contains=datetime.now().strftime('%Y-%m-%d'))
+                if check:
+                    check.delete()
                 obj = WarehouseStocks()
                 obj.id
                 obj.sku = sku
                 obj.warehouse = warehouse
                 obj.qty = qty
+                obj.created = date_str
                 obj.is_new = 0
                 obj.save()
                 i = obj.id

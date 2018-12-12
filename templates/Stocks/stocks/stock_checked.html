@@ -44,6 +44,7 @@
                     <th>Warehouse</th>
                     <th>Qty-old</th>
                     <th>Qty-new</th>
+                    <th>Date</th>
                     <th>Fun</th>
                 </tr>
                 {% for val in data %}
@@ -52,6 +53,7 @@
                     <td>{{ val.warehouse }}</td>
                     <td>{{ val.qty_old }}</td>
                     <td>{{ val.qty_new }}</td>
+                    <td>{{ val.date }}</td>
                     <td>
                         <a href="javascript:;" class="fun-btn btn-edit stock-check-edit" data-id="{{ val.id }}">
                             {% if type == 'new' %}
@@ -78,7 +80,8 @@
                 var elem = $(this);
                 var elem_tr = $(this).parents('tr');
                 var id = elem.data('id');
-                var qty = elem.parents('td').prev().html();
+                var qty = elem.parents('td').prev().prev().html();
+                var date_str = elem.parents('td').prev().html();
                 var sku = elem.parents('tr').children('td:eq(0)').html();
                 var warehouse = elem.parents('tr').children('td:eq(1)').html();
                 var data = {
@@ -86,6 +89,7 @@
                     'sku':sku,
                     'warehouse':warehouse,
                     'qty':qty,
+                    'date_str':date_str,
                     'type':'{{ type }}'
                 };
                 $.post('/admin/max_stock/checked_edit/',data,function (re) {
