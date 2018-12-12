@@ -18,7 +18,7 @@ class ListingSpider(scrapy.Spider):
 
     def __init__(self, asin=None, user=None, *args, **kwargs):
         sr = random.randint(1,16)
-        url = "https://www.amazon.com/dp/%s/ref=sr_1_%s?ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1"
+        url = "https://www.amazon.com/dp/%s/ref=sr_1_%s?ie=UTF8&qid=%d&sr=1-%s&keywords=%s&th=1&psc=1&aid=%s"
         super(ListingSpider, self).__init__(*args, **kwargs)
         if asin == '99':
             self.res = list(UserAsins.objects.filter(is_use=True, is_done=0).values('aid').annotate(count=Count('aid')))
@@ -38,9 +38,11 @@ class ListingSpider(scrapy.Spider):
             for v in asin_li:
                 self.res.append({'aid':v})
         if self.res:
+            time_str = int(time.time())
             for v in self.res:
+                time_str += 1
                 if not re.search(r'-',v['aid']):
-                    urls1 = url % (v['aid'].strip(), sr, int(time.time()), sr, v['aid'].strip())
+                    urls1 = url % (v['aid'].strip(), sr, time_str, sr, v['aid'].strip(), v['aid'].strip())
                     self.start_urls.append(urls1)
 
     def parse(self, response):

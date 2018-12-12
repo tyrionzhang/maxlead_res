@@ -13,24 +13,28 @@ class QaSpider(scrapy.Spider):
     start_urls = []
 
     def __init__(self, asin=None, *args, **kwargs):
-        urls = "https://www.amazon.com/ask/questions/asin/%s/?th=1&psc=1&qid=%s"
+        urls = "https://www.amazon.com/ask/questions/asin/%s/?th=1&psc=1&qid=%s&aid=%s"
         super(QaSpider, self).__init__(*args, **kwargs)
+        time_str = int(time.time())
         if asin == '88':
             res = list(UserAsins.objects.filter(is_use=True).values('aid').annotate(count=Count('aid')))
             if res:
                 for re in list(res):
-                    asin = urls % (re['aid'].strip(), int(time.time()))
+                    time_str += 1
+                    asin = urls % (re['aid'].strip(), time_str, re['aid'].strip())
                     self.start_urls.append(asin)
         elif asin == '77':
             self.res =list( UserAsins.objects.values('aid').annotate(count=Count('aid')).filter(is_use=True, is_done=0))
             if self.res:
                 for v in self.res:
-                    urls1 = urls % (v['aid'].strip(), int(time.time()))
+                    time_str += 1
+                    urls1 = urls % (v['aid'].strip(), time_str, v['aid'].strip())
                     self.start_urls.append(urls1)
         else:
             asin_li = asin.split(',')
             for v in asin_li:
-                urls1 = urls % (v.strip() ,int(time.time()))
+                time_str += 1
+                urls1 = urls % (v.strip() ,time_str, v.strip())
                 self.start_urls.append(urls1)
 
 

@@ -37,34 +37,38 @@ class CatrankSpider(scrapy.Spider):
 
     def _get_urls(self, asins):
         start_urls = []
-        url = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias=aps&field-keywords=%s&asin=%s&qid=%s"
-        url1 = 'https://www.amazon.com/gp/search/ref=sr_hi_1?fst=p90x:1&rh=n:%s,k:%s&keywords=%s&ie=UTF8&qid=%s&asin=%s'
+        url = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias=aps&field-keywords=%s&asin=%s&qid=%s&aid=%s"
+        url1 = 'https://www.amazon.com/gp/search/ref=sr_hi_1?fst=p90x:1&rh=n:%s,k:%s&keywords=%s&ie=UTF8&qid=%s&asin=%said=%s'
         for re in list(asins):
             asins = UserAsins.objects.values('id', 'aid', 'cat1', 'cat2', 'cat3', 'keywords1', 'keywords2', 'keywords3'). \
                 filter(aid=re['aid'])[0]
+            time_str = int(time.time())
             if asins['keywords1']:
                 keywords1 = asins['keywords1'].split(',')
                 for val in keywords1:
-                    url_k = url % (val, asins['aid'].strip(), int(time.time()))
+                    time_str += 1
+                    url_k = url % (val, asins['aid'].strip(), time_str, asins['aid'].strip())
                     start_urls.append(url_k)
                     if asins['cat1']:
-                        url_c = url1 % (asins['cat1'], val, val, int(time.time()), asins['aid'].strip())
+                        url_c = url1 % (asins['cat1'], val, val, time_str, asins['aid'].strip(), asins['aid'].strip())
                         start_urls.append(url_c)
             if asins['keywords2']:
                 keywords2 = asins['keywords2'].split(',')
                 for val in keywords2:
-                    url_k = url % (val, asins['aid'].strip(), int(time.time()))
+                    time_str += 1
+                    url_k = url % (val, asins['aid'].strip(), time_str, asins['aid'].strip())
                     start_urls.append(url_k)
                     if asins['cat2']:
-                        url_c = url1 % (asins['cat2'], val, val, int(time.time()), asins['aid'].strip())
+                        url_c = url1 % (asins['cat2'], val, val, time_str, asins['aid'].strip(), asins['aid'].strip())
                         start_urls.append(url_c)
             if asins['keywords3']:
                 keywords3 = asins['keywords3'].split(',')
                 for val in keywords3:
-                    url_k = url % (val, asins['aid'].strip(), int(time.time()))
+                    time_str += 1
+                    url_k = url % (val, asins['aid'].strip(), time_str, asins['aid'].strip())
                     start_urls.append(url_k)
                     if asins['cat3']:
-                        url_c = url1 % (asins['cat3'], val, val, int(time.time()), asins['aid'].strip())
+                        url_c = url1 % (asins['cat3'], val, val, time_str, asins['aid'].strip(), asins['aid'].strip())
                         start_urls.append(url_c)
         return start_urls
 

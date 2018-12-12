@@ -59,10 +59,13 @@ class UserAgent(UserAgentMiddleware):
         }
         ua = random.choice(self.user_agent_list)
         if ua:
-            res_asin = request.url.split('qid=')
-            asin_id = res_asin[1][:10]
+            res_asin = request.url.split('aid=')
+            try:
+                asin_id = res_asin[1][:10]
+                request.meta.setdefault('keywords', asin_id)
+            except:
+                pass
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
-            request.meta.setdefault('keywords', asin_id)
             request.headers.setdefault('User-Agent', ua)
             request.headers.setdefault('Accept', headers['Accept'])
             request.headers.setdefault('Referer', headers['Referer'])
