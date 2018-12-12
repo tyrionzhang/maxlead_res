@@ -53,7 +53,8 @@ def index(request):
     have_new = 0
     d_list = []
     for value in stocks:
-        if not d_list or not value in d_list:
+        del value['count']
+        if not d_list or value not in d_list:
             d_list.append(value)
 
     for key,val in enumerate(d_list,0):
