@@ -290,6 +290,7 @@ def export_stocks(request):
     data = []
     d_list = []
     for value in stocks:
+        del value['count']
         if not d_list or not value in d_list:
             d_list.append(value)
 
