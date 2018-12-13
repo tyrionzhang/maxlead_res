@@ -36,7 +36,8 @@ class ListingSpider(scrapy.Spider):
         else:
             asin_li = asin.split(',')
             for v in asin_li:
-                self.res.append({'aid':v})
+                if v:
+                    self.res.append({'aid':v})
         if self.res:
             time_str = int(time.time())
             for v in self.res:

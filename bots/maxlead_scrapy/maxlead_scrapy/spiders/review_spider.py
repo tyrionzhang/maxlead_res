@@ -35,9 +35,10 @@ class ReviewSpider(scrapy.Spider):
         else:
             asin_li = asin.split(',')
             for v in asin_li:
-                time_str += 1
-                urls1 = urls % (v.strip(), time_str, v.strip())
-                self.start_urls.append(urls1)
+                if v:
+                    time_str += 1
+                    urls1 = urls % (v.strip(), time_str, v.strip())
+                    self.start_urls.append(urls1)
 
     def parse(self, response):
         str = response.url[-7:]
