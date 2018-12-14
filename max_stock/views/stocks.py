@@ -284,7 +284,7 @@ def export_stocks(request):
         if skus:
             for val in skus:
                 skus_li.append(val[0].strip())
-        stocks = stocks.filter(sku__in=skus)
+        stocks = stocks.filter(sku__in=skus_li)
     if end_date:
         stocks = stocks.filter(created__lte=end_date)
     if keywords:
