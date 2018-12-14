@@ -62,7 +62,7 @@ class UserAgent(UserAgentMiddleware):
             res_asin = request.url.split('aid=')
             try:
                 asin_id = res_asin[1][:10]
-                request.meta.setdefault('keywords', asin_id)
+                request.meta.setdefault('aid', asin_id)
             except:
                 pass
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)

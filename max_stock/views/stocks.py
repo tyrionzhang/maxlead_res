@@ -36,7 +36,11 @@ def index(request):
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku','-qty')
     if not user.user.is_superuser and not user.stocks_role == 66:
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
-        stocks = stocks.filter(sku__in=skus)
+        skus_li = []
+        if skus:
+            for val in skus:
+                skus_li.append(val[0].strip())
+        stocks = stocks.filter(sku__in=skus_li)
     if end_date:
         stocks = stocks.filter(created__lte=end_date)
     if keywords:
