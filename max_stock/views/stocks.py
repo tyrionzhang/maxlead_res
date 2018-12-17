@@ -31,7 +31,7 @@ def index(request):
     start_date = request.GET.get('start_date','')
     end_date = request.GET.get('end_date','')
     if not start_date:
-        start_date = datetime.now() - timedelta(days = 3)
+        start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku','-qty')
     if not user.user.is_superuser and not user.stocks_role == 66:
@@ -275,7 +275,7 @@ def export_stocks(request):
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
     if not start_date:
-        start_date = datetime.now() - timedelta(days = 3)
+        start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku', '-qty')
     if not user.user.is_superuser and not user.stocks_role == 66:
@@ -637,6 +637,7 @@ def sales_vol(request):
     d_list = []
     sales_date = []
     for value in stocks:
+        del value['count']
         if not d_list or not value in d_list:
             d_list.append(value)
 
