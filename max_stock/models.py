@@ -146,4 +146,12 @@ class EmailContacts(models.Model):
     class Meta:
         db_table = 'email_contacts'
 
+class UserEmailMsg(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    content = models.TextField('Content')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_email_msg'
+
 

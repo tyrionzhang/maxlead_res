@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import os
 from datetime import *
 from django.db.models import Count
 from maxlead_site.models import UserAsins,UserProfile
+from max_stock.models import UserEmailMsg
 from maxlead_site.common.npextractor import NPExtractor
+from maxlead import settings
+from django.core.mail import send_mail
 
 def get_asins(user, ownership='', status='', revstatus='', liststatus='', type=0, user_id='',is_listings=False,is_done=0):
     asins = []
@@ -138,3 +142,49 @@ def get_send_time(time_str):
         time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M')
         t_re = (time_saturday - time_now).total_seconds()
     return t_re
+
+def spiders_send_email(file_obj, file_path=None):
+    msg_line = file_obj.read()
+    if msg_line:
+        msg_line = msg_line.split('|')
+        msg_line.pop()
+        all_msg = ''
+        subject = 'Maxlead库存预警'
+        from_email = settings.EMAIL_HOST_USER
+
+        msg = {}
+        for i, val in enumerate(msg_line, 1):
+            val = val.split('=>')
+            msg_res_str = val[1]
+            for n, v in enumerate(msg_line, 1):
+                v = v.split('=>')
+                if not n == i and val[0] == v[0]:
+                    msg_res_str += v[1]
+            msg.update({val[0]: msg_res_str})
+        for key in msg:
+            all_msg += msg[key]
+            user = UserProfile.objects.filter(user__email=key)
+            if user:
+                user_email = UserEmailMsg.objects.filter(user=user[0].user)
+                if not user_email or not user_email[0].content == msg[key]:
+                    send_mail(subject, msg[key], from_email, [key], fail_silently=False)
+                    if user_email:
+                        user_email.delete()
+                    obj = UserEmailMsg()
+                    obj.id
+                    obj.content = msg[key]
+                    obj.user = user[0].user
+                    obj.save()
+        admin_email_msg = UserEmailMsg.objects.filter(user_id=1)
+        if not admin_email_msg or not admin_email_msg[0].content == all_msg:
+            send_mail(subject, all_msg, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
+            if admin_email_msg:
+                admin_email_msg.delete()
+            obj = UserEmailMsg()
+            obj.id
+            obj.content = all_msg
+            obj.user_id = 1
+            obj.save()
+
+    file_obj.close()
+    os.remove(file_path)

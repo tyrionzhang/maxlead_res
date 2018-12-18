@@ -7,7 +7,7 @@ from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
-from django.core.mail import send_mail
+from maxlead_site.common.common import spiders_send_email
 
 class ExlSpider(scrapy.Spider):
     name = "exl_spider"
@@ -168,28 +168,6 @@ class ExlSpider(scrapy.Spider):
             msg3 = f.readline()
             msg4 = f.readline()
             if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n':
-                msg_line = f.read()
-                if msg_line:
-                    msg_line = msg_line.split('|')
-                    msg_line.pop()
-                    all_msg = ''
-                    subject = 'Maxlead库存预警'
-                    from_email = max_settings.EMAIL_HOST_USER
-
-                    msg = {}
-                    for i, val in enumerate(msg_line, 1):
-                        val = val.split('=>')
-                        msg_res_str = val[1]
-                        for n, v in enumerate(msg_line, 1):
-                            v = v.split('=>')
-                            if not n == i and val[0] == v[0]:
-                                msg_res_str += v[1]
-                        msg.update({val[0]: msg_res_str})
-                    for key in msg:
-                        all_msg += msg[key]
-                        send_mail(subject, msg[key], from_email, [key], fail_silently=False)
-                    send_mail(subject, all_msg, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
-                f.close()
-                os.remove(file_path)
+                spiders_send_email(f, file_path=file_path)
 
 
