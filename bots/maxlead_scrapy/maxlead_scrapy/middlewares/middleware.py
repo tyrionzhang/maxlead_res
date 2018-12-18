@@ -60,9 +60,12 @@ class UserAgent(UserAgentMiddleware):
         ua = random.choice(self.user_agent_list)
         if ua:
             res_asin = request.url.split('aid=')
+            qid = request.url.split('qid=')
             try:
                 asin_id = res_asin[1][:10]
+                qid = qid[1][:10]
                 request.meta.setdefault('aid', asin_id)
+                request.meta.setdefault('qid', qid)
             except:
                 pass
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
