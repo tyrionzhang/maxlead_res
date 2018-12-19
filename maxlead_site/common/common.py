@@ -162,11 +162,11 @@ def spiders_send_email(file_obj, file_path=None):
                     msg_res_str += v[1]
             msg.update({val[0]: msg_res_str})
         for key in msg:
-            all_msg += msg[key]
             user = UserProfile.objects.filter(user__email=key)
             if user:
                 user_email = UserEmailMsg.objects.filter(user=user[0].user)
                 if not user_email or not user_email[0].content == msg[key]:
+                    all_msg += msg[key]
                     send_mail(subject, msg[key], from_email, [key], fail_silently=False)
                     if user_email:
                         user_email.delete()
@@ -176,7 +176,7 @@ def spiders_send_email(file_obj, file_path=None):
                     obj.user = user[0].user
                     obj.save()
         admin_email_msg = UserEmailMsg.objects.filter(user_id=1)
-        if not admin_email_msg or not admin_email_msg[0].content == all_msg:
+        if all_msg and (not admin_email_msg or not admin_email_msg[0].content == all_msg):
             send_mail(subject, all_msg, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
             if admin_email_msg:
                 admin_email_msg.delete()
