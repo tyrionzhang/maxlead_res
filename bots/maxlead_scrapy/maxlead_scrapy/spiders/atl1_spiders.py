@@ -3,9 +3,9 @@ import scrapy,os
 from datetime import *
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from bots.stockbot.stockbot import settings
+from bots.maxlead_scrapy.maxlead_scrapy import settings
 from maxlead import settings as max_settings
-from bots.stockbot.stockbot.items import WarehouseStocksItem
+from bots.maxlead_scrapy.maxlead_scrapy.items import WarehouseStocksItem
 from max_stock.models import Thresholds,SkuUsers,WarehouseStocks
 from maxlead_site.common.common import spiders_send_email
 
