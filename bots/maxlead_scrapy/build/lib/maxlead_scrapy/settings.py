@@ -11,7 +11,7 @@
 import sys, os, django
 import random
 
-sys.path.append('D:\maxlead')
+sys.path.append('D:\myproject\maxlead_res')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 
@@ -34,38 +34,16 @@ ITEM_PIPELINES = {
     # 'maxlead_scrapy.pipelines.MyImagesPipeline': 1,
 }
 
-IMAGES_STORE = 'D:\maxlead\download\images'
+IMAGES_STORE = 'D:\myproject\maxlead_res\download\images'
 IMAGES = '\download\images'
-PHANTOMJS_PATH = 'C:\\Users\\asus\\node_modules\\phantomjs\\lib\\phantom\\bin\\phantomjs.exe'
+PHANTOMJS_PATH = 'D:\\appList\\python35\\Scripts\\phantomjs.exe'
+CHROME_PATH = 'C:\\Program Files\\Python\Python36\\chromedriver.exe'
+LOG_PATH = 'D:\\MyProject\\maxlead_res\\chromedriver.log'
 
 IMAGES_EXPIRES = 90
 
-user_agent_list = [
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
-    "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",
-    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6",
-    "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/19.77.34.5 Safari/537.1",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.9 Safari/536.5",
-    "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.36 Safari/536.5",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
-    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",
-    "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
-]
-UA = random.choice(user_agent_list)
-
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = UA
-
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
@@ -83,7 +61,7 @@ ROBOTSTXT_OBEY = False
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = False
+# COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -108,19 +86,18 @@ COOKIES_ENABLED = False
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware':543,
-    'maxlead_scrapy.middlewares.middleware.UserAgent': 543,
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None,
+    'maxlead_scrapy.middlewares.middleware.UserAgent':543,
    # 'maxlead_scrapy.middlewares.MyCustomDownloaderMiddleware': 543,
    #  'scrapy_splash.SplashCookiesMiddleware': 723,
    #  'scrapy_splash.SplashMiddleware': 725,
    #  'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
    #  'maxlead_scrapy.middlewares.middleware.JavaScriptMiddleware': 543, #键为中间件类的路径，值为中间件的顺序
     # 'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware':543,
-    # 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None, #禁止内置的中间件
-    'scrapyjs.SplashMiddleware':725
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None #禁止内置的中间件
+    # 'scrapyjs.SplashMiddleware':725
 }
-
-DUPEFILTER_CLASS = 'scrapyjs.SplashAwareDupeFilter'
+DUPEFILTER_CLASS = 'maxlead_scrapy.duplicate_filter.CustomFilter'
+# DUPEFILTER_CLASS = 'scrapyjs.SplashAwareDupeFilter'
 SPLASH_URL = 'http:192.168.3.53:8050'
 
 # Enable or disable extensions
