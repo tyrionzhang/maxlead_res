@@ -8,6 +8,7 @@
 import scrapy
 from scrapy_djangoitem import DjangoItem
 from maxlead_site.models import AsinReviews,Reviews,Listings,Questions,Answers,ListingWacher,CategoryRank
+from max_stock.models import WarehouseStocks,OrderItems
 
 
 class AsinReviewsItem(DjangoItem):
@@ -42,5 +43,14 @@ class ListingWacherItem(DjangoItem):
 
 class CategoryRankItem(DjangoItem):
     django_model = CategoryRank
+
+# stocks
+class WarehouseStocksItem(DjangoItem):
+    # define the fields for your item here like:
+    django_model = WarehouseStocks
+
+class OrderItemsItem(DjangoItem):
+    # define the fields for your item here like:
+    django_model = OrderItems
 
 
