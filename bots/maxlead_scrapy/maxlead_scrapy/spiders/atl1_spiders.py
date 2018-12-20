@@ -6,7 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from bots.maxlead_scrapy.maxlead_scrapy import settings
 from maxlead import settings as max_settings
 from bots.maxlead_scrapy.maxlead_scrapy.items import WarehouseStocksItem
-from max_stock.models import Thresholds,SkuUsers,WarehouseStocks
+from max_stock.models import Thresholds,SkuUsers,WarehouseStocks,UserEmailMsg
 from maxlead_site.common.common import spiders_send_email
 
 class Atl1Spider(scrapy.Spider):
@@ -88,6 +88,17 @@ class Atl1Spider(scrapy.Spider):
                             if user:
                                 msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                                             user[0].user.email, item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                                msg_obj = UserEmailMsg.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
+                                if not msg_obj:
+                                    obj = UserEmailMsg()
+                                    obj.id
+                                    obj.sku = item['sku']
+                                    obj.warehouse = item['warehouse']
+                                    obj.user = user[0].user
+                                    obj.content = msg_str2
+                                if msg_obj and not msg_obj[0].content == msg_str2:
+                                    msg_obj.update(content=msg_str2, user=user[0].user, is_send=0)
+
 
                 if i < total_page:
                     elem_next_page = driver.find_elements_by_css_selector('.nav-list-wrapper a:nth-child(6)')
@@ -105,7 +116,6 @@ class Atl1Spider(scrapy.Spider):
             f.seek(0)
             f.write(self.msg_str1)
             f.write(old)
-            f.write(msg_str2)
             f.close()
 
         with open(file_path, "r") as f:
@@ -113,5 +123,7 @@ class Atl1Spider(scrapy.Spider):
             msg2 = f.readline()
             msg3 = f.readline()
             msg4 = f.readline()
+            f.close()
             if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n':
-                spiders_send_email(f, file_path=file_path)
+                spiders_send_email(file_path=file_path)
+

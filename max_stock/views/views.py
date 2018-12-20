@@ -8,7 +8,7 @@ from django.shortcuts import render
 from maxlead_site.views.app import App
 from maxlead import settings
 from maxlead_site.models import UserProfile
-from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates
+from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg
 from django.http import HttpResponse
 from max_stock.views.stocks import covered_stocks
 
@@ -140,9 +140,7 @@ def save_logs(data):
     return True
 
 def empty_data(request):
-    OrderItems.objects.filter().all().delete()
-    OldOrderItems.objects.filter().all().delete()
-    EmailTemplates.objects.filter().all().delete()
+    UserEmailMsg.objects.filter().all().delete()
     return HttpResponse(request, 'Spiders is runing!Time:%s' % datetime.now())
 
 def test(request):
