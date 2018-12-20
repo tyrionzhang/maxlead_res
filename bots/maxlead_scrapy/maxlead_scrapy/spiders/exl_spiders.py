@@ -146,7 +146,7 @@ class ExlSpider(scrapy.Spider):
                             user = SkuUsers.objects.filter(sku=item['sku'])
                             if threshold and threshold[0].threshold >= int(item['qty']):
                                 if user:
-                                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
+                                    msg_str2 = '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
                                                                 item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
                                     msg_obj = UserEmailMsg.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
                                     if not msg_obj:
@@ -156,6 +156,7 @@ class ExlSpider(scrapy.Spider):
                                         obj.warehouse = item['warehouse']
                                         obj.user = user[0].user
                                         obj.content = msg_str2
+                                        obj.save()
                                     if msg_obj and not msg_obj[0].content == msg_str2:
                                         msg_obj.update(content=msg_str2, user=user[0].user, is_send=0)
         display.stop()
