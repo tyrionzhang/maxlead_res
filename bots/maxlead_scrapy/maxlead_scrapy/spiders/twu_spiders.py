@@ -54,11 +54,11 @@ class TwuSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        # from pyvirtualdisplay import Display
-        # display = Display(visible=0, size=(800, 800))
-        # display.start()
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 800))
+        display.start()
         chrome_options = Options()
-        # chrome_options.add_argument('-headless')
+        chrome_options.add_argument('-headless')
         chrome_options.add_argument('--disable-gpu')
         driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
                                   service_log_path=settings.LOG_PATH)
@@ -129,5 +129,5 @@ class TwuSpider(scrapy.Spider):
                 msg4 = f.readline()
                 if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n':
                     spiders_send_email(f, file_path=file_path)
-        # display.stop()
+        display.stop()
         driver.quit()
