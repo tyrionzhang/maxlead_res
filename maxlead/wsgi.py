@@ -17,8 +17,6 @@ from django.core.wsgi import get_wsgi_application
 from maxlead_site.views.views import download_listings,get_send_time,perform_command,perform_command1
 from max_stock.views.views import run_command_queue,task_save_stocks
 
-p = os.popen('scrapyd')
-print(p)
 # time_re1 = int(get_send_time('19:05'))
 # t1 = threading.Timer(float('%.1f' % time_re1), download_listings)
 # t1.start()
