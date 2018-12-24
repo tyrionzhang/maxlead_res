@@ -143,48 +143,24 @@ def get_send_time(time_str):
         t_re = (time_saturday - time_now).total_seconds()
     return t_re
 
-def spiders_send_email(file_obj, file_path=None):
-    msg_line = file_obj.read()
-    if msg_line:
-        msg_line = msg_line.split('|')
-        msg_line.pop()
-        all_msg = ''
+def spiders_send_email(file_path=None):
+    msg_list = UserEmailMsg.objects.filter(is_send=0)
+    if msg_list:
+        msg_str = ''
         subject = 'Maxlead库存预警'
         from_email = settings.EMAIL_HOST_USER
-
-        msg = {}
-        for i, val in enumerate(msg_line, 1):
-            val = val.split('=>')
-            msg_res_str = val[1]
-            for n, v in enumerate(msg_line, 1):
-                v = v.split('=>')
-                if not n == i and val[0] == v[0]:
-                    msg_res_str += v[1]
-            msg.update({val[0]: msg_res_str})
-        for key in msg:
-            all_msg += msg[key]
-            user = UserProfile.objects.filter(user__email=key)
-            if user:
-                user_email = UserEmailMsg.objects.filter(user=user[0].user)
-                if not user_email or not user_email[0].content == msg[key]:
-                    send_mail(subject, msg[key], from_email, [key], fail_silently=False)
-                    if user_email:
-                        user_email.delete()
-                    obj = UserEmailMsg()
-                    obj.id
-                    obj.content = msg[key]
-                    obj.user = user[0].user
-                    obj.save()
-        admin_email_msg = UserEmailMsg.objects.filter(user_id=1)
-        if not admin_email_msg or not admin_email_msg[0].content == all_msg:
-            send_mail(subject, all_msg, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
-            if admin_email_msg:
-                admin_email_msg.delete()
-            obj = UserEmailMsg()
-            obj.id
-            obj.content = all_msg
-            obj.user_id = 1
-            obj.save()
-
-    file_obj.close()
+        msg_dict = {}
+        for val in msg_list:
+            msg_obj = UserEmailMsg.objects.filter(id=val.id)
+            if val.user.email:
+                msg_dict.update({val.user.email:''})
+                msg_dict[val.user.email] += val.content
+                msg_str += val.content
+                msg_obj.update(is_send=1)
+            else:
+                msg_obj.delete()
+        for key in msg_dict:
+            send_mail(subject, msg_dict[key], from_email, [key], fail_silently=False)
+        if msg_str:
+            send_mail(subject, msg_str, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
     os.remove(file_path)

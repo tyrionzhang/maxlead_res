@@ -148,7 +148,10 @@ class EmailContacts(models.Model):
 
 class UserEmailMsg(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    sku = models.CharField('Sku', max_length=225, default='')
+    warehouse = models.CharField('Warehouse', max_length=225, default='')
     content = models.TextField('Content')
+    is_send = models.IntegerField('Is Send', default=0)
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:
