@@ -51,17 +51,15 @@ def perform_command1():
     t.start()
     pass
 
-def Spiders2(request):
-    time_re = int(get_send_time('23:00'))
+def spiders2():
+    os.popen('scrapyd')
+    time_re = int(get_send_time('20:00'))
     time_re1 = time_re - 3600
     t1 = threading.Timer(float('%.1f' % time_re1), perform_command)
     t1.start()
     t2 = threading.Timer(float('%.1f' % time_re), perform_command1)
     t2.start()
-    # 持续运行，直到计划时间队列变成空为止
-    date = datetime.now() + timedelta(seconds = time_re1)
-    msg_str = 'Spiders is runing!Time:%s' % date
-    return render(request, "Stocks/spider/home.html", {'msg_str': msg_str})
+    pass
 
 def Spiders1(request):
     perform_command2()

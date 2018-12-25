@@ -14,26 +14,16 @@ import django
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 from django.core.wsgi import get_wsgi_application
-from maxlead_site.views.views import download_listings,get_send_time,perform_command,perform_command1
-# from max_stock.views.views import run_command_queue,task_save_stocks
+from maxlead_site.views.views import download_listings,get_send_time,spiders2
+from max_stock.views.views import run_command_queue,task_save_stocks
 
-p = os.popen('scrapyd')
-print(p)
-# time_re1 = int(get_send_time('19:05'))
-# t1 = threading.Timer(float('%.1f' % time_re1), download_listings)
-# t1.start()
+t = threading.Timer(1.0, spiders2)
+t.start()
 
-time_re3 = int(get_send_time('20:00'))
-time_re4 = time_re3 - 3600
-t2 = threading.Timer(float('%.1f' % time_re4), perform_command)
-t2.start()
-t3 = threading.Timer(float('%.1f' % time_re3), perform_command1)
-t3.start()
-
-# time_re5 = int(get_send_time('08:00'))
-# # time_re6 = time_re5 + 1800
-# t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
-# t4.start()
+time_re5 = int(get_send_time('08:00'))
+# time_re6 = time_re5 + 1800
+t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
+t4.start()
 # t5 = threading.Timer(float('%.1f' % time_re6), task_save_stocks)
 # t5.start()
 

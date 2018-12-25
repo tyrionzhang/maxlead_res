@@ -37,7 +37,6 @@ urlpatterns = [
     # url(r'^admin/warehouse/spider/', warehouse_views.home),
     url(r'^static/(?P<path>.*)$', static.serve,{ 'document_root': settings.STATIC_URL }),
     url(r'^download/(?P<path>.*)$', static.serve,{ 'document_root': settings.DOWNLOAD_URL }),
-    url(r'^admin/maxlead_site/spiders2/', max_views.Spiders2),
     url(r'^admin/maxlead_site/spiders1/', max_views.update_listing),
     url(r'^admin/maxlead_site/test1/', max_views.debug),
     url(r'^admin/maxlead_site/run_command_queue/', max_views.run_command_queue),
