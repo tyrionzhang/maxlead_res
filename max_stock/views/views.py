@@ -53,7 +53,6 @@ def _set_user_sku(request=None):
 
 class perform_command_que(threading.Thread):
     def __init__(self, t_name, queue, request=None):
-        os.popen('scrapyd')
         threading.Thread.__init__(self,name=t_name)
         self.data = queue
         self.t_name = t_name

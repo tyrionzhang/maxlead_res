@@ -52,7 +52,6 @@ def perform_command1():
     pass
 
 def spiders2():
-    os.popen('scrapyd')
     time_re = int(get_send_time('20:00'))
     time_re1 = time_re - 3600
     t1 = threading.Timer(float('%.1f' % time_re1), perform_command)
