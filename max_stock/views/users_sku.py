@@ -20,7 +20,7 @@ def sku_list(request):
     res = SkuUsers.objects.all()
     if keywords:
         res = res.filter(Q(sku__contains=keywords) | Q(user__username__contains=keywords))
-    user_list = User.objects.filter(userprofile__role=99)
+    user_list = User.objects.all()
     if not user.user.is_superuser and not user.stocks_role == 66:
         res = res.filter(user_id=user.user.id)
         user_list = user_list.filter(id=user.user_id)

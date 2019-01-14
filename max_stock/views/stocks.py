@@ -784,39 +784,62 @@ def save_sales(request):
                 try:
                     if not val['exl'] == '0':
                         sales = val['exl'].split('补货')
+                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
                         re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='EXL', created__contains=val['date'], qty1__lt=0)
                         if re:
-                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='EXL', created__contains=date1.strftime('%Y-%m-%d'))
+                            obj1.update(qty=obj1[0].qty + int(sales[1]))
+                            re.update(qty1=obj1[0].qty - re[0].qty)
                     if not val['twu'] == '0':
                         sales = val['twu'].split('补货')
+                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
                         re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='TWU',
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
-                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='TWU',
+                                                                  created__contains=date1.strftime('%Y-%m-%d'))
+                            obj1.update(qty=obj1[0].qty + int(sales[1]))
+                            re.update(qty1=obj1[0].qty - re[0].qty)
                     if not val['ego'] == '0':
                         sales = val['ego'].split('补货')
+                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
                         re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='EGO',
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
-                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='EGO',
+                                                                  created__contains=date1.strftime('%Y-%m-%d'))
+                            obj1.update(qty=obj1[0].qty + int(sales[1]))
+                            re.update(qty1=obj1[0].qty - re[0].qty)
                     if not val['tfd'] == '0':
                         sales = val['tfd'].split('补货')
+                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
                         re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='TFD',
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
-                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='TFD',
+                                                                  created__contains=date1.strftime('%Y-%m-%d'))
+                            obj1.update(qty=obj1[0].qty + int(sales[1]))
+                            re.update(qty1=obj1[0].qty - re[0].qty)
                     if not val['hanover'] == '0':
                         sales = val['hanover'].split('补货')
+                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
                         re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='Hanover',
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
-                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='Hanover',
+                                                                  created__contains=date1.strftime('%Y-%m-%d'))
+                            obj1.update(qty=obj1[0].qty + int(sales[1]))
+                            re.update(qty1=obj1[0].qty - re[0].qty)
                     if not val['atl'] == '0':
                         sales = val['atl'].split('补货')
+                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
                         re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL-1',
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
-                            re.update(qty1=int(sales[0]) + int(sales[1]))
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL-1',
+                                                                  created__contains=date1.strftime('%Y-%m-%d'))
+                            obj1.update(qty=obj1[0].qty + int(sales[1]))
+                            re.update(qty1=obj1[0].qty - re[0].qty)
                 except:
                     msg += "第%s行修改有误！\n" % i
                     continue
@@ -833,10 +856,14 @@ def ajax_save_sales(request):
         data = request.POST.get('data','')
         if data:
             for val in eval(data):
+                date1 = datetime.strptime(val['date'], '%Y-%m-%d %H:%M:%S') - timedelta(days=1)
                 obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=warehouse[val['warehouse']], created__contains=val['date'][:10],
                                                      qty1__lt=0)
                 if obj:
-                    obj.update(qty1=obj[0].qty1 + int(val['num']))
+                    obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=warehouse[val['warehouse']],
+                                                         created__contains=date1.strftime('%Y-%m-%d'))
+                    obj1.update(qty=obj1[0].qty + int(val['num']))
+                    obj.update(qty1=obj1[0].qty - obj[0].qty)
     return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfuly!'}), content_type='application/json')
 
 
