@@ -26,7 +26,7 @@ class App:
         menus = Menus.objects.filter(parent_id=0)
         if menu_id:
             menu_child = Menus.objects.filter(parent_id=menu_id)
-        if not user.user.is_superuser and not user.stocks_role == 66:
+        if not user.user.is_superuser and not user.stocks_role == '66':
             menus = menus.filter(roles__code=user.stocks_role)
             if menu_id:
                 menu_child = menu_child.filter(roles__code=user.stocks_role)

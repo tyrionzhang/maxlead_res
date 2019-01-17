@@ -34,7 +34,7 @@ def index(request):
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku','-qty')
-    if not user.user.is_superuser and not user.stocks_role == 66:
+    if not user.user.is_superuser and not user.stocks_role == '66':
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         skus_li = []
         if skus:
@@ -278,7 +278,7 @@ def export_stocks(request):
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku', '-qty')
-    if not user.user.is_superuser and not user.stocks_role == 66:
+    if not user.user.is_superuser and not user.stocks_role == '66':
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         skus_li = []
         if skus:
@@ -354,7 +354,7 @@ def threshold(request):
     list = Thresholds.objects.all()
     if sku:
         list = list.filter(sku__contains=sku)
-    if not user.user.is_superuser and not user.stocks_role == 66:
+    if not user.user.is_superuser and not user.stocks_role == '66':
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         list = list.filter(sku__in=skus)
     if warehouse:
@@ -620,7 +620,7 @@ def sales_vol(request):
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('qty1', 'sku' )
-    if not user.user.is_superuser and not user.stocks_role == 66:
+    if not user.user.is_superuser and not user.stocks_role == '66':
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         skus_li = []
         if skus:

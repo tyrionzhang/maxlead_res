@@ -24,7 +24,7 @@ def user_list(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     res = []
     keywords = request.GET.get('keywords', '')
-    if user.user.is_superuser or user.stocks_role == 66:
+    if user.user.is_superuser or user.stocks_role == '66':
         res = UserProfile.objects.filter(role=99)
         if keywords:
             res = res.filter(user__username__contains=keywords)
