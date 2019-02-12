@@ -89,10 +89,10 @@ class Atl1Spider(scrapy.Spider):
                                 msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                                             user[0].user.email, item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
 
-                if i < total_page:
-                    elem_next_page = driver.find_elements_by_css_selector('.nav-list-wrapper a:nth-child(6)')
+                if i < (total_page - 1):
+                    elem_next_page = 'http://us.hipacking.com/member/instock/stock.html?pageIndex=%s&keyword=&warehouse=1&sort=NormalCount' % (i + 2)
                     if elem_next_page:
-                        elem_next_page[0].click()
+                        driver.get(elem_next_page)
                         driver.implicitly_wait(100)
 
         display.stop()
