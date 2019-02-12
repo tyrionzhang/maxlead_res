@@ -143,7 +143,7 @@ def get_send_time(time_str):
         t_re = (time_saturday - time_now).total_seconds()
     return t_re
 
-def spiders_send_email(file_path=None):
+def spiders_send_email(f_obj, file_path=None):
     msg_list = UserEmailMsg.objects.filter(is_send=0)
     if msg_list:
         msg_str = ''
@@ -164,3 +164,4 @@ def spiders_send_email(file_path=None):
         if msg_str:
             send_mail(subject, msg_str, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
     os.remove(file_path)
+    f_obj.close()
