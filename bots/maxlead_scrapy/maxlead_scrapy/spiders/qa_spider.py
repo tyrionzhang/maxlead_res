@@ -43,7 +43,10 @@ class QaSpider(scrapy.Spider):
         res_asin = response.url.split('/')
         for qa_a in response.css('div.askInlineWidget div.askTeaserQuestions>.a-spacing-base'):
             qa_url = qa_a.css('.a-spacing-base .a-link-normal::attr("href")').extract_first()
-            question = qa_a.css('.a-spacing-base .a-link-normal::text').extract_first().replace('\n','').strip()
+            question = qa_a.css('.a-spacing-base .a-link-normal .a-declarative::text').extract_first()
+            if not question:
+                question = qa_a.css('.a-spacing-base .a-link-normal::text').extract_first()
+            question = question.replace('\n','').strip()
             votes = int(qa_a.css('ul.voteAjax span.count::text').extract_first())
             count_el = response.css('div.askPaginationHeaderMessage span::text').extract_first()
             asin_id = res_asin[6]
