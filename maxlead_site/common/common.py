@@ -163,5 +163,5 @@ def spiders_send_email(f_obj, file_path=None):
             send_mail(subject, msg_dict[key], from_email, [key], fail_silently=False)
         if msg_str:
             send_mail(subject, msg_str, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
-    os.remove(file_path)
     f_obj.close()
+    os.remove(file_path)
