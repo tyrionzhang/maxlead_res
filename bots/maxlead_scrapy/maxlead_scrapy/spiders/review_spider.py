@@ -51,11 +51,11 @@ class ReviewSpider(scrapy.Spider):
         else:
             check = 1
             asin_id = res_asin[4]
-        # from pyvirtualdisplay import Display
-        # display = Display(visible=0, size=(800, 800))
-        # display.start()
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 800))
+        display.start()
         chrome_options = Options()
-        # chrome_options.add_argument('-headless')
+        chrome_options.add_argument('-headless')
         chrome_options.add_argument('--disable-gpu')
         driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
                                   service_log_path=settings.LOG_PATH)
@@ -122,7 +122,7 @@ class ReviewSpider(scrapy.Spider):
             re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
             if re:
                 re.update(is_done=1)
-        # display.stop()
+        display.stop()
         driver.quit()
 
     def parse_details(self, response):
