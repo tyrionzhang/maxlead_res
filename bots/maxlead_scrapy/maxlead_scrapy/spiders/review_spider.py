@@ -61,6 +61,7 @@ class ReviewSpider(scrapy.Spider):
                                   service_log_path=settings.LOG_PATH)
         driver.get(response.url)
         driver.implicitly_wait(100)
+        time.sleep(30)
         next_page = driver.find_elements_by_css_selector('.a-last a')
         check_next = 0
         while next_page:
