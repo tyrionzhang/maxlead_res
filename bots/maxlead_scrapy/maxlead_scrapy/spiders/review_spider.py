@@ -61,7 +61,6 @@ class ReviewSpider(scrapy.Spider):
                                   service_log_path=settings.LOG_PATH)
         driver.get(response.url)
         driver.implicitly_wait(100)
-        time.sleep(30)
         next_page = driver.find_elements_by_css_selector('.a-last a')
         check_next = 0
         while next_page:
@@ -123,9 +122,10 @@ class ReviewSpider(scrapy.Spider):
                     review_date = time.strptime(review.find_elements_by_css_selector('.review-date')[0].text, "%B %d, %Y")
                 item['review_date'] = time.strftime("%Y-%m-%d", review_date)
                 yield item
-        re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
-        if re:
-            re.update(is_done=1)
+        else:
+            re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
+            if re:
+                re.update(is_done=1)
         display.stop()
         driver.quit()
 
