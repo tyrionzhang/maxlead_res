@@ -302,3 +302,14 @@ class CategoryRankBackcup(models.Model):
 
     class Meta:
         db_table = 'category_rank_backcup'
+
+class ProxyIp(models.Model):
+    ip = models.CharField('IP',max_length=50)
+    port = models.CharField('Port',max_length=50)
+    ip_type = models.CharField('IpType',max_length=50)
+    ip_speed = models.CharField('IpSpeed',max_length=50)
+    ip_alive = models.CharField('IpAlive',max_length=50)
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'proxy_ip'

@@ -108,15 +108,15 @@ COOKIES_ENABLED = False
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware':543,
-    'maxlead_scrapy.middlewares.middleware.UserAgent':543,
    # 'maxlead_scrapy.middlewares.MyCustomDownloaderMiddleware': 543,
    #  'scrapy_splash.SplashCookiesMiddleware': 723,
    #  'scrapy_splash.SplashMiddleware': 725,
    #  'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
    #  'maxlead_scrapy.middlewares.middleware.JavaScriptMiddleware': 543, #键为中间件类的路径，值为中间件的顺序
-    # 'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware':543,
+    'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware':543,
     # 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None, #禁止内置的中间件
-    'scrapyjs.SplashMiddleware':725
+    'scrapyjs.SplashMiddleware':725,
+    'maxlead_scrapy.middlewares.middleware.UserAgent':543
 }
 
 DUPEFILTER_CLASS = 'scrapyjs.SplashAwareDupeFilter'

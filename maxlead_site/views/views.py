@@ -51,6 +51,18 @@ def perform_command1():
     t.start()
     pass
 
+def proxy_perform_command():
+    t = threading.Timer(86400.0, proxy_perform_command)
+
+    work_path = settings.SPIDER_URL
+    os.chdir(work_path)
+    os.popen('scrapyd-deploy')
+    cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=maxlead_scrapy -d spider=proxy_ip_spider'
+    os.popen(cmd_str1)
+    os.chdir(settings.ROOT_PATH)
+    t.start()
+    pass
+
 def spiders2():
     time_re = int(get_send_time('20:00'))
     time_re1 = time_re - 3600
@@ -58,6 +70,13 @@ def spiders2():
     t1.start()
     t2 = threading.Timer(float('%.1f' % time_re), perform_command1)
     t2.start()
+    pass
+
+def proxy_spiders2():
+    time_re = int(get_send_time('08:00'))
+    time_re1 = time_re - 3600
+    t1 = threading.Timer(float('%.1f' % time_re1), proxy_perform_command)
+    t1.start()
     pass
 
 def Spiders1(request):

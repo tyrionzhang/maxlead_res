@@ -3,6 +3,7 @@ import random
 from scrapy import log
 import logging
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
+from maxlead_site.common.ip_util import IPUtil
 
 
 class UserAgent(UserAgentMiddleware):
@@ -76,6 +77,10 @@ class UserAgent(UserAgentMiddleware):
             request.headers.setdefault('Accept-Language', headers['Accept-Language'])
             request.headers.setdefault('Accept-Encoding', headers['Accept-Encoding'])
             request.headers.setdefault('Access-Control-Allow-Origin', headers['Access-Control-Allow-Origin'])
+            ip_util = IPUtil()
+            proxy_ip = ip_util.get_random_ip()
+            print('using ip proxy:', proxy_ip)
+            request.meta["proxy"] = proxy_ip
 
 
 # class IPPOOLS(HttpProxyMiddleware):

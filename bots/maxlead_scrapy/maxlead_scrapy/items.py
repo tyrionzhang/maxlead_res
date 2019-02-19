@@ -7,7 +7,7 @@
 
 import scrapy
 from scrapy_djangoitem import DjangoItem
-from maxlead_site.models import AsinReviews,Reviews,Listings,Questions,Answers,ListingWacher,CategoryRank
+from maxlead_site.models import AsinReviews,Reviews,Listings,Questions,Answers,ListingWacher,CategoryRank,ProxyIp
 from max_stock.models import WarehouseStocks,OrderItems
 
 
@@ -52,5 +52,9 @@ class WarehouseStocksItem(DjangoItem):
 class OrderItemsItem(DjangoItem):
     # define the fields for your item here like:
     django_model = OrderItems
+
+class ProxyIpItem(DjangoItem):
+    # define the fields for your item here like:
+    django_model = ProxyIp
 
 
