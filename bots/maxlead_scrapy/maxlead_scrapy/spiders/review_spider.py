@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import scrapy,time,datetime
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
 from maxlead_site.models import UserAsins,AsinReviews
 from scrapy import log
 from django.db.models import Count
-from bots.stockbot.stockbot import settings
 
 
 class ReviewSpider(scrapy.Spider):
@@ -51,83 +48,65 @@ class ReviewSpider(scrapy.Spider):
         else:
             check = 1
             asin_id = res_asin[4]
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
-        chrome_options = Options()
-        chrome_options.add_argument('-headless')
-        chrome_options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
-                                  service_log_path=settings.LOG_PATH)
-        driver.get(response.url)
-        driver.implicitly_wait(100)
-        next_page = driver.find_elements_by_css_selector('.a-last a')
-        check_next = 0
-        while next_page:
-            if check_next == 1:
-                # next_page[0].click()
-                next_page = next_page[0].get_attribute('href')
-                self.asin_id = next_page.split('/')[5][0:10]
-                next_page = next_page + '&mytype=maxlead'
-                driver.get(next_page)
-                driver.implicitly_wait(100)
-                next_page = driver.find_elements_by_css_selector('.a-last a')
-            check_next = 1
+        req_res = response.css('div#cm_cr-review_list div.review')
+        if check:
+            item = AsinReviewsItem()
+            item['aid'] = asin_id
+            item['avg_score'] = 0
+            item['avg_score'] = response.css('div.averageStarRatingNumerical span.arp-rating-out-of-text::text').extract_first()
+            if not item['avg_score']:
+                item['avg_score'] = response.css('i.averageStarRating span::text').extract_first()
+            if item['avg_score']:
+                item['avg_score'] = item['avg_score'][0: 3]
+            item['total_review'] = 0
+            item['total_review'] = response.css('div.averageStarRatingIconAndCount span.totalReviewCount::text').extract_first()
 
-            req_res = driver.find_elements_by_css_selector('#cm_cr-review_list .review')
-            if check:
-                item = AsinReviewsItem()
-                item['aid'] = asin_id
-                item['avg_score'] = 0
-                item['avg_score'] = driver.find_elements_by_css_selector('.averageStarRatingNumerical .arp-rating-out-of-text')
-                if not item['avg_score']:
-                    item['avg_score'] = driver.find_elements_by_css_selector('.averageStarRating span')
-                if item['avg_score']:
-                    item['avg_score'] = item['avg_score'][0].text[0: 3]
-                item['total_review'] = 0
-                item['total_review'] = driver.find_elements_by_css_selector('.averageStarRatingIconAndCount .totalReviewCount')
+            if not item['total_review']:
+                item['total_review'] = response.css('span.totalReviewCount::text').extract_first()
+            if item['total_review']:
+                item['total_review'] = item['total_review'].replace(',','')
+            yield item
+        for review in req_res:
+            item = ReviewsItem()
+            item['name'] = review.css('div.a-profile-content span.a-profile-name::text').extract_first()
+            item['asin'] = asin_id
+            item['title'] = review.css('a.review-title::text').extract_first()
+            item['content'] = review.css('span.review-text::text').extract_first()
+            item['review_link'] = "https://www.amazon.com" + review.css('a.review-title::attr("href")').extract_first()
+            item['score'] = review.css('i.review-rating span::text').extract_first()[0:1]
+            item['variation'] = review.css('div.review-format-strip span.cr-widget-AsinVariation::text').extract_first()
+            if not item['variation']:
+                item['variation'] = review.css('div.review-format-strip a.a-color-secondary::text').extract_first()
+            if item['variation']:
+                item['variation'] = item['variation'].replace('\n','')
+            item['image_urls'] = []
+            for img_re in review.css('div.review-image-container img.review-image-tile::attr("data-src")').extract():
+                item['image_urls'].append(img_re)
 
-                if not item['total_review']:
-                    item['total_review'] = driver.find_elements_by_css_selector('.totalReviewCount')
-                if item['total_review']:
-                    item['total_review'] = item['total_review'][0].text.replace(',','')
-                yield item
-            for review in req_res:
-                item = ReviewsItem()
-                item['name'] = review.find_elements_by_css_selector('.a-profile-content .a-profile-name')[0].text
-                item['asin'] = asin_id
-                item['title'] = review.find_elements_by_css_selector('.review-title')[0].text
-                item['content'] = review.find_elements_by_css_selector('.review-text')[0].text
-                item['review_link'] = "https://www.amazon.com" + review.find_elements_by_css_selector('.review-title')[0].get_attribute('href')
-                item['score'] = review.find_elements_by_css_selector('.a-link-normal')[0].get_attribute('title')[0:1]
-                item['variation'] = review.find_elements_by_css_selector('.review-format-strip .cr-widget-AsinVariation')
-                if not item['variation']:
-                    item['variation'] = review.find_elements_by_css_selector('.review-format-strip .a-color-secondary')
-                if item['variation']:
-                    item['variation'] = item['variation'][0].text.replace('\n','')
-                item['image_urls'] = []
-                for img_re in review.find_elements_by_css_selector('.review-image-container .review-image-tile'):
-                    item['image_urls'].append(img_re.get_attribute('src'))
+            vp = review.css('div.review-format-strip .a-link-normal span::text').extract_first()
+            if not vp:
+                vp = review.css('div.review-format-strip span.a-declarative span::text').extract_first()
+            if vp is not None and vp == 'Verified Purchase':
+                item['is_vp'] = 1
+            else:
+                item['is_vp'] = 0
+            try:
+                review_date = time.strptime(review.css('span.review-date::text').extract_first()[3:40],"%B %d, %Y")
+            except:
+                review_date = time.strptime(review.css('span.review-date::text').extract_first(), "%B %d, %Y")
+            item['review_date'] = time.strftime("%Y-%m-%d", review_date)
+            yield item
 
-                vp = review.find_elements_by_css_selector('.review-format-strip .a-link-normal span')
-                if not vp:
-                    vp = review.find_elements_by_css_selector('.review-format-strip .a-declarative span')
-                if vp is not None and vp[0].text == 'Verified Purchase':
-                    item['is_vp'] = 1
-                else:
-                    item['is_vp'] = 0
-                try:
-                    review_date = time.strptime(review.find_elements_by_css_selector('.review-date')[0].text[3:40],"%B %d, %Y")
-                except:
-                    review_date = time.strptime(review.find_elements_by_css_selector('.review-date')[0].text, "%B %d, %Y")
-                item['review_date'] = time.strftime("%Y-%m-%d", review_date)
-                yield item
+        next_page = response.css('li.a-last a::attr("href")').extract_first()
+        if next_page is not None:
+            self.asin_id = next_page.split('/')[3][0:10]
+            next_page = next_page + '&mytype=maxlead'
+            next_page = response.urljoin(next_page)
+            yield scrapy.Request(next_page, callback=self.parse)
         else:
             re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
             if re:
                 re.update(is_done=1)
-        display.stop()
-        driver.quit()
 
     def parse_details(self, response):
         item = response.meta.get('item', None)
