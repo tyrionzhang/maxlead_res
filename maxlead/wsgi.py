@@ -24,7 +24,7 @@ time_re2 = int(get_send_time('07:30'))
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
 t4.start()
 
-t2 = threading.Timer(float('%.1f' % time_re2), proxy_spiders2)
+t2 = threading.Timer(1.0, proxy_spiders2)
 t2.start()
 
 t = threading.Timer(79200.0, spiders2)

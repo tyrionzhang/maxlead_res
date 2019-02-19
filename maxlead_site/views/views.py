@@ -73,9 +73,8 @@ def spiders2():
     pass
 
 def proxy_spiders2():
-    time_re = int(get_send_time('08:00'))
-    time_re1 = time_re - 3600
-    t1 = threading.Timer(float('%.1f' % time_re1), proxy_perform_command)
+    time_re = int(get_send_time('07:30'))
+    t1 = threading.Timer(float('%.1f' % time_re), proxy_perform_command)
     t1.start()
     pass
 
