@@ -20,7 +20,6 @@ from max_stock.views.views import run_command_queue,task_save_stocks
 os.popen('scrapyd')
 
 time_re5 = int(get_send_time('08:00'))
-time_re2 = int(get_send_time('07:30'))
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
 t4.start()
 
