@@ -9,7 +9,10 @@ class IPUtil(object):
         n = 10
         ip_count = ProxyIp.objects.count()
         if ip_count:
-            count = random.randint(0, ip_count - n)
+            i = ip_count - n
+            if i < 0:
+                i = ip_count
+            count = random.randint(0, i)
             rand_ids = ProxyIp.objects.all()[count : count + n]
             for ip_info in rand_ids:
                 ip = ip_info.ip
