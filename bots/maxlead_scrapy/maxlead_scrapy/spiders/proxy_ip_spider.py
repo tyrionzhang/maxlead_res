@@ -2,6 +2,7 @@
 
 import scrapy,requests,time
 from bots.maxlead_scrapy.maxlead_scrapy.items import ProxyIpItem
+from maxlead_site.models import ProxyIp
 
 
 class ProxyIpSpider(scrapy.Spider):
@@ -34,7 +35,9 @@ class ProxyIpSpider(scrapy.Spider):
             else:
                 code = proxy_response.status_code
                 if code >= 200 and code < 300:
-                    yield item
+                    check = ProxyIp.objects.filter(ip=item['ip'], port=item['port'])
+                    if not check:
+                        yield item
         next_page = response.css('div.pagination a.next_page::attr("href")').extract_first()
         if next_page is not None:
             next_page = response.urljoin(next_page)
