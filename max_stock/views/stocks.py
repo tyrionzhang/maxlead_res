@@ -5,6 +5,7 @@ from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
+from maxlead_site.models import Employee
 from maxlead_site.common.excel_world import read_excel_file1,read_excel_data,get_excel_file
 from maxlead_site.views.app import App
 from maxlead import settings
@@ -35,12 +36,19 @@ def index(request):
         start_date = start_date.strftime('%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku','-qty')
     if not user.user.is_superuser and not user.stocks_role == '66':
-        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
+        uids = [user.user_id]
+        if user.stocks_role == '88':
+            child_user = Employee.objects.filter(parent_user=user.user_id)
+            if child_user:
+                for val in child_user:
+                    uids.append(val.user_id)
+        skus = SkuUsers.objects.filter(user_id__in=uids).values_list('sku')
         skus_li = []
         if skus:
             for val in skus:
                 skus_li.append(val[0].strip())
         stocks = stocks.filter(sku__in=skus_li)
+
     if end_date:
         stocks = stocks.filter(created__lte=end_date)
     if keywords:
@@ -621,7 +629,13 @@ def sales_vol(request):
         start_date = start_date.strftime('%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('qty1', 'sku' )
     if not user.user.is_superuser and not user.stocks_role == '66':
-        skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
+        uids = [user.user_id]
+        if user.stocks_role == '88':
+            child_user = Employee.objects.filter(parent_user=user.user_id)
+            if child_user:
+                for val in child_user:
+                    uids.append(val.user_id)
+        skus = SkuUsers.objects.filter(user_id__in=uids).values_list('sku')
         skus_li = []
         if skus:
             for val in skus:

@@ -29,6 +29,7 @@ from max_stock.views import users_sku as skus
 from max_stock.views import stocks
 from max_stock.views import auto_email
 from max_stock.views import setting
+from max_stock.views import employees
 from max_stock.views import order_email_temp as emailTmp,order_items
 from django.views import static
 from maxlead import settings
@@ -95,7 +96,7 @@ urlpatterns = [
 
     # urls of max_stock
     url('^admin/max_stock/stock_spiders/', stock_views.stock_spiders),
-    url('^admin/max_stock/test/', stock_views.test),
+    url('^admin/max_stock/test/', employees.init),
     url('^admin/max_stock/help_page/', stock_views.help_page),
     url('^admin/max_stock/empty_data/', stock_views.empty_data),
     url('^admin/max_stock/login/', stock_users.userLogin),
@@ -162,5 +163,8 @@ urlpatterns = [
     url('^admin/send_email/batch_del_ocheck/', order_items.batch_del_ocheck),
     url('^admin/send_email/batch_del_contact/', order_items.batch_del_contact),
     url('^admin/send_email/get_emails/', order_items.get_emails),
+    url('^admin/employee/index/', employees.index),
+    url('^admin/employee/save/', employees.save),
+    url('^admin/employee/delete/', employees.delete),
 ]
 

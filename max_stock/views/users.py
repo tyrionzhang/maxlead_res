@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
-from maxlead_site.models import UserProfile
+from maxlead_site.models import UserProfile,Employee
 from maxlead_site.common.excel_world import read_excel_file
 from maxlead_site.common import common
 from maxlead import settings
@@ -25,7 +25,7 @@ def user_list(request):
     res = []
     keywords = request.GET.get('keywords', '')
     if user.user.is_superuser or user.stocks_role == '66':
-        res = UserProfile.objects.filter(role=99)
+        res = UserProfile.objects.all()
         if keywords:
             res = res.filter(user__username__contains=keywords)
         for val in res:
@@ -80,6 +80,10 @@ def user_save(request):
             user_file.smtp_server = smtp_server
             user_file.state = 1
             user_file.save()
+            employee = Employee()
+            employee.user_id = user.id
+            employee.name = username
+            employee.save()
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Work is done!'}),
                                 content_type='application/json')
         else:

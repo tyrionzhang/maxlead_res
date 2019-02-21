@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
-
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     group = models.ForeignKey('self',default=1,on_delete=models.CASCADE)
@@ -313,3 +312,12 @@ class ProxyIp(models.Model):
 
     class Meta:
         db_table = 'proxy_ip'
+
+class Employee(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField('Name', max_length=225, default='')
+    parent_user = models.IntegerField('Parent',default=0)
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'employee'

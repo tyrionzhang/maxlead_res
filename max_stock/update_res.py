@@ -24,7 +24,14 @@ MENUS0 = [
         'url' : '/admin/setting/index/',
         'elem_id' : 'setting',
         'parent': 0
+    },
+    {
+        'name' : 'Employee',
+        'url' : '/admin/employee/index/',
+        'elem_id' : 'employee',
+        'parent': 0
     }
+
 ]
 MENUS = [
     {
@@ -98,6 +105,12 @@ MENUS = [
         'url' : '/admin/send_email/contact_list/',
         'elem_id' : 'contact_list',
         'parent' : 'Auto Email'
+    },
+    {
+        'name' : 'Employee List',
+        'url' : '/admin/employee/index/',
+        'elem_id' : 'employee',
+        'parent': 'Employee'
     }
 
 ]

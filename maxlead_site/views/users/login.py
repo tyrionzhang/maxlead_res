@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-from maxlead_site.models import UserProfile
+from maxlead_site.models import UserProfile,Employee
 from maxlead import settings
 from maxlead_site.common.prpcrypt import Prpcrypt
 from maxlead_site.views import commons
@@ -162,6 +162,10 @@ class Logins:
                 else:
                     user.id
                     user.save()
+                    employee = Employee()
+                    employee.user_id = user.id
+                    employee.name = user.username
+                    employee.save()
 
                 user_file = UserProfile()
                 user_file.id = user.userprofile.id
