@@ -24,8 +24,8 @@ def index(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
 
     keywords = request.GET.get('keywords', '').replace('amp;', '')
-    lists = Employee.objects.filter(parent_user=user.user_id)
-    all_lists = Employee.objects.all().exclude(user__is_superuser=1).exclude(user_id=user.user_id)
+    lists = Employee.objects.filter(parent_user=user.user_id).order_by('name', 'id')
+    all_lists = Employee.objects.all().exclude(user__is_superuser=1).exclude(user_id=user.user_id).order_by('name', 'id')
     if user.user.is_superuser or user.stocks_role == '66':
         lists = all_lists
     if keywords:
