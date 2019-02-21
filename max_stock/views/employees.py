@@ -58,10 +58,10 @@ def save(request):
         name = request.POST.get('name','')
         parent_user = request.POST.get('parent_user','')
         child_employee = request.POST.get('child_employee','')
-        if not name:
-            return HttpResponse(json.dumps({'code': 0, 'msg': u'The name cannot be empty!'}),
-                                    content_type='application/json')
         if id:
+            if not name:
+                return HttpResponse(json.dumps({'code': 0, 'msg': u'The name cannot be empty!'}),
+                                    content_type='application/json')
             emp = Employee.objects.filter(id=int(id))
             if emp:
                 check = Employee.objects.filter(name=name).exclude(id=id)
