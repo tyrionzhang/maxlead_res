@@ -32,12 +32,13 @@ def index(request):
         lists = lists.filter(user__username__contains=keywords)
     for val in lists:
         parent_user = UserProfile.objects.filter(user_id=val.parent_user)
-        if val.parent_user == user.user_id:
-            val.check_employee = 1
         if parent_user:
             val.parent = parent_user[0].user.username
         else:
             val.parent = ''
+    for v in all_lists:
+        if v.parent_user == user.user_id:
+            v.check_employee = 1
 
     data = {
         'user': user,
@@ -57,7 +58,6 @@ def save(request):
         id = request.POST.get('id','')
         name = request.POST.get('name','')
         parent_user = request.POST.get('parent_user','')
-        child_employee = request.POST.get('child_employee','')
         if id:
             if not name:
                 return HttpResponse(json.dumps({'code': 0, 'msg': u'The name cannot be empty!'}),
@@ -87,12 +87,6 @@ def save(request):
                 emp_obj.name = name
                 emp_obj.parent_user = parent_user
                 emp_obj.save()
-
-            if child_employee:
-                child_employees = Employee.objects.filter(id__in=eval(child_employee))
-                if child_employees:
-                    child_employees.update(parent_user=user.user_id)
-
     return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}),
                         content_type='application/json')
 
@@ -111,4 +105,22 @@ def delete(request):
         if(obj.delete()):
             user_obj.delete()
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}),
+                                content_type='application/json')
+
+@csrf_exempt
+def edit_children(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        child_employee = request.POST.get('child_employee', '')
+        child_obj = Employee.objects.filter(parent_user=user.user_id)
+        if child_obj:
+            child_obj.update(parent_user=0)
+        if child_employee:
+            child_employees = Employee.objects.filter(id__in=eval(child_employee))
+            if child_employees:
+                child_employees.update(parent_user=user.user_id)
+
+        return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}),
                                 content_type='application/json')

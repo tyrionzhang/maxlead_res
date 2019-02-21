@@ -21,9 +21,9 @@
                 <div class="btn btn-green">
                     <button id="user_add">Add</button>
                 </div>
-{#                <div class="btn btn-blue">#}
-{#                    <button id="user_import">Import</button>#}
-{#                </div>#}
+                <div class="btn btn-blue">
+                    <button id="user_import">edit</button>
+                </div>
             </div>
             <div class="clear"></div>
         </div>
@@ -66,17 +66,6 @@
                         <option value="0">无</option>
                     </select>
 			</label>
-
-            <label class="lab-post-param">
-                <span>Subordinate:</span>
-            </label>
-            <label class="lab-post-param">
-                    <select name="child_employee" multiple="multiple" style="width: 230px;height: 106px;">
-                        {% for val in all_lists %}
-                            <option value="{{ val.id }}" {% if val.check_employee %} selected {% endif %}>{{ val.name }}</option>
-                        {% endfor %}
-                    </select>
-			</label>
         </label>
 			<div>
 				<input type="submit" value="Save" id="btn_employee">
@@ -86,8 +75,17 @@
 
     <div class="hide" id="import_modal">
         <form id="import_form" method="post" enctype="multipart/form-data">
-            <input type="file" name="myfile">
-            <input type="submit" value="Submit" id="btn_import_modal">
+            <label class="lab-post-param">
+                <span>Edit Subordinate:</span>
+            </label>
+            <label class="lab-post-param">
+                    <select name="child_employee" multiple="multiple" style="width: 230px;height: 106px;">
+                        {% for val in all_lists %}
+                            <option value="{{ val.id }}" {% if val.check_employee %} selected="selected" {% endif %}>{{ val.name }}</option>
+                        {% endfor %}
+                    </select>
+			</label>
+            <input type="submit" value="save" id="btn_import_modal">
         </form>
         <div id="import_msg"></div>
     </div>
@@ -116,20 +114,37 @@
         });
         $('#btn_employee').on('click',function () {
             var id = $('input[name="id"]').val();
-            var child_employee = new Array();
-            $('select[name="child_employee"] option:selected').each(function () {
-                child_employee.push(parseInt($(this).val()))
-            });
             var data = {
               'name':$('input[name="name"]').val(),
               'parent_user':$('select[name="parent_user"]').val(),
-              'child_employee':JSON.stringify(child_employee),
               'id':id
             };
             if (!id){
                 $(this).attr("disabled", true);
             }
             $.post('/admin/employee/save/',data,function (re) {
+               if(re.code==0 || re.code==1){
+                   alert(re.msg);
+                   if(re.code==1){
+                       window.location.reload();
+                   }
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#btn_import_modal').on('click',function () {
+            var child_employee = new Array();
+            $('select[name="child_employee"] option:selected').each(function () {
+                child_employee.push(parseInt($(this).val()))
+            });
+            var data = {
+              'child_employee':JSON.stringify(child_employee)
+            };
+            $.post('/admin/employee/edit_children/',data,function (re) {
                if(re.code==0 || re.code==1){
                    alert(re.msg);
                    if(re.code==1){
@@ -154,33 +169,6 @@
             $('input[name="name"]').val(name);
         });
 
-        $('#btn_export_stocks').on('click',function () {
-            var keywords = $('input[name="keywords"]').val();
-            var warehouse = $('select[name="warehouse"]').val();
-            var url = '/admin/max_stock/export_stocks/?keywords='+keywords+'&warehouse='+warehouse;
-            window.location.href=url;
-        });
-
-        $('#btn_import_modal').on('click', function () {
-            var form_data = new FormData();
-            var file_info =$('input[name="myfile"]')[0].files[0];
-            form_data.append('myfile',file_info);
-            //if(file_info==undefined)暂且不许要判断是否有附件
-                //alert('你没有选择任何文件');
-                //return false
-            $.ajax({
-                url:'/admin/max_stock/users_import/',
-                type:'POST',
-                data: form_data,
-                processData: false,  // tell jquery not to process the data
-                contentType: false, // tell jquery not to set contentType
-                success: function(callback) {
-                    $('#import_msg').append('Work is done!<br>');
-                    $('#import_msg').append(callback.msg);
-                }
-            });
-            return false;
-        });
         $('.employee-del').on('click', function () {
             var id=$(this).data('id');
             if (confirm('确定删除？')) {
