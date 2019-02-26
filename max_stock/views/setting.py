@@ -34,8 +34,11 @@ def index(request):
     role_menus = Menus.objects.filter(roles__id=checked_role_id)
     for val in user_list:
         val.is_checked = 0
-        if val.userprofile.stocks_role == checked_role_code:
-            val.is_checked = 1
+        try:
+            if val.userprofile.stocks_role == checked_role_code:
+                val.is_checked = 1
+        except:
+            continue
     role_ids = []
     if role_menus:
         for val in role_menus:
