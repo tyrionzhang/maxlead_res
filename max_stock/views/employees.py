@@ -16,6 +16,7 @@ def init(request):
         except:
             obj = UserProfile()
             obj.id
+            obj.user_id = va.id
             obj.state = 1
             obj.role = 0
             obj.stocks_role = 1
