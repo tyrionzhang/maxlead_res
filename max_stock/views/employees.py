@@ -12,7 +12,7 @@ def init(request):
     users = User.objects.all()
     for va in users:
         try:
-            a = users.userprofile
+            a = va.userprofile
         except:
             obj = UserProfile()
             obj.id
