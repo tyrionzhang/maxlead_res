@@ -19,6 +19,7 @@ def init(request):
             obj.state = 1
             obj.role = 0
             obj.stocks_role = 1
+            obj.save()
     return render(request, "Stocks/user/users.html")
 
 @csrf_exempt
