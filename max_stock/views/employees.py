@@ -9,12 +9,16 @@ from maxlead_site.models import UserProfile,Employee
 
 @csrf_exempt
 def init(request):
-    users = UserProfile.objects.all()
+    users = User.objects.all()
     for va in users:
-        employee = Employee()
-        employee.user_id = va.user_id
-        employee.name = va.user.username
-        employee.save()
+        try:
+            a = users.userprofile
+        except:
+            obj = UserProfile()
+            obj.id
+            obj.state = 1
+            obj.role = 0
+            obj.stocks_role = 1
     return render(request, "Stocks/user/users.html")
 
 @csrf_exempt

@@ -27,10 +27,13 @@ def index(request):
     checked_role_id = 0
     for val in role_list:
         val.is_checked = 0
-        if val.code == index_user.userprofile.stocks_role:
-            val.is_checked = 1
-            checked_role_code = val.code
-            checked_role_id = val.id
+        try:
+            if val.code == index_user.userprofile.stocks_role:
+                val.is_checked = 1
+                checked_role_code = val.code
+                checked_role_id = val.id
+        except:
+            continue
     role_menus = Menus.objects.filter(roles__id=checked_role_id)
     for val in user_list:
         val.is_checked = 0
@@ -151,7 +154,11 @@ def get_role_by_user(request):
         if not user_obj:
             return HttpResponse(json.dumps({'code': 0, 'msg': 'User is not exits!'}),
                                 content_type='application/json')
-        return HttpResponse(json.dumps({'code': 1, 'data': {'role_code': user_obj[0].userprofile.stocks_role}}),
+        try:
+            return HttpResponse(json.dumps({'code': 1, 'data': {'role_code': user_obj[0].userprofile.stocks_role}}),
+                                    content_type='application/json')
+        except:
+            return HttpResponse(json.dumps({'code': 0, 'msg': 'User/role is not exits!'}),
                                 content_type='application/json')
 
 @csrf_exempt
@@ -184,10 +191,13 @@ def get_role_user(request):
         left_str = ''
         right_str = ''
         for val in user_list:
-            if role_code and val.userprofile.stocks_role == role_code:
-                right_str += '<option value="%s">%s</option>' % (val.id, val.username)
-            elif (val.userprofile.stocks_role == '0' or not val.userprofile.stocks_role) and not val.is_superuser:
-                left_str += '<option value="%s">%s</option>' % (val.id, val.username)
+            try:
+                if role_code and val.userprofile.stocks_role == role_code:
+                    right_str += '<option value="%s">%s</option>' % (val.id, val.username)
+                elif (val.userprofile.stocks_role == '0' or not val.userprofile.stocks_role) and not val.is_superuser:
+                    left_str += '<option value="%s">%s</option>' % (val.id, val.username)
+            except:
+                continue
         data = {'right_str': right_str, 'left_str': left_str}
         return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
 
