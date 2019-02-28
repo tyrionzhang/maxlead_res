@@ -52,48 +52,46 @@ class Atl1Spider(scrapy.Spider):
         driver.implicitly_wait(100)
         driver.get('http://us.hipacking.com/member/instock/stock.html')
         driver.implicitly_wait(100)
-        data_page_el = driver.find_elements_by_css_selector('a[title="库存管理"]')
-        if data_page_el:
-            total_page = driver.find_elements_by_css_selector('.nav-list-wrapper span:nth-child(2)>b')[0].text
-            total_page = int(total_page)
-            for i in range(total_page):
-                res = driver.find_elements_by_css_selector('.table tr')
-                res.pop(0)
-                for val in res:
-                    item = WarehouseStocksItem()
-                    td_re = val.find_elements_by_tag_name('td')
-                    if td_re:
-                        item['sku'] = td_re[3].text
-                        item['warehouse'] = td_re[1].text
-                        item['is_new'] = 0
-                        if td_re[11].text and not td_re[11].text == ' ':
-                            item['qty'] = td_re[11].text
-                            item['qty'] = item['qty'].replace(',', '')
-                        else:
-                            item['qty'] = 0
-                        date_now = datetime.now()
-                        date0 = date_now.strftime('%Y-%m-%d')
-                        obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'], created__contains=date0)
-                        date1 = date_now - timedelta(days=1)
-                        obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'], created__contains=date1.strftime('%Y-%m-%d'))
-                        if obj1:
-                            item['qty1'] = obj1[0].qty - int(item['qty'])
-                        if obj:
-                            obj.delete()
-                        yield item
+        total_page = driver.find_elements_by_css_selector('.nav-list-wrapper span:nth-child(2)>b')[0].text
+        total_page = int(total_page)
+        for i in range(total_page):
+            res = driver.find_elements_by_css_selector('.table tr')
+            res.pop(0)
+            for val in res:
+                item = WarehouseStocksItem()
+                td_re = val.find_elements_by_tag_name('td')
+                if td_re:
+                    item['sku'] = td_re[3].text
+                    item['warehouse'] = td_re[1].text
+                    item['is_new'] = 0
+                    if td_re[11].text and not td_re[11].text == ' ':
+                        item['qty'] = td_re[11].text
+                        item['qty'] = item['qty'].replace(',', '')
+                    else:
+                        item['qty'] = 0
+                    date_now = datetime.now()
+                    date0 = date_now.strftime('%Y-%m-%d')
+                    obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'], created__contains=date0)
+                    date1 = date_now - timedelta(days=1)
+                    obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'], created__contains=date1.strftime('%Y-%m-%d'))
+                    if obj1:
+                        item['qty1'] = obj1[0].qty - int(item['qty'])
+                    if obj:
+                        obj.delete()
+                    yield item
 
-                        threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
-                        user = SkuUsers.objects.filter(sku=item['sku'])
-                        if threshold and threshold[0].threshold >= int(item['qty']):
-                            if user:
-                                msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
-                                            user[0].user.email, item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                    threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
+                    user = SkuUsers.objects.filter(sku=item['sku'])
+                    if threshold and threshold[0].threshold >= int(item['qty']):
+                        if user:
+                            msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
+                                        user[0].user.email, item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
 
-                if i < (total_page - 1):
-                    elem_next_page = 'http://us.hipacking.com/member/instock/stock.html?pageIndex=%s&keyword=&warehouse=1&sort=NormalCount' % (i + 2)
-                    if elem_next_page:
-                        driver.get(elem_next_page)
-                        driver.implicitly_wait(100)
+            if i < (total_page - 1):
+                elem_next_page = 'http://us.hipacking.com/member/instock/stock.html?pageIndex=%s&keyword=&warehouse=1&sort=NormalCount' % (i + 2)
+                if elem_next_page:
+                    driver.get(elem_next_page)
+                    driver.implicitly_wait(100)
 
         display.stop()
         driver.quit()
