@@ -50,10 +50,10 @@ class Atl1Spider(scrapy.Spider):
             elem_pass[0].send_keys('1202@hxml')
         btn_login[0].click()
         driver.implicitly_wait(100)
+        driver.get('http://us.hipacking.com/member/instock/stock.html')
+        driver.implicitly_wait(100)
         data_page_el = driver.find_elements_by_css_selector('a[title="库存管理"]')
         if data_page_el:
-            driver.get('http://us.hipacking.com/member/instock/stock.html')
-            driver.implicitly_wait(100)
             total_page = driver.find_elements_by_css_selector('.nav-list-wrapper span:nth-child(2)>b')[0].text
             total_page = int(total_page)
             for i in range(total_page):
