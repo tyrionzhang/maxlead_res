@@ -314,7 +314,7 @@ class ProxyIp(models.Model):
         db_table = 'proxy_ip'
 
 class Employee(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.DO_NOTHING)
     name = models.CharField('Name', max_length=225, default='')
     parent_user = models.IntegerField('Parent',default=0)
     created = models.DateTimeField('Created', auto_now_add=True)
