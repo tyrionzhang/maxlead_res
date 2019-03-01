@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from maxlead_site.models import UserProfile,Employee
+from max_stock.models import StockLogs
 from maxlead import settings
 from maxlead_site.common.prpcrypt import Prpcrypt
 from maxlead_site.views import commons
@@ -214,6 +215,12 @@ class Logins:
         del_id = eval(self.POST['ids'])
         res = UserProfile.objects.filter(id__in=del_id).exclude(id=user.id).update(state=0)
         if res:
+            log_obj = StockLogs()
+            log_obj.id
+            log_obj.user_id = user.user_id
+            log_obj.fun = self.path
+            log_obj.description = 'User delete.'
+            log_obj.save()
             return HttpResponse(json.dumps({'code': 1, 'msg': u'删除成功！'}), content_type='application/json')
         else:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'删除失败！'}), content_type='application/json')

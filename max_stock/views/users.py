@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
 from maxlead_site.models import UserProfile,Employee
+from max_stock.models import StockLogs
 from maxlead_site.common.excel_world import read_excel_file
 from maxlead_site.common import common
 from maxlead import settings
@@ -142,6 +143,12 @@ def users_del(request):
             return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not found.'}), content_type='application/json')
         res = user_obj.delete()
         if res:
+            log_obj = StockLogs()
+            log_obj.id
+            log_obj.user_id = user.user_id
+            log_obj.fun = request.path
+            log_obj.description = 'User delete.'
+            log_obj.save()
             return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}), content_type='application/json')
 
 def logout(self):
