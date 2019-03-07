@@ -346,6 +346,8 @@ def read_excel_for_orders(res,user=None,customer_num=None):
                     obj.customer_num = customer_num
                     obj.order_id = order_id
                     obj.sku = table.cell_value(i + 1, 7,).strip()
+                    if not obj.sku:
+                        obj.sku = table.cell_value(i + 1, 8,).strip()
                     obj.order_status = 0
                     obj.email = table.cell_value(i + 1, 4,)
                     obj.customer = table.cell_value(i + 1, 5,)

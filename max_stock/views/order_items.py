@@ -171,7 +171,7 @@ def order_list(request):
         list = OldOrderItems.objects.filter(is_email=1, customer_num=user.menu_child_type, created__gte=start_date)
         is_presale = 0
     else:
-        nosend_re1 = NoSendRes.objects.values_list('order_id').filter(status='Refund',customer_num=user.menu_child_type).exclude(order_id='')
+        nosend_re1 = NoSendRes.objects.values_list('order_id').filter((Q(status='Refund')| Q(status='refund')),customer_num=user.menu_child_type).exclude(order_id='')
         contacts = EmailContacts.objects.values_list('email_address').filter(expired_time__gt=datetime.now(),customer_num=user.menu_child_type)
         list = OrderItems.objects.filter(is_email=0,customer_num=user.menu_child_type)
         if nosend_re:
