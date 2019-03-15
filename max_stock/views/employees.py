@@ -140,12 +140,12 @@ def get_employees(request):
 
     if request.method == 'POST':
         keywords = request.POST.get('keywords', '').replace('amp;', '')
-        child_li = eval(request.POST.get('child_li', ''))
+        child_li = request.POST.get('child_li', '')
         employee_li = Employee.objects.all().exclude(user_id=user.user_id).order_by('name', 'id')
         if keywords:
             employee_li = employee_li.filter(name__contains=keywords)
-        if child_li:
-            employee_li = employee_li.exclude(id__in=child_li)
+        if child_li and eval(child_li):
+            employee_li = employee_li.exclude(id__in=eval(child_li))
 
 
         data = []
