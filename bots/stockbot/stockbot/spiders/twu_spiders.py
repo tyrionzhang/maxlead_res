@@ -42,8 +42,8 @@ class TwuSpider(scrapy.Spider):
                                           meta={'cookiejar': response.meta['cookiejar']},
                                           headers=headers,  # 注意此处的headers
                                           formdata={
-                                              'username': 'Lead2MAX',
-                                              'password': 'dwf@twu415!'
+                                              'username': 'maxlead',
+                                              'password': 'legwork/M103'
                                           },
                                           callback=self.parse_page,
                                           dont_filter=True
