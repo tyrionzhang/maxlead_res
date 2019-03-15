@@ -167,5 +167,7 @@ urlpatterns = [
     url('^admin/employee/save/', employees.save),
     url('^admin/employee/delete/', employees.delete),
     url('^admin/employee/edit_children/', employees.edit_children),
+    url('^admin/employee/get_employees/', employees.get_employees),
+    url('^admin/employee/get_child_employee/', employees.get_child_employee),
 ]
 

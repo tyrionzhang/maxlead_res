@@ -1,5 +1,25 @@
 {% extends "Stocks/layouts/base.html" %}
 {% block container %}
+    <style>
+    .span-middle{
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 47.5%;
+        padding-bottom: 1px;
+        padding-top: 1px;
+        cursor:pointer;
+    }
+    .span-middle1{
+        display: block;
+        position: absolute;
+        top: 57%;
+        left: 47.5%;
+        padding-bottom: 1px;
+        padding-top: 1px;
+        cursor:pointer;
+    }
+    </style>
     <div id="main" data-name="employee">
         <div class="con-head">
             <h1>{{ title }}</h1>
@@ -62,8 +82,8 @@
             <label class="lab-post-param">
 				<span>Parent:</span>
                     <select name="parent_user">
-                        <option value="{{ user.user_id }}">{{ user.user.username }}</option>
                         <option value="0">无</option>
+                        <option value="{{ user.user_id }}" selected>{{ user.user.username }}</option>
                     </select>
 			</label>
         </label>
@@ -73,16 +93,17 @@
 		</form>
     </div>
 
-    <div class="hide" id="import_modal">
+    <div class="hide" id="import_modal"  style="width: 451px;">
         <form id="import_form" method="post" enctype="multipart/form-data">
             <label class="lab-post-param">
                 <span>Edit Subordinate:</span>
             </label>
             <label class="lab-post-param">
-                    <select name="child_employee" multiple="multiple" style="width: 230px;height: 106px;">
-                        {% for val in all_lists %}
-                            <option value="{{ val.id }}" {% if val.check_employee %} selected="selected" {% endif %}>{{ val.name }}</option>
-                        {% endfor %}
+                    <select multiple="multiple" style="width: 40%;height: 106px; margin-right: 47px;" id="child_left">
+                    </select>
+                    <span class="span-middle">>></span>
+                    <span class="span-middle1"><<</span>
+                    <select name="child_employee" multiple="multiple" style="width: 40%;height: 106px;" id="child_right">
                     </select>
 			</label>
             <input type="submit" value="save" id="btn_import_modal">
@@ -100,11 +121,71 @@
                 $('#form_employee')[0].reset();
                 $('input[name="id"]').remove();
                 $('#btn_employee').removeAttr('disabled');
+                $.post('/admin/employee/get_employees/',{},function (re) {
+                   if(re.code==1){
+                       if (re.data) {
+                           re.data.forEach(function (item) {
+                               var el = '<option value="'+item.id+'" selected="selected">'+item.name+'</option>';
+                               $('select[name="parent_user"]').append(el);
+                           });
+                       }
+                   }
+                   if(re.code==66){
+                       window.location.href='/admin/max_stock/login/';
+                   }
+                },'json');
             });
 
           $('#user_import').on('click',function () {
                 $('.wrap-paper').removeClass('hide');
                 $('#import_modal').removeClass('hide');
+
+                var child_li = new Array();
+                $.post('/admin/employee/get_child_employee/',{},function (re) {
+                   if(re.code==1){
+                       $('#child_right').empty();
+                       if (re.data) {
+                           re.data.forEach(function (item) {
+                               var el = '<option value="'+item.id+'" selected="selected">'+item.name+'</option>';
+                               $('#child_right').append(el);
+                               child_li.push(item.id);
+                           });
+                       }
+                   }
+                   if(re.code==66){
+                       window.location.href='/admin/max_stock/login/';
+                   }
+
+                    var data = {
+                  'child_li':JSON.stringify(child_li)
+                };
+                $.post('/admin/employee/get_employees/',data,function (re) {
+                       if(re.code==1){
+                           $('#child_left').empty();
+                           if (re.data) {
+                               re.data.forEach(function (item) {
+                                   var el = '<option value="'+item.id+'">'+item.name+'</option>';
+                                   $('#child_left').append(el);
+                               });
+                           }
+                       }
+                       if(re.code==66){
+                           window.location.href='/admin/max_stock/login/';
+                       }
+                    },'json');
+                },'json');
+
+                $('.span-middle').on('click',function () {
+                   $('#child_left option:selected').each(function (i,val) {
+                       $('#child_right').append(val);
+                   });
+                });
+                $('.span-middle1').on('click',function () {
+                   $('#child_right option:selected').each(function (i,val) {
+                       $('#child_left').append(val);
+                   });
+                });
+
             });
             $('body').on('click','.wrap-paper' , function(){
                 $('.wrap-paper').addClass('hide');
@@ -138,7 +219,7 @@
 
         $('#btn_import_modal').on('click',function () {
             var child_employee = new Array();
-            $('select[name="child_employee"] option:selected').each(function () {
+            $('#child_right option').each(function () {
                 child_employee.push(parseInt($(this).val()))
             });
             var data = {

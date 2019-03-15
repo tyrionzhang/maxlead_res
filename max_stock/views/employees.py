@@ -130,3 +130,56 @@ def edit_children(request):
 
         return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}),
                                 content_type='application/json')
+
+
+@csrf_exempt
+def get_employees(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+
+    if request.method == 'POST':
+        keywords = request.POST.get('keywords', '').replace('amp;', '')
+        child_li = eval(request.POST.get('child_li', ''))
+        employee_li = Employee.objects.all().exclude(user_id=user.user_id).order_by('name', 'id')
+        if keywords:
+            employee_li = employee_li.filter(name__contains=keywords)
+        if child_li:
+            employee_li = employee_li.exclude(id__in=child_li)
+
+
+        data = []
+        if employee_li:
+            for val in employee_li:
+                re = {
+                    'id' : val.id,
+                    'name' : val.name,
+                }
+                data.append(re)
+
+        return HttpResponse(json.dumps({'code': 1, 'data': data}),
+                            content_type='application/json')
+
+@csrf_exempt
+def get_child_employee(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+
+    if request.method == 'POST':
+        keywords = request.POST.get('keywords', '').replace('amp;', '')
+        employee_li = Employee.objects.filter(parent_user=user.user_id).order_by('name', 'id')
+        if keywords:
+            employee_li = Employee.objects.filter(name__contains=keywords)
+
+        data = []
+        if employee_li:
+            for val in employee_li:
+                re = {
+                    'id': val.id,
+                    'name': val.name
+                }
+                data.append(re)
+
+        return HttpResponse(json.dumps({'code': 1, 'data': data}),
+                            content_type='application/json')
