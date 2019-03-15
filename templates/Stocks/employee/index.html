@@ -125,7 +125,7 @@
                    if(re.code==1){
                        if (re.data) {
                            re.data.forEach(function (item) {
-                               var el = '<option value="'+item.id+'" selected="selected">'+item.name+'</option>';
+                               var el = '<option value="'+item.id+'">'+item.name+'</option>';
                                $('select[name="parent_user"]').append(el);
                            });
                        }
