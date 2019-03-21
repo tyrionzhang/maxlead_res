@@ -247,7 +247,6 @@
         });
 
         $('#send_email').on('click', function () {
-            if(confirm('确认发送邮件？')){
                 var elem_tr = $('.check_tr:checked').parents('tr');
                var data = new Array();
                if (elem_tr.length == 0) {
@@ -284,7 +283,6 @@
                    }
                 return false;
                }
-            }
         });
 
         $('#del_send_email').on('click', function () {
