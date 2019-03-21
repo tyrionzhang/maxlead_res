@@ -253,29 +253,35 @@
                if (elem_tr.length == 0) {
                    alert('请选择订单');
                }else {
-                   $(this).attr('disabled', 'true');
-                   var customer_num = {{ user.menu_child_type }};
-                  elem_tr.each(function () {
-                      data.push({
-                          'order_id' : $(this).children('td').eq(1).text(),
-                          'sku' : $(this).children('td').eq(2).text(),
-                          'email' : $(this).children('td').eq(3).text(),
-                          'buyer' : $(this).children('td').eq(4).text()
-                      });
-                  });
-                   $('.wrap').removeClass('hide');
-                   $('.wrap-k-line').removeClass('hide');
-                  $.post('/admin/send_email/send_email/',{'data':JSON.stringify(data),'customer_num':customer_num},function (re) {
-                   if(re.code==0 || re.code==1){
-                       alert(re.msg);
-                       if(re.code==1){
-                           window.location.reload();
-                       }
+                   var from_email = '{{ user.other_email }}';
+                   if (!from_email) {
+                       from_email = 'maxlead.us@gmail.com';
                    }
-                   if(re.code==66){
-                       window.location.href='/admin/max_stock/login/';
+                   if (confirm('确定用邮箱'+from_email+'发送邮件吗？')) {
+                       $(this).attr('disabled', 'true');
+                           var customer_num = {{ user.menu_child_type }};
+                          elem_tr.each(function () {
+                              data.push({
+                                  'order_id' : $(this).children('td').eq(1).text(),
+                                  'sku' : $(this).children('td').eq(2).text(),
+                                  'email' : $(this).children('td').eq(3).text(),
+                                  'buyer' : $(this).children('td').eq(4).text()
+                              });
+                          });
+                           $('.wrap').removeClass('hide');
+                           $('.wrap-k-line').removeClass('hide');
+                          $.post('/admin/send_email/send_email/',{'data':JSON.stringify(data),'customer_num':customer_num},function (re) {
+                           if(re.code==0 || re.code==1){
+                               alert(re.msg);
+                               if(re.code==1){
+                                   window.location.reload();
+                               }
+                           }
+                           if(re.code==66){
+                               window.location.href='/admin/max_stock/login/';
+                           }
+                        },'json');
                    }
-                },'json');
                 return false;
                }
             }
