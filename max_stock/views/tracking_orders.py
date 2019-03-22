@@ -91,139 +91,140 @@ def get_tracking_order_status():
     # lists = TrackingOrders.objects.filter(billing_date__contains=billing_date)
     t = threading.Timer(86400.0, get_tracking_order_status)
     lists = TrackingOrders.objects.all().exclude(status='Delivered')
-    data = []
-    for val in lists:
-        headers = {
-            'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"
-        }
-        url = 'http://shipit-api.herokuapp.com/api/carriers/%s/%s'
-        if len(val.tracking_num) > 12:
-            carrier = 'ups'
-        else:
-            carrier = 'fedex'
-        url = url % (carrier, val.tracking_num)
-        res = requests.get(url, headers=headers)
-        try:
-            res = json.loads(res.content.decode())
-            activities = res['activities']
-            if activities:
-                status = activities[0]['details']
-                first_scan_time = ''
-                delivery_time = ''
-                shipment_late = ''
-                delivery_late = ''
-                for v in activities:
-                    if v['details'] == 'Picked up' and carrier == 'fedex':
-                        first_scan_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
-                        first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
-                    if v['details'] == 'Delivered':
-                        if carrier == 'ups':
-                            delivery_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
-                        elif carrier == 'fedex':
-                            delivery_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
-                        delivery_time = delivery_time + datetime.timedelta(hours=-7)
-                    if v['details'] == 'Origin scan' and carrier == 'ups':
-                        first_scan_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
-                        first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
+    if lists:
+        data = []
+        for val in lists:
+            headers = {
+                'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"
+            }
+            url = 'http://shipit-api.herokuapp.com/api/carriers/%s/%s'
+            if len(val.tracking_num) > 12:
+                carrier = 'ups'
+            else:
+                carrier = 'fedex'
+            url = url % (carrier, val.tracking_num)
+            res = requests.get(url, headers=headers)
+            try:
+                res = json.loads(res.content.decode())
+                activities = res['activities']
+                if activities:
+                    status = activities[0]['details']
+                    first_scan_time = ''
+                    delivery_time = ''
+                    shipment_late = ''
+                    delivery_late = ''
+                    for v in activities:
+                        if v['details'] == 'Picked up' and carrier == 'fedex':
+                            first_scan_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
+                            first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
+                        if v['details'] == 'Delivered':
+                            if carrier == 'ups':
+                                delivery_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
+                            elif carrier == 'fedex':
+                                delivery_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
+                            delivery_time = delivery_time + datetime.timedelta(hours=-7)
+                        if v['details'] == 'Origin scan' and carrier == 'ups':
+                            first_scan_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
+                            first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
+                        if first_scan_time:
+                            if val.latest_ship_date and len(val.latest_ship_date) >= 20:
+                                first_scan_time_str = int(time.mktime(first_scan_time.timetuple()))
+                                latest_ship_date_str = int(
+                                    time.mktime(time.strptime(val.latest_ship_date[0:19], "%Y-%m-%dT%H:%M:%S")))
+                                shipment_late_c = first_scan_time_str - latest_ship_date_str
+                                if shipment_late_c < 0:
+                                    shipment_late = 'Y'
+                        if delivery_time:
+                            if val.latest_delivery_date and len(val.latest_delivery_date) >= 20:
+                                delivery_time_str = int(time.mktime(delivery_time.timetuple()))
+                                latest_delivery_date_str = int(
+                                    time.mktime(time.strptime(val.latest_delivery_date[0:19], "%Y-%m-%dT%H:%M:%S")))
+                                delivery_late_c = delivery_time_str - latest_delivery_date_str
+                                if delivery_late_c < 0:
+                                    delivery_late = 'Y'
+                    val.status = status
                     if first_scan_time:
-                        if val.latest_ship_date and len(val.latest_ship_date) >= 20:
-                            first_scan_time_str = int(time.mktime(first_scan_time.timetuple()))
-                            latest_ship_date_str = int(
-                                time.mktime(time.strptime(val.latest_ship_date[0:19], "%Y-%m-%dT%H:%M:%S")))
-                            shipment_late_c = first_scan_time_str - latest_ship_date_str
-                            if shipment_late_c < 0:
-                                shipment_late = 'Y'
+                        val.first_scan_time = first_scan_time
                     if delivery_time:
-                        if val.latest_delivery_date and len(val.latest_delivery_date) >= 20:
-                            delivery_time_str = int(time.mktime(delivery_time.timetuple()))
-                            latest_delivery_date_str = int(
-                                time.mktime(time.strptime(val.latest_delivery_date[0:19], "%Y-%m-%dT%H:%M:%S")))
-                            delivery_late_c = delivery_time_str - latest_delivery_date_str
-                            if delivery_late_c < 0:
-                                delivery_late = 'Y'
-                val.status = status
-                if first_scan_time:
-                    val.first_scan_time = first_scan_time
-                if delivery_time:
-                    val.delivery_time = delivery_time
-                if shipment_late:
-                    val.shipment_late = shipment_late
-                if delivery_late:
-                    val.delivery_late = delivery_late
-                val.save()
+                        val.delivery_time = delivery_time
+                    if shipment_late:
+                        val.shipment_late = shipment_late
+                    if delivery_late:
+                        val.delivery_late = delivery_late
+                    val.save()
 
-                if val.status == 'Order Processed: Ready for UPS' or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx':
-                    data.append({
-                        'order_num': val.order_num,
-                        'tracking_num': val.tracking_num,
-                        'warehouse': val.warehouse,
-                        'account_num': val.account_num,
-                        'description': val.description,
-                        'status': val.status,
-                        'shipment_late': val.shipment_late,
-                        'delivery_late': val.delivery_late,
-                        'billing_date': val.billing_date,
-                        'latest_ship_date': val.latest_ship_date,
-                        'latest_delivery_date': val.latest_delivery_date,
-                        'first_scan_time': val.first_scan_time,
-                        'delivery_time': val.delivery_time
-                    })
-        except Exception as e:
-            log_obj = StockLogs()
-            log_obj.id
-            log_obj.user_id = 1
-            log_obj.fun = 'tracking 自动更新状态'
-            log_obj.description = 'Error msg:%s,Tracking number %s' % (e, val.tracking_num)
-            log_obj.save()
-            continue
-    if data:
-        fields = [
-            '发货单时间',
-            '账号',
-            'OrderNumber',
-            'WarehouseName',
-            'Description',
-            'Tracking Numbers',
-            'latest-ship-date',
-            'latest-delivery-date',
-            'Status',
-            'First Scan time',
-            'Delivery time',
-            'Shipment Late',
-            'Delivery Late'
-        ]
-        data_fields = [
-            'billing_date',
-            'account_num',
-            'order_num',
-            'warehouse',
-            'description',
-            'tracking_num',
-            'latest_ship_date',
-            'latest_delivery_date',
-            'status',
-            'first_scan_time',
-            'delivery_time',
-            'shipment_late',
-            'delivery_late'
-        ]
-        file_path = get_excel_file1(1, data, fields, data_fields)
-        file_path = os.path.join(settings.BASE_DIR, file_path)
-        subject = '报告邮件'
-        text_content = '未扫描状态的订单汇总。.'
-        html_content = '<p>这是一封<strong>未扫描状态的订单汇总</strong>。</p>'
-        from_email = settings.DEFAULT_FROM_EMAIL
-        msg = EmailMultiAlternatives(subject, text_content, from_email, ['swlxyztd@163.com'])
-        msg.attach_alternative(html_content, "text/html")
-        # 发送附件
-        # text = open(file_path, 'rb').read()
-        file_name = os.path.basename(file_path)
-        # 对文件进行编码处理
-        # b = make_header([(file_name, 'utf-8')]).encode('utf-8')
-        # msg.attach(b, text)
-        msg.attach_file(file_path)
-        msg.send()
-        os.remove(file_path)
+                    if val.status == 'Order Processed: Ready for UPS' or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx':
+                        data.append({
+                            'order_num': val.order_num,
+                            'tracking_num': val.tracking_num,
+                            'warehouse': val.warehouse,
+                            'account_num': val.account_num,
+                            'description': val.description,
+                            'status': val.status,
+                            'shipment_late': val.shipment_late,
+                            'delivery_late': val.delivery_late,
+                            'billing_date': val.billing_date,
+                            'latest_ship_date': val.latest_ship_date,
+                            'latest_delivery_date': val.latest_delivery_date,
+                            'first_scan_time': val.first_scan_time,
+                            'delivery_time': val.delivery_time
+                        })
+            except Exception as e:
+                log_obj = StockLogs()
+                log_obj.id
+                log_obj.user_id = 1
+                log_obj.fun = 'tracking 自动更新状态'
+                log_obj.description = 'Error msg:%s,Tracking number %s' % (e, val.tracking_num)
+                log_obj.save()
+                continue
+        if data:
+            fields = [
+                '发货单时间',
+                '账号',
+                'OrderNumber',
+                'WarehouseName',
+                'Description',
+                'Tracking Numbers',
+                'latest-ship-date',
+                'latest-delivery-date',
+                'Status',
+                'First Scan time',
+                'Delivery time',
+                'Shipment Late',
+                'Delivery Late'
+            ]
+            data_fields = [
+                'billing_date',
+                'account_num',
+                'order_num',
+                'warehouse',
+                'description',
+                'tracking_num',
+                'latest_ship_date',
+                'latest_delivery_date',
+                'status',
+                'first_scan_time',
+                'delivery_time',
+                'shipment_late',
+                'delivery_late'
+            ]
+            file_path = get_excel_file1(1, data, fields, data_fields)
+            file_path = os.path.join(settings.BASE_DIR, file_path)
+            subject = '报告邮件'
+            text_content = '未扫描状态的订单汇总。.'
+            html_content = '<p>这是一封<strong>未扫描状态的订单汇总</strong>。</p>'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            msg = EmailMultiAlternatives(subject, text_content, from_email, ['swlxyztd@163.com'])
+            msg.attach_alternative(html_content, "text/html")
+            # 发送附件
+            # text = open(file_path, 'rb').read()
+            file_name = os.path.basename(file_path)
+            # 对文件进行编码处理
+            # b = make_header([(file_name, 'utf-8')]).encode('utf-8')
+            # msg.attach(b, text)
+            msg.attach_file(file_path)
+            msg.send()
+            os.remove(file_path)
     t.start()
     pass
 
