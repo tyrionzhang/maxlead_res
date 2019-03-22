@@ -6,10 +6,10 @@ from django.http import HttpResponseRedirect
 from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
 from maxlead_site.models import UserProfile,Employee
-from max_stock.views import tracking_orders
 
 @csrf_exempt
 def init(request):
+    from max_stock.views import tracking_orders
     tracking_orders.get_tracking_order_status()
     return render(request, "Stocks/user/users.html")
 
