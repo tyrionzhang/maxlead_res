@@ -157,4 +157,25 @@ class UserEmailMsg(models.Model):
     class Meta:
         db_table = 'user_email_msg'
 
+class TrackingOrders(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1)
+    order_num = models.CharField('Order Number', max_length=225, default='')
+    tracking_num = models.CharField('Tracking Number', max_length=225, default='')
+    warehouse = models.CharField('Warehouse', max_length=225, default='')
+    account_num = models.CharField('Account Number', max_length=225, default='')
+    description = models.CharField('Description', max_length=225, default='')
+    status = models.CharField('Status', max_length=225, default='')
+    shipment_late = models.CharField('Shipment Late', max_length=2, default='')
+    delivery_late = models.CharField('Delivery Late', max_length=2, default='')
+    billing_date = models.CharField('Billing Date', max_length=20, default='')
+    latest_ship_date = models.CharField('Latest Ship Date', max_length=50, default='')
+    latest_delivery_date = models.CharField('Latest Delivery Date', max_length=50, default='')
+    first_scan_time = models.DateTimeField('First Scan time', null=True)
+    delivery_time = models.DateTimeField('Delivery time', null=True)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'tracking_orders'
+
+
 

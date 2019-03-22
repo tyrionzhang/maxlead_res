@@ -30,7 +30,14 @@ MENUS0 = [
         'url' : '/admin/employee/index/',
         'elem_id' : 'employee',
         'parent': 0
+    },
+    {
+        'name' : 'Tracking Orders',
+        'url' : '/admin/trackingOrders/index/',
+        'elem_id' : 'tracking_orders',
+        'parent': 0
     }
+
 
 ]
 MENUS = [
@@ -111,6 +118,12 @@ MENUS = [
         'url' : '/admin/employee/index/',
         'elem_id' : 'employee',
         'parent': 'Employee'
+    },
+    {
+        'name' : 'Index',
+        'url' : '/admin/trackingOrders/index/',
+        'elem_id' : 'tracking_orders',
+        'parent': 'Tracking Orders'
     }
 
 ]

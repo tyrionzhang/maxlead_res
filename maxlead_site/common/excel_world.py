@@ -5,7 +5,7 @@ from io import *
 import os,time,xlrd,csv,datetime
 from django.contrib.auth.models import User
 from maxlead_site.models import UserProfile
-from max_stock.models import SkuUsers,Thresholds,OrderItems,NoSendRes,OldOrderItems
+from max_stock.models import SkuUsers,Thresholds,OrderItems,NoSendRes,OldOrderItems,TrackingOrders
 from maxlead import settings
 from chardet import detect
 
@@ -410,3 +410,47 @@ def read_excel_data(model,res):
                     })
                     re_data.append(re_v)
     return re_data
+
+def read_excel_for_tracking_orders(res,user=None):
+    fname = res
+    msg = ''
+    if not os.path.isfile(fname):
+        return {'code':0,'msg':'File is not found!'}
+    data = xlrd.open_workbook(fname)  # 打开fname文件
+    data.sheet_names()  # 获取xls文件中所有sheet的名称
+    table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+    nrows = table.nrows
+    for i in range(nrows):
+        if i + 1 < nrows:
+            try:
+                tracking_num = table.cell_type(i + 1, 5, )
+                if tracking_num == 2:
+                    tracking_num = int(table.cell_value(i + 1, 5, ))
+                else:
+                    tracking_num = table.cell_value(i + 1, 5, )
+                order_num = table.cell_type(i + 1, 2, )
+                if order_num == 2:
+                    order_num = int(table.cell_value(i + 1, 2, ))
+                else:
+                    order_num = table.cell_value(i + 1, 2, )
+                checks = TrackingOrders.objects.filter(tracking_num=tracking_num, order_num=order_num)
+                if not checks:
+                    obj = TrackingOrders()
+                    obj.id
+                    if user:
+                        obj.user_id = user
+                    obj.billing_date = table.cell_value(i + 1, 0, )
+                    obj.account_num = table.cell_value(i + 1, 1, )
+                    obj.order_num = order_num
+                    obj.warehouse = table.cell_value(i + 1, 3, )
+                    obj.description = table.cell_value(i + 1, 4, ).strip()
+                    obj.tracking_num = tracking_num
+                    obj.latest_ship_date = table.cell_value(i + 1, 6,)
+                    obj.latest_delivery_date = table.cell_value(i + 1, 7,)
+                    obj.save()
+                else:
+                    msg += '第%s行已存在。<br>' % (i + 1)
+            except:
+                msg += '第%s行添加有误。<br>' % (i + 1)
+                continue
+    return {'code': 1, 'msg': msg}

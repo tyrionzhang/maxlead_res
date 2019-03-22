@@ -16,6 +16,7 @@ django.setup()
 from django.core.wsgi import get_wsgi_application
 from maxlead_site.views.views import download_listings,get_send_time,spiders2,proxy_spiders2
 from max_stock.views.views import run_command_queue,task_save_stocks
+from max_stock.views.tracking_orders import get_tracking_order_status
 
 os.popen('scrapyd')
 
@@ -28,6 +29,10 @@ t2.start()
 
 t = threading.Timer(79200.0, spiders2)
 t.start()
+
+time_tr_re = int(get_send_time('15:00'))
+t_tr = threading.Timer(float('%.1f' % time_tr_re), get_tracking_order_status)
+t_tr.start()
 
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "maxlead.settings")
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'

@@ -30,6 +30,7 @@ from max_stock.views import stocks
 from max_stock.views import auto_email
 from max_stock.views import setting
 from max_stock.views import employees
+from max_stock.views import tracking_orders
 from max_stock.views import order_email_temp as emailTmp,order_items
 from django.views import static
 from maxlead import settings
@@ -169,5 +170,8 @@ urlpatterns = [
     url('^admin/employee/edit_children/', employees.edit_children),
     url('^admin/employee/get_employees/', employees.get_employees),
     url('^admin/employee/get_child_employee/', employees.get_child_employee),
+    url('^admin/trackingOrders/index/', tracking_orders.index),
+    url('^admin/trackingOrders/import_tracking/', tracking_orders.import_tracking),
+    url('^admin/trackingOrders/tracking_orders_export/', tracking_orders.tracking_orders_export),
 ]
 
