@@ -90,7 +90,7 @@ def get_tracking_order_status():
     # billing_date = datetime.datetime.now().strftime("%b.%y")
     # lists = TrackingOrders.objects.filter(billing_date__contains=billing_date)
     t = threading.Timer(86400.0, get_tracking_order_status)
-    lists = TrackingOrders.objects.all()
+    lists = TrackingOrders.objects.all().exclude(status='Delivered')
     data = []
     for val in lists:
         headers = {
