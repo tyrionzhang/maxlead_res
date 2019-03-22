@@ -104,7 +104,7 @@ def get_tracking_order_status():
         url = url % (carrier, val.tracking_num)
         res = requests.get(url, headers=headers)
         try:
-            res = json.loads(res.content)
+            res = json.loads(res.content.decode())
             activities = res['activities']
             if activities:
                 status = activities[0]['details']
