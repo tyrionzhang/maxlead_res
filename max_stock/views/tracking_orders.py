@@ -117,10 +117,13 @@ def get_tracking_order_status():
                         first_scan_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
                         first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
                     if v['details'] == 'Delivered':
-                        delivery_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
+                        if carrier == 'ups':
+                            delivery_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
+                        elif carrier == 'fedex':
+                            delivery_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
                         delivery_time = delivery_time + datetime.timedelta(hours=-7)
                     if v['details'] == 'Origin scan' and carrier == 'ups':
-                        first_scan_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
+                        first_scan_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
                         first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
                     if first_scan_time:
                         if val.latest_ship_date and len(val.latest_ship_date) >= 20:
