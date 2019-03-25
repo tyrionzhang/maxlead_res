@@ -9,8 +9,13 @@ from maxlead_site.models import UserProfile,Employee
 
 @csrf_exempt
 def init(request):
-    from max_stock.views import tracking_orders
-    tracking_orders.get_tracking_order_status()
+    import datetime
+    from max_stock.models import TrackingOrders
+    data = TrackingOrders.objects.all()
+    for val in data:
+        a = val.billing_date
+        val.billing_date = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y') + a, "%Y%b.%d")
+        val.save()
     return render(request, "Stocks/user/users.html")
 
 @csrf_exempt

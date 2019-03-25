@@ -19,13 +19,10 @@ def index(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
 
     keywords = request.GET.get('keywords', '').replace('amp;', '')
-    billing_date_search = request.GET.get('billing_date', '')
-    if not billing_date_search:
-        billing_date = datetime.datetime.now().strftime("%b.%y")
-        billing_date_search = datetime.datetime.now().strftime("%Y-%m")
-    else:
-        billing_date = time.strptime(billing_date_search, "%Y-%m")
-        billing_date = time.strftime('%b.%y',time.localtime(time.mktime(billing_date)))
+    billing_date = request.GET.get('billing_date', '')
+    if not billing_date:
+        billing_date = (datetime.datetime.now() + datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
+
     if user.user.is_superuser or user.stocks_role == '66':
         lists = TrackingOrders.objects.all()
     else:
@@ -33,7 +30,7 @@ def index(request):
     if keywords:
         lists = lists.filter(Q(order_num__contains=keywords)|Q(tracking_num__contains=keywords))
     if billing_date:
-        lists = lists.filter(billing_date__contains=billing_date)
+        lists = lists.filter(billing_date__gt=billing_date)
     data = []
     if lists:
         for val in lists:
@@ -52,7 +49,7 @@ def index(request):
                 'status': val.status,
                 'shipment_late': val.shipment_late,
                 'delivery_late': val.delivery_late,
-                'billing_date': val.billing_date,
+                'billing_date': val.billing_date.strftime('%b.%d'),
                 'latest_ship_date': val.latest_ship_date,
                 'latest_delivery_date': val.latest_delivery_date,
                 'first_scan_time': first_scan_time,
@@ -62,7 +59,7 @@ def index(request):
     data = {
         'user': user,
         'data': data,
-        'billing_date': billing_date_search,
+        'billing_date': billing_date,
         'keywords': keywords,
         'title': 'TrackingOrders',
     }
@@ -164,7 +161,7 @@ def get_tracking_order_status():
                             'status': val.status,
                             'shipment_late': val.shipment_late,
                             'delivery_late': val.delivery_late,
-                            'billing_date': val.billing_date,
+                            'billing_date': val.billing_date.strftime('%b.%d'),
                             'latest_ship_date': val.latest_ship_date,
                             'latest_delivery_date': val.latest_delivery_date,
                             'first_scan_time': val.first_scan_time,
@@ -235,12 +232,9 @@ def tracking_orders_export(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords', '').replace('amp;', '')
-    billing_date_search = request.GET.get('billing_date', '')
-    if not billing_date_search:
-        billing_date = datetime.datetime.now().strftime("%b.%y")
-    else:
-        billing_date = time.strptime(billing_date_search, "%Y-%m")
-        billing_date = time.strftime('%b.%y', time.localtime(time.mktime(billing_date)))
+    billing_date = request.GET.get('billing_date', '')
+    if not billing_date:
+        billing_date = (datetime.datetime.now() + datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
     if user.user.is_superuser or user.stocks_role == '66':
         lists = TrackingOrders.objects.all()
     else:
@@ -248,7 +242,7 @@ def tracking_orders_export(request):
     if keywords:
         lists = lists.filter(Q(order_num__contains=keywords) | Q(tracking_num__contains=keywords))
     if billing_date:
-        lists = lists.filter(billing_date__contains=billing_date)
+        lists = lists.filter(billing_date__gt=billing_date)
 
     data = []
     if lists:
@@ -268,7 +262,7 @@ def tracking_orders_export(request):
                 'status': val.status,
                 'shipment_late': val.shipment_late,
                 'delivery_late': val.delivery_late,
-                'billing_date': val.billing_date,
+                'billing_date': val.billing_date.strftime('%b.%d'),
                 'latest_ship_date': val.latest_ship_date,
                 'latest_delivery_date': val.latest_delivery_date,
                 'first_scan_time': first_scan_time,

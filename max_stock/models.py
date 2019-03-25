@@ -167,7 +167,7 @@ class TrackingOrders(models.Model):
     status = models.CharField('Status', max_length=225, default='')
     shipment_late = models.CharField('Shipment Late', max_length=2, default='')
     delivery_late = models.CharField('Delivery Late', max_length=2, default='')
-    billing_date = models.CharField('Billing Date', max_length=20, default='')
+    billing_date = models.DateField('Billing Date', max_length=20, null=True)
     latest_ship_date = models.CharField('Latest Ship Date', max_length=50, default='')
     latest_delivery_date = models.CharField('Latest Delivery Date', max_length=50, default='')
     first_scan_time = models.DateTimeField('First Scan time', null=True)

@@ -439,7 +439,7 @@ def read_excel_for_tracking_orders(res,user=None):
                     obj.id
                     if user:
                         obj.user_id = user
-                    obj.billing_date = table.cell_value(i + 1, 0, )
+                    obj.billing_date = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y') + table.cell_value(i + 1, 0, ), "%Y%b.%d")
                     obj.account_num = table.cell_value(i + 1, 1, )
                     obj.order_num = order_num
                     obj.warehouse = table.cell_value(i + 1, 3, )
