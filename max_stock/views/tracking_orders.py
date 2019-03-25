@@ -22,8 +22,9 @@ def index(request):
     billing_date_search = request.GET.get('billing_date', '')
     if not billing_date_search:
         billing_date = datetime.datetime.now().strftime("%b.%y")
+        billing_date_search = datetime.datetime.now().strftime("%Y-%m")
     else:
-        billing_date = time.strptime(billing_date_search, "%Y-%m-%d")
+        billing_date = time.strptime(billing_date_search, "%Y-%m")
         billing_date = time.strftime('%b.%y',time.localtime(time.mktime(billing_date)))
     if user.user.is_superuser or user.stocks_role == '66':
         lists = TrackingOrders.objects.all()
@@ -61,7 +62,7 @@ def index(request):
     data = {
         'user': user,
         'data': data,
-        'billing_date': billing_date,
+        'billing_date': billing_date_search,
         'keywords': keywords,
         'title': 'TrackingOrders',
     }
@@ -214,7 +215,7 @@ def get_tracking_order_status():
             text_content = '未扫描状态的订单汇总。.'
             html_content = '<p>这是一封<strong>未扫描状态的订单汇总</strong>。</p>'
             from_email = settings.DEFAULT_FROM_EMAIL
-            msg = EmailMultiAlternatives(subject, text_content, from_email, ['swlxyztd@163.com'])
+            msg = EmailMultiAlternatives(subject, text_content, from_email, ['landy.zhang@gmainland.com'])
             msg.attach_alternative(html_content, "text/html")
             # 发送附件
             # text = open(file_path, 'rb').read()
@@ -238,7 +239,7 @@ def tracking_orders_export(request):
     if not billing_date_search:
         billing_date = datetime.datetime.now().strftime("%b.%y")
     else:
-        billing_date = time.strptime(billing_date_search, "%Y-%m-%d")
+        billing_date = time.strptime(billing_date_search, "%Y-%m")
         billing_date = time.strftime('%b.%y', time.localtime(time.mktime(billing_date)))
     if user.user.is_superuser or user.stocks_role == '66':
         lists = TrackingOrders.objects.all()
