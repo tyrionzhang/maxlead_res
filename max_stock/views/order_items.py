@@ -94,7 +94,7 @@ def send_email_as_tmp(title, msg, from_email, email, order_id, sku, buyer, payme
     from_addr = 'maxlead.us@gmail.com'
     to_addr = email
     password = "nxtpinfcqitdcpzb"
-    if from_email and from_email.email_pass:
+    if from_email and from_email.other_email:
         if from_email.smtp_server:
             smtp_server = from_email.smtp_server
         from_addr = from_email.other_email
