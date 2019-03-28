@@ -130,10 +130,12 @@ body,ul{margin: 0;padding: 0;}
     padding: 5px;
 }
 .btn-green button {
+    background: #252222;
 	background: -webkit-linear-gradient(top, #a29c9c, #252222);
 	background: -webkit-gradient(linear, left top, left bottom, from(#a29c9c), to(#252222));
 }
 .btn-blue button {
+    background: gray;
 	background: -webkit-linear-gradient(top, #a29c9c, #252222);
 	background: -webkit-gradient(linear, left top, left bottom, from(#252222), to(#a29c9c));
 }
