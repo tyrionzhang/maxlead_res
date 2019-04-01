@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy,math,time
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import Select
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
@@ -17,13 +17,13 @@ class EmailSpider(scrapy.Spider):
     next_url = ''
 
     def parse(self, response):
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
+        # from pyvirtualdisplay import Display
+        # display = Display(visible=0, size=(800, 800))
+        # display.start()
         chrome_options = Options()
-        chrome_options.add_argument('-headless')
+        # chrome_options.add_argument('-headless')
         chrome_options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
+        driver = webdriver.Firefox(firefox_options=chrome_options, executable_path=settings.FIREFOX_PATH,
                                   service_log_path=settings.LOG_PATH)
         driver.get(response.url)
         elem_email = driver.find_elements_by_id('ap_email')
@@ -108,5 +108,5 @@ class EmailSpider(scrapy.Spider):
             last_link_el = order_trs[-2].find_elements_by_css_selector('td tr>td:nth-child(3) a:last-child')
             if last_link_el:
                 self.next_url = last_link_el[0].get_attribute('href')
-        display.stop()
+        # display.stop()
         driver.quit()
