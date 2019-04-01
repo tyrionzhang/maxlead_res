@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import scrapy,os,time
+import scrapy,os
 from datetime import *
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bots.stockbot.stockbot import settings
