@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import scrapy,os
+import scrapy,os,time
 from datetime import *
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -105,11 +105,14 @@ class ExlSpider(scrapy.Spider):
                     if btn_runreport:
                         btn_runreport[0].click()
                     iframe1 = driver.find_elements_by_id('ReportFrameStockStatusViewer')
+                    driver.implicitly_wait(100)
                     if iframe1:
                         driver.switch_to.frame(iframe1[0])
                     iframe2 = driver.find_elements_by_id('report')
+                    driver.implicitly_wait(100)
                     driver.switch_to.frame(iframe2[0])
                     driver.implicitly_wait(100)
+                    time.sleep(30)
                     res = driver.find_elements_by_css_selector('.a383 tr')
                     res.pop(1)
                     res.pop(0)
