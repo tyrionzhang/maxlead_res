@@ -104,9 +104,11 @@ class ExlSpider(scrapy.Spider):
                     if warehouse_name:
                         warehouse_name = warehouse_name[0].text
                     list_rows[i].click()
+                    driver.implicitly_wait(100)
                     btn_runreport = driver.find_elements_by_id('btnRunRpt')
                     if btn_runreport:
                         btn_runreport[0].click()
+                        driver.implicitly_wait(100)
                     iframe1 = driver.find_elements_by_id('ReportFrameStockStatusViewer')
                     driver.implicitly_wait(100)
                     if iframe1:
