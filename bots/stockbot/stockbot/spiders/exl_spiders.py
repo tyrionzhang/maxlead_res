@@ -119,6 +119,7 @@ class ExlSpider(scrapy.Spider):
                     driver.implicitly_wait(100)
                     driver.switch_to.frame(iframe2[0])
                     driver.implicitly_wait(100)
+                    time.sleep(10)
                     res = driver.find_elements_by_css_selector('.a383 tr')
                     res.pop(1)
                     res.pop(0)
