@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy,os
 from datetime import *
+import time
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
@@ -57,6 +58,8 @@ class ExlSpider(scrapy.Spider):
         a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
         if a_stock:
             a_stock[0].click()
+        driver.implicitly_wait(100)
+
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
         list_rows.pop(-1)
@@ -64,25 +67,25 @@ class ExlSpider(scrapy.Spider):
             length = len(list_rows)
             for i in range(0, length):
                 if not i == 0:
-                    display.stop()
-                    from pyvirtualdisplay import Display
-                    display = Display(visible=0, size=(800, 800))
-                    display.start()
-                    firefox_options = Options()
-                    firefox_options.add_argument('-headless')
-                    firefox_options.add_argument('--disable-gpu')
-                    driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
+                    # display.stop()
+                    # from pyvirtualdisplay import Display
+                    # display = Display(visible=0, size=(800, 800))
+                    # display.start()
+                    # firefox_options = Options()
+                    # firefox_options.add_argument('-headless')
+                    # firefox_options.add_argument('--disable-gpu')
+                    # driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
                     driver.get(response.url)
-                    elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
-                    elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
-                    btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
-                    # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
-
-                    if elem_name:
-                        elem_name[0].send_keys('Intybot')
-                    if elem_pass:
-                        elem_pass[0].send_keys('7G1#AJjX')
-                    btn_login[0].click()
+                    # elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
+                    # elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
+                    # btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
+                    # # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
+                    #
+                    # if elem_name:
+                    #     elem_name[0].send_keys('Intybot')
+                    # if elem_pass:
+                    #     elem_pass[0].send_keys('7G1#AJjX')
+                    # btn_login[0].click()
                     driver.implicitly_wait(100)
                     a_reports = driver.find_elements_by_id('Menu_Reports_head')
                     if a_reports:
@@ -90,6 +93,7 @@ class ExlSpider(scrapy.Spider):
                     a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
                     if a_stock:
                         a_stock[0].click()
+                    driver.implicitly_wait(100)
                     list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
                     list_rows.pop(0)
                     list_rows.pop(-1)
