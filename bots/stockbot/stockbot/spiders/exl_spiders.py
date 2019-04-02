@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import scrapy,os
+import scrapy,os,time
 from datetime import *
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
@@ -35,10 +35,10 @@ class ExlSpider(scrapy.Spider):
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
-        firefox_options = Options()
-        firefox_options.add_argument('-headless')
-        firefox_options.add_argument('--disable-gpu')
-        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
+        chrome_options = Options()
+        chrome_options.add_argument('-headless')
+        chrome_options.add_argument('--disable-gpu')
+        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH, service_log_path=settings.LOG_PATH)
         driver.get(response.url)
         elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
         elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
@@ -68,10 +68,11 @@ class ExlSpider(scrapy.Spider):
                     from pyvirtualdisplay import Display
                     display = Display(visible=0, size=(800, 800))
                     display.start()
-                    firefox_options = Options()
-                    firefox_options.add_argument('-headless')
-                    firefox_options.add_argument('--disable-gpu')
-                    driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
+                    chrome_options = Options()
+                    chrome_options.add_argument('-headless')
+                    chrome_options.add_argument('--disable-gpu')
+                    driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
+                                              service_log_path=settings.LOG_PATH)
                     driver.get(response.url)
                     elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
                     elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
@@ -111,6 +112,7 @@ class ExlSpider(scrapy.Spider):
                     driver.implicitly_wait(100)
                     driver.switch_to.frame(iframe2[0])
                     driver.implicitly_wait(100)
+                    time.sleep(20)
                     res = driver.find_elements_by_css_selector('.a383 tr')
                     res.pop(1)
                     res.pop(0)
