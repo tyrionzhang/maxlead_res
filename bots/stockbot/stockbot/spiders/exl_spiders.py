@@ -59,6 +59,7 @@ class ExlSpider(scrapy.Spider):
         if a_stock:
             a_stock[0].click()
         driver.implicitly_wait(100)
+        time.sleep(10)
 
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
@@ -94,6 +95,7 @@ class ExlSpider(scrapy.Spider):
                     if a_stock:
                         a_stock[0].click()
                     driver.implicitly_wait(100)
+                    time.sleep(10)
                     list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
                     list_rows.pop(0)
                     list_rows.pop(-1)
