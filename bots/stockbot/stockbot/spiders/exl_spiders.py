@@ -3,7 +3,7 @@ import scrapy,os
 from datetime import *
 import time
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
@@ -36,10 +36,10 @@ class ExlSpider(scrapy.Spider):
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
-        chrome_options = Options()
-        chrome_options.add_argument('-headless')
-        chrome_options.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH, service_log_path=settings.LOG_PATH)
+        firefox_options = Options()
+        firefox_options.add_argument('-headless')
+        firefox_options.add_argument('--disable-gpu')
+        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
         driver.get(response.url)
         time.sleep(5)
         elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
@@ -53,12 +53,14 @@ class ExlSpider(scrapy.Spider):
             elem_pass[0].send_keys('7G1#AJjX')
         btn_login[0].click()
         driver.implicitly_wait(100)
+        time.sleep(5)
         a_reports = driver.find_elements_by_id('Menu_Reports_head')
         if a_reports:
             a_reports[0].click()
         a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
         if a_stock:
             a_stock[0].click()
+        driver.implicitly_wait(100)
         time.sleep(5)
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
