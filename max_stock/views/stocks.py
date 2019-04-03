@@ -31,10 +31,45 @@ def index(request):
     sel_new = request.GET.get('sel_new','')
     start_date = request.GET.get('start_date','')
     end_date = request.GET.get('end_date','')
+    if not warehouse:
+        warehouse = 'TWU'
     if not start_date:
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
-    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku','-qty')
+    stocks_url = '/admin/max_stock/get_stocks?%s'
+    get_str = ''
+    url_data = request.get_raw_uri().split('?')
+    if len(url_data) > 1:
+        get_str = url_data[1]
+    stocks_url = stocks_url % get_str
+
+    data = {
+        'user': user,
+        'keywords': keywords,
+        'warehouse': warehouse,
+        'sel_new': sel_new,
+        'start_date': start_date,
+        'end_date': end_date,
+        'stocks_url': stocks_url,
+        'menu_id': user.menu_parent_id,
+        'title': 'Inventory',
+    }
+    return render(request,"Stocks/stocks/index.html",data)
+
+@csrf_exempt
+def get_stocks(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+    keywords = request.GET.get('keywords', '').replace('amp;', '')
+    warehouse = request.GET.get('warehouse', '')
+    sel_new = request.GET.get('sel_new', '')
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
+    if not start_date:
+        start_date = datetime.now()
+        start_date = start_date.strftime('%Y-%m-%d')
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku', '-qty')
     if not user.user.is_superuser and not user.stocks_role == '66':
         uids = [user.user_id]
         if user.stocks_role == '88':
@@ -69,71 +104,64 @@ def index(request):
         if not d_list or value not in d_list:
             d_list.append(value)
 
-    for key,val in enumerate(d_list,0):
+    for key, val in enumerate(d_list, 0):
         re = {
             'sku': val['sku'],
-            'exl':{'qty':0,'is_same':0},
-            'twu':{'qty':0,'is_same':0},
-            'ego':{'qty':0,'is_same':0},
-            'tfd':{'qty':0,'is_same':0},
-            'hanover':{'qty':0,'is_same':0},
-            'atl':{'qty':0,'is_same':0}
+            'exl': {'qty': 0, 'is_same': 0},
+            'twu': {'qty': 0, 'is_same': 0},
+            'ego': {'qty': 0, 'is_same': 0},
+            'tfd': {'qty': 0, 'is_same': 0},
+            'hanover': {'qty': 0, 'is_same': 0},
+            'atl': {'qty': 0, 'is_same': 0}
         }
         obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
         sum = 0
         for v in obj:
             if v.warehouse == 'EXL':
-                re['exl'].update({'qty':v.qty})
+                re['exl'].update({'qty': v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['exl'].update({'is_same':1})
+                    re['exl'].update({'is_same': 1})
             elif v.warehouse == 'TWU':
-                re['twu'].update({'qty':v.qty})
+                re['twu'].update({'qty': v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['twu'].update({'is_same':1})
+                    re['twu'].update({'is_same': 1})
             elif v.warehouse == 'EGO':
-                re['ego'].update({'qty':v.qty})
+                re['ego'].update({'qty': v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['ego'].update({'is_same':1})
+                    re['ego'].update({'is_same': 1})
             elif v.warehouse == 'TFD':
-                re['tfd'].update({'qty':v.qty})
+                re['tfd'].update({'qty': v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['tfd'].update({'is_same':1})
+                    re['tfd'].update({'is_same': 1})
             elif v.warehouse == 'Hanover':
-                re['hanover'].update({'qty':v.qty})
+                re['hanover'].update({'qty': v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['hanover'].update({'is_same':1})
+                    re['hanover'].update({'is_same': 1})
             else:
-                re['atl'].update({'qty':v.qty})
+                re['atl'].update({'qty': v.qty})
                 sum += int(v.qty)
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['atl'].update({'is_same':1})
+                    re['atl'].update({'is_same': 1})
             date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
-        re.update({'sum': sum, 'date':date_re})
+        re.update({'sum': sum, 'date': date_re})
         items.append(re)
     data = {
-        'stock_list':items,
+        'stock_list': items,
         'user': user,
-        'keywords': keywords,
-        'warehouse': warehouse,
-        'sel_new': sel_new,
         'have_new': have_new,
-        'start_date': start_date,
-        'end_date': end_date,
-        'menu_id': user.menu_parent_id,
-        'title': 'Inventory',
     }
-    return render(request,"Stocks/stocks/index.html",data)
+    return render(request, "Stocks/stocks/stocks_list.html", data)
 
 @csrf_exempt
 def stock_checked(request):

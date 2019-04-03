@@ -83,43 +83,7 @@
             <div class="clear"></div>
         </div>
         <div class="con-body">
-            <table id="datas" class="tb-datas">
-                <tr id="tr-head">
-                    <th>Sku</th>
-                    <th>EXL</th>
-                    <th>TWU</th>
-                    <th>EGO</th>
-                    <th>TFD</th>
-                    <th>Hanover</th>
-                    <th>ATL</th>
-                    <th>SUM</th>
-                    <th>Date</th>
-                    {% if have_new %}
-                    <th>Fun</th>
-                    {% endif %}
-                </tr>
-                {% for val in stock_list %}
-                <tr>
-                    <td>{{ val.sku }}</td>
-                    <td class="tr-stock-blue{{ val.exl.is_same }}">{{ val.exl.qty }}</td>
-                    <td class="tr-stock-blue{{ val.twu.is_same }}">{{ val.twu.qty }}</td>
-                    <td class="tr-stock-blue{{ val.ego.is_same }}">{{ val.ego.qty }}</td>
-                    <td class="tr-stock-blue{{ val.tfd.is_same }}">{{ val.tfd.qty }}</td>
-                    <td class="tr-stock-blue{{ val.hanover.is_same }}">{{ val.hanover.qty }}</td>
-                    <td class="tr-stock-blue{{ val.atl.is_same }}">{{ val.atl.qty }}</td>
-                    <td>{{ val.sum }}</td>
-                    <td>{{ val.date }}</td>
-                {% if have_new %}
-                    <td>
-                        {% if val.is_new_type %}
-                        <a href="javascript:;" class="fun-btn btn-edit stock-check-edit">Covered</a>
-                        {% endif %}
-                    </td>
-                {% endif %}
-                </tr>
-                {% endfor %}
-
-            </table>
+            <iframe src="{{ stocks_url }}" id="external-frame" width="100%"></iframe>
         </div>
     </div>
     <div class="hide" id="import_modal">
@@ -130,6 +94,19 @@
         <div id="import_msg"></div>
     </div>
     <script>
+         // document.domain = "caibaojian.com";
+        function setIframeHeight(iframe) {
+            if (iframe) {
+                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                }
+            }
+        }
+
+        window.onload = function () {
+            setIframeHeight(document.getElementById('external-frame'));
+        };
         $(document).ready(function(){
           $('input[name="keywords"]').val("{{ keywords }}");
           $('select[name="warehouse"]').val('{{ warehouse }}');
