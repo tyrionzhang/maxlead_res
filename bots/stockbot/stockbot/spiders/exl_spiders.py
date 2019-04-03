@@ -70,26 +70,7 @@ class ExlSpider(scrapy.Spider):
             for i in range(0, length):
                 try:
                     if not i == 0:
-                        # display.stop()
-                        # from pyvirtualdisplay import Display
-                        # display = Display(visible=0, size=(800, 800))
-                        # display.start()
-                        # chrome_options = Options()
-                        # chrome_options.add_argument('-headless')
-                        # chrome_options.add_argument('--disable-gpu')
-                        # driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=settings.CHROME_PATH,
-                        #                           service_log_path=settings.LOG_PATH)
                         driver.get(response.url)
-                        # elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
-                        # elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
-                        # btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
-                        # # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
-                        #
-                        # if elem_name:
-                        #     elem_name[0].send_keys('Intybot')
-                        # if elem_pass:
-                        #     elem_pass[0].send_keys('7G1#AJjX')
-                        # btn_login[0].click()
                         driver.implicitly_wait(100)
                         time.sleep(5)
                         a_reports = driver.find_elements_by_id('Menu_Reports_head')
@@ -162,7 +143,7 @@ class ExlSpider(scrapy.Spider):
                                         msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
                                                                     item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
                 except:
-                    pass
+                    continue
         display.stop()
         driver.quit()
 

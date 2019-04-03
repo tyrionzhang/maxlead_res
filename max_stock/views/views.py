@@ -67,15 +67,14 @@ class perform_command_que(threading.Thread):
         os.chdir(work_path)
         os.popen('scrapyd-deploy')
 
-        # cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
-        # cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d username=%s' % self.username
+        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
+        cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d username=%s' % self.username
         cmd_str3 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d username=%s' % self.username
-        # cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider -d username=%s' % self.username
-        # cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl1_spider'
-        # os.popen(cmd_str2)
-        # os.popen(cmd_str1)
+        cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider -d username=%s' % self.username
+        os.popen(cmd_str2)
+        os.popen(cmd_str1)
         os.popen(cmd_str3)
-        # os.popen(cmd_str4)
+        os.popen(cmd_str4)
         print('%s:%s finished!' % (time.time(), self.getName()))
         os.chdir(settings.ROOT_PATH)
 
