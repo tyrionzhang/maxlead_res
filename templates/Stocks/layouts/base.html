@@ -117,7 +117,7 @@
 			</ul> -->
 			<h3>Welcome,<a href="javascript:;" style="text-decoration: none;color: white;" id="user_info">{{ user.user.username }}</a>!</h3>
             <div class="header-right">
-                <a href="/admin/max_stock/index/?menu_id=-1" {% if user.index_menu_id == -1 %}style="color: #cccccc;"{% endif %}>Index</a>
+                <a href="/admin/max_stock/index" {% if user.index_menu_id == -1 %}style="color: #cccccc;"{% endif %}>Index</a>
                 {% for val in user.menu_list %}
                     <a href="{{ val.url }}?menu_id={{ val.id }}" {% if user.index_menu_id == val.id %}style="color: #cccccc;"{% endif %}>{{ val.name }}</a>
                 {% endfor %}
