@@ -33,11 +33,11 @@ class ExlSpider(scrapy.Spider):
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         msg_str2 = ''
-        # from pyvirtualdisplay import Display
-        # display = Display(visible=0, size=(800, 800))
-        # display.start()
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 800))
+        display.start()
         firefox_options = Options()
-        # firefox_options.add_argument('-headless')
+        firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
         driver.get(response.url)
@@ -52,6 +52,7 @@ class ExlSpider(scrapy.Spider):
             elem_pass[0].send_keys('7G1#AJjX')
         btn_login[0].click()
         driver.implicitly_wait(100)
+        time.sleep(10)
         a_reports = driver.find_elements_by_id('Menu_Reports_head')
         if a_reports:
             a_reports[0].click()
@@ -59,7 +60,6 @@ class ExlSpider(scrapy.Spider):
         if a_stock:
             a_stock[0].click()
         driver.implicitly_wait(100)
-        time.sleep(10)
 
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
@@ -157,7 +157,7 @@ class ExlSpider(scrapy.Spider):
                                 if user:
                                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
                                                                 item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
-        # display.stop()
+        display.stop()
         driver.quit()
 
         if not os.path.isfile(file_path):
