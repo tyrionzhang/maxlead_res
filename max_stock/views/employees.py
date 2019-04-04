@@ -9,20 +9,30 @@ from maxlead_site.models import UserProfile,Employee
 
 @csrf_exempt
 def init(request):
-    import datetime
+    import time
     from max_stock.models import TrackingOrders
     data = TrackingOrders.objects.all()
     for val in data:
-        shipment_late = val.shipment_late
-        delivery_late = val.delivery_late
-        if shipment_late == 'Y':
+        if val.first_scan_time and val.latest_ship_date:
+            first_scan_time_str = int(time.mktime(time.strptime(val.first_scan_time, "%Y-%m-%d %H:%M:%S")))
+            latest_ship_date_str = int(time.mktime(time.strptime(val.latest_ship_date[0:19], "%Y-%m-%dT%H:%M:%S")))
+            shipment_late_c = first_scan_time_str - latest_ship_date_str
+            if shipment_late_c > 0:
+                val.shipment_late = 'Y'
+            else:
+                val.shipment_late = ''
+        else:
             val.shipment_late = ''
+        if val.latest_delivery_date and val.delivery_time:
+            first_scan_time_str = int(time.mktime(time.strptime(val.delivery_time, "%Y-%m-%d %H:%M:%S")))
+            latest_ship_date_str = int(time.mktime(time.strptime(val.latest_delivery_date[0:19], "%Y-%m-%dT%H:%M:%S")))
+            delivery_late_c = first_scan_time_str - latest_ship_date_str
+            if delivery_late_c > 0:
+                val.delivery_late = 'Y'
+            else:
+                val.delivery_late = ''
         else:
-            val.shipment_late = 'Y'
-        if delivery_late == 'Y':
             val.delivery_late = ''
-        else:
-            val.delivery_late = 'Y'
         val.save()
     return render(request, "Stocks/user/users.html")
 
