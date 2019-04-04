@@ -13,8 +13,16 @@ def init(request):
     from max_stock.models import TrackingOrders
     data = TrackingOrders.objects.all()
     for val in data:
-        a = val.billing_date
-        val.billing_date = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y') + a, "%Y%b.%d")
+        shipment_late = val.shipment_late
+        delivery_late = val.delivery_late
+        if shipment_late == 'Y':
+            val.shipment_late = ''
+        else:
+            val.shipment_late = 'Y'
+        if delivery_late == 'Y':
+            val.delivery_late = ''
+        else:
+            val.delivery_late = 'Y'
         val.save()
     return render(request, "Stocks/user/users.html")
 
