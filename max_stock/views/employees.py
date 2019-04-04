@@ -13,8 +13,8 @@ def init(request):
     from max_stock.models import TrackingOrders
     data = TrackingOrders.objects.all()
     for val in data:
-        if val.first_scan_time and val.latest_ship_date:
-            first_scan_time_str = int(time.mktime(time.strptime(val.first_scan_time, "%Y-%m-%d %H:%M:%S")))
+        if val.first_scan_time and val.latest_ship_date and len(val.latest_ship_date)>=20:
+            first_scan_time_str = int(time.mktime(val.first_scan_time.timetuple()))
             latest_ship_date_str = int(time.mktime(time.strptime(val.latest_ship_date[0:19], "%Y-%m-%dT%H:%M:%S")))
             shipment_late_c = first_scan_time_str - latest_ship_date_str
             if shipment_late_c > 0:
@@ -23,8 +23,8 @@ def init(request):
                 val.shipment_late = ''
         else:
             val.shipment_late = ''
-        if val.latest_delivery_date and val.delivery_time:
-            first_scan_time_str = int(time.mktime(time.strptime(val.delivery_time, "%Y-%m-%d %H:%M:%S")))
+        if val.latest_delivery_date and val.delivery_time and len(val.latest_delivery_date)>=20:
+            first_scan_time_str = int(time.mktime(val.delivery_time.timetuple()))
             latest_ship_date_str = int(time.mktime(time.strptime(val.latest_delivery_date[0:19], "%Y-%m-%dT%H:%M:%S")))
             delivery_late_c = first_scan_time_str - latest_ship_date_str
             if delivery_late_c > 0:
