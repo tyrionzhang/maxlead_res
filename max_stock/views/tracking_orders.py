@@ -20,6 +20,7 @@ def index(request):
 
     keywords = request.GET.get('keywords', '').replace('amp;', '')
     billing_date = request.GET.get('billing_date', '')
+    end_date = request.GET.get('end_date', '')
     if not billing_date:
         billing_date = (datetime.datetime.now() + datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
 
@@ -31,6 +32,8 @@ def index(request):
         lists = lists.filter(Q(order_num__contains=keywords)|Q(tracking_num__contains=keywords))
     if billing_date:
         lists = lists.filter(billing_date__gt=billing_date)
+    if end_date:
+        lists = lists.filter(billing_date__lte=end_date)
     data = []
     if lists:
         for val in lists:
@@ -60,6 +63,7 @@ def index(request):
         'user': user,
         'data': data,
         'billing_date': billing_date,
+        'end_date': end_date,
         'keywords': keywords,
         'title': 'TrackingOrders',
     }
