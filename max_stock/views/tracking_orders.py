@@ -130,7 +130,7 @@ def get_tracking_order_status():
                                 latest_ship_date_str = int(
                                     time.mktime(time.strptime(val.latest_ship_date[0:19], "%Y-%m-%dT%H:%M:%S")))
                                 shipment_late_c = first_scan_time_str - latest_ship_date_str
-                                if shipment_late_c < 0:
+                                if shipment_late_c > 0:
                                     shipment_late = 'Y'
                         if delivery_time:
                             if val.latest_delivery_date and len(val.latest_delivery_date) >= 20:
@@ -138,7 +138,7 @@ def get_tracking_order_status():
                                 latest_delivery_date_str = int(
                                     time.mktime(time.strptime(val.latest_delivery_date[0:19], "%Y-%m-%dT%H:%M:%S")))
                                 delivery_late_c = delivery_time_str - latest_delivery_date_str
-                                if delivery_late_c < 0:
+                                if delivery_late_c > 0:
                                     delivery_late = 'Y'
                     val.status = status
                     if first_scan_time:
