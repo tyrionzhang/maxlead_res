@@ -54,6 +54,7 @@ class Atl1Spider(scrapy.Spider):
         driver.implicitly_wait(100)
         total_page = driver.find_elements_by_css_selector('.nav-list-wrapper span:nth-child(2)>b')[0].text
         total_page = int(total_page)
+        items = []
         for i in range(total_page):
             try:
                 res = driver.find_elements_by_css_selector('.table tr')
@@ -70,23 +71,7 @@ class Atl1Spider(scrapy.Spider):
                             item['qty'] = item['qty'].replace(',', '')
                         else:
                             item['qty'] = 0
-                        date_now = datetime.now()
-                        date0 = date_now.strftime('%Y-%m-%d')
-                        obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'], created__contains=date0)
-                        date1 = date_now - timedelta(days=1)
-                        obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'], created__contains=date1.strftime('%Y-%m-%d'))
-                        if obj1:
-                            item['qty1'] = obj1[0].qty - int(item['qty'])
-                        if obj:
-                            obj.delete()
-                        yield item
-
-                        threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
-                        user = SkuUsers.objects.filter(sku=item['sku'])
-                        if threshold and threshold[0].threshold >= int(item['qty']):
-                            if user:
-                                msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
-                                            user[0].user.email, item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                        items.append(item)
 
                 if i < (total_page - 1):
                     elem_next_page = 'http://us.hipacking.com/member/instock/stock.html?pageIndex=%s&keyword=&warehouse=1&sort=NormalCount' % (i + 2)
@@ -95,9 +80,33 @@ class Atl1Spider(scrapy.Spider):
                         driver.implicitly_wait(100)
             except:
                 continue
-
         display.stop()
         driver.quit()
+
+        for i, val in enumerate(items, 0):
+            for n, v in enumerate(items, 0):
+                if v['sku'] == val['sku'] and not i == n:
+                    val['qty'] = int(v['qty']) + int(val['qty'])
+                    del items[n]
+            date_now = datetime.now()
+            date0 = date_now.strftime('%Y-%m-%d')
+            obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'], created__contains=date0)
+            date1 = date_now - timedelta(days=1)
+            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
+                                                  created__contains=date1.strftime('%Y-%m-%d'))
+            if obj1:
+                val['qty1'] = obj1[0].qty - int(val['qty'])
+            if obj:
+                obj.delete()
+            yield val
+
+            threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
+            user = SkuUsers.objects.filter(sku=val['sku'])
+            if threshold and threshold[0].threshold >= int(val['qty']):
+                if user:
+                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
+                        user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
                 f.close()
