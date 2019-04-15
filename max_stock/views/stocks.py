@@ -19,7 +19,8 @@ warehouse= {
     'ego' : 'EGO',
     'tfd' : 'TFD',
     'hanover' : 'Hanover',
-    'atl' : 'ATL-1'
+    'atl' : 'ATL-1',
+    'pc' : 'PC'
 }
 @csrf_exempt
 def index(request):
@@ -112,7 +113,8 @@ def get_stocks(request):
             'ego': {'qty': 0, 'is_same': 0},
             'tfd': {'qty': 0, 'is_same': 0},
             'hanover': {'qty': 0, 'is_same': 0},
-            'atl': {'qty': 0, 'is_same': 0}
+            'atl': {'qty': 0, 'is_same': 0},
+            'pc': {'qty': 0, 'is_same': 0}
         }
         obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
         sum = 0
@@ -147,6 +149,12 @@ def get_stocks(request):
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['hanover'].update({'is_same': 1})
+            elif v.warehouse == 'PC':
+                re['pc'].update({'qty': v.qty})
+                sum += int(v.qty)
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                    re['pc'].update({'is_same': 1})
             else:
                 re['atl'].update({'qty': v.qty})
                 sum += int(v.qty)
@@ -350,7 +358,8 @@ def export_stocks(request):
             'ego': '0',
             'tfd': '0',
             'hanover': '0',
-            'atl': '0'
+            'atl': '0',
+            'pc': '0'
         }
         obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
         sum = 0
@@ -369,6 +378,9 @@ def export_stocks(request):
                 sum += int(v.qty)
             elif v.warehouse == 'Hanover':
                 re.update({'hanover': v.qty})
+                sum += int(v.qty)
+            elif v.warehouse == 'PC':
+                re.update({'pc': v.qty})
                 sum += int(v.qty)
             else:
                 re.update({'atl': v.qty})

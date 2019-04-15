@@ -114,6 +114,7 @@
                 <th>TFD</th>
                 <th>Hanover</th>
                 <th>ATL</th>
+                <th>PC</th>
                 <th>SUM</th>
                 <th>Date</th>
                 {% if have_new %}
@@ -129,6 +130,7 @@
                 <td class="tr-stock-blue{{ val.tfd.is_same }}">{{ val.tfd.qty }}</td>
                 <td class="tr-stock-blue{{ val.hanover.is_same }}">{{ val.hanover.qty }}</td>
                 <td class="tr-stock-blue{{ val.atl.is_same }}">{{ val.atl.qty }}</td>
+                <td class="tr-stock-blue{{ val.pc.is_same }}">{{ val.pc.qty }}</td>
                 <td>{{ val.sum }}</td>
                 <td>{{ val.date }}</td>
             {% if have_new %}
