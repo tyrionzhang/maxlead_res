@@ -178,8 +178,9 @@ def stock_checked(request):
             f.write(chunk)
         f.close()
         res = read_excel_data(WarehouseStocks, file_path)
+        edit_type = ''
         if res:
-            for val in res:
+            for i, val in enumerate(res, 1):
                 re1 = {}
                 re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'])
                 date_str = datetime.now().strftime("%Y-%m-%d")
@@ -199,6 +200,8 @@ def stock_checked(request):
                     id = 0
                     qty_old = 0
                     is_same = 1
+                if qty_old < val['qty']:
+                    edit_type += '有OOS:第%s行,sku:%s\\n' % (i, val['sku'])
                 re1.update({
                     'id':id,
                     'sku':val['sku'],
@@ -217,6 +220,7 @@ def stock_checked(request):
             'user': user,
             'title': 'Inventory-Check',
             'type': type,
+            'edit_type': edit_type,
         }
     return render(request, "Stocks/stocks/stock_checked.html", data)
 

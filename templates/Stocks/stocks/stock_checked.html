@@ -73,6 +73,10 @@
     </div>
     <script>
         $(document).ready(function() {
+            {% if not type and edit_type %}
+                alert('{{ edit_type }}');
+                return false;
+            {% endif %}
             $("form[name='userLogin']").submit(function (e) {
                 e.preventDefault();
             });
@@ -92,6 +96,10 @@
                     'date_str':date_str,
                     'type':'{{ type }}'
                 };
+                {% if not type and edit_type %}
+                    alert('{{ edit_type }}');
+                    return false;
+                {% endif %}
                 $.post('/admin/max_stock/checked_edit/',data,function (re) {
                    if(re.code==1){
                        elem.parents('tr').children('td:eq(2)').html(re.data);
@@ -110,6 +118,10 @@
             });
 
             $('#all_covered').on('click', function () {
+                {% if edit_type %}
+                    alert('{{ edit_type }}');
+                    return false;
+                {% endif %}
                 if(confirm('确认全部修改？')){
                     var data = new Array();
                     {% for val in data %}
