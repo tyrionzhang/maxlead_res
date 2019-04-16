@@ -57,6 +57,7 @@ class ZtoSpider(scrapy.Spider):
         time.sleep(3)
         stock_li.click()
         driver.implicitly_wait(100)
+        time.sleep(3)
         total_count = driver.find_element_by_class_name('el-pagination__total').text
         total_page = int(total_count.split(' ')[1].replace(',','')) / 10
         total_page = math.ceil(total_page)
