@@ -100,7 +100,8 @@ class ZtoSpider(scrapy.Spider):
                         time.sleep(3)
                         elem_next_page[0].click()
                         driver.implicitly_wait(100)
-             except:
+             except IndexError as e:
+                 print(e)
                  continue
         display.stop()
         driver.quit()
