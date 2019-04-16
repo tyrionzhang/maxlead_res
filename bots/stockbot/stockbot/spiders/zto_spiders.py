@@ -62,7 +62,7 @@ class ZtoSpider(scrapy.Spider):
         total_page = int(total_count.split(' ')[1].replace(',','')) / 10
         total_page = math.ceil(total_page)
         for i in range(total_page):
-             # try:
+             try:
                 res = driver.find_elements_by_css_selector('.el-table tbody>tr')
                 for val in res:
                     item = WarehouseStocksItem()
@@ -95,16 +95,16 @@ class ZtoSpider(scrapy.Spider):
                             if user:
                                 msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % ( user[0].user.email,
                                                         item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
-                if i < total_page:
+                if i < total_page - 1:
                     elem_next_page = driver.find_elements_by_class_name('btn-next')
                     if elem_next_page:
                         time.sleep(3)
                         elem_next_page[0].click()
                         driver.implicitly_wait(100)
                         time.sleep(3)
-             # except IndexError as e:
-             #     print(e)
-             #     continue
+             except IndexError as e:
+                 print(e)
+                 continue
         display.stop()
         driver.quit()
 
