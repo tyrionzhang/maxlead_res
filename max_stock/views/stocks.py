@@ -280,7 +280,7 @@ def checked_edit(request):
                 }
             re_qty = qty
         else:
-            qtys = res[0].qty-int(qty)
+            qtys = res[0].qty+int(qty)
             i = res.update(qty=qtys)
             if i:
                 data = {
@@ -306,7 +306,7 @@ def checked_batch_edit(request):
                 try:
                     re = WarehouseStocks.objects.filter(id=val['id'])
                     if re:
-                        qtys = re[0].qty - val['qty_new']
+                        qtys = re[0].qty + val['qty_new']
                         i = re.update(qty=qtys)
                         if i:
                             data = {
