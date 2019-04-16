@@ -418,6 +418,8 @@ def read_excel_data(model,res):
                         'tfd' : int(table.cell_value(i + 1, 4,)),
                         'hanover' : int(table.cell_value(i + 1, 5,)),
                         'atl' : int(table.cell_value(i + 1, 6,)),
+                        'pc' : int(table.cell_value(i + 1, 7,)),
+                        'zto' : int(table.cell_value(i + 1, 8,)),
                         'date' : xlrd.xldate.xldate_as_datetime(table.cell_value(i + 1, 7,), 0)
                     })
                     re_data.append(re_v)

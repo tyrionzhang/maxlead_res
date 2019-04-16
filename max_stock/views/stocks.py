@@ -20,7 +20,8 @@ warehouse= {
     'tfd' : 'TFD',
     'hanover' : 'Hanover',
     'atl' : 'ATL-1',
-    'pc' : 'PC'
+    'pc' : 'PC',
+    'zto' : 'ZTO'
 }
 @csrf_exempt
 def index(request):
@@ -114,7 +115,8 @@ def get_stocks(request):
             'tfd': {'qty': 0, 'is_same': 0},
             'hanover': {'qty': 0, 'is_same': 0},
             'atl': {'qty': 0, 'is_same': 0},
-            'pc': {'qty': 0, 'is_same': 0}
+            'pc': {'qty': 0, 'is_same': 0},
+            'zto': {'qty': 0, 'is_same': 0}
         }
         obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
         sum = 0
@@ -155,6 +157,12 @@ def get_stocks(request):
                 threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['pc'].update({'is_same': 1})
+            elif v.warehouse == 'ZTO':
+                re['zto'].update({'qty': v.qty})
+                sum += int(v.qty)
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                    re['zto'].update({'is_same': 1})
             else:
                 re['atl'].update({'qty': v.qty})
                 sum += int(v.qty)
@@ -359,7 +367,8 @@ def export_stocks(request):
             'tfd': '0',
             'hanover': '0',
             'atl': '0',
-            'pc': '0'
+            'pc': '0',
+            'zto': '0'
         }
         obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
         sum = 0
@@ -382,6 +391,9 @@ def export_stocks(request):
             elif v.warehouse == 'PC':
                 re.update({'pc': v.qty})
                 sum += int(v.qty)
+            elif v.warehouse == 'ZTO':
+                re.update({'zto': v.qty})
+                sum += int(v.qty)
             else:
                 re.update({'atl': v.qty})
                 sum += int(v.qty)
@@ -389,8 +401,8 @@ def export_stocks(request):
         re.update({'sum': sum, 'date': date_re})
         data.append(re)
     if data:
-        fields = ['SKU','EXL','TWU','EGO','TFD','Hanover','ATL','SUM','Created']
-        data_fields = ['sku','exl','twu','ego','tfd','hanover','atl','sum','date']
+        fields = ['SKU','EXL','TWU','EGO','TFD','Hanover','ATL', 'PC', 'ZTO', 'SUM','Created']
+        data_fields = ['sku','exl','twu','ego','tfd','hanover','atl', 'pc', 'zto', 'sum','date']
         return get_excel_file(request, data, fields, data_fields)
     else:
         return HttpResponse('没有数据~~')
@@ -712,6 +724,8 @@ def sales_vol(request):
             'tfd': 0,
             'hanover': 0,
             'atl': 0,
+            'pc': 0,
+            'zto': 0,
             'sum': 0
         }
         contain_date = val['d'].strftime('%Y-%m-%d')
@@ -741,6 +755,16 @@ def sales_vol(request):
                     sakes_check = 1
             elif v.warehouse == 'Hanover':
                 re['hanover'] = v.qty1
+                sum += int(v.qty1)
+                if v.qty1 < 0:
+                    sakes_check = 1
+            elif v.warehouse == 'PC':
+                re['pc'] = v.qty1
+                sum += int(v.qty1)
+                if v.qty1 < 0:
+                    sakes_check = 1
+            elif v.warehouse == 'ZTO':
+                re['zto'] = v.qty1
                 sum += int(v.qty1)
                 if v.qty1 < 0:
                     sakes_check = 1
@@ -797,6 +821,8 @@ def stock_sales(request):
                     'ego' : 0,
                     'tfd' : 0,
                     'hanover' : 0,
+                    'pc' : 0,
+                    'zto' : 0,
                     'atl' : 0,
                     'date' : val['date'],
                     'error' : ''
@@ -815,6 +841,10 @@ def stock_sales(request):
                             re1.update({'tfd' : qty1_str % (v.qty1, val['tfd'])})
                         elif v.warehouse == 'Hanover':
                             re1.update({'hanover' : qty1_str % (v.qty1, val['hanover'])})
+                        elif v.warehouse == 'PC':
+                            re1.update({'pc' : qty1_str % (v.qty1, val['pc'])})
+                        elif v.warehouse == 'ZTO':
+                            re1.update({'zto' : qty1_str % (v.qty1, val['zto'])})
                         else:
                             re1.update({'atl': qty1_str % (v.qty1, val['atl'])})
                 else:
@@ -895,6 +925,26 @@ def save_sales(request):
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
                             obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL-1',
+                                                                  created__contains=date1.strftime('%Y-%m-%d'))
+                            obj1.update(qty=obj1[0].qty + int(sales[1]))
+                            re.update(qty1=obj1[0].qty - re[0].qty)
+                    if not val['pc'] == '0':
+                        sales = val['pc'].split('补货')
+                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='PC',
+                                                            created__contains=val['date'], qty1__lt=0)
+                        if re:
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='PC',
+                                                                  created__contains=date1.strftime('%Y-%m-%d'))
+                            obj1.update(qty=obj1[0].qty + int(sales[1]))
+                            re.update(qty1=obj1[0].qty - re[0].qty)
+                    if not val['zto'] == '0':
+                        sales = val['zto'].split('补货')
+                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ZTO',
+                                                            created__contains=val['date'], qty1__lt=0)
+                        if re:
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ZTO',
                                                                   created__contains=date1.strftime('%Y-%m-%d'))
                             obj1.update(qty=obj1[0].qty + int(sales[1]))
                             re.update(qty1=obj1[0].qty - re[0].qty)

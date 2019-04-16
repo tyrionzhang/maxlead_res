@@ -42,6 +42,7 @@
                             <option value="ATL-1">ATL-1</option>
                             <option value="TFD">TFD</option>
                             <option value="PC">PC</option>
+                            <option value="ZTO">ZTO</option>
                         </select>
                     </label>
                 </div>
@@ -94,6 +95,8 @@
                     <th>TFD</th>
                     <th>Hanover</th>
                     <th>ATL</th>
+                    <th>PC</th>
+                    <th>ZTO</th>
                     <th>SUM</th>
                     <th>Date</th>
                     <th>Fun</th>
@@ -124,6 +127,14 @@
                     <td class="tr-stock-blue sales_num">
                         <span>{{ val.atl }}</span>
                         <input name='atl' type='text' value='' class="hide sales-input"/>
+                    </td>
+                    <td class="tr-stock-blue sales_num">
+                        <span>{{ val.pc }}</span>
+                        <input name='pc' type='text' value='' class="hide sales-input"/>
+                    </td>
+                    <td class="tr-stock-blue sales_num">
+                        <span>{{ val.zto }}</span>
+                        <input name='zto' type='text' value='' class="hide sales-input"/>
                     </td>
                     <td>{{ val.sum }}</td>
                     <td>{{ val.date }}</td>

@@ -35,6 +35,8 @@
                             <option value="EGO">EGO</option>
                             <option value="ATL-1">ATL-1</option>
                             <option value="TFD">TFD</option>
+                            <option value="PC">PC</option>
+                            <option value="ZTO">ZTO</option>
                         </select>
                     </label>
                 </div>
@@ -87,6 +89,8 @@
                     <th>TFD</th>
                     <th>Hanover</th>
                     <th>ATL</th>
+                    <th>PC</th>
+                    <th>ZTO</th>
                     <th>DES</th>
                     <th>Date</th>
                     {% if have_new %}
@@ -103,6 +107,8 @@
                     <td class="tr-stock-blue{{ val.tfd.is_same }}">{{ val.tfd }}</td>
                     <td class="tr-stock-blue{{ val.hanover.is_same }}">{{ val.hanover }}</td>
                     <td class="tr-stock-blue{{ val.atl.is_same }}">{{ val.atl }}</td>
+                    <td class="tr-stock-blue{{ val.pc.is_same }}">{{ val.pc }}</td>
+                    <td class="tr-stock-blue{{ val.zto.is_same }}">{{ val.zto }}</td>
                     <td>{{ val.error }}</td>
                     <td>{{ val.date }}</td>
                 </tr>
@@ -142,6 +148,8 @@
                         'tfd': '{{ val.tfd }}',
                         'hanover': '{{ val.hanover }}',
                         'atl': '{{ val.atl }}',
+                        'pc': '{{ val.pc }}',
+                        'zto': '{{ val.zto }}',
                         'date': '{{ val.date }}'
                     };
                     data.push(re);
