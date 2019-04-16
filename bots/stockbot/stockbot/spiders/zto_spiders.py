@@ -62,7 +62,7 @@ class ZtoSpider(scrapy.Spider):
         total_page = int(total_count.split(' ')[1].replace(',','')) / 10
         total_page = math.ceil(total_page)
         for i in range(total_page):
-             try:
+             # try:
                 res = driver.find_elements_by_css_selector('.el-table tbody>tr')
                 for val in res:
                     item = WarehouseStocksItem()
@@ -101,9 +101,9 @@ class ZtoSpider(scrapy.Spider):
                         time.sleep(3)
                         elem_next_page[0].click()
                         driver.implicitly_wait(100)
-             except IndexError as e:
-                 print(e)
-                 continue
+             # except IndexError as e:
+             #     print(e)
+             #     continue
         display.stop()
         driver.quit()
 
