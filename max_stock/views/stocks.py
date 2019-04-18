@@ -196,7 +196,17 @@ def stock_checked(request):
         res = read_excel_data(WarehouseStocks, file_path)
         edit_type = ''
         if res:
+            sku_li = []
+            res_li = []
             for i, val in enumerate(res, 1):
+                if val['sku'] not in sku_li:
+                    sku_li.append(val['sku'])
+                    res_li.append(val)
+                else:
+                    for v in res_li:
+                        if v['sku'] == val['sku']:
+                            v['qty'] += val['qty']
+            for i, val in enumerate(res_li, 1):
                 re1 = {}
                 re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'])
                 date_str = datetime.now().strftime("%Y-%m-%d")
