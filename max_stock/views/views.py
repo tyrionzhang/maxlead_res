@@ -173,6 +173,27 @@ def task_save_stocks():
     t.start()
     pass
 
+def copy_stocks_of_pc():
+    t = threading.Timer(86400.0, copy_stocks_of_pc)
+    sherch_date = (datetime.now() + timedelta(days=-1)).strftime("%Y-%m-%d")
+    stocks = WarehouseStocks.objects.filter(warehouse='PC', created__contains=sherch_date)
+    querysetlist = []
+    for val in stocks:
+        try:
+            querysetlist.append(WarehouseStocks(
+                sku= val.sku,
+                warehouse= 'PC',
+                qty1= val.qty1,
+                is_new= 0,
+                qty= val.qty
+            ))
+        except:
+            continue
+    if querysetlist:
+        WarehouseStocks.objects.bulk_create(querysetlist)
+    t.start()
+    pass
+
 
 def help_page(request):
     user = App.get_user_info(request)
