@@ -216,7 +216,7 @@ def stock_checked(request):
                     id = 0
                     qty_old = 0
                     is_same = 1
-                if qty_old < val['qty']:
+                if val['qty'] < 0 and qty_old < (val['qty'] * -1):
                     edit_type += '有OOS:第%s行,sku:%s\\n' % (i, val['sku'])
                 re1.update({
                     'id':id,
