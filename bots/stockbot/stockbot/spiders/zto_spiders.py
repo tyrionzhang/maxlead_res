@@ -50,7 +50,7 @@ class ZtoSpider(scrapy.Spider):
         if elem_name:
             elem_name[0].send_keys('ZTLO')
         if elem_pass:
-            elem_pass[0].send_keys('123456')
+            elem_pass[0].send_keys('usZTO5012')
         btn_login[0].click()
         driver.implicitly_wait(100)
         stock_li = driver.find_element_by_id('stock')
