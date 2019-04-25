@@ -125,22 +125,12 @@ class ExlSpider(scrapy.Spider):
                                 else:
                                     item['qty'] = 0
                                 item['is_new'] = 0
-                                date_now = datetime.now()
-                                date0 = date_now.strftime('%Y-%m-%d')
-                                obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
-                                                                     created__contains=date0)
-                                date1 = date_now - timedelta(days=1)
-                                obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
-                                                                      created__contains=date1.strftime('%Y-%m-%d'))
-                                if obj1:
-                                    item['qty1'] = obj1[0].qty - int(item['qty'])
-                                if obj:
-                                    obj.delete()
                                 items.append(item)
                 except:
                     continue
         display.stop()
         driver.quit()
+
         for i, val in enumerate(items, 0):
             for n, v in enumerate(items, 0):
                 if v['sku'] == val['sku'] and not i == n:
