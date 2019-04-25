@@ -65,6 +65,7 @@ class ExlSpider(scrapy.Spider):
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
         list_rows.pop(-1)
+        items = []
         if list_rows:
             length = len(list_rows)
             for i in range(0, length):
@@ -135,17 +136,34 @@ class ExlSpider(scrapy.Spider):
                                     item['qty1'] = obj1[0].qty - int(item['qty'])
                                 if obj:
                                     obj.delete()
-                                yield item
-                                threshold = Thresholds.objects.filter(sku=item['sku'],warehouse=item['warehouse'])
-                                user = SkuUsers.objects.filter(sku=item['sku'])
-                                if threshold and threshold[0].threshold >= int(item['qty']):
-                                    if user:
-                                        msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
-                                                                    item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                                items.append(item)
                 except:
                     continue
         display.stop()
         driver.quit()
+        for i, val in enumerate(items, 0):
+            for n, v in enumerate(items, 0):
+                if v['sku'] == val['sku'] and not i == n:
+                    val['qty'] = int(v['qty']) + int(val['qty'])
+                    del items[n]
+            date_now = datetime.now()
+            date0 = date_now.strftime('%Y-%m-%d')
+            obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'], created__contains=date0)
+            date1 = date_now - timedelta(days=1)
+            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
+                                                  created__contains=date1.strftime('%Y-%m-%d'))
+            if obj1:
+                val['qty1'] = obj1[0].qty - int(val['qty'])
+            if obj:
+                obj.delete()
+            yield val
+
+            threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
+            user = SkuUsers.objects.filter(sku=val['sku'])
+            if threshold and threshold[0].threshold >= int(val['qty']):
+                if user:
+                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
+                        user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
