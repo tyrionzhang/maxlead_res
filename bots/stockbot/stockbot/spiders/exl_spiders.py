@@ -124,7 +124,6 @@ class ExlSpider(scrapy.Spider):
                                     item['qty'] = item['qty'].replace(',', '')
                                 else:
                                     item['qty'] = 0
-                                item['is_new'] = 0
                                 items.append(item)
                 except:
                     continue
@@ -133,7 +132,7 @@ class ExlSpider(scrapy.Spider):
 
         for i, val in enumerate(items, 0):
             for n, v in enumerate(items, 0):
-                if v['sku'] == val['sku'] and not i == n:
+                if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
                     val['qty'] = int(v['qty']) + int(val['qty'])
                     del items[n]
             date_now = datetime.now()
