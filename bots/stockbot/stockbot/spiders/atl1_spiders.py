@@ -80,8 +80,6 @@ class Atl1Spider(scrapy.Spider):
                         driver.implicitly_wait(100)
             except:
                 continue
-        display.stop()
-        driver.quit()
 
         for i, val in enumerate(items, 0):
             for n, v in enumerate(items, 0):
@@ -106,6 +104,9 @@ class Atl1Spider(scrapy.Spider):
                 if user:
                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                         user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+
+        display.stop()
+        driver.quit()
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
