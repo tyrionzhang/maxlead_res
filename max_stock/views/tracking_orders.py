@@ -93,7 +93,7 @@ def get_tracking_order_status():
     # lists = TrackingOrders.objects.filter(billing_date__contains=billing_date)
     t = threading.Timer(86400.0, get_tracking_order_status)
     lists = TrackingOrders.objects.all().exclude(status='Delivered')
-    start_date = (datetime.datetime.now() + datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
+    start_date = time.mktime((datetime.datetime.now() + datetime.timedelta(days=-5)).timetuple())
     if lists:
         data = []
         for val in lists:
@@ -156,7 +156,7 @@ def get_tracking_order_status():
                         val.delivery_late = delivery_late
                     val.save()
 
-                    if val.created >= start_date and (val.status == 'Order Processed: Ready for UPS' or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx'):
+                    if time.mktime(val.created.timetuple()) >= start_date and (val.status == 'Order Processed: Ready for UPS' or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx'):
                         data.append({
                             'order_num': val.order_num,
                             'tracking_num': val.tracking_num,
@@ -217,7 +217,7 @@ def get_tracking_order_status():
             text_content = '未扫描状态的订单汇总。.'
             html_content = '<p>这是一封<strong>未扫描状态的订单汇总</strong>。</p>'
             from_email = settings.DEFAULT_FROM_EMAIL
-            msg = EmailMultiAlternatives(subject, text_content, from_email, ['rudy.zhangwei@gmainland.com'])
+            msg = EmailMultiAlternatives(subject, text_content, from_email, ['landy.zhang@gmainland.com'])
             msg.attach_alternative(html_content, "text/html")
             # 发送附件
             # text = open(file_path, 'rb').read()
