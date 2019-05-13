@@ -76,6 +76,8 @@ def guess_charset(msg):
     return charset
 
 def _get_send_time(time_str, m_time=None):
+    if not time_str or time_str == ' ':
+        time_str = '06:00'
     time_now = datetime.now()
     time_saturday = time_now.strftime('%Y-%m-%d ') + time_str
     time_saturday = datetime.strptime(time_saturday, '%Y-%m-%d %H:%M')
