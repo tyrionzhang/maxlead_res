@@ -33,8 +33,8 @@ t2.start()
 t = threading.Timer(79200.0, spiders2)
 t.start()
 
-time_tr_re = int(get_send_time('15:00'))
-t_tr = threading.Timer(float('%.1f' % time_tr_re), get_tracking_order_status)
+time_tr_re = int(get_send_time('14:00'))
+t_tr = threading.Timer(1.0, get_tracking_order_status)
 t_tr.start()
 
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "maxlead.settings")
