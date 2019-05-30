@@ -102,9 +102,18 @@ DATABASES = {
         'NAME': 'maxlead',
         'USER': 'odoo',
         'PASSWORD': '123456',
-        'HOST': '127.0.0.1',
+        'HOST': '68.66.232.221',
         'PORT': '5432',
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'maxlead',
+    #     'USER': 'odoo',
+    #     'PASSWORD': '123456',
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '5432',
+    # }
 }
 
 
