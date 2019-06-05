@@ -72,8 +72,11 @@ class ZtoSpider(scrapy.Spider):
                         item['warehouse'] = 'ZTO'
                         item['is_new'] = 0
                         if td_re[4].text and not td_re[4].text == ' ':
+                            qty5 = int(td_re[5].text)
                             item['qty'] = td_re[4].text
                             item['qty'] = item['qty'].replace(',','')
+                            if qty5:
+                                item['qty'] = int(item['qty']) - qty5
                         else:
                             item['qty'] = 0
                         date_now = datetime.now()
