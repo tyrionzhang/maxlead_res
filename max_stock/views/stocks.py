@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os,json
+import threading
 from datetime import *
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
@@ -72,6 +73,7 @@ def get_stocks(request):
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku', '-qty')
+    page_lines()
     if not user.user.is_superuser and not user.stocks_role == '66':
         uids = [user.user_id]
         if user.stocks_role == '88':
@@ -121,57 +123,51 @@ def get_stocks(request):
         obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
         sum = 0
         for v in obj:
+            threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
             if v.warehouse == 'EXL':
                 re['exl'].update({'qty': v.qty})
                 sum += int(v.qty)
-                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['exl'].update({'is_same': 1})
             elif v.warehouse == 'TWU':
                 re['twu'].update({'qty': v.qty})
                 sum += int(v.qty)
-                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['twu'].update({'is_same': 1})
             elif v.warehouse == 'EGO':
                 re['ego'].update({'qty': v.qty})
                 sum += int(v.qty)
-                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['ego'].update({'is_same': 1})
             elif v.warehouse == 'TFD':
                 re['tfd'].update({'qty': v.qty})
                 sum += int(v.qty)
-                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['tfd'].update({'is_same': 1})
             elif v.warehouse == 'Hanover':
                 re['hanover'].update({'qty': v.qty})
                 sum += int(v.qty)
-                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['hanover'].update({'is_same': 1})
             elif v.warehouse == 'PC':
                 re['pc'].update({'qty': v.qty})
                 sum += int(v.qty)
-                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['pc'].update({'is_same': 1})
             elif v.warehouse == 'ZTO':
                 re['zto'].update({'qty': v.qty})
                 sum += int(v.qty)
-                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['zto'].update({'is_same': 1})
             else:
                 re['atl'].update({'qty': v.qty})
                 sum += int(v.qty)
-                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
                 if threshold_obj and threshold_obj[0].threshold >= v.qty:
                     re['atl'].update({'is_same': 1})
             date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
         re.update({'sum': sum, 'date': date_re})
         items.append(re)
+    page_lines(check=False)
     data = {
         'stock_list': items,
         'user': user,
@@ -985,3 +981,8 @@ def ajax_save_sales(request):
     return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfuly!'}), content_type='application/json')
 
 
+def page_lines(check=True):
+    t = threading.Timer(40.0, page_lines)
+    a = 1
+    if check:
+        t.start()
