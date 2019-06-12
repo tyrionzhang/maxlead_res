@@ -106,8 +106,9 @@
     </head>
     <body>
         <table id="datas" class="tb-datas">
+        <thead>
             <tr id="tr-head">
-                <th>Sku</th>
+                <th style="cursor:pointer;">Sku</th>
                 <th>EXL</th>
                 <th>TWU</th>
                 <th>EGO</th>
@@ -122,8 +123,10 @@
                 <th>Fun</th>
                 {% endif %}
             </tr>
+        </thead>
             {% for val in stock_list %}
-            <tr>
+        <tbody id="stocks_body">
+            <tr id="stocks_tr">
                 <td>{{ val.sku }}</td>
                 <td class="tr-stock-blue{{ val.exl.is_same }}">{{ val.exl.qty }}</td>
                 <td class="tr-stock-blue{{ val.twu.is_same }}">{{ val.twu.qty }}</td>
@@ -144,7 +147,38 @@
             {% endif %}
             </tr>
             {% endfor %}
-
+        </tbody>
         </table>
 </body>
+    <script>
+         var table = $('#datas').eq(0);
+        {#表格排序01#}
+        table.on('click', 'th', function() {  {#监视表头点击#}
+          var table = $(this).parents('table').eq(0);   {#点击表头时，取得表格的<table>元素#}
+          var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));  {#找到<tbody>中所有<tr>，并排序;（$(this).index()获取点击列的列序号）#}
+          this.dasc = !this.dasc;
+          if (this.dasc) {   {#默认首次点击逆序排列#}
+            rows = rows.reverse();  {#排序后<tr>替换原始<tr>#}
+          }
+          $('#stocks_body').empty().html(rows);
+        });
+        {#表格排序02#}
+        function comparer(index) {
+          return function(a, b) {
+            var valA = getCellValue(a, index),  {#得到本<tr>的第index列的值#}
+              valB = getCellValue(b, index);
+            return $.isNumeric(valA) && $.isNumeric(valB) ?
+              valA - valB : valA.localeCompare(valB);   {#可对数字和字符串进行排序，以相减的值进行排序；（数字以数值大小排序，字符串先转为数值型再按数值型排序）#}
+          };
+        }
+        {#表格排序03#}
+        function getCellValue(row, index) { {#取得row行index列的值#}
+          return $(row).children('td').eq(index).text();    {#从row行find第index列的值#}
+        }
+
+         var th = $('#datas th');
+         var rows = table.find('tr:gt(0)').toArray().sort(comparer(th.index()));
+         rows = rows.reverse();
+         $('#stocks_body').empty().html(rows);
+    </script>
 </html>
