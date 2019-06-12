@@ -73,7 +73,7 @@ def get_stocks(request):
     if not start_date:
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
-    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku', '-qty')
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date)
     if not user.user.is_superuser and not user.stocks_role == '66':
         uids = [user.user_id]
         if user.stocks_role == '88':
@@ -119,7 +119,6 @@ def get_stocks(request):
     for i in range(int(total_num) + 1):
         names['t' + str(i)].start()
     while 1:
-        time.sleep(2)
         if len(items) == len(d_list):
             break
     data = {
@@ -293,7 +292,7 @@ def export_stocks(request):
     if not start_date:
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
-    stocks = WarehouseStocks.objects.filter(created__gte=start_date).order_by('sku', '-qty')
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date)
     if not user.user.is_superuser and not user.stocks_role == '66':
         skus = SkuUsers.objects.filter(user_id=user.user.id).values_list('sku')
         skus_li = []
@@ -329,7 +328,6 @@ def export_stocks(request):
     for i in range(int(total_num) + 1):
         names['t' + str(i)].start()
     while 1:
-        time.sleep(5)
         if len(data) == len(d_list):
             break
 
