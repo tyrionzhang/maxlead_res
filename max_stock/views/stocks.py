@@ -119,6 +119,7 @@ def get_stocks(request):
     for i in range(int(total_num) + 1):
         names['t' + str(i)].start()
     while 1:
+        time.sleep(2)
         if len(items) == len(d_list):
             break
     data = {
@@ -328,6 +329,7 @@ def export_stocks(request):
     for i in range(int(total_num) + 1):
         names['t' + str(i)].start()
     while 1:
+        time.sleep(2)
         if len(data) == len(d_list):
             break
 
