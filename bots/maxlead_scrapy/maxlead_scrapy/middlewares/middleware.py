@@ -18,7 +18,7 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
     def from_crawler(cls, crawler):
         return cls(crawler)
 
-    def process_request(self, request, spider):
+    def process_request(self, request, spider, dont_filter=True):
         def get_ua():
             """
             函数中的函数 闭包
@@ -43,6 +43,7 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
                 qid = qid[1][:10]
                 request.meta.setdefault('aid', asin_id)
                 request.meta.setdefault('qid', qid)
+                request.meta.setdefault('dont_redirect', True)
             except:
                 pass
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)

@@ -112,4 +112,4 @@ class CatrankSpider(scrapy.Spider):
                 if int(page)<=20:
                     next_page = response.urljoin(next_page)
                     next_page = next_page + '&asin='+res_asin[1]
-                    yield scrapy.Request(next_page, callback=self.parse)
+                    yield scrapy.Request(next_page, callback=self.parse, dont_filter=True)

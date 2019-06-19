@@ -102,7 +102,7 @@ class ReviewSpider(scrapy.Spider):
             self.asin_id = next_page.split('/')[3][0:10]
             next_page = next_page + '&mytype=maxlead'
             next_page = response.urljoin(next_page)
-            yield scrapy.Request(next_page, callback=self.parse)
+            yield scrapy.Request(next_page, callback=self.parse, dont_filter=True)
         else:
             re = AsinReviews.objects.filter(aid=asin_id,created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
             if re:

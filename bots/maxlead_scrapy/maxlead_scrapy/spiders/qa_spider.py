@@ -59,12 +59,12 @@ class QaSpider(scrapy.Spider):
             qa_url = qa_url + '?qa_id=%s' % qa_data.id
             qa_page = response.urljoin(qa_url)
             time.sleep(2)
-            yield scrapy.Request(qa_page, callback=self.get_answer)
+            yield scrapy.Request(qa_page, callback=self.get_answer, dont_filter=True)
 
         next_page = response.css('div#askPaginationBar li.a-last a::attr("href")').extract_first()
         if next_page is not None:
             next_page = response.urljoin(next_page)
-            yield scrapy.Request(next_page, callback=self.parse)
+            yield scrapy.Request(next_page, callback=self.parse, dont_filter=True)
         else:
             re = Questions.objects.filter(asin=res_asin[6],created__icontains=datetime.datetime.now().strftime('%Y-%m-%d'))
             if re:
