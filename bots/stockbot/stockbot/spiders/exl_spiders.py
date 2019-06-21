@@ -8,7 +8,7 @@ from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
-from maxlead_site.common.common import spiders_send_email
+from maxlead_site.common.common import spiders_send_email,kill_pid_for_name
 
 class ExlSpider(scrapy.Spider):
     name = "exl_spider"
@@ -174,5 +174,6 @@ class ExlSpider(scrapy.Spider):
             msg5 = f.readline()
             if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n' and msg5 == 'complete\n':
                 spiders_send_email(f, file_path=file_path)
+                kill_pid_for_name('postgres')
 
 

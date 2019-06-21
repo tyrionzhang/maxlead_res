@@ -165,3 +165,16 @@ def spiders_send_email(f_obj, file_path=None):
             send_mail(subject, msg_str, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
     f_obj.close()
     os.remove(file_path)
+
+def kill_pid_for_name(name):
+    lines = os.popen('ps -ef | grep %s' % name)
+    for path in lines:
+        try:
+            client = path.split(' ')
+            if "idle" in client:
+                progress = path.split(' ')[2]
+                if not progress:
+                    progress = path.split(' ')[1]
+                os.popen('kill %s' % progress)
+        except:
+            continue
