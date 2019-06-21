@@ -14,6 +14,7 @@ from maxlead import settings
 from max_stock.views import views
 from django.db.models import Count
 from django.core.mail import send_mail
+from maxlead_site.common.common import kill_pid_for_name
 
 warehouse= {
     'exl' : 'EXL',
@@ -121,6 +122,7 @@ def get_stocks(request):
     while 1:
         time.sleep(2)
         if len(items) == len(d_list):
+            kill_pid_for_name('postgres')
             break
     data = {
         'stock_list': items,
@@ -331,6 +333,7 @@ def export_stocks(request):
     while 1:
         time.sleep(2)
         if len(data) == len(d_list):
+            kill_pid_for_name('postgres')
             break
 
     if data:
