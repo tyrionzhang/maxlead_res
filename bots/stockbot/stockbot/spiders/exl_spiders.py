@@ -174,6 +174,6 @@ class ExlSpider(scrapy.Spider):
             msg5 = f.readline()
             if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n' and msg5 == 'complete\n':
                 spiders_send_email(f, file_path=file_path)
-                kill_pid_for_name('postgres')
+                kill_pid_for_name('firefox', type=1)
 
 
