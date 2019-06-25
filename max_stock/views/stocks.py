@@ -123,8 +123,8 @@ def get_stocks1(request):
 
     total_num = int(len(d_list) / 100)
     page = int(page)
-    if page + 1 == total_num:
-        lists = d_list[page * 25: ]
+    if page + 1 >= total_num:
+        lists = d_list[total_num * 25: ]
         data = update_data(lists)
     else:
         step_num = (page + 1) * 25
