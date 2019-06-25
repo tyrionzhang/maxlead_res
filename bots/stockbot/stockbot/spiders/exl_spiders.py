@@ -128,6 +128,9 @@ class ExlSpider(scrapy.Spider):
                 except:
                     continue
 
+        display.stop()
+        driver.quit()
+
         for i, val in enumerate(items, 0):
             for n, v in enumerate(items, 0):
                 if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
@@ -152,9 +155,6 @@ class ExlSpider(scrapy.Spider):
                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                         user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
 
-        display.stop()
-        driver.quit()
-
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
                 f.close()
@@ -174,6 +174,13 @@ class ExlSpider(scrapy.Spider):
             msg5 = f.readline()
             if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n' and msg5 == 'complete\n':
                 spiders_send_email(f, file_path=file_path)
-                kill_pid_for_name('firefox', type=1)
-
+                lines = os.popen('pgrep firefox')
+                for path in lines:
+                    try:
+                        progress = path.split(' ')[0]
+                        if progress:
+                            os.popen('kill %s' % progress)
+                    except:
+                        continue
+                kill_pid_for_name('postgres')
 
