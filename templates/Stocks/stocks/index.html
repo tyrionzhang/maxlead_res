@@ -162,6 +162,7 @@
         function get_list(page, data){
             data['page'] = page;
             $('#table_loading').removeClass('hide');
+            $('body').css('overflow','hidden');
             $.get('/admin/max_stock/get_stocks1/',data,function (re) {
                 if(re.code==1){
                     re.page_data.data.forEach(function (val) {
@@ -188,6 +189,7 @@
                         $('#datas').append(tr_el);
                     });
                 $('#table_loading').addClass('hide');
+                $('body').css('overflow','auto');
                 }else{
                     alert(re.msg);
                 }
