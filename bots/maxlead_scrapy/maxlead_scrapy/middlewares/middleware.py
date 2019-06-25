@@ -4,6 +4,7 @@ from scrapy import log
 import logging
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 from fake_useragent import UserAgent
+from maxlead_res.bots.maxlead_scrapy.maxlead_scrapy.proxy_handle import get_proxy,delete_proxy
 
 
 class RandomUserAgentMiddleware(UserAgentMiddleware):
@@ -36,6 +37,11 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
         }
         ua = get_ua()
         if ua:
+            proxy = "http://" + get_proxy()
+            request.meta['download_timeout'] = 30
+            request.meta["proxy"] = proxy
+            print('为%s 添加代理%s ' % (request.url, proxy), end='')
+
             res_asin = request.url.split('aid=')
             qid = request.url.split('qid=')
             try:
@@ -54,3 +60,22 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
             request.headers.setdefault('Accept-Language', headers['Accept-Language'])
             request.headers.setdefault('Accept-Encoding', headers['Accept-Encoding'])
             request.headers.setdefault('Access-Control-Allow-Origin', headers['Access-Control-Allow-Origin'])
+
+    def process_exception(self, request, exception, spider):
+        """
+        当下载处理器(download handler)或 process_request() (下载中间件)抛出异常
+        :param response:
+        :param exception:
+        :param spider:
+        :return:
+            None：继续交给后续中间件处理异常；
+            Response对象：停止后续process_exception方法
+            Request对象：停止中间件，request将会被重新调用下载
+        """
+        print('代理%s，访问%s出现异常:%s' %(request.meta['proxy'],request.url,exception))
+        import time
+        time.sleep(5)
+        delete_proxy(request.meta['proxy'].split("//")[-1])
+        request.meta['proxy']='http://'+get_proxy()
+
+        return request
