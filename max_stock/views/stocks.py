@@ -66,11 +66,24 @@ def get_stocks(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
+    have_new = 0
+    data = {
+        'user': user,
+        'have_new': have_new,
+    }
+    return render(request, "Stocks/stocks/stocks_list.html", data)
+
+@csrf_exempt
+def get_stocks1(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
     keywords = request.GET.get('keywords', '').replace('amp;', '')
     warehouse = request.GET.get('warehouse', '')
     sel_new = request.GET.get('sel_new', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
+    page = request.GET.get('page', '')
     if not start_date:
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
@@ -100,8 +113,7 @@ def get_stocks(request):
     if sel_new:
         stocks = stocks.filter(is_new=sel_new)
     select_data = {"d": """date_trunc('day', created)"""}
-    stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
-    items = []
+    stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku')).order_by('sku', '-qty')
     have_new = 0
     d_list = []
     for value in stocks:
@@ -109,27 +121,20 @@ def get_stocks(request):
         if not d_list or value not in d_list:
             d_list.append(value)
 
-    total_num = len(d_list)/100
-    names = locals()
-    for i in range(int(total_num) + 1):
-        page_num = (i+1)*100
-        if i == int(total_num):
-            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i*100:], items, ))
-        else:
-            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i * 100: page_num], items,))
-    for i in range(int(total_num) + 1):
-        names['t' + str(i)].start()
-    while 1:
-        time.sleep(2)
-        if len(items) == len(d_list):
-            kill_pid_for_name('postgres')
-            break
-    data = {
-        'stock_list': items,
-        'user': user,
+    total_num = int(len(d_list) / 100)
+    page = int(page)
+    if page + 1 == total_num:
+        lists = d_list[page * 25: ]
+        data = update_data(lists)
+    else:
+        step_num = (page + 1) * 25
+        lists = d_list[page * 25: step_num]
+        data = update_data(lists)
+    page_data = {
         'have_new': have_new,
+        'data': data
     }
-    return render(request, "Stocks/stocks/stocks_list.html", data)
+    return HttpResponse(json.dumps({'code': 1, 'page_data': page_data}), content_type='application/json')
 
 @csrf_exempt
 def stock_checked(request):
@@ -910,7 +915,8 @@ def ajax_save_sales(request):
                     obj.update(qty1=obj1[0].qty - obj[0].qty)
     return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfuly!'}), content_type='application/json')
 
-def update_data(lists, data = []):
+def update_data(lists):
+    data = []
     for key, val in enumerate(lists, 0):
         re = {
             'sku': val['sku'],
@@ -970,6 +976,7 @@ def update_data(lists, data = []):
             date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
         re.update({'sum': sum, 'date': date_re})
         data.append(re)
+    return data
 
 def export_update_data(lists, data = []):
     for key, val in enumerate(lists, 0):

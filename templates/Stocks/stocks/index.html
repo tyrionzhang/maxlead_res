@@ -85,7 +85,51 @@
             <div class="clear"></div>
         </div>
         <div class="con-body">
-            <iframe src="{{ stocks_url }}" id="external-frame" width="100%"></iframe>
+            <table id="datas" class="tb-datas">
+        <thead>
+            <tr id="tr-head">
+                <th style="cursor:pointer;">Sku</th>
+                <th>EXL</th>
+                <th>TWU</th>
+                <th>EGO</th>
+                <th>TFD</th>
+                <th>Hanover</th>
+                <th>ATL</th>
+                <th>PC</th>
+                <th>ZTO</th>
+                <th>SUM</th>
+                <th>Date</th>
+                {% if have_new %}
+                <th>Fun</th>
+                {% endif %}
+            </tr>
+        </thead>
+            {% for val in stock_list %}
+        <tbody id="stocks_body">
+            <tr id="stocks_tr">
+                <td>{{ val.sku }}</td>
+                <td class="tr-stock-blue{{ val.exl.is_same }}">{{ val.exl.qty }}</td>
+                <td class="tr-stock-blue{{ val.twu.is_same }}">{{ val.twu.qty }}</td>
+                <td class="tr-stock-blue{{ val.ego.is_same }}">{{ val.ego.qty }}</td>
+                <td class="tr-stock-blue{{ val.tfd.is_same }}">{{ val.tfd.qty }}</td>
+                <td class="tr-stock-blue{{ val.hanover.is_same }}">{{ val.hanover.qty }}</td>
+                <td class="tr-stock-blue{{ val.atl.is_same }}">{{ val.atl.qty }}</td>
+                <td class="tr-stock-blue{{ val.pc.is_same }}">{{ val.pc.qty }}</td>
+                <td class="tr-stock-blue{{ val.zto.is_same }}">{{ val.zto.qty }}</td>
+                <td>{{ val.sum }}</td>
+                <td>{{ val.date }}</td>
+            {% if have_new %}
+                <td>
+                    {% if val.is_new_type %}
+                    <a href="javascript:;" class="fun-btn btn-edit stock-check-edit">Covered</a>
+                    {% endif %}
+                </td>
+            {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+            <span id="page_loading"><img src="/static/img/loading.png.png" /></span>
         </div>
     </div>
     <div class="hide" id="import_modal">
@@ -97,19 +141,67 @@
     </div>
     <script>
          // document.domain = "caibaojian.com";
-        function setIframeHeight(iframe) {
-            if (iframe) {
-                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
-                if (iframeWin.document.body) {
-                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
-                }
-            }
-        }
+        {#function setIframeHeight(iframe) {#}
+        {#    if (iframe) {#}
+        {#        var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;#}
+        {#        if (iframeWin.document.body) {#}
+        {#            iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;#}
+        {#        }#}
+        {#    }#}
+        //}
 
-        window.onload = function () {
-            setIframeHeight(document.getElementById('external-frame'));
-        };
+        {#window.onload = function () {#}
+        {#    setIframeHeight(document.getElementById('external-frame'));#}
+        {#}#}
+        function get_list(page, data){
+            data['page'] = page;
+            $.get('/admin/max_stock/get_stocks1/',data,function (re) {
+                if(re.code==1){
+                    re.page_data.data.forEach(function (val) {
+                        var fun_el = '';
+                        if (val.is_new_type) {
+                            fun_el = '<a href="javascript:;" class="fun-btn btn-edit stock-check-edit">Covered</a>';
+                        }
+                        var tr_el = '<tr id="stocks_tr">'+
+                            '<td>'+ val.sku +'</td>'+
+                            '<td class="tr-stock-blue'+ val.exl.is_same +'">'+ val.exl.qty +'</td>'+
+                            '<td class="tr-stock-blue'+ val.twu.is_same +'">'+ val.twu.qty +'</td>'+
+                            '<td class="tr-stock-blue'+ val.ego.is_same +'">'+ val.ego.qty +'</td>'+
+                            '<td class="tr-stock-blue'+ val.tfd.is_same +'">'+ val.tfd.qty +'</td>'+
+                            '<td class="tr-stock-blue'+ val.hanover.is_same +'">'+ val.hanover.qty +'</td>'+
+                            '<td class="tr-stock-blue'+ val.atl.is_same +'">'+ val.atl.qty +'</td>'+
+                            '<td class="tr-stock-blue'+ val.pc.is_same +'">'+ val.pc.qty +'</td>'+
+                            '<td class="tr-stock-blue'+ val.zto.is_same +'">'+ val.zto.qty +'</td>'+
+                            '<td>'+ val.sum +'</td>'+
+                            '<td>'+ val.date +'</td>'
+                            {% if have_new %}
+                                +'<td>'+ fun_el +'</td>'
+                            {% endif %}
+                            +'</tr>';
+                        $('#datas').append(tr_el);
+                    });
+                }else{
+                    alert(re.msg);
+                }
+            },'json')
+        }
         $(document).ready(function(){
+            var data = {
+                'keywords' : '{{ keywords }}',
+                'start_date' : '{{ start_date }}',
+                'end_date' : '{{ end_date }}',
+                'warehouse' : '{{ warehouse }}'
+            };
+            var page = 0;
+            $(window).scroll(function(){
+                var documentTop = $(document).scrollTop();
+                var windowHeight = $(window).height();
+                var documentHeight = $(document).height();
+                if(documentTop >= (documentHeight-windowHeight)){
+                    get_list(page, data);
+                    page += 1;
+                }
+            });
           $('input[name="keywords"]').val("{{ keywords }}");
           $('select[name="warehouse"]').val('{{ warehouse }}');
           $('input[name="start_date"]').val('{{ start_date }}');
