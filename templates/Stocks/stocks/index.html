@@ -129,7 +129,13 @@
             {% endfor %}
         </tbody>
         </table>
-            <span id="page_loading"><img src="/static/img/loading.png.png" /></span>
+            <div class="wrap color-E" style="position: relative;" id="table_loading">
+                <div class="k-line k-lineE-1"></div>
+                <div class="k-line k-lineE-2"></div>
+                <div class="k-line k-lineE-3"></div>
+                <div class="k-line k-lineE-4"></div>
+                <div class="k-line k-lineE-5"></div>
+            </div>
         </div>
     </div>
     <div class="hide" id="import_modal">
@@ -152,9 +158,10 @@
 
         {#window.onload = function () {#}
         {#    setIframeHeight(document.getElementById('external-frame'));#}
-        {#}#}
+       // }
         function get_list(page, data){
             data['page'] = page;
+            $('#table_loading').removeClass('hide');
             $.get('/admin/max_stock/get_stocks1/',data,function (re) {
                 if(re.code==1){
                     re.page_data.data.forEach(function (val) {
@@ -180,6 +187,7 @@
                             +'</tr>';
                         $('#datas').append(tr_el);
                     });
+                $('#table_loading').addClass('hide');
                 }else{
                     alert(re.msg);
                 }
@@ -193,13 +201,14 @@
                 'warehouse' : '{{ warehouse }}'
             };
             var page = 0;
+            get_list(page, data);
             $(window).scroll(function(){
                 var documentTop = $(document).scrollTop();
                 var windowHeight = $(window).height();
                 var documentHeight = $(document).height();
                 if(documentTop >= (documentHeight-windowHeight)){
-                    get_list(page, data);
                     page += 1;
+                    get_list(page, data);
                 }
             });
           $('input[name="keywords"]').val("{{ keywords }}");
