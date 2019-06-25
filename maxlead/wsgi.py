@@ -14,7 +14,7 @@ import django
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 from django.core.wsgi import get_wsgi_application
-from maxlead_site.views.views import download_listings,get_send_time,spiders2,proxy_spiders2
+from maxlead_site.views.views import download_listings,get_send_time,spiders2
 from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc
 from max_stock.views.tracking_orders import get_tracking_order_status
 from maxlead import settings
@@ -27,9 +27,6 @@ t4.start()
 
 t4_pc = threading.Timer(float('%.1f' % time_re5), copy_stocks_of_pc)
 t4_pc.start()
-
-t2 = threading.Timer(1.0, proxy_spiders2)
-t2.start()
 
 t = threading.Timer(79200.0, spiders2)
 t.start()
