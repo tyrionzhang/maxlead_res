@@ -6,7 +6,7 @@
      background-color: #90a4de;
      width:424px;
      right:-428px;
-     top:76%;
+     top:72%;
      border-radius: 8px;
      box-shadow: -4px 4px 5px #888888;
     }
@@ -66,6 +66,12 @@
     #area #small_menu ul li:hover a{
      color: #00ffff;
      }
+    #del_spiders_log{
+    display: block;
+    position: absolute;
+    top: 12%;
+    right: 3%;
+    }
 </style>
     <div id="main" data-name="reviews">
         <div class="con-head">
@@ -166,6 +172,7 @@
     <div id="area">
        <div id="small_menu">
            <p style="padding: 9px"></p>
+           <span id="del_spiders_log"><a href="javascript:;"> Del</a></span>
        </div>
        <div id="on" onclick="xuanfu();"><p>+</p></div>
      </div>
@@ -410,5 +417,15 @@
       menubox.style.right = r_len + 'px';
     }
   }
+
+  $('#del_spiders_log').on('click', function () {
+      $.get('/admin/max_stock/del_spiders_logs/',{},function (re) {
+        if(re.code==1){
+            console.log(re.msg);
+        }else{
+            alert(re.msg);
+        }
+      },'json')
+  });
     </script>
 {% endblock %}

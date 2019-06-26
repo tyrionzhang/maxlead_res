@@ -1090,3 +1090,17 @@ def get_spiders_logs(request):
     if obj:
         data = obj[0].description
         return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
+
+@csrf_exempt
+def del_spiders_logs(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    obj = SpidersLogs.objects.filter(is_done=0)
+    if obj:
+        data = obj.delete()
+        return HttpResponse(json.dumps({'code': 1, 'msg':'Successfully!'}), content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({'code': 1, 'msg': 'Data exites!'}), content_type='application/json')
+
+
