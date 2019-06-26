@@ -66,24 +66,12 @@ def get_stocks(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
-    have_new = 0
-    data = {
-        'user': user,
-        'have_new': have_new,
-    }
-    return render(request, "Stocks/stocks/stocks_list.html", data)
 
-@csrf_exempt
-def get_stocks1(request):
-    user = App.get_user_info(request)
-    if not user:
-        return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
     keywords = request.GET.get('keywords', '').replace('amp;', '')
     warehouse = request.GET.get('warehouse', '')
     sel_new = request.GET.get('sel_new', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
-    page = request.GET.get('page', '')
     if not start_date:
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
@@ -113,7 +101,8 @@ def get_stocks1(request):
     if sel_new:
         stocks = stocks.filter(is_new=sel_new)
     select_data = {"d": """date_trunc('day', created)"""}
-    stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku')).order_by('sku', '-qty')
+    stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
+    items = []
     have_new = 0
     d_list = []
     for value in stocks:
@@ -121,22 +110,92 @@ def get_stocks1(request):
         if not d_list or value not in d_list:
             d_list.append(value)
 
-    total_num = int(len(d_list) / 100)
-    page = int(page)
-    if page + 1 == total_num:
-        lists = d_list[total_num * 25: ]
-        data = update_data(lists)
-    elif page < total_num:
-        step_num = (page + 1) * 25
-        lists = d_list[page * 25: step_num]
-        data = update_data(lists)
-    else:
-        data = []
-    page_data = {
+    total_num = len(d_list)/100
+    names = locals()
+    for i in range(int(total_num) + 1):
+        page_num = (i+1)*100
+        if i == int(total_num):
+            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i*100:], items, ))
+        else:
+            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i * 100: page_num], items,))
+    for i in range(int(total_num) + 1):
+        names['t' + str(i)].start()
+    while 1:
+        time.sleep(2)
+        if len(items) == len(d_list):
+            kill_pid_for_name('postgres')
+            break
+    data = {
+        'stock_list': items,
+        'user': user,
         'have_new': have_new,
-        'data': data
     }
-    return HttpResponse(json.dumps({'code': 1, 'page_data': page_data}), content_type='application/json')
+    return render(request, "Stocks/stocks/stocks_list.html", data)
+
+# @csrf_exempt
+# def get_stocks1(request):
+#     user = App.get_user_info(request)
+#     if not user:
+#         return HttpResponse(json.dumps({'code': 0, 'msg': '用户未登录'}), content_type='application/json')
+#     keywords = request.GET.get('keywords', '').replace('amp;', '')
+#     warehouse = request.GET.get('warehouse', '')
+#     sel_new = request.GET.get('sel_new', '')
+#     start_date = request.GET.get('start_date', '')
+#     end_date = request.GET.get('end_date', '')
+#     page = request.GET.get('page', '')
+#     if not start_date:
+#         start_date = datetime.now()
+#         start_date = start_date.strftime('%Y-%m-%d')
+#     stocks = WarehouseStocks.objects.filter(created__gte=start_date)
+#     if not user.user.is_superuser and not user.stocks_role == '66':
+#         uids = [user.user_id]
+#         if user.stocks_role == '88':
+#             child_user = Employee.objects.filter(parent_user=user.user_id)
+#             if child_user:
+#                 for val in child_user:
+#                     uids.append(val.user_id)
+#         skus = SkuUsers.objects.filter(user_id__in=uids).values_list('sku')
+#         skus_li = []
+#         if skus:
+#             for val in skus:
+#                 skus_li.append(val[0].strip())
+#         stocks = stocks.filter(sku__in=skus_li)
+#
+#     if end_date:
+#         stocks = stocks.filter(created__lte=end_date)
+#     if keywords:
+#         stocks = stocks.filter(sku__contains=keywords)
+#     if not warehouse:
+#         warehouse = 'TWU'
+#     if not warehouse == 'all':
+#         stocks = stocks.filter(warehouse=warehouse)
+#     if sel_new:
+#         stocks = stocks.filter(is_new=sel_new)
+#     select_data = {"d": """date_trunc('day', created)"""}
+#     stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku')).order_by('sku', '-qty')
+#     have_new = 0
+#     d_list = []
+#     for value in stocks:
+#         del value['count']
+#         if not d_list or value not in d_list:
+#             d_list.append(value)
+#
+#     total_num = int(len(d_list) / 100)
+#     page = int(page)
+#     if page + 1 == total_num:
+#         lists = d_list[total_num * 25: ]
+#         data = update_data(lists)
+#     elif page < total_num:
+#         step_num = (page + 1) * 25
+#         lists = d_list[page * 25: step_num]
+#         data = update_data(lists)
+#     else:
+#         data = []
+#     page_data = {
+#         'have_new': have_new,
+#         'data': data
+#     }
+#     return HttpResponse(json.dumps({'code': 1, 'page_data': page_data}), content_type='application/json')
 
 @csrf_exempt
 def stock_checked(request):
@@ -917,8 +976,7 @@ def ajax_save_sales(request):
                     obj.update(qty1=obj1[0].qty - obj[0].qty)
     return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfuly!'}), content_type='application/json')
 
-def update_data(lists):
-    data = []
+def update_data(lists, data = []):
     for key, val in enumerate(lists, 0):
         re = {
             'sku': val['sku'],
@@ -978,7 +1036,6 @@ def update_data(lists):
             date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
         re.update({'sum': sum, 'date': date_re})
         data.append(re)
-    return data
 
 def export_update_data(lists, data = []):
     for key, val in enumerate(lists, 0):
