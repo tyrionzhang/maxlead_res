@@ -8,7 +8,7 @@ from django.shortcuts import render
 from maxlead_site.views.app import App
 from maxlead import settings
 from maxlead_site.models import UserProfile
-from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg
+from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg,SpidersLogs
 from django.http import HttpResponse
 from max_stock.views.stocks import covered_stocks
 
@@ -104,14 +104,23 @@ def stock_spiders(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     type = request.GET.get('type','')
     if type == 'now':
-        _set_user_sku(request)
-        q = queue.Queue()
+        runLogs = SpidersLogs.objects.filter(is_done=0)
+        if not runLogs:
+            _set_user_sku(request)
+            q = queue.Queue()
 
-        tname = 'stocks_done'
-        reviews = perform_command_que(tname, q, request)
-        reviews.start()
-        reviews.join()
-        msg_str = u'爬虫已运行，大概需要10分钟。'
+            tname = 'stocks_done'
+            reviews = perform_command_que(tname, q, request)
+            reviews.start()
+            reviews.join()
+            msg_str = u'爬虫已运行'
+            SlogsObj = SpidersLogs()
+            SlogsObj.id
+            SlogsObj.user_id = user.user_id
+            SlogsObj.start_time = datetime.now()
+            SlogsObj.save()
+        else:
+            msg_str = u'更新正在进行...'
     else:
         time_now = datetime.now()
         time_re = datetime.now() + timedelta(days = 1)
@@ -201,3 +210,13 @@ def help_page(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
 
     return render(request, "Stocks/users_sku/help_page.html")
+
+def update_spiders_logs(name, is_done=0):
+    obj = SpidersLogs.objects.filter(is_done=0)
+    if obj:
+        now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        des_str = obj[0].description + '%s的数据已拉取完毕,时间%s<br>' % (name, now_time)
+        obj.update(description=des_str)
+        if is_done:
+            obj.update(is_done=is_done, end_time=now_time)
+        return obj

@@ -8,6 +8,7 @@ from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
+from max_stock.views.views import update_spiders_logs
 from maxlead_site.common.common import spiders_send_email
 
 class ZtoSpider(scrapy.Spider):
@@ -110,6 +111,7 @@ class ZtoSpider(scrapy.Spider):
                  continue
         display.stop()
         driver.quit()
+        update_spiders_logs('ZTO')
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:

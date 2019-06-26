@@ -109,28 +109,26 @@
 </body>
     <script>
          var table = $('#datas').eq(0);
-        {#表格排序01#}
-        table.on('click', 'th', function() {  {#监视表头点击#}
-          var table = $(this).parents('table').eq(0);   {#点击表头时，取得表格的<table>元素#}
-          var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));  {#找到<tbody>中所有<tr>，并排序;（$(this).index()获取点击列的列序号）#}
+        table.on('click', 'th', function() {
+          var table = $(this).parents('table').eq(0);
+          var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
           this.dasc = !this.dasc;
-          if (this.dasc) {   {#默认首次点击逆序排列#}
-            rows = rows.reverse();  {#排序后<tr>替换原始<tr>#}
+          if (this.dasc) {
+            rows = rows.reverse();
           }
           $('#stocks_body').empty().html(rows);
         });
-        {#表格排序02#}
         function comparer(index) {
           return function(a, b) {
-            var valA = getCellValue(a, index),  {#得到本<tr>的第index列的值#}
+            var valA = getCellValue(a, index),
               valB = getCellValue(b, index);
             return $.isNumeric(valA) && $.isNumeric(valB) ?
-              valA - valB : valA.localeCompare(valB);   {#可对数字和字符串进行排序，以相减的值进行排序；（数字以数值大小排序，字符串先转为数值型再按数值型排序）#}
+              valA - valB : valA.localeCompare(valB);
           };
         }
-        {#表格排序03#}
-        function getCellValue(row, index) { {#取得row行index列的值#}
-          return $(row).children('td').eq(index).text();    {#从row行find第index列的值#}
+
+        function getCellValue(row, index) {
+          return $(row).children('td').eq(index).text();
         }
 
          var th = $('#datas th');

@@ -6,7 +6,7 @@ import time
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
+from max_stock.models import WarehouseStocks,Thresholds,SkuUsers,SpidersLogs
 from maxlead_site.models import Employee
 from maxlead_site.common.excel_world import read_excel_file1,read_excel_data,get_excel_file
 from maxlead_site.views.app import App
@@ -123,13 +123,15 @@ def get_stocks1(request):
 
     total_num = int(len(d_list) / 100)
     page = int(page)
-    if page + 1 >= total_num:
+    if page + 1 == total_num:
         lists = d_list[total_num * 25: ]
         data = update_data(lists)
-    else:
+    elif page < total_num:
         step_num = (page + 1) * 25
         lists = d_list[page * 25: step_num]
         data = update_data(lists)
+    else:
+        data = []
     page_data = {
         'have_new': have_new,
         'data': data
@@ -1021,3 +1023,13 @@ def export_update_data(lists, data = []):
             date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
         re.update({'sum': sum, 'date': date_re})
         data.append(re)
+
+@csrf_exempt
+def get_spiders_logs(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    obj = SpidersLogs.objects.all().order_by( '-created', '-id')
+    if obj:
+        data = obj[0].description
+        return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')

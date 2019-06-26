@@ -177,5 +177,17 @@ class TrackingOrders(models.Model):
     class Meta:
         db_table = 'tracking_orders'
 
+class SpidersLogs(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1)
+    is_done = models.IntegerField('Is Done', default=0)
+    start_time = models.DateTimeField('Start time', null=True)
+    end_time = models.DateTimeField('End time', null=True)
+    description = models.CharField('Description', max_length=522, default='')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'spiders_logs'
+
+
 
 

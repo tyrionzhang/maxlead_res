@@ -7,6 +7,7 @@ from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import Thresholds,SkuUsers,WarehouseStocks
+from max_stock.views.views import update_spiders_logs
 from maxlead_site.common.common import spiders_send_email
 
 class Atl1Spider(scrapy.Spider):
@@ -107,6 +108,7 @@ class Atl1Spider(scrapy.Spider):
 
         display.stop()
         driver.quit()
+        update_spiders_logs('ATL-1')
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:

@@ -1,5 +1,72 @@
 {% extends "Stocks/layouts/base.html" %}
 {% block container %}
+    <style>
+    #area{
+     position:fixed;
+     background-color: #90a4de;
+     width:424px;
+     right:-428px;
+     top:76%;
+     border-radius: 8px;
+     box-shadow: -4px 4px 5px #888888;
+    }
+    #small_menu ul {
+     list-style: none;
+    }
+    #area #on{
+     position: absolute;
+     top: 40%;
+     right: 100%;
+     width: 30px;
+     height: 30px;
+     cursor: pointer;
+     border-radius: 15px;
+     background-color: #9090f0;
+     }
+    #area #on p{
+     font-size:30px;
+     text-align:center;
+     margin-top:-6px;
+     color:#f5f7f6;
+     }
+    #area #small_menu {
+     width:100%;
+     }
+    #area #small_menu ul li {
+     width:100%;
+     height: 44px;
+     text-align:left;
+     background-color: rgba(2, 27, 38, 0.62);
+     border-top: 1px solid #043B46;
+     line-height: 44px;
+    }
+    #area #small_menu ul li a{
+     text-decoration: none;
+     margin-left:30px;
+     color: #bfbfbf;
+     font-size:16px;
+     font-family: 'Microsoft Yahei';
+     }
+    #area #small_menu li.active {
+     width: 156px;
+     background-color: rgba(2, 27, 38, 0.87);
+     border-left: 4px solid #00ffff;
+     border-top: 0px;
+    }
+    #area #small_menu li.active a{
+     color: #00ffff;
+     }
+
+    #area #small_menu ul li:hover {
+     width: 156px;
+     background-color: rgba(2, 27, 38, 0.87);
+     border-left: 4px solid #00ffff;
+
+    }
+    #area #small_menu ul li:hover a{
+     color: #00ffff;
+     }
+</style>
     <div id="main" data-name="reviews">
         <div class="con-head">
             <h1>{{ title }}</h1>
@@ -146,6 +213,12 @@
         </form>
         <div id="import_msg"></div>
     </div>
+    <div id="area">
+       <div id="small_menu">
+           <p style="padding: 9px"></p>
+       </div>
+       <div id="on" onclick="xuanfu();"><p>+</p></div>
+     </div>
     <script>
          // document.domain = "caibaojian.com";
         {#function setIframeHeight(iframe) {#}
@@ -160,6 +233,16 @@
         {#window.onload = function () {#}
         {#    setIframeHeight(document.getElementById('external-frame'));#}
        // }
+         function get_spiders_logs() {
+             $.get('/admin/max_stock/get_spiders_logs/',{},function (re) {
+                if(re.code==1){
+                    $('#small_menu p').html(re.data)
+                }else{
+                    alert(re.msg);
+                }
+            },'json')
+         }
+        setInterval("get_spiders_logs();",5*1000);
         function get_list(page, data){
             data['page'] = page;
             $('#table_loading').removeClass('hide');
@@ -197,6 +280,7 @@
             },'json')
         }
         $(document).ready(function(){
+            get_spiders_logs();
             var data = {
                 'keywords' : '{{ keywords }}',
                 'start_date' : '{{ start_date }}',
@@ -334,5 +418,47 @@
             },'json');
             return false;
         });
+
+        var menubox = document.getElementById("area");
+    var cli_on = document.getElementById("on");
+    var flag = false, timer = null, initime = null, r_len = 0;
+    if(menubox.style.right=== 0){
+    flag = true;
+    }
+    else{
+    flag = false;
+    }
+    cli_on.onclick = function () {
+    clearTimeout(initime);
+    if (flag) {
+      r_len = 0;
+      timer = setInterval(slideright, 10);
+    } else {
+      r_len = -428;
+      timer = setInterval(slideleft, 10);
+    }
+    };
+
+  function slideright() {
+    if (r_len <= -428) {
+      clearInterval(timer);
+      flag = !flag;
+      return false;
+    }else{
+      r_len -= 5;
+      menubox.style.right = r_len + 'px';
+    }
+  }
+
+  function slideleft() {
+    if (r_len >= 0) {
+      clearInterval(timer);
+      flag = !flag;
+      return false;
+    } else {
+      r_len += 5;
+      menubox.style.right = r_len + 'px';
+    }
+  }
     </script>
 {% endblock %}

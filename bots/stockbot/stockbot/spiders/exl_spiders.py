@@ -8,6 +8,7 @@ from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
+from max_stock.views.views import update_spiders_logs
 from maxlead_site.common.common import spiders_send_email,kill_pid_for_name
 
 class ExlSpider(scrapy.Spider):
@@ -154,6 +155,7 @@ class ExlSpider(scrapy.Spider):
                 if user:
                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                         user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+        update_spiders_logs('EXL', is_done=1)
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
