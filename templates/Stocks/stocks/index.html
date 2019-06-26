@@ -386,6 +386,7 @@
     flag = false;
     }
     cli_on.onclick = function () {
+        var dd = $('#on p').html();
     clearTimeout(initime);
     if (flag) {
       r_len = 0;
@@ -394,6 +395,12 @@
       r_len = -428;
       timer = setInterval(slideleft, 10);
     }
+        if (dd == '+') {
+            dd = '-'
+        }else {
+            dd = '+'
+        }
+        $('#on p').html(dd);
     };
 
   function slideright() {

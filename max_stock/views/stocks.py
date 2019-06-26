@@ -1091,7 +1091,7 @@ def get_spiders_logs(request):
         data = obj[0].description
         return HttpResponse(json.dumps({'code': 1, 'data': data}), content_type='application/json')
     else:
-        return HttpResponse(json.dumps({'code': 1, 'data': u'更新已完成~'}), content_type='application/json')
+        return HttpResponse(json.dumps({'code': 1, 'data': u'数据未更新~'}), content_type='application/json')
 
 @csrf_exempt
 def del_spiders_logs(request):
