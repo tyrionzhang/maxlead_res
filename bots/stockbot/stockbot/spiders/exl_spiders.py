@@ -44,7 +44,7 @@ class ExlSpider(scrapy.Spider):
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
         driver.get(response.url)
-        time.sleep(5)
+        time.sleep(3)
         elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
         elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
         btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
@@ -56,7 +56,7 @@ class ExlSpider(scrapy.Spider):
             elem_pass[0].send_keys('7G1#AJjX')
         btn_login[0].click()
         driver.implicitly_wait(100)
-        time.sleep(5)
+        time.sleep(3)
         a_reports = driver.find_elements_by_id('Menu_Reports_head')
         if a_reports:
             a_reports[0].click()
@@ -64,44 +64,93 @@ class ExlSpider(scrapy.Spider):
         if a_stock:
             a_stock[0].click()
         driver.implicitly_wait(100)
-        time.sleep(5)
+        time.sleep(3)
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
         list_rows.pop(-1)
-        names = locals()
-        length = len(list_rows)
+        items = []
         if list_rows:
+            length = len(list_rows)
             for i in range(0, length):
-                if not i == 0:
-                    driver.get(response.url)
-                    driver.implicitly_wait(100)
-                    time.sleep(5)
-                    a_reports = driver.find_elements_by_id('Menu_Reports_head')
-                    if a_reports:
-                        a_reports[0].click()
-                    a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
-                    if a_stock:
-                        a_stock[0].click()
-                    driver.implicitly_wait(100)
-                    time.sleep(5)
-                    list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
-                    list_rows.pop(0)
-                    list_rows.pop(-1)
+                try:
+                    if not i == 0:
+                        driver.get(response.url)
+                        driver.implicitly_wait(100)
+                        time.sleep(3)
+                        a_reports = driver.find_elements_by_id('Menu_Reports_head')
+                        if a_reports:
+                            a_reports[0].click()
+                        a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
+                        if a_stock:
+                            a_stock[0].click()
+                        driver.implicitly_wait(100)
+                        time.sleep(3)
+                        list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
+                        list_rows.pop(0)
+                        list_rows.pop(-1)
+                    warehouse_type = list_rows[i].find_elements_by_class_name('aw-column-0')
+                    warehouse_type_name = warehouse_type[0].text
+                    if warehouse_type_name in self.stock_names:
+                        warehouse_name = list_rows[i].find_elements_by_class_name('aw-column-1')
+                        if warehouse_name:
+                            warehouse_name = warehouse_name[0].text
+                        list_rows[i].find_element_by_tag_name('span').click()
+                        btn_runreport = driver.find_elements_by_id('btnRunRpt')
+                        if btn_runreport:
+                            btn_runreport[0].click()
+                            driver.implicitly_wait(100)
+                        iframe1 = driver.find_elements_by_id('ReportFrameStockStatusViewer')
+                        driver.implicitly_wait(100)
+                        if iframe1:
+                            driver.switch_to.frame(iframe1[0])
+                        iframe2 = driver.find_elements_by_id('report')
+                        driver.implicitly_wait(100)
+                        driver.switch_to.frame(iframe2[0])
+                        driver.implicitly_wait(100)
+                        time.sleep(3)
+                        res = driver.find_elements_by_css_selector('.a383 tr')
+                        res.pop(1)
+                        res.pop(0)
+                        res.pop()
+                        for val in res:
+                            item = WarehouseStocksItem()
+                            tds = val.find_elements_by_tag_name('td')
+                            if tds:
+                                item['sku'] = tds[0].text
+                                item['warehouse'] = warehouse_name
+                                if warehouse_name == 'Exchange Logistics':
+                                    item['warehouse'] = 'EXL'
+                                if warehouse_name == 'Tradeforce Dayton':
+                                    item['warehouse'] = 'TFD'
+                                if tds[6].text and not tds[6].text == ' ':
+                                    item['qty'] = tds[6].text
+                                    item['qty'] = item['qty'].replace(',', '')
+                                else:
+                                    item['qty'] = 0
+                                items.append(item)
+                except:
+                    continue
 
-                warehouse_type = list_rows[i].find_elements_by_class_name('aw-column-0')
-                warehouse_type_name = warehouse_type[0].text
-                if warehouse_type_name in self.stock_names:
-                    names['t' + str(i)] = threading.Thread(target=self.get_web_data, args=(response, msg_str2, i))
-                    names['t' + str(i)].start()
+        display.stop()
+        driver.quit()
 
-            while 1:
-                time.sleep(5)
-                if self.rows_num == length - 1:
-                    break
-            display.stop()
-            driver.quit()
+        total_num = len(items) / 500
+        names = locals()
+        for i in range(int(total_num) + 1):
+            page_num = (i + 1) * 500
+            if i == int(total_num):
+                names['t' + str(i)] = threading.Thread(target=self.save_item, args=(items[i * 500:], msg_str2,))
+            else:
+                names['t' + str(i)] = threading.Thread(target=self.save_item, args=(items[i * 500: page_num], msg_str2,))
+            names['t' + str(i)].start()
+        while 1:
+            time.sleep(2)
+            if self.rows_num == len(items):
+                kill_pid_for_name('postgres')
+                break
 
         update_spiders_logs('EXL', is_done=1)
+
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
                 f.close()
@@ -131,104 +180,32 @@ class ExlSpider(scrapy.Spider):
                         continue
                 kill_pid_for_name('postgres')
 
-    def get_web_data(self, response, msg_str2, sort_num):
-        i = sort_num
-        self.rows_num = i
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
-        firefox_options = Options()
-        firefox_options.add_argument('-headless')
-        firefox_options.add_argument('--disable-gpu')
-        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
-        driver.get(response.url)
-        time.sleep(5)
-        elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
-        elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
-        btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
-        # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
-
-        if elem_name:
-            elem_name[0].send_keys('Intybot')
-        if elem_pass:
-            elem_pass[0].send_keys('7G1#AJjX')
-        btn_login[0].click()
-        driver.implicitly_wait(100)
-        time.sleep(5)
-        a_reports = driver.find_elements_by_id('Menu_Reports_head')
-        if a_reports:
-            a_reports[0].click()
-        a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
-        if a_stock:
-            a_stock[0].click()
-        driver.implicitly_wait(100)
-        time.sleep(5)
-        list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
-        list_rows.pop(0)
-        list_rows.pop(-1)
-        items = []
-        if list_rows:
-            warehouse_name = list_rows[i].find_elements_by_class_name('aw-column-1')
-            if warehouse_name:
-                warehouse_name = warehouse_name[0].text
-            list_rows[i].find_element_by_tag_name('span').click()
-            btn_runreport = driver.find_elements_by_id('btnRunRpt')
-            if btn_runreport:
-                btn_runreport[0].click()
-                driver.implicitly_wait(100)
-            iframe1 = driver.find_elements_by_id('ReportFrameStockStatusViewer')
-            driver.implicitly_wait(100)
-            if iframe1:
-                driver.switch_to.frame(iframe1[0])
-            iframe2 = driver.find_elements_by_id('report')
-            driver.implicitly_wait(100)
-            driver.switch_to.frame(iframe2[0])
-            driver.implicitly_wait(100)
-            time.sleep(10)
-            res = driver.find_elements_by_css_selector('.a383 tr')
-            res.pop(1)
-            res.pop(0)
-            res.pop()
-            for val in res:
-                item = WarehouseStocksItem()
-                tds = val.find_elements_by_tag_name('td')
-                if tds:
-                    item['sku'] = tds[0].text
-                    item['warehouse'] = warehouse_name
-                    if warehouse_name == 'Exchange Logistics':
-                        item['warehouse'] = 'EXL'
-                    if warehouse_name == 'Tradeforce Dayton':
-                        item['warehouse'] = 'TFD'
-                    if tds[6].text and not tds[6].text == ' ':
-                        item['qty'] = tds[6].text
-                        item['qty'] = item['qty'].replace(',', '')
-                    else:
-                        item['qty'] = 0
-                    items.append(item)
-        # display.stop()
-        # driver.quit()
-
+    def save_item(self, items, msg_str2):
         for i, val in enumerate(items, 0):
-            for n, v in enumerate(items, 0):
-                if v['sku'] == val['sku'] and not i == n and val['warehouse'] == v['warehouse']:
-                    val['qty'] = int(v['qty']) + int(val['qty'])
-                    del items[n]
-            date_now = datetime.now()
-            date0 = date_now.strftime('%Y-%m-%d')
-            obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'], created__contains=date0)
-            date1 = date_now - timedelta(days=1)
-            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
-                                                  created__contains=date1.strftime('%Y-%m-%d'))
-            if obj1:
-                val['qty1'] = obj1[0].qty - int(val['qty'])
-            if obj:
-                obj.delete()
-            yield val
+            self.rows_num += 1
+            try:
+                for n, v in enumerate(items, 0):
+                    if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
+                        val['qty'] = int(v['qty']) + int(val['qty'])
+                        del items[n]
+                date_now = datetime.now()
+                date0 = date_now.strftime('%Y-%m-%d')
+                obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'], created__contains=date0)
+                date1 = date_now - timedelta(days=1)
+                obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
+                                                      created__contains=date1.strftime('%Y-%m-%d'))
+                if obj1:
+                    val['qty1'] = obj1[0].qty - int(val['qty'])
+                if obj:
+                    obj.delete()
+                yield val
 
-            threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
-            user = SkuUsers.objects.filter(sku=val['sku'])
-            if threshold and threshold[0].threshold >= int(val['qty']):
-                if user:
-                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
-                        user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+                threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
+                user = SkuUsers.objects.filter(sku=val['sku'])
+                if threshold and threshold[0].threshold >= int(val['qty']):
+                    if user:
+                        msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
+                            user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+            except:
+                continue
 
