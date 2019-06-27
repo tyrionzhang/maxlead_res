@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import scrapy,os
-import threading
 from datetime import *
 import time
 from selenium import webdriver
@@ -19,7 +18,6 @@ class ExlSpider(scrapy.Spider):
     start_urls = ['https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}']
     sku_list = []
     stock_names = ['M&L','Match Land','Parts']
-    rows_num = 0
 
     # def __init__(self, username=None, *args, **kwargs):
     #     super(ExlSpider, self).__init__(*args, **kwargs)
@@ -134,21 +132,32 @@ class ExlSpider(scrapy.Spider):
         display.stop()
         driver.quit()
 
-        total_num = len(items) / 500
-        names = locals()
-        for i in range(int(total_num) + 1):
-            page_num = (i + 1) * 500
-            if i == int(total_num):
-                names['t' + str(i)] = threading.Thread(target=self.save_item, args=(items[i * 500:], msg_str2,))
-            else:
-                names['t' + str(i)] = threading.Thread(target=self.save_item, args=(items[i * 500: page_num], msg_str2,))
-            names['t' + str(i)].start()
-        while 1:
-            time.sleep(2)
-            if self.rows_num == len(items):
-                kill_pid_for_name('postgres')
-                break
+        for i, val in enumerate(items, 0):
+            try:
+                for n, v in enumerate(items, 0):
+                    if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
+                        val['qty'] = int(v['qty']) + int(val['qty'])
+                        del items[n]
+                date_now = datetime.now()
+                date0 = date_now.strftime('%Y-%m-%d')
+                obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'], created__contains=date0)
+                date1 = date_now - timedelta(days=1)
+                obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
+                                                      created__contains=date1.strftime('%Y-%m-%d'))
+                if obj1:
+                    val['qty1'] = obj1[0].qty - int(val['qty'])
+                if obj:
+                    obj.delete()
+                yield val
 
+                threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
+                user = SkuUsers.objects.filter(sku=val['sku'])
+                if threshold and threshold[0].threshold >= int(val['qty']):
+                    if user:
+                        msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
+                            user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+            except:
+                continue
         update_spiders_logs('EXL', is_done=1)
 
         if not os.path.isfile(file_path):
@@ -179,33 +188,4 @@ class ExlSpider(scrapy.Spider):
                     except:
                         continue
                 kill_pid_for_name('postgres')
-
-    def save_item(self, items, msg_str2):
-        for i, val in enumerate(items, 0):
-            self.rows_num += 1
-            try:
-                for n, v in enumerate(items, 0):
-                    if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
-                        val['qty'] = int(v['qty']) + int(val['qty'])
-                        del items[n]
-                date_now = datetime.now()
-                date0 = date_now.strftime('%Y-%m-%d')
-                obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'], created__contains=date0)
-                date1 = date_now - timedelta(days=1)
-                obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
-                                                      created__contains=date1.strftime('%Y-%m-%d'))
-                if obj1:
-                    val['qty1'] = obj1[0].qty - int(val['qty'])
-                if obj:
-                    obj.delete()
-                yield val
-
-                threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
-                user = SkuUsers.objects.filter(sku=val['sku'])
-                if threshold and threshold[0].threshold >= int(val['qty']):
-                    if user:
-                        msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
-                            user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
-            except:
-                continue
 
