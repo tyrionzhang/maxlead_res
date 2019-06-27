@@ -83,9 +83,9 @@ class ExlSpider(scrapy.Spider):
             while 1:
                 time.sleep(5)
                 if self.rows_num == length - 1:
-                    update_spiders_logs('EXL', is_done=1)
                     break
 
+        update_spiders_logs('EXL', is_done=1)
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
                 f.close()
