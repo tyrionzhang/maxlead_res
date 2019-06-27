@@ -156,6 +156,7 @@ class ExlSpider(scrapy.Spider):
                     if user:
                         msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                             user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+                kill_pid_for_name('postgres')
             except:
                 continue
         update_spiders_logs('EXL', is_done=1)
@@ -187,5 +188,4 @@ class ExlSpider(scrapy.Spider):
                             os.popen('kill %s' % progress)
                     except:
                         continue
-                kill_pid_for_name('postgres')
 
