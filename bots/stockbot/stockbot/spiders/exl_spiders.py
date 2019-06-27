@@ -72,18 +72,34 @@ class ExlSpider(scrapy.Spider):
         length = len(list_rows)
         if list_rows:
             for i in range(0, length):
+                if not i == 0:
+                    driver.get(response.url)
+                    driver.implicitly_wait(100)
+                    time.sleep(5)
+                    a_reports = driver.find_elements_by_id('Menu_Reports_head')
+                    if a_reports:
+                        a_reports[0].click()
+                    a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
+                    if a_stock:
+                        a_stock[0].click()
+                    driver.implicitly_wait(100)
+                    time.sleep(5)
+                    list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
+                    list_rows.pop(0)
+                    list_rows.pop(-1)
+
                 warehouse_type = list_rows[i].find_elements_by_class_name('aw-column-0')
                 warehouse_type_name = warehouse_type[0].text
                 if warehouse_type_name in self.stock_names:
                     names['t' + str(i)] = threading.Thread(target=self.get_web_data, args=(response, msg_str2, i))
                     names['t' + str(i)].start()
 
-            display.stop()
-            driver.quit()
             while 1:
                 time.sleep(5)
                 if self.rows_num == length - 1:
                     break
+            display.stop()
+            driver.quit()
 
         update_spiders_logs('EXL', is_done=1)
         if not os.path.isfile(file_path):
@@ -189,8 +205,8 @@ class ExlSpider(scrapy.Spider):
                     else:
                         item['qty'] = 0
                     items.append(item)
-        display.stop()
-        driver.quit()
+        # display.stop()
+        # driver.quit()
 
         for i, val in enumerate(items, 0):
             for n, v in enumerate(items, 0):
