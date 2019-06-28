@@ -69,18 +69,16 @@ class perform_command_que(threading.Thread):
         os.chdir(work_path)
         os.popen('scrapyd-deploy')
 
-        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
         cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d username=%s' % self.username
-        cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider -d username=%s' % self.username
-        cmd_str5 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider -d username=%s' % self.username
+        cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
 
-        t = threading.Timer(36000.0, self.run_exl_spider)
+        t = threading.Timer(21600.0, self.run_atl_spider)
         t.start()
+        t1 = threading.Timer(57600.0, self.run_exl_spider)
+        t1.start()
 
-        os.popen(cmd_str2)
         os.popen(cmd_str1)
-        os.popen(cmd_str4)
-        os.popen(cmd_str5)
+        os.popen(cmd_str2)
         print('%s:%s finished!' % (time.time(), self.getName()))
         os.chdir(settings.ROOT_PATH)
 
@@ -89,6 +87,12 @@ class perform_command_que(threading.Thread):
             cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d username=%s -d stock_name=%s' % (
             self.username, val)
             os.popen(cmd_str)
+
+    def run_atl_spider(self):
+        cmd_str5 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider -d username=%s' % self.username
+        cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider -d username=%s' % self.username
+        os.popen(cmd_str5)
+        os.popen(cmd_str4)
 
 def run_command_queue():
     # time_now = datetime.now()
