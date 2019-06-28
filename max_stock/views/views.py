@@ -68,14 +68,17 @@ class perform_command_que(threading.Thread):
         work_path = settings.STOCHS_SPIDER_URL
         os.chdir(work_path)
         os.popen('scrapyd-deploy')
-        for val in self.stock_names:
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d username=%s -d stock_name=%s' % (self.username, val)
-            os.popen(cmd_str)
 
         cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
         cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d username=%s' % self.username
         cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider -d username=%s' % self.username
         cmd_str5 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider -d username=%s' % self.username
+
+        time.sleep(36000)
+        for val in self.stock_names:
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d username=%s -d stock_name=%s' % (self.username, val)
+            os.popen(cmd_str)
+
         os.popen(cmd_str2)
         os.popen(cmd_str1)
         os.popen(cmd_str4)
