@@ -161,7 +161,11 @@ class ExlSpider(scrapy.Spider):
                 kill_pid_for_name('postgres', type=1)
             except:
                 continue
-        update_spiders_logs('EXL', is_done=1)
+        name = 'EXL-%s' % self.stock_name
+        if self.stock_name == 'M&L':
+            update_spiders_logs(name, is_done=1)
+        else:
+            update_spiders_logs(name)
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
