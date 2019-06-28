@@ -52,7 +52,7 @@ def _set_user_sku(request=None):
     return True
 
 class perform_command_que(threading.Thread):
-    stock_names = ['M&L', 'Match Land', 'Parts']
+    stock_names = ['ml', 'match', 'parts']
 
     def __init__(self, t_name, queue, request=None):
         threading.Thread.__init__(self,name=t_name)
@@ -74,7 +74,7 @@ class perform_command_que(threading.Thread):
 
         t = threading.Timer(360.0, self.run_atl_spider)
         t.start()
-        t1 = threading.Timer(600.0, self.run_exl_spider)
+        t1 = threading.Timer(5.0, self.run_exl_spider)
         t1.start()
 
         os.popen(cmd_str1)
@@ -84,8 +84,7 @@ class perform_command_que(threading.Thread):
 
     def run_exl_spider(self):
         for val in self.stock_names:
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d username=%s -d stock_name=%s' % (
-            self.username, val)
+            cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d stock_name=%s' % (val)
             os.popen(cmd_str)
 
     def run_atl_spider(self):

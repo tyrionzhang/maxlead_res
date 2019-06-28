@@ -22,6 +22,12 @@ class ExlSpider(scrapy.Spider):
 
     def __init__(self, stock_name=None, *args, **kwargs):
         super(ExlSpider, self).__init__(*args, **kwargs)
+        if stock_name == 'ml':
+            stock_name = 'M&L'
+        elif stock_name == 'match':
+            stock_name = 'Match Land'
+        elif stock_name == 'parts':
+            stock_name = 'Parts'
         self.stock_name = stock_name
         # file_name = 'userSkus_txt.txt'
         # if username:
