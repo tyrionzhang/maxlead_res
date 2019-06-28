@@ -18,18 +18,20 @@ class ExlSpider(scrapy.Spider):
     start_urls = ['https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}']
     sku_list = []
     stock_names = ['M&L','Match Land','Parts']
+    stock_name = ''
 
-    # def __init__(self, username=None, *args, **kwargs):
-    #     super(ExlSpider, self).__init__(*args, **kwargs)
-    #     file_name = 'userSkus_txt.txt'
-    #     if username:
-    #         file_name = 'userSkus_txt_%s.txt' % username
-    #     file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, file_name)
-    #     with open(file_path, "r") as f:
-    #         sku_list = f.read()
-    #         f.close()
-    #     if sku_list:
-    #         self.sku_list = eval(sku_list)
+    def __init__(self, stock_name=None, *args, **kwargs):
+        super(ExlSpider, self).__init__(*args, **kwargs)
+        self.stock_name = stock_name
+        # file_name = 'userSkus_txt.txt'
+        # if username:
+        #     file_name = 'userSkus_txt_%s.txt' % username
+        # file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, file_name)
+        # with open(file_path, "r") as f:
+        #     sku_list = f.read()
+        #     f.close()
+        # if sku_list:
+        #     self.sku_list = eval(sku_list)
 
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
@@ -88,7 +90,7 @@ class ExlSpider(scrapy.Spider):
                         list_rows.pop(-1)
                     warehouse_type = list_rows[i].find_elements_by_class_name('aw-column-0')
                     warehouse_type_name = warehouse_type[0].text
-                    if warehouse_type_name in self.stock_names:
+                    if warehouse_type_name == self.stock_name:
                         warehouse_name = list_rows[i].find_elements_by_class_name('aw-column-1')
                         if warehouse_name:
                             warehouse_name = warehouse_name[0].text
@@ -156,7 +158,7 @@ class ExlSpider(scrapy.Spider):
                     if user:
                         msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                             user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
-                kill_pid_for_name('postgres')
+                kill_pid_for_name('postgres', type=1)
             except:
                 continue
         update_spiders_logs('EXL', is_done=1)
