@@ -166,7 +166,7 @@ class ExlSpider(scrapy.Spider):
                             user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
             except:
                 continue
-        name = 'EXL-%s' % self.stock_name
+        name = '3pl-%s' % self.stock_name
         update_spiders_logs(name)
         kill_pid_for_name('postgres')
 
