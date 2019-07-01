@@ -128,14 +128,14 @@
         <tbody id="stocks_body">
             <tr id="stocks_tr">
                 <td>{{ val.sku }}</td>
-                <td class="tr-stock-blue{{ val.exl.is_same }}">{{ val.exl.qty }}</td>
-                <td class="tr-stock-blue{{ val.twu.is_same }}">{{ val.twu.qty }}</td>
-                <td class="tr-stock-blue{{ val.ego.is_same }}">{{ val.ego.qty }}</td>
-                <td class="tr-stock-blue{{ val.tfd.is_same }}">{{ val.tfd.qty }}</td>
-                <td class="tr-stock-blue{{ val.hanover.is_same }}">{{ val.hanover.qty }}</td>
-                <td class="tr-stock-blue{{ val.atl.is_same }}">{{ val.atl.qty }}</td>
-                <td class="tr-stock-blue{{ val.pc.is_same }}">{{ val.pc.qty }}</td>
-                <td class="tr-stock-blue{{ val.zto.is_same }}">{{ val.zto.qty }}</td>
+                <td class="tr-stock-blue{{ val.EXL.is_same }}">{% if val.EXL.qty %}{{ val.EXL.qty }}{% else %}0{% endif %}</td>
+                <td class="tr-stock-blue{{ val.TWU.is_same }}">{% if val.TWU.qty %}{{ val.TWU.qty }}{% else %}0{% endif %}</td>
+                <td class="tr-stock-blue{{ val.EGO.is_same }}">{% if val.EGO.qty %}{{ val.EGO.qty }}{% else %}0{% endif %}</td>
+                <td class="tr-stock-blue{{ val.TFD.is_same }}">{% if val.TFD.qty %}{{ val.TFD.qty }}{% else %}0{% endif %}</td>
+                <td class="tr-stock-blue{{ val.Hanover.is_same }}">{% if val.Hanover.qty %}{{ val.Hanover.qty }}{% else %}0{% endif %}</td>
+                <td class="tr-stock-blue{{ val.atl.is_same }}">{% if val.atl.qty %}{{ val.atl.qty }}{% else %}0{% endif %}</td>
+                <td class="tr-stock-blue{{ val.PC.is_same }}">{% if val.PC.qty %}{{ val.PC.qty }}{% else %}0{% endif %}</td>
+                <td class="tr-stock-blue{{ val.ZTO.is_same }}">{% if val.ZTO.qty %}{{ val.ZTO.qty }}{% else %}0{% endif %}</td>
                 <td>{{ val.sum }}</td>
                 <td>{{ val.date }}</td>
             {% if have_new %}
@@ -151,6 +151,17 @@
         </table>
 </body>
     <script>
+        $('#stocks_body tr').each(function (re) {
+            var sum = parseInt($(this).children('td').eq(1).html()) +
+                parseInt($(this).children('td').eq(2).html()) +
+                parseInt($(this).children('td').eq(3).html()) +
+                parseInt($(this).children('td').eq(4).html()) +
+                parseInt($(this).children('td').eq(5).html()) +
+                parseInt($(this).children('td').eq(6).html()) +
+                parseInt($(this).children('td').eq(7).html()) +
+                parseInt($(this).children('td').eq(8).html());
+            $(this).children('td').eq(9).html(sum);
+        });
          var table = $('#datas').eq(0);
         table.on('click', 'th', function() {
           var table = $(this).parents('table').eq(0);

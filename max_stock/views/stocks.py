@@ -110,32 +110,42 @@ def get_stocks(request):
     select_data = {"d": """date_trunc('day', created)"""}
     stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     items = []
+    items_sku = []
     have_new = 0
     d_list = []
     for value in stocks:
         del value['count']
         if not d_list or value not in d_list:
-            d_list.append(value)
+            d_list.append(value['sku'])
+    data_list = WarehouseStocks.objects.filter(sku__in=d_list, created__gte=start_date)
+    if end_date:
+        data_list = data_list.filter(created__lte=end_date)
+    if keywords:
+        data_list = data_list.filter(sku__contains=keywords)
 
-    total_num = len(d_list)/100
-    names = locals()
-    with ThreadPoolExecutor(int(total_num) + 1) as executor:
-        task_list = []
-        for i in range(int(total_num) + 1):
-            page_num = (i+1)*100
-            if i == int(total_num):
-                names['t' + str(i)] = executor.submit(update_data, d_list[i*100:], items)
-                names['t' + str(i)].add_done_callback(on_done)
-            else:
-                names['t' + str(i)] = executor.submit(update_data, d_list[i * 100: page_num], items)
-                names['t' + str(i)].add_done_callback(on_done)
-            task_list.append(names['t' + str(i)])
-    for task in as_completed(task_list):
-        task.result()
-    # while 1:
-    #     time.sleep(2)
-    #     if len(items) == len(d_list):
-    #         break
+    if sel_new:
+        data_list = data_list.filter(is_new=sel_new)
+
+    for val in data_list:
+        if val.sku not in items_sku:
+            items_sku.append(val.sku)
+            items.append({'sku':val.sku})
+        for v in items:
+            # threshold_obj = Thresholds.objects.filter(sku=val.sku, warehouse=val.warehouse)
+            if v['sku'] == val.sku:
+                is_same = 0
+                if val.warehouse == 'ATL-1':
+                    val.warehouse = 'atl'
+                # if threshold_obj and threshold_obj[0].threshold >= val.qty:
+                #     is_same = 1
+                date_time = val.created.strftime('%Y-%m-%d %H:%M:%S')
+                if val.warehouse == warehouse:
+                    date_time = val.created.strftime('%Y-%m-%d %H:%M:%S')
+
+                v.update({
+                    val.warehouse : {'qty':val.qty, 'is_same':is_same},
+                    'date' : date_time
+                })
     data = {
         'stock_list': items,
         'user': user,
