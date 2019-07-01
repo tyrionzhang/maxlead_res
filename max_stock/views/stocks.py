@@ -16,6 +16,7 @@ from django.db.models import Count
 from django.core.mail import send_mail
 from maxlead_site.common.common import kill_pid_for_name
 from django.db import connections
+from concurrent.futures import ThreadPoolExecutor,as_completed
 
 warehouse= {
     'exl' : 'EXL',
@@ -27,6 +28,11 @@ warehouse= {
     'pc' : 'PC',
     'zto' : 'ZTO'
 }
+
+def on_done(future):
+    # 因为每一个线程都有一个 connections，所以这里可以调用 close_all()，把本线程名下的所有连接关闭。
+    connections.close_all()
+
 @csrf_exempt
 def index(request):
     user = App.get_user_info(request)
@@ -113,19 +119,23 @@ def get_stocks(request):
 
     total_num = len(d_list)/100
     names = locals()
-    for i in range(int(total_num) + 1):
-        page_num = (i+1)*100
-        if i == int(total_num):
-            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i*100:], items, ))
-        else:
-            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i * 100: page_num], items,))
-    for i in range(int(total_num) + 1):
-        names['t' + str(i)].start()
-    while 1:
-        time.sleep(2)
-        if len(items) == len(d_list):
-            connections.close_all()
-            break
+    with ThreadPoolExecutor(int(total_num) + 1) as executor:
+        task_list = []
+        for i in range(int(total_num) + 1):
+            page_num = (i+1)*100
+            if i == int(total_num):
+                names['t' + str(i)] = executor.submit(update_data, d_list[i*100:], items)
+                names['t' + str(i)].add_done_callback(on_done)
+            else:
+                names['t' + str(i)] = executor.submit(update_data, d_list[i * 100: page_num], items)
+                names['t' + str(i)].add_done_callback(on_done)
+            task_list.append(names['t' + str(i)])
+    for task in as_completed(task_list):
+        task.result()
+    # while 1:
+    #     time.sleep(2)
+    #     if len(items) == len(d_list):
+    #         break
     data = {
         'stock_list': items,
         'user': user,
@@ -389,19 +399,19 @@ def export_stocks(request):
 
     total_num = len(d_list) / 100
     names = locals()
-    for i in range(int(total_num) + 1):
-        page_num = (i + 1) * 100
-        if i == int(total_num):
-            names['t' + str(i)] = threading.Thread(target=export_update_data, args=(d_list[i * 100:], data,))
-        else:
-            names['t' + str(i)] = threading.Thread(target=export_update_data, args=(d_list[i * 100: page_num], data,))
-    for i in range(int(total_num) + 1):
-        names['t' + str(i)].start()
-    while 1:
-        time.sleep(2)
-        if len(data) == len(d_list):
-            connections.close_all()
-            break
+    with ThreadPoolExecutor(int(total_num) + 1) as executor:
+        task_list = []
+        for i in range(int(total_num) + 1):
+            page_num = (i+1)*100
+            if i == int(total_num):
+                names['t' + str(i)] = executor.submit(export_update_data, d_list[i*100:], data)
+                names['t' + str(i)].add_done_callback(on_done)
+            else:
+                names['t' + str(i)] = executor.submit(export_update_data, d_list[i * 100: page_num], data)
+                names['t' + str(i)].add_done_callback(on_done)
+            task_list.append(names['t' + str(i)])
+    for task in as_completed(task_list):
+        task.result()
 
     if data:
         fields = ['SKU','EXL','TWU','EGO','TFD','Hanover','ATL', 'PC', 'ZTO', 'SUM','Created']
@@ -979,64 +989,67 @@ def ajax_save_sales(request):
 
 def update_data(lists, data = []):
     for key, val in enumerate(lists, 0):
-        re = {
-            'sku': val['sku'],
-            'exl': {'qty': 0, 'is_same': 0},
-            'twu': {'qty': 0, 'is_same': 0},
-            'ego': {'qty': 0, 'is_same': 0},
-            'tfd': {'qty': 0, 'is_same': 0},
-            'hanover': {'qty': 0, 'is_same': 0},
-            'atl': {'qty': 0, 'is_same': 0},
-            'pc': {'qty': 0, 'is_same': 0},
-            'zto': {'qty': 0, 'is_same': 0}
-        }
-        obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
-        sum = 0
-        for v in obj:
-            threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
-            if v.warehouse == 'EXL':
-                re['exl'].update({'qty': v.qty})
-                sum += int(v.qty)
-                if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['exl'].update({'is_same': 1})
-            elif v.warehouse == 'TWU':
-                re['twu'].update({'qty': v.qty})
-                sum += int(v.qty)
-                if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['twu'].update({'is_same': 1})
-            elif v.warehouse == 'EGO':
-                re['ego'].update({'qty': v.qty})
-                sum += int(v.qty)
-                if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['ego'].update({'is_same': 1})
-            elif v.warehouse == 'TFD':
-                re['tfd'].update({'qty': v.qty})
-                sum += int(v.qty)
-                if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['tfd'].update({'is_same': 1})
-            elif v.warehouse == 'Hanover':
-                re['hanover'].update({'qty': v.qty})
-                sum += int(v.qty)
-                if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['hanover'].update({'is_same': 1})
-            elif v.warehouse == 'PC':
-                re['pc'].update({'qty': v.qty})
-                sum += int(v.qty)
-                if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['pc'].update({'is_same': 1})
-            elif v.warehouse == 'ZTO':
-                re['zto'].update({'qty': v.qty})
-                sum += int(v.qty)
-                if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['zto'].update({'is_same': 1})
-            else:
-                re['atl'].update({'qty': v.qty})
-                sum += int(v.qty)
-                if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                    re['atl'].update({'is_same': 1})
-            date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
-        re.update({'sum': sum, 'date': date_re})
-        data.append(re)
+        try:
+            re = {
+                'sku': val['sku'],
+                'exl': {'qty': 0, 'is_same': 0},
+                'twu': {'qty': 0, 'is_same': 0},
+                'ego': {'qty': 0, 'is_same': 0},
+                'tfd': {'qty': 0, 'is_same': 0},
+                'hanover': {'qty': 0, 'is_same': 0},
+                'atl': {'qty': 0, 'is_same': 0},
+                'pc': {'qty': 0, 'is_same': 0},
+                'zto': {'qty': 0, 'is_same': 0}
+            }
+            obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
+            sum = 0
+            for v in obj:
+                threshold_obj = Thresholds.objects.filter(sku=v.sku, warehouse=v.warehouse)
+                if v.warehouse == 'EXL':
+                    re['exl'].update({'qty': v.qty})
+                    sum += int(v.qty)
+                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                        re['exl'].update({'is_same': 1})
+                elif v.warehouse == 'TWU':
+                    re['twu'].update({'qty': v.qty})
+                    sum += int(v.qty)
+                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                        re['twu'].update({'is_same': 1})
+                elif v.warehouse == 'EGO':
+                    re['ego'].update({'qty': v.qty})
+                    sum += int(v.qty)
+                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                        re['ego'].update({'is_same': 1})
+                elif v.warehouse == 'TFD':
+                    re['tfd'].update({'qty': v.qty})
+                    sum += int(v.qty)
+                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                        re['tfd'].update({'is_same': 1})
+                elif v.warehouse == 'Hanover':
+                    re['hanover'].update({'qty': v.qty})
+                    sum += int(v.qty)
+                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                        re['hanover'].update({'is_same': 1})
+                elif v.warehouse == 'PC':
+                    re['pc'].update({'qty': v.qty})
+                    sum += int(v.qty)
+                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                        re['pc'].update({'is_same': 1})
+                elif v.warehouse == 'ZTO':
+                    re['zto'].update({'qty': v.qty})
+                    sum += int(v.qty)
+                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                        re['zto'].update({'is_same': 1})
+                else:
+                    re['atl'].update({'qty': v.qty})
+                    sum += int(v.qty)
+                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
+                        re['atl'].update({'is_same': 1})
+                date_re = v.created.strftime('%Y-%m-%d %H:%M:%S')
+            re.update({'sum': sum, 'date': date_re})
+            data.append(re)
+        except:
+            continue
 
 def export_update_data(lists, data = []):
     for key, val in enumerate(lists, 0):
