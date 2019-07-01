@@ -231,7 +231,7 @@ def help_page(request):
 def update_spiders_logs(name, is_done=0):
     obj = SpidersLogs.objects.filter(is_done=0)
     if obj:
-        now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now_time = datetime.now().strftime("%m-%d %H:%M:%S")
         des_str = obj[0].description + '%s的数据已拉取完毕,时间%s<br>' % (name, now_time)
         obj.update(description=des_str)
         if 'M&L' in des_str and 'Parts' in des_str and 'Match Land' in des_str:
