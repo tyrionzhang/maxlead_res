@@ -110,14 +110,14 @@ def get_stocks(request):
         if not d_list or value not in d_list:
             d_list.append(value)
 
-    total_num = len(d_list)/200
+    total_num = len(d_list)/100
     names = locals()
     for i in range(int(total_num) + 1):
-        page_num = (i+1)*200
+        page_num = (i+1)*100
         if i == int(total_num):
-            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i*200:], items, ))
+            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i*100:], items, ))
         else:
-            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i * 200: page_num], items,))
+            names['t' + str(i)] = threading.Thread(target=update_data, args=(d_list[i * 100: page_num], items,))
     for i in range(int(total_num) + 1):
         names['t' + str(i)].start()
     while 1:
@@ -387,14 +387,14 @@ def export_stocks(request):
         if not d_list or not value in d_list:
             d_list.append(value)
 
-    total_num = len(d_list) / 200
+    total_num = len(d_list) / 100
     names = locals()
     for i in range(int(total_num) + 1):
-        page_num = (i + 1) * 200
+        page_num = (i + 1) * 100
         if i == int(total_num):
-            names['t' + str(i)] = threading.Thread(target=export_update_data, args=(d_list[i * 200:], data,))
+            names['t' + str(i)] = threading.Thread(target=export_update_data, args=(d_list[i * 100:], data,))
         else:
-            names['t' + str(i)] = threading.Thread(target=export_update_data, args=(d_list[i * 200: page_num], data,))
+            names['t' + str(i)] = threading.Thread(target=export_update_data, args=(d_list[i * 100: page_num], data,))
     for i in range(int(total_num) + 1):
         names['t' + str(i)].start()
     while 1:
