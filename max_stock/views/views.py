@@ -11,6 +11,7 @@ from maxlead_site.models import UserProfile
 from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg,SpidersLogs
 from django.http import HttpResponse
 from max_stock.views.stocks import covered_stocks
+from maxlead_site.common.common import kill_pid_for_name
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
@@ -93,6 +94,7 @@ class perform_command_que(threading.Thread):
         cmd_str5 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider -d username=%s' % self.username
         cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider -d username=%s' % self.username
         os.popen(cmd_str5)
+        time.sleep(360)
         os.popen(cmd_str4)
 
 def run_command_queue():
@@ -237,3 +239,8 @@ def update_spiders_logs(name, is_done=0):
         if is_done:
             obj.update(is_done=is_done, end_time=now_time)
         return obj
+
+def kill_postgres_on_type():
+    t = threading.Timer(86400.0, kill_postgres_on_type)
+    kill_pid_for_name('postgres', select_type = 'SELECT')
+    t.start()

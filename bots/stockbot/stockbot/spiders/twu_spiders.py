@@ -53,13 +53,13 @@ class TwuSpider(scrapy.Spider):
 
     def parse_page(self, response):
         res = response.css('article')[0].css('table[width="100%"]>tr')
+        msg_str2 = ''
+        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         if res:
             fields = res[1].css('td::text').extract()
             res.pop(1)
             res.pop(0)
             fields.pop(0)
-            msg_str2 = ''
-            file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
             for val in res:
                 item = WarehouseStocksItem()
                 items = val.css('td::text').extract()
@@ -90,24 +90,24 @@ class TwuSpider(scrapy.Spider):
                         if user:
                             msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (user[0].user.email,
                                                 item['sku'], item['warehouse'],item['qty'], threshold[0].threshold)
-            update_spiders_logs('TWU')
+        update_spiders_logs('TWU')
 
-            if not os.path.isfile(file_path):
-                with open(file_path, "w+") as f:
-                    f.close()
-            with open(file_path, "r+") as f:
-                old = f.read()
-                f.seek(0)
-                f.write(self.msg_str1)
-                f.write(old)
-                f.write(msg_str2)
+        if not os.path.isfile(file_path):
+            with open(file_path, "w+") as f:
                 f.close()
+        with open(file_path, "r+") as f:
+            old = f.read()
+            f.seek(0)
+            f.write(self.msg_str1)
+            f.write(old)
+            f.write(msg_str2)
+            f.close()
 
-            with open(file_path, "r") as f:
-                msg1 = f.readline()
-                msg2 = f.readline()
-                msg3 = f.readline()
-                msg4 = f.readline()
-                msg5 = f.readline()
-                if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n' and msg5 == 'complete\n':
-                    spiders_send_email(f, file_path=file_path)
+        with open(file_path, "r") as f:
+            msg1 = f.readline()
+            msg2 = f.readline()
+            msg3 = f.readline()
+            msg4 = f.readline()
+            msg5 = f.readline()
+            if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n' and msg5 == 'complete\n':
+                spiders_send_email(f, file_path=file_path)
