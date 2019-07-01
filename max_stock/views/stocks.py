@@ -401,27 +401,67 @@ def export_stocks(request):
     select_data = {"d": """date_trunc('day', created)"""}
     stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     data = []
+    items_sku = []
     d_list = []
     for value in stocks:
         del value['count']
-        if not d_list or not value in d_list:
-            d_list.append(value)
+        if not d_list or value not in d_list:
+            d_list.append(value['sku'])
+    data_list = WarehouseStocks.objects.filter(sku__in=d_list, created__gte=start_date)
+    if end_date:
+        data_list = data_list.filter(created__lte=end_date)
+    if keywords:
+        data_list = data_list.filter(sku__contains=keywords)
 
-    total_num = len(d_list) / 100
-    names = locals()
-    with ThreadPoolExecutor(int(total_num) + 1) as executor:
-        task_list = []
-        for i in range(int(total_num) + 1):
-            page_num = (i+1)*100
-            if i == int(total_num):
-                names['t' + str(i)] = executor.submit(export_update_data, d_list[i*100:], data)
-                names['t' + str(i)].add_done_callback(on_done)
-            else:
-                names['t' + str(i)] = executor.submit(export_update_data, d_list[i * 100: page_num], data)
-                names['t' + str(i)].add_done_callback(on_done)
-            task_list.append(names['t' + str(i)])
-    for task in as_completed(task_list):
-        task.result()
+    for val in data_list:
+        if val.sku not in items_sku:
+            items_sku.append(val.sku)
+            data.append({
+                'sku':val.sku,
+                'exl': 0,
+                'twu': 0,
+                'ego':0,
+                'tfd': 0,
+                'hanover': 0,
+                'atl': 0,
+                'pc': 0,
+                'zto': 0,
+                'sum':0
+            })
+        for v in data:
+            # threshold_obj = Thresholds.objects.filter(sku=val.sku, warehouse=val.warehouse)
+            if v['sku'] == val.sku:
+                is_same = 0
+                if val.warehouse == 'ATL-1':
+                    val.warehouse = 'atl'
+                elif val.warehouse == 'EXL':
+                    val.warehouse = 'exl'
+                elif val.warehouse == 'TWU':
+                    val.warehouse = 'twu'
+                elif val.warehouse == 'EGO':
+                    val.warehouse = 'ego'
+                elif val.warehouse == 'TFD':
+                    val.warehouse = 'tfd'
+                elif val.warehouse == 'Hanover':
+                    val.warehouse = 'hanover'
+                elif val.warehouse == 'PC':
+                    val.warehouse = 'pc'
+                elif val.warehouse == 'ZTO':
+                    val.warehouse = 'zto'
+                else:
+                    val.warehouse = 'atl'
+                # if threshold_obj and threshold_obj[0].threshold >= val.qty:
+                #     is_same = 1
+                date_time = val.created.strftime('%Y-%m-%d %H:%M:%S')
+                if val.warehouse == warehouse:
+                    date_time = val.created.strftime('%Y-%m-%d %H:%M:%S')
+
+                v.update({
+                    val.warehouse : val.qty,
+                    'date' : date_time
+                })
+                sum = v['exl'] + v['twu'] + v['ego'] + v['tfd'] + v['hanover'] + v['pc'] + v['zto'] + v['atl']
+                v.update({'sum': sum})
 
     if data:
         fields = ['SKU','EXL','TWU','EGO','TFD','Hanover','ATL', 'PC', 'ZTO', 'SUM','Created']
