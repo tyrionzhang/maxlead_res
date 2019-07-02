@@ -139,6 +139,12 @@ def stock_spiders(request):
         else:
             msg_str = u'更新正在进行...'
     else:
+        SlogsObj = SpidersLogs()
+        SlogsObj.id
+        SlogsObj.user_id = user.user_id
+        SlogsObj.start_time = datetime.now()
+        SlogsObj.save()
+
         time_now = datetime.now()
         time_re = datetime.now() + timedelta(days = 1)
         time_saturday = '%s 05:00:00' % time_re.strftime('%Y-%m-%d')

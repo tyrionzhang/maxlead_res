@@ -14,9 +14,7 @@ from maxlead import settings
 from max_stock.views import views
 from django.db.models import Count
 from django.core.mail import send_mail
-from maxlead_site.common.common import kill_pid_for_name
 from django.db import connections
-from concurrent.futures import ThreadPoolExecutor,as_completed
 
 warehouse= {
     'exl' : 'EXL',

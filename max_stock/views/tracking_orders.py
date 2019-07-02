@@ -92,6 +92,8 @@ def get_tracking_order_status():
     # billing_date = datetime.datetime.now().strftime("%b.%y")
     # lists = TrackingOrders.objects.filter(billing_date__contains=billing_date)
     t = threading.Timer(86400.0, get_tracking_order_status)
+    from maxlead_site.common.common import kill_pid_for_name
+    kill_pid_for_name('postgres')
     lists = TrackingOrders.objects.all().exclude(status='Delivered')
     start_date = time.mktime((datetime.datetime.now() + datetime.timedelta(days=-5)).timetuple())
     if lists:
