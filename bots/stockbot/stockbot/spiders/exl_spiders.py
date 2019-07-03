@@ -167,10 +167,7 @@ class ExlSpider(scrapy.Spider):
             except:
                 continue
         name = '3pl-%s' % self.stock_name
-        if self.stock_name == 'Parts':
-            update_spiders_logs(name, is_done=1)
-        else:
-            update_spiders_logs(name)
+        update_spiders_logs(name)
         kill_pid_for_name('postgres')
 
         if not os.path.isfile(file_path):

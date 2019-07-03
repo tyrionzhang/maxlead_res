@@ -105,6 +105,12 @@ def run_command_queue():
     # t_re = (time_saturday - time_now).total_seconds()
     # spiders_time = "%.1f" % t_re
     t = threading.Timer(86400.0, run_command_queue)
+    SlogsObj = SpidersLogs()
+    SlogsObj.id
+    SlogsObj.user_id = 1
+    SlogsObj.start_time = datetime.now()
+    SlogsObj.save()
+
     _set_user_sku()
     q = queue.Queue()
 
@@ -139,12 +145,6 @@ def stock_spiders(request):
         else:
             msg_str = u'更新正在进行...'
     else:
-        SlogsObj = SpidersLogs()
-        SlogsObj.id
-        SlogsObj.user_id = user.user_id
-        SlogsObj.start_time = datetime.now()
-        SlogsObj.save()
-
         time_now = datetime.now()
         time_re = datetime.now() + timedelta(days = 1)
         time_saturday = '%s 05:00:00' % time_re.strftime('%Y-%m-%d')
@@ -238,12 +238,13 @@ def update_spiders_logs(name, is_done=0):
     obj = SpidersLogs.objects.filter(is_done=0)
     if obj:
         now_time = datetime.now().strftime("%m-%d %H:%M:%S")
+        now_time1 = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         des_str = obj[0].description + '%s的数据已拉取完毕,时间%s<br>' % (name, now_time)
         obj.update(description=des_str)
-        if 'M&L' in des_str and 'Parts' in des_str and 'Match Land' in des_str:
+        if ('M&L' in des_str) and ('Parts' in des_str) and ('Match Land' in des_str):
             is_done = 1
         if is_done:
-            obj.update(is_done=is_done, end_time=now_time)
+            obj.update(is_done=is_done, end_time=now_time1)
         return obj
 
 def kill_postgres_on_type():
