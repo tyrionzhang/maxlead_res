@@ -1165,6 +1165,6 @@ def del_spiders_logs(request):
         data = obj.delete()
         return HttpResponse(json.dumps({'code': 1, 'msg':'Successfully!'}), content_type='application/json')
     else:
-        return HttpResponse(json.dumps({'code': 1, 'msg': 'Data exites!'}), content_type='application/json')
+        return HttpResponse(json.dumps({'code': 1, 'msg': 'Data does not exist!'}), content_type='application/json')
 
 
