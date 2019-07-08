@@ -144,7 +144,6 @@ def get_send_time(time_str):
     return t_re
 
 def spiders_send_email(f_obj, file_path=None):
-    kill_pid_for_name('postgres')
     msg_list = UserEmailMsg.objects.filter(is_send=0)
     if msg_list:
         msg_str = ''
