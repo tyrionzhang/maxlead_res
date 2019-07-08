@@ -4,7 +4,7 @@ from scrapy import log
 import logging
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 from fake_useragent import UserAgent
-from maxlead_res.bots.maxlead_scrapy.maxlead_scrapy.proxy_handle import get_proxy,delete_proxy
+from bots.maxlead_scrapy.maxlead_scrapy.proxy_handle import get_proxy,delete_proxy
 
 
 class RandomUserAgentMiddleware(UserAgentMiddleware):
