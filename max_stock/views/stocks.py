@@ -80,6 +80,7 @@ def get_stocks(request):
     if not start_date:
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
+        start_date = datetime.strptime(start_date,'%Y-%m-%d')
     stocks = WarehouseStocks.objects.filter(created__gte=start_date)
     if not user.user.is_superuser and not user.stocks_role == '66':
         uids = [user.user_id]
@@ -96,6 +97,7 @@ def get_stocks(request):
         stocks = stocks.filter(sku__in=skus_li)
 
     if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
         stocks = stocks.filter(created__lte=end_date)
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
