@@ -235,6 +235,7 @@ def help_page(request):
 
 def update_spiders_logs(name, is_done=0):
     obj = SpidersLogs.objects.filter(is_done=0)
+    kill_pid_for_name('postgres')
     if obj:
         now_time = datetime.now().strftime("%m-%d %H:%M:%S")
         now_time1 = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
