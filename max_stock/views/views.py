@@ -84,10 +84,9 @@ class perform_command_que(threading.Thread):
         os.chdir(settings.ROOT_PATH)
 
     def run_exl_spider(self):
-        for val in self.stock_names:
-            cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d stock_name=%s' % (val)
-            time.sleep(360)
-            os.popen(cmd_str)
+        cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider'
+        time.sleep(360)
+        os.popen(cmd_str)
 
     def run_atl_spider(self):
         time.sleep(360)
@@ -241,7 +240,7 @@ def update_spiders_logs(name, is_done=0):
         now_time1 = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         des_str = obj[0].description + '%s的数据已拉取完毕,时间%s<br>' % (name, now_time)
         obj.update(description=des_str)
-        if ('M&L' in des_str) and ('Parts' in des_str) and ('Match Land' in des_str):
+        if '3pl' in des_str:
             is_done = 1
         if is_done:
             obj.update(is_done=is_done, end_time=now_time1)
