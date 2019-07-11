@@ -25,7 +25,8 @@ time_re5 = int(get_send_time('07:00'))
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
 t4.start()
 
-t4_pc = threading.Timer(float('%.1f' % time_re5), copy_stocks_of_pc)
+time_re_pc = int(get_send_time('05:00'))
+t4_pc = threading.Timer(float('%.1f' % time_re_pc), copy_stocks_of_pc)
 t4_pc.start()
 
 t = threading.Timer(79200.0, spiders2)
