@@ -161,7 +161,7 @@
                     };
                     data.push(re);
                 });
-                 $.post('/admin/max_stock/check_all_new/',{'data':JSON.stringify(data)},function(re){
+                 $.post('/admin/max_stock/covered_new_all/',{'data':JSON.stringify(data)},function(re){
                     if (re.code == 1) {
                         alert(re.msg);
                         window.location.reload();
