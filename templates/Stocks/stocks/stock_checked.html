@@ -157,11 +157,12 @@
                     var re = {
                         'sku': $(this).find('td:eq(0)').html(),
                         'warehouse': $(this).find('td:eq(1)').html(),
-                        'qty': $(this).find('td:eq(3)').html()
+                        'qty': $(this).find('td:eq(3)').html(),
+                        'date': $(this).find('td:eq(4)').html()
                     };
                     data.push(re);
                 });
-                 $.post('/admin/max_stock/check_all_new/',{'type' : '{{ type }}', 'data':JSON.stringify(data)},function(re){
+                 $.post('/admin/max_stock/check_all_new/',{'data':JSON.stringify(data)},function(re){
                     if (re.code == 1) {
                         alert(re.msg);
                         window.location.reload();

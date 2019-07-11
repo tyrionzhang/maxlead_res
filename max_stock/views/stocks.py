@@ -617,7 +617,6 @@ def check_all_new(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
         data = request.POST.get('data','')
-        type = request.POST.get('type','')
         if data:
             data = eval(data)
             querylist = []
@@ -627,8 +626,8 @@ def check_all_new(request):
             for val in data:
                 val['sku'] = val['sku'].replace('amp;','')
                 try:
-                    obj = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=0)
-                    if obj and not type == 'new':
+                    obj = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'],is_new=0, created__contains=val['date'])
+                    if obj:
                         i = obj.update(qty=val['qty'])
                     else:
                         querylist.append(WarehouseStocks(sku=val['sku'],warehouse=val['warehouse'],qty=val['qty'],is_new=0))
