@@ -54,13 +54,7 @@ class ExlSpider(scrapy.Spider):
             elem_pass[0].send_keys('7G1#AJjX')
         btn_login[0].click()
         driver.implicitly_wait(100)
-        time.sleep(3)
-        a_reports = driver.find_elements_by_id('Menu_Reports_head')
-        if a_reports:
-            a_reports[0].click()
-        a_stock = driver.find_elements_by_css_selector('#Menu_Reports a')
-        if a_stock:
-            a_stock[0].click()
+        driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
         driver.implicitly_wait(100)
         time.sleep(3)
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
