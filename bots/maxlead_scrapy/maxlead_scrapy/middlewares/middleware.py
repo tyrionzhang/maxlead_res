@@ -40,7 +40,7 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
             proxy = "http://" + get_proxy()
             request.meta['download_timeout'] = 30
             request.meta["proxy"] = proxy
-            print(u'为%s 添加代理%s ' % (request.url, proxy), end='')
+            print('Url%s Proxy%s ' % (request.url, proxy), end='')
 
             res_asin = request.url.split('aid=')
             qid = request.url.split('qid=')
@@ -72,7 +72,7 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
             Response对象：停止后续process_exception方法
             Request对象：停止中间件，request将会被重新调用下载
         """
-        print(u'代理%s，访问%s出现异常:%s' %(request.meta['proxy'],request.url,exception))
+        print('Proxy%s，The url%sError:%s' %(request.meta['proxy'],request.url,exception))
         import time
         time.sleep(5)
         delete_proxy(request.meta['proxy'].split("//")[-1])
