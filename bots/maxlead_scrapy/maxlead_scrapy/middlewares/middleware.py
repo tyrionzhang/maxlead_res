@@ -75,7 +75,7 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
         print('Proxy%s，The url%sError:%s' %(request.meta['proxy'],request.url,exception))
         import time
         time.sleep(5)
-        if not request.meta['proxy'] == 'no proxy!':
+        if not request.meta['proxy'] == 'http://no proxy!':
             delete_proxy(request.meta['proxy'].split("//")[-1])
         request.meta['proxy']='http://'+get_proxy()
 
