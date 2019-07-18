@@ -197,13 +197,14 @@ def order_list(request):
         list = list.filter(created__lte=end_date)
     if payments_date:
         list = list.filter(payments_date__contains=payments_date)
-    tmps = EmailTemplates.objects.filter(customer_num=user.menu_child_type)
+
     if not user.user.is_superuser:
+        tmps = EmailTemplates.objects.filter(customer_num=user.menu_child_type)
         tmps = tmps.filter(user_id=user.user.id)
-    tmp_list = []
-    for val in tmps:
-        tmp_list.append(val.sku)
-    list = list.filter(sku__in=tmp_list)
+        tmp_list = []
+        for val in tmps:
+            tmp_list.append(val.sku)
+        list = list.filter(sku__in=tmp_list)
 
     data = {
         'list': list,
