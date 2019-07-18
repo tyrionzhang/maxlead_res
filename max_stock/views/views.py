@@ -250,3 +250,10 @@ def kill_postgres_on_type():
     t = threading.Timer(86400.0, kill_postgres_on_type)
     kill_pid_for_name('postgres', select_type = 'SELECT')
     t.start()
+
+def del_orders():
+    t = threading.Timer(86400.0, del_orders)
+    data = OrderItems.objects.filter(is_email=0)
+    if data:
+        data.delete()
+    t.start()
