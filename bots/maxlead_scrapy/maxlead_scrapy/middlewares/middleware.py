@@ -50,6 +50,7 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
                 request.meta.setdefault('aid', asin_id)
                 request.meta.setdefault('qid', qid)
                 request.meta.setdefault('dont_redirect', True)
+                request.meta.setdefault('dont_filter', True)
             except:
                 pass
             log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
