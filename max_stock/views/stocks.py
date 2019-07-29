@@ -42,7 +42,7 @@ def index(request):
     start_date = request.GET.get('start_date','')
     end_date = request.GET.get('end_date','')
     if not warehouse:
-        warehouse = 'TWU'
+        warehouse = 'all'
     if not start_date:
         start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
