@@ -102,7 +102,7 @@ def get_stocks(request):
     if keywords:
         stocks = stocks.filter(sku__contains=keywords)
     if not warehouse:
-        warehouse = 'TWU'
+        warehouse = 'all'
     if not warehouse == 'all':
         stocks = stocks.filter(warehouse=warehouse)
     if sel_new:
