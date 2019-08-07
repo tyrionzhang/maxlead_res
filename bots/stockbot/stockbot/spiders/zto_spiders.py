@@ -63,42 +63,46 @@ class ZtoSpider(scrapy.Spider):
         total_page = int(total_count.split(' ')[1].replace(',','')) / 10
         total_page = math.ceil(total_page)
         for i in range(total_page):
-             try:
+            try:
                 res = driver.find_elements_by_css_selector('.el-table tbody>tr')
                 for val in res:
-                    item = WarehouseStocksItem()
-                    td_re = val.find_elements_by_tag_name('td')
-                    if td_re:
-                        item['sku'] = td_re[1].text
-                        item['warehouse'] = 'ZTO'
-                        item['is_new'] = 0
-                        if td_re[4].text and not td_re[4].text == ' ':
-                            qty5 = int(td_re[5].text)
-                            item['qty'] = td_re[4].text
-                            item['qty'] = item['qty'].replace(',','')
-                            if qty5:
-                                item['qty'] = int(item['qty']) - qty5
-                        else:
-                            item['qty'] = 0
-                        date_now = datetime.now()
-                        date0 = date_now.strftime('%Y-%m-%d')
-                        obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
-                                                             created__contains=date0)
-                        date1 = date_now - timedelta(days=1)
-                        obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
-                                                              created__contains=date1.strftime('%Y-%m-%d'))
-                        if obj1:
-                            item['qty1'] = obj1[0].qty - int(item['qty'])
-                        if obj:
-                            obj.delete()
-                        yield item
+                    try:
+                        item = WarehouseStocksItem()
+                        td_re = val.find_elements_by_tag_name('td')
+                        if td_re:
+                            item['sku'] = td_re[1].text
+                            item['warehouse'] = 'ZTO'
+                            item['is_new'] = 0
+                            if td_re[4].text and not td_re[4].text == ' ':
+                                qty5 = int(td_re[5].text)
+                                item['qty'] = td_re[4].text
+                                item['qty'] = item['qty'].replace(',','')
+                                if qty5:
+                                    item['qty'] = int(item['qty']) - qty5
+                            else:
+                                item['qty'] = 0
+                            date_now = datetime.now()
+                            date0 = date_now.strftime('%Y-%m-%d')
+                            obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
+                                                                 created__contains=date0)
+                            date1 = date_now - timedelta(days=1)
+                            obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
+                                                                  created__contains=date1.strftime('%Y-%m-%d'))
+                            if obj1:
+                                item['qty1'] = obj1[0].qty - int(item['qty'])
+                            if obj:
+                                obj.delete()
+                            yield item
 
-                        threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
-                        user = SkuUsers.objects.filter(sku=item['sku'])
-                        if threshold and threshold[0].threshold >= int(item['qty']):
-                            if user:
-                                msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % ( user[0].user.email,
-                                                        item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                            threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
+                            user = SkuUsers.objects.filter(sku=item['sku'])
+                            if threshold and threshold[0].threshold >= int(item['qty']):
+                                if user:
+                                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % ( user[0].user.email,
+                                                            item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                    except IndexError as e:
+                        print(e)
+                        continue
                 if i < total_page - 1:
                     elem_next_page = driver.find_elements_by_class_name('btn-next')
                     if elem_next_page:
@@ -106,9 +110,9 @@ class ZtoSpider(scrapy.Spider):
                         elem_next_page[0].click()
                         driver.implicitly_wait(100)
                         time.sleep(3)
-             except IndexError as e:
-                 print(e)
-                 continue
+            except IndexError as e:
+                print(e)
+                continue
         display.stop()
         driver.quit()
         update_spiders_logs('ZTO')
