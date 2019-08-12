@@ -219,7 +219,7 @@ def get_tracking_order_status():
             text_content = '未扫描状态的订单汇总。.'
             html_content = '<p>这是一封<strong>未扫描状态的订单汇总</strong>。</p>'
             from_email = settings.DEFAULT_FROM_EMAIL
-            msg = EmailMultiAlternatives(subject, text_content, from_email, ['landy.zhang@gmainland.com', 'nicole.yan@gmainland.com'])
+            msg = EmailMultiAlternatives(subject, text_content, from_email, ['landy.zhang@gmainland.com', 'nicole.yan@gmainland.com', 'rudy.zhangwei@gmainland.com'])
             msg.attach_alternative(html_content, "text/html")
             # 发送附件
             # text = open(file_path, 'rb').read()

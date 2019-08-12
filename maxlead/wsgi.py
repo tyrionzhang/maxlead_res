@@ -32,7 +32,7 @@ t4_pc.start()
 t = threading.Timer(79200.0, spiders2)
 t.start()
 
-time_tr_re = int(get_send_time('15:00'))
+time_tr_re = int(get_send_time('15:10'))
 t_tr = threading.Timer(float('%.1f' % time_tr_re), get_tracking_order_status)
 t_tr.start()
 
@@ -44,9 +44,9 @@ time_del_ord_re = int(get_send_time('01:00'))
 t_del_ord_pid = threading.Timer(float('%.1f' % time_del_ord_re), del_orders)
 t_del_ord_pid.start()
 
-os.chdir(settings.PROXY_URL)
-os.popen('python main.py')
-os.chdir(settings.ROOT_PATH)
+# os.chdir(settings.PROXY_URL)
+# os.popen('python main.py')
+# os.chdir(settings.ROOT_PATH)
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "maxlead.settings")
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 
