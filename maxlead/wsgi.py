@@ -32,7 +32,7 @@ t4_pc.start()
 t = threading.Timer(79200.0, spiders2)
 t.start()
 
-time_tr_re = int(get_send_time('16:30'))
+time_tr_re = int(get_send_time('15:00'))
 t_tr = threading.Timer(float('%.1f' % time_tr_re), get_tracking_order_status)
 t_tr.start()
 
