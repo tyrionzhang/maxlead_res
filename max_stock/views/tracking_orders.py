@@ -111,69 +111,70 @@ def get_tracking_order_status():
             res = requests.get(url, headers=headers)
             try:
                 res = json.loads(res.content.decode())
-                activities = res['activities']
-                if activities:
-                    status = activities[0]['details']
-                    first_scan_time = ''
-                    delivery_time = ''
-                    shipment_late = ''
-                    delivery_late = ''
-                    for v in activities:
-                        if v['details'] == 'Picked up' and carrier == 'fedex':
-                            first_scan_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
-                            first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
-                        if v['details'] == 'Delivered':
-                            if carrier == 'ups':
-                                delivery_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
-                            elif carrier == 'fedex':
-                                delivery_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
-                            delivery_time = delivery_time + datetime.timedelta(hours=-7)
-                        if v['details'] == 'Origin scan' and carrier == 'ups':
-                            first_scan_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
-                            first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
+                if 'activities' in res:
+                    activities = res['activities']
+                    if activities:
+                        status = activities[0]['details']
+                        first_scan_time = ''
+                        delivery_time = ''
+                        shipment_late = ''
+                        delivery_late = ''
+                        for v in activities:
+                            if v['details'] == 'Picked up' and carrier == 'fedex':
+                                first_scan_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
+                                first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
+                            if v['details'] == 'Delivered':
+                                if carrier == 'ups':
+                                    delivery_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
+                                elif carrier == 'fedex':
+                                    delivery_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
+                                delivery_time = delivery_time + datetime.timedelta(hours=-7)
+                            if v['details'] == 'Origin scan' and carrier == 'ups':
+                                first_scan_time = datetime.datetime.strptime(v['timestamp'][0:19], '%Y-%m-%dT%H:%M:%S')
+                                first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
+                            if first_scan_time:
+                                if val.latest_ship_date and len(val.latest_ship_date) >= 20:
+                                    first_scan_time_str = int(time.mktime(first_scan_time.timetuple()))
+                                    latest_ship_date_str = int(
+                                        time.mktime(time.strptime(val.latest_ship_date[0:19], "%Y-%m-%dT%H:%M:%S")))
+                                    shipment_late_c = first_scan_time_str - latest_ship_date_str
+                                    if shipment_late_c > 0:
+                                        shipment_late = 'Y'
+                            if delivery_time:
+                                if val.latest_delivery_date and len(val.latest_delivery_date) >= 20:
+                                    delivery_time_str = int(time.mktime(delivery_time.timetuple()))
+                                    latest_delivery_date_str = int(
+                                        time.mktime(time.strptime(val.latest_delivery_date[0:19], "%Y-%m-%dT%H:%M:%S")))
+                                    delivery_late_c = delivery_time_str - latest_delivery_date_str
+                                    if delivery_late_c > 0:
+                                        delivery_late = 'Y'
+                        val.status = status
                         if first_scan_time:
-                            if val.latest_ship_date and len(val.latest_ship_date) >= 20:
-                                first_scan_time_str = int(time.mktime(first_scan_time.timetuple()))
-                                latest_ship_date_str = int(
-                                    time.mktime(time.strptime(val.latest_ship_date[0:19], "%Y-%m-%dT%H:%M:%S")))
-                                shipment_late_c = first_scan_time_str - latest_ship_date_str
-                                if shipment_late_c > 0:
-                                    shipment_late = 'Y'
+                            val.first_scan_time = first_scan_time
                         if delivery_time:
-                            if val.latest_delivery_date and len(val.latest_delivery_date) >= 20:
-                                delivery_time_str = int(time.mktime(delivery_time.timetuple()))
-                                latest_delivery_date_str = int(
-                                    time.mktime(time.strptime(val.latest_delivery_date[0:19], "%Y-%m-%dT%H:%M:%S")))
-                                delivery_late_c = delivery_time_str - latest_delivery_date_str
-                                if delivery_late_c > 0:
-                                    delivery_late = 'Y'
-                    val.status = status
-                    if first_scan_time:
-                        val.first_scan_time = first_scan_time
-                    if delivery_time:
-                        val.delivery_time = delivery_time
-                    if shipment_late:
-                        val.shipment_late = shipment_late
-                    if delivery_late:
-                        val.delivery_late = delivery_late
-                    val.save()
+                            val.delivery_time = delivery_time
+                        if shipment_late:
+                            val.shipment_late = shipment_late
+                        if delivery_late:
+                            val.delivery_late = delivery_late
+                        val.save()
 
-                    if time.mktime(val.created.timetuple()) >= start_date and (val.status == 'Order Processed: Ready for UPS' or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx'):
-                        data.append({
-                            'order_num': val.order_num,
-                            'tracking_num': val.tracking_num,
-                            'warehouse': val.warehouse,
-                            'account_num': val.account_num,
-                            'description': val.description,
-                            'status': val.status,
-                            'shipment_late': val.shipment_late,
-                            'delivery_late': val.delivery_late,
-                            'billing_date': val.billing_date.strftime('%b.%d'),
-                            'latest_ship_date': val.latest_ship_date,
-                            'latest_delivery_date': val.latest_delivery_date,
-                            'first_scan_time': val.first_scan_time,
-                            'delivery_time': val.delivery_time
-                        })
+                        if time.mktime(val.created.timetuple()) >= start_date and (val.status == 'Order Processed: Ready for UPS' or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx'):
+                            data.append({
+                                'order_num': val.order_num,
+                                'tracking_num': val.tracking_num,
+                                'warehouse': val.warehouse,
+                                'account_num': val.account_num,
+                                'description': val.description,
+                                'status': val.status,
+                                'shipment_late': val.shipment_late,
+                                'delivery_late': val.delivery_late,
+                                'billing_date': val.billing_date.strftime('%b.%d'),
+                                'latest_ship_date': val.latest_ship_date,
+                                'latest_delivery_date': val.latest_delivery_date,
+                                'first_scan_time': val.first_scan_time,
+                                'delivery_time': val.delivery_time
+                            })
             except Exception as e:
                 log_obj = StockLogs()
                 log_obj.id
