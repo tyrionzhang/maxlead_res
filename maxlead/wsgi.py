@@ -15,7 +15,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 from django.core.wsgi import get_wsgi_application
 from maxlead_site.views.views import download_listings,get_send_time,spiders2
-from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc,kill_postgres_on_type,del_orders
+from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc,kill_postgres_on_type,del_orders,run_zto_spiders
 from max_stock.views.tracking_orders import get_tracking_order_status
 from maxlead import settings
 
@@ -43,6 +43,10 @@ t_kil_pid.start()
 time_del_ord_re = int(get_send_time('01:00'))
 t_del_ord_pid = threading.Timer(float('%.1f' % time_del_ord_re), del_orders)
 t_del_ord_pid.start()
+
+time_zto_spiders_re = int(get_send_time('08:50'))
+t_zto_spiders = threading.Timer(float('%.1f' % time_zto_spiders_re), run_zto_spiders)
+t_zto_spiders.start()
 
 # os.chdir(settings.PROXY_URL)
 # os.popen('python main.py')

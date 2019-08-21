@@ -257,3 +257,13 @@ def del_orders():
     if data:
         data.delete()
     t.start()
+
+def run_zto_spiders():
+    t = threading.Timer(86400.0, run_zto_spiders)
+    work_path = settings.STOCHS_SPIDER_URL
+    os.chdir(work_path)
+    os.popen('scrapyd-deploy')
+    cmd_str5 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider'
+    os.popen(cmd_str5)
+    os.chdir(settings.ROOT_PATH)
+    t.start()
