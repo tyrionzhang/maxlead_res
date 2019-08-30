@@ -89,11 +89,8 @@ class perform_command_que(threading.Thread):
         os.popen(cmd_str)
 
     def run_atl_spider(self):
-        time.sleep(360)
-        cmd_str5 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider -d username=%s' % self.username
         cmd_str4 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider -d username=%s' % self.username
-        os.popen(cmd_str5)
-        time.sleep(360)
+        time.sleep(720)
         os.popen(cmd_str4)
 
 def run_command_queue():
