@@ -232,7 +232,7 @@ def get_tracking_order_status():
             msg.send()
             os.remove(file_path)
     t.start()
-    pass
+    return True
 
 @csrf_exempt
 def tracking_orders_export(request):
