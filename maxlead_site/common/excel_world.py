@@ -627,7 +627,7 @@ def read_ads_excel(file, user, range_type=None, week=None, month=None, account=N
                 msg += '第%s行添加有误。\n' % (i + 1)
                 continue
         data_check = AdsData.objects.filter(user=user, account=account, type=type, range_type=range_type, year_str=year_str,
-                                            month=month, week=week)
+                                            month=month, week=week, change_time=None)
         if not data_check:
             data_obj = AdsData()
             data_obj.id
