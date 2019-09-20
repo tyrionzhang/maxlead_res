@@ -6,6 +6,7 @@ import os,time,xlrd,csv,datetime
 from django.contrib.auth.models import User
 from maxlead_site.models import UserProfile
 from max_stock.models import SkuUsers,Thresholds,OrderItems,NoSendRes,OldOrderItems,TrackingOrders
+from maxlead_site.models import AdsData,AdsCampaign,SearchTeam,Placement,PurProduct,AdvProducts,CampaignPla,KwdPla
 from maxlead import settings
 from chardet import detect
 
@@ -528,26 +529,111 @@ def read_excel_data_for_pdf(model,res):
                     print(results)
 
 
-# def read_excel_data_for_csv(model,res):
-#     fname = res
-#     if not os.path.isfile(fname):
-#         return {'code':0,'msg':'File is not found!'}
-#     handleEncoding(res)
-#     csv_files = csv.reader(open(res,'r', encoding='UTF-8'))
-#     msg = 'Work Is Done!<br>'
-#     fields = model._meta.fields
-#     try:
-#         for i,val in enumerate(csv_files,0):
-#             re_v = {}
-#             try:
-#                 if i > 1:
-#                     re_v = {
-#                         'sku' : val[3],
-#                         'warehouse' : val[8],
-#                     }
-#
-#             except:
-#                 msg += '第%s行添加有误。<br>' % i
-#                 continue
-#     except:
-#         pass
+def read_ads_excel(file, user, range_type=None, week=None, month=None, account=None, type=None):
+    from django.db import connection, transaction
+    cursor = connection.cursor()
+    msg = 'Successfully!\n'
+    if os.path.isfile(file):
+        data = xlrd.open_workbook(file)  # 打开fname文件
+        data.sheet_names()  # 获取xls文件中所有sheet的名称
+        table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+        type_check = table.cell_value(0, 13, )
+        if type == '4':
+            if not type_check == 'Spend':
+                msg = u'Type与文件不匹配'
+                return msg
+            model = SearchTeam
+            fields = model._meta.fields
+        elif type == '5':
+            if not type_check == 'Total Return on Advertising Spend (RoAS)':
+                msg = u'Type与文件不匹配'
+                return msg
+            model = Placement
+            fields = model._meta.fields
+        elif type == '7':
+            if not type_check == '7 Day Other SKU Sales ':
+                msg = u'Type与文件不匹配'
+                return msg
+            model = PurProduct
+            fields = model._meta.fields
+        elif type == '6':
+            if not type_check == '7 Day Total Sales ':
+                msg = u'Type与文件不匹配'
+                return msg
+            model = AdvProducts
+            fields = model._meta.fields
+        elif type == '8':
+            if not type_check == '14 Day Total Sales ':
+                msg = u'Type与文件不匹配'
+                return msg
+            model = CampaignPla
+            fields = model._meta.fields
+        elif type == '9':
+            if not type_check == 'Total Advertising Cost of Sales (ACoS) ':
+                msg = u'Type与文件不匹配'
+                return msg
+            model = KwdPla
+            fields = model._meta.fields
+
+        nrows = table.nrows
+        if range_type == 'Monthly':
+            month = month.split('-')
+            year_str = month[0]
+            month = month[1]
+            week = 0
+        if range_type == 'Weekly':
+            week = week.split('-')
+            year_str = week[0]
+            week = week[1].split('W')[1]
+            month = 0
+
+        for i in range(1, nrows):
+            try:
+                # AdsCampaign
+                campaign_check = AdsCampaign.objects.filter(user=user, campaign=table.cell_value(i, 4, ), account=account)
+                if not campaign_check:
+                    campaign_obj = AdsCampaign()
+                    campaign_obj.id
+                    campaign_obj.campaign = table.cell_value(i, 4, )
+                    campaign_obj.user = user
+                    campaign_obj.account = account
+                    campaign_obj.save()
+                field_str = ''
+                value_str = "'%s', '0', '%s', '%s', '%s', '%s', '%s', '%s','%s', '%s',"
+                value_str = value_str % (user.id, account, type, range_type, year_str, month, week, table.cell_value(i, 2, ).
+                                         replace('\'', '-'), table.cell_value(i, 4, ))
+                for n, val in enumerate(fields, 0):
+                    if 0 < n < len(fields):
+                        if n == 1:
+                            val.name = 'user_id'
+                        if n == (len(fields) - 1):
+                            field_str += val.name
+                        else:
+                            field_str += val.name + ','
+                        if n > 10:
+                            if n == (len(fields) - 1):
+                                val_str = "\'%s\'"
+                                val_str = val_str % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            else:
+                                val_str = "\'%s\',"
+                                val_str = val_str % table.cell_value(i, n - 6, )
+                            value_str += val_str
+                sql = "insert into %s (%s) VALUES (%s)" % (model._meta.db_table, field_str, value_str)
+                cursor.execute(sql)
+            except:
+                msg += '第%s行添加有误。\n' % (i + 1)
+                continue
+        data_check = AdsData.objects.filter(user=user, account=account, type=type, range_type=range_type, year_str=year_str,
+                                            month=month, week=week)
+        if not data_check:
+            data_obj = AdsData()
+            data_obj.id
+            data_obj.user = user
+            data_obj.account = account
+            data_obj.type = type
+            data_obj.range_type = range_type
+            data_obj.year_str = year_str
+            data_obj.month = month
+            data_obj.week = week
+            data_id = data_obj.save()
+    return {'code': 1, 'msg': msg}

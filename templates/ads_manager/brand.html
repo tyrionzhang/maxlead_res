@@ -1,0 +1,209 @@
+{% extends "layouts/page_base.html" %}
+    {% block container %}
+            <main class="miner">
+                <h2>Brand</h2>
+                <button id="addNewMiner" class="headButton" type="button"/>Import</button>
+                <button id="export" class="headButton" type="button"/>Export</button>
+                <div id="addMinerTask" style="display:none;">
+                    <form method = "post" action="" name="newTaskForm" />
+                    <h3>Import brand</h3>
+                    <label>请选择文件:</label>
+                    <input type="file" name="my_file"><br><br>
+                    <div class="actionButton">
+                        <input type="button" value="import" id="import"/>  <input id="nmtCancel" type = "button" onclick="" value="Cancel" />
+                    </div>
+                </div>
+                <div id="update" style="display:none;" class="update-block">
+                    <form method = "post" action="" name="newTaskForm" />
+                    <h3>Update brand</h3>
+                    <label>SKU:</label>
+                    <input type="text" name="sku" value="" readonly/>
+                    <input type="hidden" name="id" value=""><br><br>
+                    <label>ASIN:</label>
+                    <input type="text" name="asin" value=""  readonly/> <br><br>
+                    <label>Brand:</label>
+                    <input type="text" name="brand" class="">
+                    <br><br>
+                    <div class="actionButton">
+                        <input type="button" value="submit" id="submit"/>  <input id="Cancel" type = "button" onclick="" value="Cancel" />
+                    </div>
+                </div>
+                <table cellspacing="0px" id="datas">
+                    <tr id="th-task">
+                        <th>SKU</th>
+                        <th>ASIN</th>
+                        <th>Par ASIN</th>
+                        <th>Brand</th>
+                        <th>Time</th>
+                        <th>User</th>
+                        <th>Action</th>
+                    </tr>
+                <tbody id="data_body">
+                    {% for v in data %}
+                    <tr id="tr_task_{{ v.id }}">
+                        <td>{{ v.sku }}</td>
+                        <td>{{ v.asin }}</td>
+                        <td>{{ v.parent_asin }}</td>
+                        <td>{{ v.brand }}</td>
+                        <td>{{ v.created }}</td>
+                        <td>{{ v.user.username }}</td>
+                        <td>
+                            <a href="javascript:;" class="minner-del" data-id="{{ v.id }}">update</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+                
+            
+            <form action="" method="get" name="pageForm" id="page_form">
+                <div id="pagination">
+                    <div class="pageNum">
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in  {{ data.paginator.num_pages }} <!--总页数-->pages.
+                    </p>
+                        <ul>
+                            {% if data.has_previous %}
+                            <li><a href="?page={{ data.previous_page_number }}&limit={{ limit }}&viewRange={{ viewRange }}">previous</a></li>
+                            {% endif %}
+                            <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
+                            {% if data.has_next %}
+                            <li><a href="?page={{ data.next_page_number }}&limit={{ limit }}&viewRange={{ viewRange }}">next</a></li>
+                            {% endif %}
+                            <li><input type="number" name="page" value="{{ page }}" /></li>
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                        </ul>
+
+                    <div class="qtyUpdater">
+                        <select name="limit">
+                            <option value="20" {% if re_limit == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if re_limit == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if re_limit == 100 %}selected{% endif %}>100</option>
+                        </select> results per page.
+                    </div>
+
+                    </div>
+                </div>
+            </form>
+            </main>
+        <script>
+            var table = $('#datas').eq(0);
+            table.on('click', 'th', function() {
+                var table = $(this).parents('table').eq(0);
+                var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+                this.dasc = !this.dasc;
+                if (this.dasc) {
+                    rows = rows.reverse();
+                }
+                $('#data_body').empty().html(rows);
+            });
+            function comparer(index) {
+              return function(a, b) {
+                var valA = getCellValue(a, index),
+                  valB = getCellValue(b, index);
+                return $.isNumeric(valA) && $.isNumeric(valB) ?
+                  valA - valB : valA.localeCompare(valB);
+              };
+            }
+
+            function getCellValue(row, index) {
+              return $(row).children('td').eq(index).text();
+            }
+
+             var th = $('#datas th');
+             var rows = table.find('tr:gt(0)').toArray().sort(comparer(th.index()));
+             $('#data_body').empty().html(rows);
+
+            function getWeekOfYear(){
+              var today = new Date();
+              var firstDay = new Date(today.getFullYear(),0, 1);
+              var dayOfWeek = firstDay.getDay(); 
+              var spendDay= 1;
+              if (dayOfWeek !=0) {
+                spendDay=7-dayOfWeek+1;
+              }
+              firstDay = new Date(today.getFullYear(),0, 1+spendDay);
+              var d =Math.ceil((today.valueOf()- firstDay.valueOf())/ 86400000);
+              var result =Math.ceil(d/7);
+              return result+1;
+            }
+
+            $('#gotoPage').on('click',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var viewRange = $('select[name="viewRange"]').val();
+                var url = '/admin/maxlead_site/brand/?page='+page+'&limit='+limit+'&viewRange='+viewRange;
+                window.location.href = url;
+                return false;
+            });
+
+            $('select[name="limit"]').on('change',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var viewRange = $('select[name="viewRange"]').val();
+                var url = '/admin/maxlead_site/brand/?page='+page+'&limit='+limit+'&viewRange='+viewRange;
+                window.location.href = url;
+                return false;
+            });
+
+            $('#addNewMiner').click(function () {
+                $('#import').removeAttr('disabled');
+            });
+            $('#import').on('click', function () {
+                var form_data = new FormData();
+                var file_info = $('input[name="my_file"]')[0].files[0];
+                $(this).attr('disabled', 'true');
+                form_data.append('my_file',file_info);
+                $.ajax({
+                    url:'/admin/maxlead_site/brand_import/',
+                    type:'POST',
+                    data: form_data,
+                    processData: false,  // tell jquery not to process the data
+                    contentType: false, // tell jquery not to set contentType
+                    success: function(callback) {
+                        alert(callback.msg);
+                        window.location.reload();
+                    }
+                });
+                return false;
+            });
+
+            $('#export').on('click',function () {
+                var url = '/admin/maxlead_site/export_brand/';
+                window.location.href=url;
+            });
+
+            $('.minner-del').on('click', function () {
+                $('#update').removeAttr('style');
+                var tr = $(this).parents('tr');
+                var id = $(this).data('id');
+                var sku = tr.children('td').eq(0).html();
+                var asin = tr.children('td').eq(1).html();
+                var brand = tr.children('td').eq(3).html();
+                $("input[name='sku']").val(sku);
+                $("input[name='asin']").val(asin);
+                $("input[name='brand']").val(brand);
+                $("input[name='id']").val(id);
+                $('#submit').removeAttr();
+            });
+            $('#Cancel').click(function () {
+                $('#update').attr('style','display:none;');
+            });
+            $('#submit').click(function () {
+                var data = {
+                    'id' : $('input[name="id"]').val(),
+                    'brand' : $('input[name="brand"]').val()
+                };
+                $(this).attr('disabled', 'true');
+                $.post('/admin/maxlead_site/save_brand/',data,function (re) {
+                    if(re.code == 1){
+                        alert(re.msg);
+                        window.location.reload();
+                    }else {
+                        alert(re.msg);
+                    }
+                },'json');
+                return false;
+            });
+        </script>
+{% endblock %}
+

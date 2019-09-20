@@ -321,3 +321,289 @@ class Employee(models.Model):
 
     class Meta:
         db_table = 'employee'
+
+class AdsData(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    change_time = models.DateTimeField('Update time', null=True)
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'ads_data'
+
+class AdsBrand(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    sku = models.CharField('SKU', max_length=225, default='')
+    asin = models.CharField('Asin', max_length=225, default='')
+    parent_asin = models.CharField('Par ASIN', max_length=225, default='')
+    brand = models.CharField('Brand', max_length=225, default='')
+    change_time = models.DateTimeField('Update time', null=True)
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'ads_brand'
+
+class AdsCampaign(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    campaign = models.CharField('Campaign', max_length=225, default='')
+    account = models.IntegerField('Account', default=0)
+    brand = models.CharField('Brand', max_length=225, default='')
+    change_time = models.DateTimeField('Update time', null=True)
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'ads_campaign'
+
+class SearchTeam(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team',default=0)
+    account = models.IntegerField('Account',default=0)
+    type = models.IntegerField('Type',default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year',default=0)
+    month = models.IntegerField('Month',default=0)
+    week = models.IntegerField('Week',default=0)
+    portfolio_name = models.CharField('Portfolio name', max_length=225, default='')
+    campaign_name = models.CharField('Campaign Name', max_length=225, default='')
+    ad_group_name = models.CharField('Ad Group Name', max_length=225, default='')
+    targeting = models.CharField('Targeting', max_length=225, default='')
+    match_type = models.CharField('Match Type', max_length=225, default='')
+    customer_search_term = models.CharField('Customer Search Term', max_length=225, default='')
+    impressions = models.CharField('Impressions', max_length=225, default='')
+    clicks = models.CharField('Clicks', max_length=225, default='')
+    click_thru_rate = models.CharField('Click-Thru Rate (CTR)', max_length=225, default='')
+    cost_per_click = models.CharField('Cost Per Click (CPC)', max_length=225, default='')
+    spend = models.CharField('Spend', max_length=225, default='')
+    day_total_sales = models.CharField('7 Day Total Sales ', max_length=225, default='')
+    total_advertising_cost_of_sales = models.CharField('Total Advertising Cost of Sales (ACoS) ', max_length=225, default='')
+    total_return_on_advertising_spend = models.CharField('Total Return on Advertising Spend (RoAS)', max_length=225, default='')
+    day_total_orders = models.CharField('7 Day Total Orders', max_length=225, default='')
+    day_total_units = models.CharField('7 Day Total Units', max_length=225, default='')
+    day_conversion_rate = models.CharField('7 Day Conversion Rate', max_length=225, default='')
+    day_advertised_sku_units = models.CharField('7 Day Advertised SKU Units', max_length=225, default='')
+    day_other_sku_units = models.CharField('7 Day Other SKU Units', max_length=225, default='')
+    day_advertised_sku_sales = models.CharField('7 Day Advertised SKU Sales', max_length=225, default='')
+    day_other_sku_sales = models.CharField('7 Day Other SKU Sales ', max_length=225, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'search_team'
+
+class Placement(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    portfolio_name = models.CharField('Portfolio name', max_length=225, default='')
+    campaign_name = models.CharField('Campaign Name', max_length=225, default='')
+    bidding_strategy = models.CharField('Bidding strategy', max_length=225, default='')
+    placement = models.CharField('Placement', max_length=225, default='')
+    impressions = models.CharField('Impressions', max_length=225, default='')
+    clicks = models.CharField('Clicks', max_length=225, default='')
+    cost_per_click = models.CharField('Cost Per Click', max_length=225, default='')
+    spend = models.CharField('Spend', max_length=225, default='')
+    day_total_sales = models.CharField('7 Day Total Sales', max_length=225, default='')
+    total_advertising_cost_of_sales = models.CharField('Total Advertising Cost of Sales', max_length=225, default='')
+    total_return_on_advertising_spend = models.CharField('Total Return on Advertising Spend', max_length=225, default='')
+    day_total_orders = models.CharField('7 Day Total Orders', max_length=225, default='')
+    day_total_units = models.CharField('7 Day Total Units ', max_length=225, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'placement'
+
+class PurProduct(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    portfolio_name = models.CharField('Portfolio name', max_length=225, default='')
+    campaign_name = models.CharField('Campaign Name', max_length=225, default='')
+    ad_group_name = models.CharField('Ad Group Name', max_length=225, default='')
+    advertised_sku = models.CharField('Advertised SKU', max_length=225, default='')
+    advertised_asin = models.CharField('Advertised ASIN', max_length=225, default='')
+    targeting = models.CharField('Targeting', max_length=225, default='')
+    match_type = models.CharField('Match Type', max_length=225, default='')
+    purchased_asin = models.CharField('Purchased ASIN', max_length=225, default='')
+    day_other_sku_units = models.CharField('7 Day Other SKU Units', max_length=225, default='')
+    day_other_sku_orders = models.CharField('7 Day Other SKU Orders', max_length=225, default='')
+    day_other_sku_sales = models.CharField('7 Day Other SKU Sales', max_length=225, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'pur_product'
+
+
+class AdvProducts(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    portfolio_name = models.CharField('Portfolio name', max_length=225, default='')
+    campaign_name = models.CharField('Campaign Name', max_length=225, default='')
+    ad_group_name = models.CharField('Ad Group Name', max_length=225, default='')
+    advertised_sku = models.CharField('Advertised SKU', max_length=225, default='')
+    advertised_asin = models.CharField('Advertised ASIN', max_length=225, default='')
+    impressions = models.CharField('Impressions', max_length=225, default='')
+    clicks = models.CharField('Clicks', max_length=225, default='')
+    click_thru_rate = models.CharField('Click-Thru Rate', max_length=225, default='')
+    cost_per_click = models.CharField('Cost Per Click', max_length=225, default='')
+    spend = models.CharField('Spend', max_length=225, default='')
+    day_total_sales = models.CharField('7 Day Total Sales', max_length=225, default='')
+    total_advertising_cost_of_sales = models.CharField('Total Advertising Cost of Sales', max_length=225, default='')
+    total_return_on_advertising_spend = models.CharField('Total Return on Advertising Spend', max_length=225, default='')
+    day_total_orders = models.CharField('7 Day Total Orders', max_length=225, default='')
+    day_total_units = models.CharField('7 Day Total Units', max_length=225, default='')
+    day_conversion_rate = models.CharField('7 Day Conversion Rate', max_length=225, default='')
+    day_advertised_sku_units = models.CharField('7 Day Advertised SKU Units', max_length=225, default='')
+    day_other_sku_units = models.CharField('7 Day Other SKU Units', max_length=225, default='')
+    day_advertised_sku_sales = models.CharField('7 Day Advertised SKU Sales', max_length=225, default='')
+    day_other_sku_sales = models.CharField('7 Day Other SKU Sales', max_length=225, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'adv_products'
+
+class CampaignPla(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    portfolio_name = models.CharField('Portfolio name', max_length=225, default='')
+    campaign_name = models.CharField('Campaign Name', max_length=225, default='')
+    placement_type = models.CharField('Placement Type', max_length=225, default='')
+    impressions = models.CharField('Impressions', max_length=225, default='')
+    clicks = models.CharField('Clicks', max_length=225, default='')
+    click_thru_rate = models.CharField('Click-Thru Rate', max_length=225, default='')
+    cost_per_click = models.CharField('Cost Per Click', max_length=225, default='')
+    spend = models.CharField('Spend', max_length=225, default='')
+    total_advertising_cost_of_sales = models.CharField('Total Advertising Cost of Sales', max_length=225, default='')
+    total_return_on_advertising_spend = models.CharField('Total Return on Advertising Spend', max_length=225, default='')
+    day_total_sales = models.CharField('14 Day Total Sales ', max_length=225, default='')
+    day_total_orders = models.CharField('14 Day Total Orders', max_length=225, default='')
+    day_total_units = models.CharField('14 Day Total Units', max_length=225, default='')
+    day_conversion_rate = models.CharField('14 Day Conversion Rate', max_length=225, default='')
+    day_new_to_brand_orders = models.CharField('14 Day New-to-brand Orders', max_length=225, default='')
+    day_of_orders_new_to_brand = models.CharField('14 Day % of Orders New-to-brand', max_length=225, default='')
+    day_new_to_brand_sales = models.CharField('14 Day New-to-brand Sales', max_length=225, default='')
+    day_of_sales_new_to_brand = models.CharField('14 Day % of Sales New-to-brand', max_length=225, default='')
+    day_new_to_brand_units = models.CharField('14 Day New-to-brand Units', max_length=225, default='')
+    day_of_units_new_to_brand = models.CharField('14 Day % of Units New-to-brand', max_length=225, default='')
+    day_new_to_brand_order_rate = models.CharField('14 Day New-to-brand Order Rate', max_length=225, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'campaign_pla'
+
+class KwdPla(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    portfolio_name = models.CharField('Portfolio name', max_length=225, default='')
+    campaign_name = models.CharField('Campaign Name', max_length=225, default='')
+    targeting = models.CharField('Targeting', max_length=225, default='')
+    match_type = models.CharField('Match Type', max_length=225, default='')
+    placement_type = models.CharField('Placement Type', max_length=225, default='')
+    impressions = models.CharField('Impressions', max_length=225, default='')
+    clicks = models.CharField('Clicks', max_length=225, default='')
+    click_thru_rate = models.CharField('Click-Thru Rate', max_length=225, default='')
+    cost_per_click = models.CharField('Cost Per Click', max_length=225, default='')
+    spend = models.CharField('Spend', max_length=225, default='')
+    total_advertising_cost_of_sales = models.CharField('Total Advertising Cost of Sales', max_length=225, default='')
+    total_return_on_advertising_spend = models.CharField('Total Return on Advertising Spend', max_length=225, default='')
+    day_total_sales = models.CharField('14 Day Total Sales ', max_length=225, default='')
+    day_total_orders = models.CharField('14 Day Total Orders', max_length=225, default='')
+    day_total_units = models.CharField('14 Day Total Units', max_length=225, default='')
+    day_conversion_rate = models.CharField('14 Day Conversion Rate', max_length=225, default='')
+    day_new_to_brand_orders = models.CharField('14 Day New-to-brand Orders', max_length=225, default='')
+    day_of_orders_new_to_brand = models.CharField('14 Day % of Orders New-to-brand', max_length=225, default='')
+    day_new_to_brand_sales = models.CharField('14 Day New-to-brand Sales', max_length=225, default='')
+    day_of_sales_new_to_brand = models.CharField('14 Day % of Sales New-to-brand', max_length=225, default='')
+    day_new_to_brand_units = models.CharField('14 Day New-to-brand Units', max_length=225, default='')
+    day_of_units_new_to_brand = models.CharField('14 Day % of Units New-to-brand', max_length=225, default='')
+    day_new_to_brand_order_rate = models.CharField('14 Day New-to-brand Order Rate', max_length=225, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'kwd_pla'
+
+class BrandPerformance(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    asin = models.CharField('ASIN', max_length=50, default='')
+    brand_name = models.CharField('Brand Name', max_length=50, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'brand_performance'
+
+class BizReport(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    parent_asin = models.CharField('(Parent) ASIN', max_length=50, default='')
+    asin = models.CharField('ASIN', max_length=50, default='')
+    sessions = models.CharField('Sessions', max_length=225, default='')
+    page_views = models.CharField('Page Views', max_length=225, default='')
+    buy_box_percentage = models.CharField('Buy Box Percentage', max_length=225, default='')
+    units_ordered = models.CharField('Units Ordered', max_length=225, default='')
+    unit_session_percentage = models.CharField('Unit Session Percentage', max_length=225, default='')
+    ordered_product_sales = models.CharField('Ordered Product Sales', max_length=225, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'biz_report'
+
+class Inventory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.IntegerField('Team', default=0)
+    account = models.IntegerField('Account', default=0)
+    type = models.IntegerField('Type', default=0)
+    range_type = models.CharField('Range Type', max_length=50, default='')
+    year_str = models.IntegerField('Year', default=0)
+    month = models.IntegerField('Month', default=0)
+    week = models.IntegerField('Week', default=0)
+    sku = models.CharField('SKU', max_length=50, default='')
+    asin = models.CharField('ASIN', max_length=50, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'inventory'

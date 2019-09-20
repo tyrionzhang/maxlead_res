@@ -6,10 +6,10 @@
                     <label>Username:</label> <input type="text" name="username" value="{{ user_info.user.username }}" /><br /><br />
                     <input type="hidden" name="id" value="{{ user_info.id }}">
                     <label>Email:</label> <input type="email" name="email" value="{{ user_info.user.email }}" /><br /><br />
-                    {% if user.role == 2 %}
+                    {% if user.role == 2 or user.user.is_superuser %}
                     <label>Status:</label> <input type="radio" name="state" value="1" {% if user_info.state == 1 %}checked{% endif %}>Active    <input type="radio" name="state" value="2" {% if user_info.state == 2 %}checked{% endif %}>Suspended  <br /><br />
                     <label>Role:</label> <input type="radio" name="role" value="0" {% if user_info.role == 0 %}checked{% endif %}>Member    <input type="radio" name="role" value="1" {% if user_info.role == 1 %}checked{% endif %}>Leader    <input type="radio" name="role" value="2" {% if user_info.role == 2 %}checked{% endif %}>Admin <br /><br />
-                    <label>Group:</label> <select name="group">
+                    <label>Team:</label> <select name="group">
                         <option value="">None</option>
                         {% for val in member_groups %}
                         <option value="{{ val.id }}" {% if val.id == user_info.group_id %}selected{% endif %}>{{ val.user.username }}</option>

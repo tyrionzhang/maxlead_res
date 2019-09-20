@@ -27,7 +27,7 @@ main > h2, .dashboard  h3, #editASIN h3, .productInfo h2 {
 
 main {
     margin-left: 15px;
-    width: 1050px;
+    width: 1026px;
 }
 
 main > h2, .headButton, .dashContent, #userNav, .pageNum > ul, .pageNum li, nav, main, .signIn form label, .userInfo label, #addMinerTask label, .pageNum, .pageStatics, .qtyUpdater,#userNav > p span, .detailGallery, .productInfo, .rvKeywords, .rvInfo {
@@ -180,7 +180,7 @@ nav, main {
 nav {
 
     margin-left: 20px;
-    width: 108px;
+    width: 125px;
     
 }
 
@@ -654,6 +654,21 @@ input[name="cat1"],input[name="cat2"],input[name="cat3"] {
     line-height: 22px;
 }
 
+.update-block label {
+    margin-right: 10px;
+    text-align: right;
+    width: 100px;
+    display: inline-block;
+
+}
+.update-block {
+    position:absolute;
+    top: 150px;
+    background:#fff;
+    border: 1px solid #333;
+    padding: 10px 15px 15px;
+    left: 35%;
+}
 
 
 /*listingDetail Ends*/

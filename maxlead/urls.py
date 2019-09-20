@@ -21,6 +21,9 @@ from maxlead_site.views.listing.listing import Listing
 from maxlead_site.views.listing.item import Item
 from maxlead_site.views.dashboard.dashboard import Dashboard
 from maxlead_site.views.miner.miner import Miner
+from maxlead_site.views.ads_manager import data as ads_data
+from maxlead_site.views.ads_manager import campaign
+from maxlead_site.views.ads_manager import brand
 
 # views of max_stock
 from max_stock.views import views as stock_views
@@ -94,6 +97,20 @@ urlpatterns = [
     url('^$', Dashboard.index),
     url('^admin/maxlead_site/$', Dashboard.index),
     url('^admin/maxlead_site/export_users/', max_views.export_users),
+
+    url('^admin/maxlead_site/ads_data/', ads_data.data),
+    url('^admin/maxlead_site/data_import/', ads_data.data_import),
+    url('^admin/maxlead_site/del_ads_data/', ads_data.del_ads_data),
+    url('^admin/maxlead_site/campaign/', campaign.campaign),
+    url('^admin/maxlead_site/campaign_import/', campaign.campaign_import),
+    url('^admin/maxlead_site/export_campaign/', campaign.export_campaign),
+    url('^admin/maxlead_site/get_brand/', campaign.get_brand),
+    url('^admin/maxlead_site/get_team/', campaign.get_team),
+    url('^admin/maxlead_site/save_campaign/', campaign.save_campaign),
+    url('^admin/maxlead_site/brand/', brand.brand),
+    url('^admin/maxlead_site/brand_import/', brand.brand_import),
+    url('^admin/maxlead_site/export_brand/', brand.export_brand),
+    url('^admin/maxlead_site/save_brand/', brand.save_brand),
 
     # urls of max_stock
     url('^admin/max_stock/stock_spiders/', stock_views.stock_spiders),
