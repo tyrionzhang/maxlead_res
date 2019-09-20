@@ -601,7 +601,7 @@ def read_ads_excel(file, user, range_type=None, week=None, month=None, account=N
                 field_str = ''
                 value_str = "'%s', '0', '%s', '%s', '%s', '%s', '%s', '%s','%s', '%s',"
                 value_str = value_str % (user.id, account, type, range_type, year_str, month, week, table.cell_value(i, 2, ).
-                                         replace('\'', '-'), table.cell_value(i, 4, ))
+                                         replace("'", "|"), table.cell_value(i, 4, ))
                 for n, val in enumerate(fields, 0):
                     if 0 < n < len(fields):
                         if n == 1:
@@ -615,10 +615,13 @@ def read_ads_excel(file, user, range_type=None, week=None, month=None, account=N
                                 val_str = "\'%s\'"
                                 val_str = val_str % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             else:
+                                table_val = table.cell_value(i, n - 6, )
+                                if isinstance(table_val, str):
+                                    table_val = table.cell_value(i, n - 6, ).replace("'", "|")
                                 val_str = "\'%s\',"
-                                val_str = val_str % table.cell_value(i, n - 6, )
+                                val_str = val_str % table_val
                             value_str += val_str
-                sql = "insert into %s (%s) VALUES (%s)" % (model._meta.db_table, field_str, value_str)
+                sql = 'insert into %s (%s) VALUES (%s)' % (model._meta.db_table, field_str, value_str)
                 cursor.execute(sql)
             except:
                 msg += '第%s行添加有误。\n' % (i + 1)
