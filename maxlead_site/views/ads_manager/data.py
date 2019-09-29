@@ -249,7 +249,7 @@ def data_import(request):
                             obj.buy_box_percentage = val[7]
                             obj.units_ordered = val[8]
                             obj.unit_session_percentage = val[10]
-                            obj.ordered_product_sales = val[12]
+                            obj.ordered_product_sales = val[12].split('$')[1].replace(',','')
                             if range_type == 'Monthly':
                                 obj.month = month_str
                             if range_type == 'Weekly':

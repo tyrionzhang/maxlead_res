@@ -276,3 +276,28 @@ def save_campaign(request):
         if team_obj:
             campaign_obj.update(team = team_obj[0].id)
         return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}), content_type='application/json')
+
+@csrf_exempt
+def get_campaign(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+
+    if request.method == 'GET':
+        campaign = request.GET.get('campaign', '')
+        user_list = UserProfile.objects.filter(state=1)
+        if user.role == 0:
+            user_list = user_list.filter(id=user.id)
+        if user.role == 1:
+            user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+        users = []
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
+        campaign_list = []
+        campaign_list_obj = AdsCampaign.objects.filter(user_id__in=users, campaign__contains=campaign).order_by('campaign', '-id')
+        if campaign_list_obj:
+            for val in campaign_list_obj:
+                if val.campaign and not val.campaign in campaign_list:
+                    campaign_list.append(val.campaign)
+        return HttpResponse(json.dumps({'code': 1, 'data': campaign_list}), content_type='application/json')

@@ -24,6 +24,9 @@ from maxlead_site.views.miner.miner import Miner
 from maxlead_site.views.ads_manager import data as ads_data
 from maxlead_site.views.ads_manager import campaign
 from maxlead_site.views.ads_manager import brand
+from maxlead_site.views.ads_manager import brand_sku as brandSku
+from maxlead_site.views.ads_manager import details
+from maxlead_site.views.ads_manager import kwd_alert
 
 # views of max_stock
 from max_stock.views import views as stock_views
@@ -107,10 +110,16 @@ urlpatterns = [
     url('^admin/maxlead_site/get_brand/', campaign.get_brand),
     url('^admin/maxlead_site/get_team/', campaign.get_team),
     url('^admin/maxlead_site/save_campaign/', campaign.save_campaign),
+    url('^admin/maxlead_site/get_campaign/', campaign.get_campaign),
     url('^admin/maxlead_site/brand/', brand.brand),
     url('^admin/maxlead_site/brand_import/', brand.brand_import),
     url('^admin/maxlead_site/export_brand/', brand.export_brand),
     url('^admin/maxlead_site/save_brand/', brand.save_brand),
+    url('^admin/maxlead_site/brand_sku/', brandSku.brand_sku),
+    url('^admin/maxlead_site/export_brand_sku/', brandSku.export_brand_sku),
+    url('^admin/maxlead_site/details/', details.details),
+    url('^admin/maxlead_site/export_details/', details.export_details),
+    url('^admin/maxlead_site/kwd_alert/', kwd_alert.kwd_alert),
 
     # urls of max_stock
     url('^admin/max_stock/stock_spiders/', stock_views.stock_spiders),

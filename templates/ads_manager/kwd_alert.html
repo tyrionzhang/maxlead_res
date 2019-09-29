@@ -1,0 +1,209 @@
+{% extends "layouts/page_base.html" %}
+{% load base %}
+    {% block container %}
+            <main class="listMgm">
+                <h2>Brand/SKU</h2>
+                <form method="get" action="" name="listSearchForm" autocomplete="autocomplete" autofocus="autofocus">
+                    <input type="search" name="listKwd" value="{{ listKwd }}" />
+                    <input type="submit" value="Search" />
+                    <select name="search_key" id="">
+                        <option value="all">ALL</option>
+                        <option value="campaign">Campaign</option>
+                        <option value="targeting">Targeting</option>
+                        <option value="search_term">Search Term </option>
+                    </select><br />
+                         Account:
+                    <select name="account" id="">
+                        <option value="1">1账号</option>
+                        <option value="2">子账号</option>
+                        <option value="3">2账号</option>
+                        <option value="4">3账号</option>
+                        <option value="5">HZ账号</option>
+                        <option value="6">UKDP</option>
+                    </select>
+                    <label>RangeType:</label>
+                    <input type="radio" name="range_type" value="Monthly" class="range-type" {% if range_type == 'Monthly' %}checked{% endif %}> Monthly
+                    <input type="radio" name="range_type" value="Weekly" class="range-type" {% if range_type == 'Weekly' %}checked{% endif %}> Weekly
+                    <input type="checkbox" name="sum_by_date" {% if sum_by_date == 'on' %}checked{% endif %}> Sum By Date
+                    <label>日期:</label>
+                    <input type="week" name="week" value="{{ week }}" />
+                    <input type="week" name="end_week" value="{{ end_week }}" />
+                    <input type="month" name="month" value="{{ month }}"  style="display: none"/>
+                    <input type="month" name="end_month" value="{{ end_month }}"  style="display: none"/>
+                    <input type="radio" name="conventers" value="All" class="conventers" {% if conventers == 'All' %}checked{% endif %}> All
+                    <input type="radio" name="conventers" value="new" class="conventers" {% if conventers == 'new' %}checked{% endif %}> New Conventers
+                    <input type="radio" name="conventers" value="rising" class="conventers" {% if conventers == 'rising' %}checked{% endif %}> Rising Conventers
+                    <input type="radio" name="conventers" value="non" class="conventers" {% if conventers == 'non' %}checked{% endif %}> Non Conventers
+                    Threshold:
+                    <input type="text" name="threshold" value="{{ threshold }}">
+                </form>
+                <div >
+                    <button class="funcButtons" type="button" id="export">Export</button>
+                </div>
+                <table cellspacing=0>
+                    <tr>
+                        <th><input type="checkbox" name="selectallListing" value="all" id="selectAllListing"/></th>
+                        {% for val in fields %}
+                        <th>{{ fields|get_item:val }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr><td colspan="13"><hr></td></tr>
+                    {% for val in data %}
+                    <tr>
+                        <td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td>
+                        {% for v in fields %}
+                            <td>{{ val|get_item:v }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+                <hr>
+                <input type="checkbox" name="selectallListing" value="all" id="selectAllListing2"/>
+                <div id="editASIN"  style="display:none;">
+                    <h3>Basic Info</h3>
+                        <input type="hidden" name="ids" value="" id="editASIN_id"/>
+                        <div class="basicInfo">*ASIN<br><textarea name="newASIN" rows=5 cols=18 title="每个ASIN请用|隔开">每个ASIN请用|隔开</textarea><!--如果是通过编辑进来，增加readonly属性--></div>
+                        <div class="basicInfo">SKU<br><textarea name="newSKU" rows="5" cols="18" title="每个SKU请用|隔开,ASIN与SKU一一对应">每个SKU请用|隔开</textarea></div>
+                        <div class="basicInfo">
+                            *Ownership: <input type="radio" name="ownership" value="Ours" />Ours  <input type="radio" name="ownership" value="Others" />Others<br />
+                            *Status: <input type="radio" name="status" value="1" />ON  <input type="radio" name="status" value="0" />OFF<br />
+                            *Review Watcher: <input type="radio" name="revWatcher" value="1" />ON  <input type="radio" name="revWatcher" value="0" />OFF<br />
+                            *Listing Watcher: <input type="radio" name="listWatcher" value="1" />ON  <input type="radio" name="listWatcher" value="0" />OFF
+                        </div>
+                        <div><span style="font-size:13px"><i>*</i> 每个ASIN和SKU请用‘|’隔开。</span></div>
+                        <div class="kwdTracking">
+                            <h3>Keywords Tracking</h3>
+                            Keyword Set 1: <input type="text" name="kwdSet1" title="3 keywords/set max. separated by comma" />  Category Node: <input type="number" name="cat1" title="category node ID, number only"/><br />
+                            Keyword Set 2: <input type="text" name="kwdSet2" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat2" /><br />
+                            Keyword Set 3: <input type="text" name="kwdSet3" title="3 keywords/set max. separated by comma"/>  Category Node: <input type="number" title="category node ID, number only" name="cat3" /><br />
+                        </div>
+                        <div><span style="font-size:13px"><i>*</i> Keywords请用‘,’隔开。</span></div>
+                        <div class="listActionButton"><input type="submit" value="Add" id="btn-asin-add"/><input type="button" value="Cancel" id="editASINCancel"/></div>
+                </div>
+        <form action="" method="get" name="pageForm" id="page_form">
+                <div id="pagination">
+                    <div class="pageNum">
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in {{ list_data.paginator.num_pages }} <!--总页数-->pages.
+                    </p>
+                        <ul>
+                            {% if list_data.has_previous %}
+                            <li><a href="?page={{ list_data.previous_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}&viewRange={{ viewRange }}">previous</a></li>
+                            {% endif %}
+                            <li>Page {{ list_data.number }} of {{ list_data.paginator.num_pages }}.</li>
+                            {% if list_data.has_next %}
+                            <li><a href="?page={{ list_data.next_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}&viewRange={{ viewRange }}">next</a></li>
+                            {% endif %}
+                            <li><input type="number" name="page" value="{{ page }}" /></li>
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                        </ul>
+
+                    <div class="qtyUpdater">
+                        <select name="limit">
+                            <option value="20" {% if limit_re == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if limit_re == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if limit_re == 100 %}selected{% endif %}>100</option>
+                        </select> results per page.
+                    </div>
+
+                    </div>
+                </div>
+        </form>
+            </main>
+        <script>
+        var viewRange = $('select[name="viewRange"]').val();
+        var viewrange_el = '<input type="hidden" name="viewRange" value="'+viewRange+'">';
+        $('form[name="listSearchForm"]').append(viewrange_el);
+        $('select[name="account"]').val({{ account }});
+        $('select[name="search_key"]').val('{{ search_key }}');
+        var range_type = $("input[name='range_type']:checked").val();
+
+        if (range_type == 'Monthly'){
+            $('input[name="week"]').attr('style', 'display:none');
+            $('input[name="end_week"]').attr('style', 'display:none');
+            $('input[name="month"]').removeAttr('style');
+            $('input[name="end_month"]').removeAttr('style');
+            $('input[name="month"]').val('{{ month }}');
+            $('input[name="end_month"]').val('{{ end_month }}');
+        }else {
+            $('input[name="month"]').attr('style', 'display:none');
+            $('input[name="end_month"]').attr('style', 'display:none');
+            $('input[name="week"]').removeAttr('style');
+            $('input[name="end_week"]').removeAttr('style');
+            $('input[name="week"]').val("{{ week }}");
+            $('input[name="end_week"]').val("{{ end_week }}");
+        }
+
+        $('.campaign_sel').change(function () {
+            var campaign = $(this).val();
+            $.get('/admin/maxlead_site/get_campaign/',{'campaign':campaign},function (re) {
+                if(re.code == 1){
+                    var el = '';
+                    for (var index in re.data){
+                        el += '<li class="select-li">'+ re.data[index]+'</li>';
+                    }
+                    $('#ul_campaign').html(el);
+                    $('#ul_campaign').show();
+                }else {
+                    alert(re.msg);
+                }
+
+            },'json');
+        });
+
+        $('.range-type').click(function () {
+            var date = new Date();  //创建对象
+            var y = date.getFullYear();
+            var range_type = $(this).val();
+            if(range_type == 'Monthly'){
+                var max_month = date.getMonth()+1;
+                if (max_month < 10){
+                    max_month= '0' + max_month;
+                }
+                $('input[name="end_week"]').attr('style', 'display:none');
+                $('input[name="end_month"]').removeAttr('style');
+                $('input[name="end_month"]').attr('max', y+'-'+ max_month);
+                $('input[name="end_month"]').attr('min', y+'-01');
+            }else {
+                var weeks = getWeekOfYear() - 1;
+                $('input[name="end_month"]').attr('style', 'display:none');
+                $('input[name="end_week"]').removeAttr('style');
+                $('input[name="end_week"]').attr('max', y+'-W'+ weeks);
+                $('input[name="end_week"]').attr('min', y+'-W01');
+            }
+        });
+
+        $('#gotoPage').on('click',function () {
+            var param = "&listKwd={{ listKwd }}&brand={{ brand }}&account={{ account }}&range_type={{ range_type }}"+
+                        "&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}"+
+                        "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
+            var page = $('input[name="page"]').val();
+            var limit = $('select[name="limit"]').val();
+            var viewRange = $('select[name="viewRange"]').val();
+            var url = '/admin/maxlead_site/details/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
+            window.location.href = url;
+            return false;
+        });
+
+        $('select[name="limit"]').on('change',function () {
+            var param = "&listKwd={{ listKwd }}&brand={{ brand }}&account={{ account }}&range_type={{ range_type }}"+
+                        "&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}"+
+                        "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
+            var page = $('input[name="page"]').val();
+            var limit = $('select[name="limit"]').val();
+            var viewRange = $('select[name="viewRange"]').val();
+            var url = '/admin/maxlead_site/details/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
+            window.location.href = url;
+            return false;
+        });
+
+        $('#export').on('click',function () {
+            var param = "&listKwd={{ listKwd }}&searchCol={{ searchCol }}&account={{ account }}&range_type={{ range_type }}"+
+                        "&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}"+
+                        "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
+            var viewRange = $('select[name="viewRange"]').val();
+            var url = '/admin/maxlead_site/export_details/?'+param+'&viewRange='+viewRange;
+            window.location.href=url;
+        });
+        </script>
+    {% endblock %}
+

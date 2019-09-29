@@ -670,6 +670,30 @@ input[name="cat1"],input[name="cat2"],input[name="cat3"] {
     left: 35%;
 }
 
+#div_sel_block {
+    display: inline-block;
+    position: relative;
+}
+.ul-select {
+     position: absolute;
+     top: 8px;
+     background-color: white;
+     min-width: 134px;
+     max-height: 179px;
+     line-height: 23px;
+     overflow: auto;
+     z-index: 999;
+ }
+.ul-select li {
+    padding-right: 13px;
+    padding-left: 13px;
+    margin-left: -40px;
+}
+.ul-select li.select-li:hover {
+    background-color:blue;
+    color: white;
+}
+
 
 /*listingDetail Ends*/
 

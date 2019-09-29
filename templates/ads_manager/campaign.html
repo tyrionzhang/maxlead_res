@@ -1,20 +1,5 @@
 {% extends "layouts/page_base.html" %}
     {% block container %}
-        <style>
-         .ul-select {
-             background-color: #f1edee;
-             width: 322px;
-             max-height: 179px;
-             line-height: 23px;
-             margin-left: 115px;
-             margin-top: 0;
-             overflow: auto;
-         }
-        .ul-select li.select-li:hover {
-            background-color:blue;
-            color: white;
-        }
-        </style>
             <main class="miner">
                 <h2>Campaign</h2>
                 <button id="addNewMiner" class="headButton" type="button"/>Import</button>
@@ -37,20 +22,24 @@
                     <label>Campaign:</label>
                     <input type="text" name="campaign" value=""  readonly/> <br><br>
                     <label>Team:</label>
-                    <input type="text" name="team" class="input-sel team_sel">
-                    <ul class="ul-select" id="ul_team" style="display: none">
-                        {% for val in team_list %}
-                        <li class="select-li" data-id="{{ val.user.id }}">{{ val.user.username }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div id="div_sel_block">
+                        <input type="text" name="team" class="input-sel team_sel">
+                        <ul class="ul-select" id="ul_team" style="display: none">
+                            {% for val in team_list %}
+                            <li class="select-li" data-id="{{ val.user.id }}">{{ val.user.username }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                     <br><br>
                     <label>Brand:</label>
-                    <input type="text" name="brand" class="input-sel brand_sel">
-                    <ul class="ul-select" id="ul_brand" style="display: none">
-                        {% for val in brand_list %}
-                        <li class="select-li">{{ val }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div id="div_sel_block">
+                        <input type="text" name="brand" class="input-sel brand_sel">
+                        <ul class="ul-select" id="ul_brand" style="display: none">
+                            {% for val in brand_list %}
+                            <li class="select-li">{{ val }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                     <br><br>
                     <div class="actionButton">
                         <input type="button" value="submit" id="submit"/>  <input id="Cancel" type = "button" onclick="" value="Cancel" />
@@ -218,16 +207,6 @@
                 $('#update').attr('style','display:none;');
             });
 
-            $('body').on('click', '.select-li', function () {
-                var brand = $(this).html();
-                var ul = $(this).parents('.ul-select');
-                ul.prev('input').val(brand);
-                ul.hide();
-                return false;
-            });
-            $('.input-sel').click(function () {
-                $(this).next().show();
-            });
             $('.brand_sel').change(function () {
                 var brand = $(this).val();
                 $.get('/admin/maxlead_site/get_brand/',{'brand':brand},function (re) {
