@@ -118,46 +118,46 @@ def brand_sku(request):
             brands = AdsBrand.objects.values('sku').filter(user_id__in=users, brand=brand)
             ads_brand = ads_brand.filter(advertised_sku__in=brands)
     if searchCol == 'SKU':
-        fields = {
-            'account' : 'Account',
-            'date_range': 'Date Range',
-            'sku': 'SKU',
-            'asin': 'ASIN',
-            'brand': 'Brand',
-            'sp_spend': 'SP Spend',
-            'self_units': 'Self Units',
-            'self_sales': 'Self Sales',
-            'other_units': 'Other Units',
-            'other_sales': 'Other Sales',
-            'sp_sales': 'SP Sales',
-            'all_sales': 'All Sales',
-            'spend_sales': 'All Spend/All Sales',
-            'sp_all_sales' : 'SP Sales/All Sales'
-        }
+        fields = [
+            ('account', 'Account'),
+            ('date_range', 'Date Range'),
+            ('sku', 'SKU'),
+            ('asin', 'ASIN'),
+            ('brand', 'Brand'),
+            ('sp_spend', 'SP Spend'),
+            ('self_units', 'Self Units'),
+            ('self_sales', 'Self Sales'),
+            ('other_units', 'Other Units'),
+            ('other_sales', 'Other Sales'),
+            ('sp_sales', 'SP Sales'),
+            ('all_sales', 'All Sales'),
+            ('spend_sales', 'All Spend/All Sales'),
+            ('sp_all_sales', 'SP Sales/All Sales')
+        ]
         if search_key == 'SKU':
             ads_brand = ads_brand.filter(advertised_sku=listKwd)
         if search_key == 'ASIN':
             adv_brand_obj = AdsBrand.objects.filter(user_id__in=users, asin=listKwd).values('sku')
             ads_brand = ads_brand.filter(advertised_sku__in=adv_brand_obj)
     else:
-        fields = {
-            'account': 'Account',
-            'date_range': 'Date Range',
-            'brand': 'Brand',
-            'sp_spend': 'SP Spend',
-            'sb_spend': 'SB Spend',
-            'all_spend': 'All Spend',
-            'self_units': 'Self Units',
-            'self_sales': 'Self Sales',
-            'other_units': 'Other Units',
-            'other_sales': 'Other Sales',
-            'sp_sales': 'SP Sales',
-            'sb_sales': 'SB Sales',
-            'all_ads_sales': 'All Ads Sales',
-            'all_sales': 'All Sales',
-            'spend_sales': 'All Spend/All Sales',
-            'ads_sales_sales': 'All Ads Sales/All Sales'
-        }
+        fields = [
+            ('account', 'Account'),
+            ('date_range', 'Date Range'),
+            ('brand', 'Brand'),
+            ('sp_spend', 'SP Spend'),
+            ('sb_spend', 'SB Spend'),
+            ('all_spend', 'All Spend'),
+            ('self_units', 'Self Units'),
+            ('self_sales', 'Self Sales'),
+            ('other_units', 'Other Units'),
+            ('other_sales', 'Other Sales'),
+            ('sp_sales', 'SP Sales'),
+            ('sb_sales', 'SB Sales'),
+            ('all_ads_sales', 'All Ads Sales'),
+            ('all_sales', 'All Sales'),
+            ('spend_sales', 'All Spend/All Sales'),
+            ('ads_sales_sales', 'All Ads Sales/All Sales')
+        ]
 
     limit = request.GET.get('limit', 20)
     page = request.GET.get('page', 1)

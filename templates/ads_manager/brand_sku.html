@@ -48,7 +48,7 @@
                     <tr>
                         <th><input type="checkbox" name="selectallListing" value="all" id="selectAllListing"/></th>
                         {% for val in fields %}
-                        <th>{{ fields|get_item:val }}</th>
+                        <th>{{ val.1 }}</th>
                         {% endfor %}
                     </tr>
                     <tr><td colspan="13"><hr></td></tr>
@@ -56,7 +56,7 @@
                     <tr>
                         <td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td>
                         {% for v in fields %}
-                            <td>{{ val|get_item:v }}</td>
+                            <td>{{ val|get_item:v.0 }}</td>
                         {% endfor %}
                     </tr>
                     {% endfor %}
