@@ -246,7 +246,7 @@ def brand_sku(request):
                         week_obj = '%s-%s-0' % (val['year_str'], val['week'])
                         start_week = datetime.datetime.strptime(week_obj, '%Y-%U-%w')
                         start_week_str = start_week + datetime.timedelta(days=-6)
-                        range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week_str.strftime("%Y%m%d"))
+                        range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week.strftime("%Y%m%d"))
                     sp_spend = val['sp_spend']
                     self_units = val['self_units']
                     self_sales = val['self_sales']
@@ -341,7 +341,7 @@ def brand_sku(request):
                         week_obj = '%s-%s-0' % (val['year_str'], val['week'])
                         start_week = datetime.datetime.strptime(week_obj, '%Y-%U-%w')
                         start_week_str = start_week + datetime.timedelta(days=-6)
-                        range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week_str.strftime("%Y%m%d"))
+                        range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week.strftime("%Y%m%d"))
                     if campaign_list:
                         pla_obj = CampaignPla.objects.filter(user_id__in=users, account=account, year_str=val['year_str'],
                                                          month=val['month'], week=val['week'], campaign_name__in=campaign_list)
@@ -642,7 +642,7 @@ def export_brand_sku(request):
                     week_obj = '%s-%s-0' % (val['year_str'], val['week'])
                     start_week = datetime.datetime.strptime(week_obj, '%Y-%U-%w')
                     start_week_str = start_week + datetime.timedelta(days=-6)
-                    range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week_str.strftime("%Y%m%d"))
+                    range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week.strftime("%Y%m%d"))
                 sp_spend = val['sp_spend']
                 self_units = val['self_units']
                 self_sales = val['self_sales']
@@ -737,7 +737,7 @@ def export_brand_sku(request):
                     week_obj = '%s-%s-0' % (val['year_str'], val['week'])
                     start_week = datetime.datetime.strptime(week_obj, '%Y-%U-%w')
                     start_week_str = start_week + datetime.timedelta(days=-6)
-                    range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week_str.strftime("%Y%m%d"))
+                    range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week.strftime("%Y%m%d"))
                 if campaign_list:
                     pla_obj = CampaignPla.objects.filter(user_id__in=users, account=account, year_str=val['year_str'],
                                                      month=val['month'], week=val['week'], campaign_name__in=campaign_list)

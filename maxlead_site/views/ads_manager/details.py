@@ -207,7 +207,7 @@ def details(request):
                     week_obj = '%s-%s-0' % (val['year_str'], val['week'])
                     start_week = datetime.datetime.strptime(week_obj, '%Y-%U-%w')
                     start_week_str = start_week + datetime.timedelta(days=-6)
-                    range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week_str.strftime("%Y%m%d"))
+                    range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week.strftime("%Y%m%d"))
                     sum_off_week_re = start_week_str - relativedelta(days=1)
                     sum_off_year = sum_off_week_re.year
                     sum_off_week = sum_off_week_re.isocalendar()[1]
@@ -566,7 +566,7 @@ def export_details(request):
                     week_obj = '%s-%s-0' % (val['year_str'], val['week'])
                     start_week = datetime.datetime.strptime(week_obj, '%Y-%U-%w')
                     start_week_str = start_week + datetime.timedelta(days=-6)
-                    range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week_str.strftime("%Y%m%d"))
+                    range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week.strftime("%Y%m%d"))
                     sum_off_week_re = start_week_str - relativedelta(days=1)
                     sum_off_year = sum_off_week_re.year
                     sum_off_week = sum_off_week_re.isocalendar()[1]

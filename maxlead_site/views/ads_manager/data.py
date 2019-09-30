@@ -56,6 +56,7 @@ def data(request):
 
     if ads_data:
         for v in ads_data:
+            range_type_str = ''
             v.is_del = 0
             if not v.change_time:
                 check_del = datetime.datetime.now() - v.created
@@ -65,6 +66,17 @@ def data(request):
                 v.change_time = ''
             else:
                 v.change_time = v.change_time.strftime('%Y-%m-%d %H:%M:%S')
+            if v.month:
+                if v.month < 10:
+                    range_type_str = "%s0%s" % (v.year_str, v.month)
+                else:
+                    range_type_str = "%s%s" % (v.year_str, v.month)
+            if v.week:
+                week_obj = '%s-%s-0' % (v.year_str, v.week)
+                start_week = datetime.datetime.strptime(week_obj, '%Y-%U-%w')
+                start_week_str = start_week + datetime.timedelta(days=-6)
+                range_type_str = "%s-%s" % (start_week_str.strftime("%Y%m%d"), start_week.strftime("%Y%m%d"))
+            v.range_type = range_type_str
             v.created = v.created.strftime('%Y-%m-%d %H:%M:%S')
             v.type = type_li[v.type]
             v.account = account_li[v.account]
