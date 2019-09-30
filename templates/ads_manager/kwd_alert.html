@@ -173,35 +173,35 @@
         });
 
         $('#gotoPage').on('click',function () {
-            var param = "&listKwd={{ listKwd }}&brand={{ brand }}&account={{ account }}&range_type={{ range_type }}"+
+            var param = "&listKwd={{ listKwd }}&account={{ account }}&range_type={{ range_type }}"+
                         "&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}"+
-                        "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
+                        "&end_month={{ end_month }}&search_key={{ search_key }}&conventers={{ conventers }}&threshold={{ threshold }}";
             var page = $('input[name="page"]').val();
             var limit = $('select[name="limit"]').val();
             var viewRange = $('select[name="viewRange"]').val();
-            var url = '/admin/maxlead_site/details/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
+            var url = '/admin/maxlead_site/kwd_alert/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
             window.location.href = url;
             return false;
         });
 
         $('select[name="limit"]').on('change',function () {
-            var param = "&listKwd={{ listKwd }}&brand={{ brand }}&account={{ account }}&range_type={{ range_type }}"+
+            var param = "&listKwd={{ listKwd }}&account={{ account }}&range_type={{ range_type }}"+
                         "&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}"+
-                        "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
+                        "&end_month={{ end_month }}&search_key={{ search_key }}&conventers={{ conventers }}&threshold={{ threshold }}";
             var page = $('input[name="page"]').val();
             var limit = $('select[name="limit"]').val();
             var viewRange = $('select[name="viewRange"]').val();
-            var url = '/admin/maxlead_site/details/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
+            var url = '/admin/maxlead_site/kwd_alert/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
             window.location.href = url;
             return false;
         });
 
         $('#export').on('click',function () {
-            var param = "&listKwd={{ listKwd }}&searchCol={{ searchCol }}&account={{ account }}&range_type={{ range_type }}"+
+            var param = "&listKwd={{ listKwd }}&account={{ account }}&range_type={{ range_type }}"+
                         "&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}"+
-                        "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
+                        "&end_month={{ end_month }}&search_key={{ search_key }}&conventers={{ conventers }}&threshold={{ threshold }}";
             var viewRange = $('select[name="viewRange"]').val();
-            var url = '/admin/maxlead_site/export_details/?'+param+'&viewRange='+viewRange;
+            var url = '/admin/maxlead_site/export_kwd_alert/?'+param+'&viewRange='+viewRange;
             window.location.href=url;
         });
         </script>

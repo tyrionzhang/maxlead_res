@@ -120,6 +120,7 @@ urlpatterns = [
     url('^admin/maxlead_site/details/', details.details),
     url('^admin/maxlead_site/export_details/', details.export_details),
     url('^admin/maxlead_site/kwd_alert/', kwd_alert.kwd_alert),
+    url('^admin/maxlead_site/export_kwd_alert/', kwd_alert.export_kwd_alert),
 
     # urls of max_stock
     url('^admin/max_stock/stock_spiders/', stock_views.stock_spiders),
