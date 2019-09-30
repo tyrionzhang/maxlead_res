@@ -172,7 +172,7 @@
                 window.location.href=url;
             });
 
-            $('.minner-del').on('click', function () {
+            $('body').on('click', '.minner-del', function () {
                 $('#update').removeAttr('style');
                 var tr = $(this).parents('tr');
                 var id = $(this).data('id');

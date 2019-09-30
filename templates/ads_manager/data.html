@@ -185,7 +185,7 @@
                 return false;
             });
 
-            $('.minner-del').click(function () {
+            $('body').on('click', '.minner-del', function () {
                var task_id = $(this).data('id');
                if(confirm('确定删除？')){
                    $.get('/admin/maxlead_site/del_ads_data/',{'id':task_id},function (re) {
