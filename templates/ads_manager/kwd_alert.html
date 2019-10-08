@@ -36,18 +36,21 @@
                     <input type="radio" name="conventers" value="non" class="conventers" {% if conventers == 'non' %}checked{% endif %}> Non Conventers
                     Threshold:
                     <input type="text" name="threshold" value="{{ threshold }}">
+                    <input type="hidden" name="order_type"  value="{{ order_type }}" class="">
+                    <input type="hidden" name="order_dasc"  value="{{ order_dasc }}" class="">
                 </form>
                 <div >
                     <button class="funcButtons" type="button" id="export">Export</button>
                 </div>
-                <table cellspacing=0>
-                    <tr>
+                <table cellspacing=0 id="datas">
+                    <tr id="th-task">
                         <th><input type="checkbox" name="selectallListing" value="all" id="selectAllListing"/></th>
                         {% for val in fields %}
                         <th>{{ fields|get_item:val }}</th>
                         {% endfor %}
                     </tr>
                     <tr><td colspan="13"><hr></td></tr>
+                <tbody id="data_body">
                     {% for val in data %}
                     <tr>
                         <td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td>
@@ -56,6 +59,7 @@
                         {% endfor %}
                     </tr>
                     {% endfor %}
+                </tbody>
                 </table>
                 <hr>
                 <input type="checkbox" name="selectallListing" value="all" id="selectAllListing2"/>
@@ -110,6 +114,44 @@
         </form>
             </main>
         <script>
+        var order_type = $("input[name='order_type']");
+        var order_dasc = $("input[name='order_dasc']");
+        if (order_type.val() !== '') {
+            var th_h = $('#th-task').children('th').eq(order_type.val());
+            th_h[0].dasc = order_dasc.val();
+            var table_order = th_h.parents('table').eq(0);
+            var rows_order = table_order.find('tr:gt(0)').toArray().sort(comparer(th_h.index()));
+            if (th_h[0].dasc == 'true') {
+                rows_order = rows_order.reverse();
+            }
+            $('#data_body').empty().html(rows_order);
+        }
+        var table = $('#datas').eq(0);
+        table.on('click', 'th', function() {
+            var table = $(this).parents('table').eq(0);
+            order_type.val($(this).index());
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+            var inp_dasc =  order_dasc.val();
+            if (inp_dasc !== '') {
+                if (inp_dasc == 'false') {
+                    this.dasc = true
+                }else {
+                    this.dasc = false
+                }
+            }else {
+                this.dasc = !this.dasc;
+            }
+            order_dasc.val(this.dasc);
+            if (this.dasc) {
+                rows = rows.reverse();
+            }
+            $('#data_body').empty().html(rows);
+        });
+
+        var th = $('#datas th');
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer(th.index()));
+        $('#data_body').empty().html(rows);
+
         var viewRange = $('select[name="viewRange"]').val();
         var viewrange_el = '<input type="hidden" name="viewRange" value="'+viewRange+'">';
         $('form[name="listSearchForm"]').append(viewrange_el);
@@ -179,7 +221,10 @@
             var page = $('input[name="page"]').val();
             var limit = $('select[name="limit"]').val();
             var viewRange = $('select[name="viewRange"]').val();
-            var url = '/admin/maxlead_site/kwd_alert/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
+            var ordder_type = order_type.val();
+            var order_dasc_val = order_dasc.val();
+            var url = '/admin/maxlead_site/kwd_alert/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+
+                ordder_type+param+'&limit='+limit+'&viewRange='+viewRange;
             window.location.href = url;
             return false;
         });
@@ -191,7 +236,10 @@
             var page = $('input[name="page"]').val();
             var limit = $('select[name="limit"]').val();
             var viewRange = $('select[name="viewRange"]').val();
-            var url = '/admin/maxlead_site/kwd_alert/?page='+page+param+'&limit='+limit+'&viewRange='+viewRange;
+            var ordder_type = order_type.val();
+            var order_dasc_val = order_dasc.val();
+            var url = '/admin/maxlead_site/kwd_alert/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+
+                ordder_type+param+'&limit='+limit+'&viewRange='+viewRange;
             window.location.href = url;
             return false;
         });

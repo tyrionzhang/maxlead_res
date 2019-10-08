@@ -34,12 +34,15 @@ type_li = {
     9 : 'SB Kwd Pla'
 }
 
+@csrf_exempt
 def brand(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
     viewRange = request.GET.get('viewRange', user.user.id)
+    order_type = request.GET.get('order_type', '')
+    order_dasc = request.GET.get('order_dasc', '')
     if viewRange:
         viewRange = int(viewRange)
     user_list = UserProfile.objects.filter(state=1)
@@ -84,6 +87,8 @@ def brand(request):
             're_limit': int(re_limit),
             'limit': int(limit),
             'page': page,
+            'order_type': order_type,
+            'order_dasc': order_dasc,
             'user': user,
             'viewRange': viewRange,
             'avator': user.user.username[0],

@@ -30,6 +30,8 @@
                 </div>
                 <table cellspacing="0px" id="datas">
                     <tr id="th-task">
+                        <input type="hidden" name="order_type"  value="{{ order_type }}" class="">
+                        <input type="hidden" name="order_dasc"  value="{{ order_dasc }}" class="">
                         <th>SKU</th>
                         <th>ASIN</th>
                         <th>Par ASIN</th>
@@ -63,11 +65,11 @@
                     </p>
                         <ul>
                             {% if data.has_previous %}
-                            <li><a href="?page={{ data.previous_page_number }}&limit={{ limit }}&viewRange={{ viewRange }}">previous</a></li>
+                            <li><a href="?page={{ data.previous_page_number }}&order_dasc={{ order_dasc }}&order_type={{ order_type }}&limit={{ limit }}&viewRange={{ viewRange }}">previous</a></li>
                             {% endif %}
                             <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
                             {% if data.has_next %}
-                            <li><a href="?page={{ data.next_page_number }}&limit={{ limit }}&viewRange={{ viewRange }}">next</a></li>
+                            <li><a href="?page={{ data.next_page_number }}&order_dasc={{ order_dasc }}&order_type={{ order_type }}&limit={{ limit }}&viewRange={{ viewRange }}">next</a></li>
                             {% endif %}
                             <li><input type="number" name="page" value="{{ page }}" /></li>
                             <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
@@ -86,32 +88,52 @@
             </form>
             </main>
         <script>
+            var order_type = $("input[name='order_type']");
+            var order_dasc = $("input[name='order_dasc']");
+            if (order_type.val() !== '') {
+                var th_h = $('#th-task').children('th').eq(order_type.val());
+                th_h[0].dasc = order_dasc.val();
+                var table_order = th_h.parents('table').eq(0);
+                var rows_order = table_order.find('tr:gt(0)').toArray().sort(comparer(th_h.index()));
+                if (th_h[0].dasc == 'true') {
+                    rows_order = rows_order.reverse();
+                }
+                $('#data_body').empty().html(rows_order);
+            }
             var table = $('#datas').eq(0);
             table.on('click', 'th', function() {
                 var table = $(this).parents('table').eq(0);
+                order_type.val($(this).index());
                 var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
-                this.dasc = !this.dasc;
+                var inp_dasc =  order_dasc.val();
+                if (inp_dasc !== '') {
+                    if (inp_dasc == 'false') {
+                        this.dasc = true
+                    }else {
+                        this.dasc = false
+                    }
+                }else {
+                    this.dasc = !this.dasc;
+                }
+                order_dasc.val(this.dasc);
+                {% if data.has_previous %}
+                $('#a_previous').attr("href", "?page={{ data.previous_page_number }}&order_dasc="+this.dasc+
+                    "&order_type="+$(this).index()+"&limit={{ limit }}");
+                {% endif %}
+
+                {% if data.has_next %}
+                $('#a_next').attr("href", "?page={{ data.next_page_number }}&order_dasc="+this.dasc+
+                    "&order_type="+$(this).index()+"&limit={{ limit }}");
+                {% endif %}
                 if (this.dasc) {
                     rows = rows.reverse();
                 }
                 $('#data_body').empty().html(rows);
             });
-            function comparer(index) {
-              return function(a, b) {
-                var valA = getCellValue(a, index),
-                  valB = getCellValue(b, index);
-                return $.isNumeric(valA) && $.isNumeric(valB) ?
-                  valA - valB : valA.localeCompare(valB);
-              };
-            }
 
-            function getCellValue(row, index) {
-              return $(row).children('td').eq(index).text();
-            }
-
-             var th = $('#datas th');
-             var rows = table.find('tr:gt(0)').toArray().sort(comparer(th.index()));
-             $('#data_body').empty().html(rows);
+            var th = $('#datas th');
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer(th.index()));
+            $('#data_body').empty().html(rows);
 
             function getWeekOfYear(){
               var today = new Date();
@@ -131,7 +153,9 @@
                 var page = $('input[name="page"]').val();
                 var limit = $('select[name="limit"]').val();
                 var viewRange = $('select[name="viewRange"]').val();
-                var url = '/admin/maxlead_site/brand/?page='+page+'&limit='+limit+'&viewRange='+viewRange;
+                var ordder_type = order_type.val();
+                var order_dasc_val = order_dasc.val();
+                var url = '/admin/maxlead_site/brand/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+ordder_type+'&limit='+limit+'&viewRange='+viewRange;
                 window.location.href = url;
                 return false;
             });
@@ -140,7 +164,9 @@
                 var page = $('input[name="page"]').val();
                 var limit = $('select[name="limit"]').val();
                 var viewRange = $('select[name="viewRange"]').val();
-                var url = '/admin/maxlead_site/brand/?page='+page+'&limit='+limit+'&viewRange='+viewRange;
+                var ordder_type_val = order_type.val();
+                var order_dasc_val = order_dasc.val();
+                var url = '/admin/maxlead_site/brand/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+ordder_type_val+'&limit='+limit+'&viewRange='+viewRange;
                 window.location.href = url;
                 return false;
             });

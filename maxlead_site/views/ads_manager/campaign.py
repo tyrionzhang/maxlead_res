@@ -40,6 +40,8 @@ def campaign(request):
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
     viewRange = request.GET.get('viewRange', user.user.id)
+    order_type = request.GET.get('order_type', '')
+    order_dasc = request.GET.get('order_dasc', '')
     team_list = UserProfile.objects.filter(role=1,state=1).order_by('user__username','-id')
     if viewRange:
         viewRange = int(viewRange)
@@ -102,6 +104,8 @@ def campaign(request):
             'limit': int(limit),
             'page': page,
             'user': user,
+            'order_type': order_type,
+            'order_dasc': order_dasc,
             'viewRange': viewRange,
             'avator': user.user.username[0],
             'team_list': team_list,

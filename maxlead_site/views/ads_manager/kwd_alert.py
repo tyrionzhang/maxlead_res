@@ -32,6 +32,8 @@ def kwd_alert(request):
     conventers = request.GET.get('conventers', '')
     threshold = request.GET.get('threshold', 0)
     threshold = float(threshold)
+    order_type = request.GET.get('order_type', '')
+    order_dasc = request.GET.get('order_dasc', '')
 
     month_str = None
     end_month_str = None
@@ -401,6 +403,8 @@ def kwd_alert(request):
             'end_month': end_month,
             'conventers': conventers,
             'threshold': threshold,
+            'order_type': order_type,
+            'order_dasc': order_dasc,
             'avator': user.user.username[0]
         }
     else:

@@ -39,6 +39,8 @@ def details(request):
     end_month = request.GET.get('end_month', '')
     other_self = request.GET.get('other_self', '')
     brand = request.GET.get('brand', '')
+    order_type = request.GET.get('order_type', '')
+    order_dasc = request.GET.get('order_dasc', '')
 
     month_str = None
     end_month_str = None
@@ -356,6 +358,8 @@ def details(request):
             'end_month': end_month,
             'other_self': other_self,
             'brand_list': brand_list,
+            'order_type': order_type,
+            'order_dasc': order_dasc,
             'avator': user.user.username[0]
         }
     else:

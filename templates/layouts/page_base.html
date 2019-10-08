@@ -65,13 +65,16 @@
             {% endblock %}
             <!-- footer.php BEGIN -->
             <footer>
-                <p>&copy;2017 Staff X</p>
+                <p>&copy;2017<span id="copy_year"></span> Staff X</p>
             </footer>
         </div>
         <script>
             $('#viewRange').on('change', function () {
                 $('#show_me').submit();
-            })
+            });
+            var date = new Date();  //创建对象
+            var y = date.getFullYear();
+            $('#copy_year').html('-'+y);
         </script>
     </body>
 </html>
