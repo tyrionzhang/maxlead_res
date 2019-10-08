@@ -15,9 +15,12 @@ class ExlSpider(scrapy.Spider):
     name = "exl_spider"
 
     msg_str1 = 'complete\n'
-    start_urls = ['https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}']
+    start_urls = [
+        'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}',
+        'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl=%7b340efd05-b1c7-453f-be02-39bebb462163%7d&type=myweb'
+    ]
     sku_list = []
-    stock_names = ['M&L','Match Land','Parts']
+    stock_names = ['M&L','Match Land','Parts', 'Tradeforce Inc']
 
     # def __init__(self, username=None, *args, **kwargs):
     #     super(ExlSpider, self).__init__(*args, **kwargs)
@@ -34,24 +37,32 @@ class ExlSpider(scrapy.Spider):
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         msg_str2 = ''
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
+        # from pyvirtualdisplay import Display
+        # display = Display(visible=0, size=(800, 800))
+        # display.start()
         firefox_options = Options()
-        firefox_options.add_argument('-headless')
+        # firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
-        driver.get(response.url)
+        url = response.url
+        type = url[-5:]
+        driver.get(url)
         time.sleep(3)
         elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
         elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
         btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
         # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
 
-        if elem_name:
-            elem_name[0].send_keys('Intybot')
-        if elem_pass:
-            elem_pass[0].send_keys('7G1#AJjX')
+        if type == 'myweb':
+            if elem_name:
+                elem_name[0].send_keys('Dteng')
+            if elem_pass:
+                elem_pass[0].send_keys('Tr@d3')
+        else:
+            if elem_name:
+                elem_name[0].send_keys('Intybot')
+            if elem_pass:
+                elem_pass[0].send_keys('7G1#AJjX')
         btn_login[0].click()
         driver.implicitly_wait(100)
         driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
@@ -73,11 +84,11 @@ class ExlSpider(scrapy.Spider):
                         list_rows.pop(0)
                         list_rows.pop(-1)
                     warehouse_type = list_rows[i].find_elements_by_class_name('aw-column-0')
+                    warehouse_name = list_rows[i].find_elements_by_class_name('aw-column-1')
                     warehouse_type_name = warehouse_type[0].text
-                    if warehouse_type_name in self.stock_names:
-                        warehouse_name = list_rows[i].find_elements_by_class_name('aw-column-1')
-                        if warehouse_name:
-                            warehouse_name = warehouse_name[0].text
+                    if warehouse_name:
+                        warehouse_name = warehouse_name[0].text
+                    if warehouse_type_name in self.stock_names and warehouse_name and not warehouse_name == 'EGO':
                         list_rows[i].find_element_by_tag_name('span').click()
                         btn_runreport = driver.find_elements_by_id('btnRunRpt')
                         if btn_runreport:
@@ -92,7 +103,10 @@ class ExlSpider(scrapy.Spider):
                         driver.switch_to.frame(iframe2[0])
                         driver.implicitly_wait(100)
                         time.sleep(10)
-                        res = driver.find_elements_by_css_selector('.a383 tr')
+                        if type == 'myweb':
+                            res = driver.find_elements_by_css_selector('.a366 tr')
+                        else:
+                            res = driver.find_elements_by_css_selector('.a383 tr')
                         res.pop(1)
                         res.pop(0)
                         res.pop()
@@ -106,6 +120,8 @@ class ExlSpider(scrapy.Spider):
                                     item['warehouse'] = 'EXL'
                                 if warehouse_name == 'Tradeforce Dayton':
                                     item['warehouse'] = 'TFD'
+                                if warehouse_name == 'Roll On Logistics':
+                                    item['warehouse'] = 'ROL'
                                 if tds[6].text and not tds[6].text == ' ':
                                     item['qty'] = tds[6].text
                                     item['qty'] = item['qty'].replace(',', '')
@@ -116,7 +132,7 @@ class ExlSpider(scrapy.Spider):
                     continue
 
         try:
-            display.stop()
+            # display.stop()
             driver.quit()
         except IndexError as e:
             print(e)
