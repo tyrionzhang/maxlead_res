@@ -136,7 +136,7 @@ def details(request):
     user_group = user.group
     users = []
     user_list = UserProfile.objects.filter(state=1)
-    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+    if not user.user.is_superuser and not user_group.user.username == 'Ads':
         user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
         if user_list:
             for val in user_list:
@@ -498,7 +498,7 @@ def export_details(request):
     user_group = user.group
     users = []
     user_list = UserProfile.objects.filter(state=1)
-    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+    if not user.user.is_superuser and not user_group.user.username == 'Ads':
         user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
         if user_list:
             for val in user_list:

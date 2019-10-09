@@ -49,7 +49,7 @@ def brand(request):
     user_group = user.group
     users = []
     user_list = []
-    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+    if not user.user.is_superuser and not user_group.user.username == 'Ads':
         user_list = UserProfile.objects.filter(state=1)
         user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
         if user_list:
@@ -165,7 +165,7 @@ def export_brand(request):
     brand_data = AdsBrand.objects.all()
     user_group = user.group
     users = []
-    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+    if not user.user.is_superuser and not user_group.user.username == 'Ads':
         user_list = UserProfile.objects.filter(state=1)
         user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
         if user_list:
