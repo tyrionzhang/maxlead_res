@@ -19,7 +19,6 @@ def kwd_alert(request):
     user = App.get_user_info(request)
     if not user:
         return HttpResponseRedirect("/admin/maxlead_site/login/")
-    viewRange = request.GET.get('viewRange', user.user.id)
     account = request.GET.get('account', '1')
     range_type = request.GET.get('range_type', 'Weekly')
     sum_by_date = request.GET.get('sum_by_date', '')
@@ -101,8 +100,6 @@ def kwd_alert(request):
             start_last_week = start_last_week.isocalendar()[1]
             end_last_week = end_last_week.isocalendar()[1]
 
-    if viewRange:
-        viewRange = int(viewRange)
     user_group = user.group
     users = []
     user_list = UserProfile.objects.filter(state=1)
@@ -391,7 +388,6 @@ def kwd_alert(request):
             'limit': int(limit),
             'page': page,
             'user': user,
-            'viewRange': viewRange,
             'account': account,
             'range_type': range_type,
             'sum_by_date': sum_by_date,
@@ -412,7 +408,6 @@ def kwd_alert(request):
             'data': '',
             'fields': fields,
             'user': user,
-            'viewRange': viewRange,
             'account': account,
             'range_type': range_type,
             'sum_by_date': sum_by_date,
@@ -435,7 +430,6 @@ def export_kwd_alert(request):
     if not user:
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
 
-    viewRange = request.GET.get('viewRange', user.user.id)
     account = request.GET.get('account', '1')
     range_type = request.GET.get('range_type', 'Weekly')
     sum_by_date = request.GET.get('sum_by_date', '')
@@ -515,8 +509,6 @@ def export_kwd_alert(request):
             start_last_week = start_last_week.isocalendar()[1]
             end_last_week = end_last_week.isocalendar()[1]
 
-    if viewRange:
-        viewRange = int(viewRange)
     user_group = user.group
     users = []
     user_list = UserProfile.objects.filter(state=1)

@@ -40,11 +40,8 @@ def brand(request):
     if not user:
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-    viewRange = request.GET.get('viewRange', user.user.id)
     order_type = request.GET.get('order_type', '')
     order_dasc = request.GET.get('order_dasc', '')
-    if viewRange:
-        viewRange = int(viewRange)
     ads_brand = AdsBrand.objects.all().order_by('-created')
     user_group = user.group
     users = []
@@ -56,9 +53,6 @@ def brand(request):
             for val in user_list:
                 users.append(val.user_id)
         ads_brand = ads_brand.filter(user_id__in=users)
-
-    if viewRange:
-        ads_brand = ads_brand.filter(user_id=viewRange)
 
     if ads_brand:
         for v in ads_brand:
@@ -92,7 +86,6 @@ def brand(request):
             'order_type': order_type,
             'order_dasc': order_dasc,
             'user': user,
-            'viewRange': viewRange,
             'avator': user.user.username[0],
             'user_list': user_list
         }
@@ -105,7 +98,6 @@ def brand(request):
             'limit': int(limit),
             'page': page,
             'user': user,
-            'viewRange': viewRange,
             'avator': user.user.username[0],
             'user_list': user_list
         }

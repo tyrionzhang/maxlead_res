@@ -38,11 +38,8 @@ def data(request):
     if not user:
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-    viewRange = request.GET.get('viewRange', user.user.id)
     order_type = request.GET.get('order_type', '')
     order_dasc = request.GET.get('order_dasc', '')
-    if viewRange:
-        viewRange = int(viewRange)
     ads_data = AdsData.objects.all().order_by('-created')
     user_group = user.group
     users = []
@@ -54,9 +51,6 @@ def data(request):
             for val in user_list:
                 users.append(val.user_id)
         ads_data = ads_data.filter(user_id__in=users)
-
-    if viewRange:
-        ads_data = ads_data.filter(user_id=viewRange)
 
     if ads_data:
         for v in ads_data:
@@ -111,7 +105,6 @@ def data(request):
             'limit': int(limit),
             'page': page,
             'user': user,
-            'viewRange': viewRange,
             'order_type': order_type,
             'order_dasc': order_dasc,
             'avator': user.user.username[0],
@@ -126,7 +119,6 @@ def data(request):
             'limit': int(limit),
             'page': page,
             'user': user,
-            'viewRange': viewRange,
             'avator': user.user.username[0],
             'user_list': user_list
         }

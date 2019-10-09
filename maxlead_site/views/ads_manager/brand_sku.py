@@ -26,7 +26,6 @@ def brand_sku(request):
     if not user:
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-    viewRange = request.GET.get('viewRange', user.user.id)
     searchCol = request.GET.get('searchCol', 'brand')
     account = request.GET.get('account', '1')
     range_type = request.GET.get('range_type', 'Weekly')
@@ -73,8 +72,7 @@ def brand_sku(request):
             start_week = start_week + datetime.timedelta(days=-6)
             start_week = start_week.strftime("%Y%m%d")
             end_week_week = datetime.datetime.strptime(end_week_obj, '%Y-%U-%w').strftime("%Y%m%d")
-    if viewRange:
-        viewRange = int(viewRange)
+
     user_group = user.group
     users = []
     user_list = UserProfile.objects.filter(state=1)
@@ -104,8 +102,7 @@ def brand_sku(request):
             if brand:
                 brands = AdsBrand.objects.values('sku').filter(user_id__in=users, brand=brand)
                 ads_brand = ads_brand.filter(advertised_sku__in=brands)
-        if viewRange:
-            ads_brand = ads_brand.filter(user_id=viewRange)
+
     else:
         if sum_by_date == 'on':
             ads_brand = AdvProducts.objects.filter(user_id__in=users, account=account).values("advertised_sku").distinct().exclude(advertised_sku='')
@@ -113,8 +110,7 @@ def brand_sku(request):
                                  month_str=month_str, week_str=week_str, end_week_str=end_week_str)
         else:
             ads_brand = AdvProducts.objects.values("year_str", "month", "week", "advertised_sku").annotate(test_sum=Sum('day_advertised_sku_sales')).filter(user_id__in=users, account=account).exclude(advertised_sku='')
-        if viewRange:
-            ads_brand = ads_brand.filter(user_id=viewRange)
+
         if brand:
             brands = AdsBrand.objects.values('sku').filter(user_id__in=users, brand=brand)
             ads_brand = ads_brand.filter(advertised_sku__in=brands)
@@ -408,7 +404,6 @@ def brand_sku(request):
             'limit': int(limit),
             'page': page,
             'user': user,
-            'viewRange': viewRange,
             'searchCol': searchCol,
             'account': account,
             'range_type': range_type,
@@ -435,7 +430,6 @@ def brand_sku(request):
             'limit': int(limit),
             'page': page,
             'user': user,
-            'viewRange': viewRange,
             'brand_list': brand_list,
             'searchCol': searchCol,
             'account': account,
@@ -458,7 +452,6 @@ def export_brand_sku(request):
     if not user:
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
 
-    viewRange = request.GET.get('viewRange', user.user.id)
     searchCol = request.GET.get('searchCol', 'brand')
     account = request.GET.get('account', '1')
     range_type = request.GET.get('range_type', 'Weekly')
@@ -502,8 +495,7 @@ def export_brand_sku(request):
             start_week = start_week + datetime.timedelta(days=-6)
             start_week = start_week.strftime("%Y%m%d")
             end_week_week = datetime.datetime.strptime(end_week_obj, '%Y-%U-%w').strftime("%Y%m%d")
-    if viewRange:
-        viewRange = int(viewRange)
+
     user_group = user.group
     users = []
     user_list = UserProfile.objects.filter(state=1)
@@ -520,8 +512,7 @@ def export_brand_sku(request):
             ads_brand = AdvProducts.objects.values("year_str", "month", "week", "advertised_sku").annotate(sp_spend=Sum('spend'),
                                             self_units=Sum('day_advertised_sku_units'), self_sales=Sum('day_advertised_sku_sales')).\
                                             filter(user_id__in=users, account=account).exclude(advertised_sku='')
-        if viewRange:
-            ads_brand = ads_brand.filter(user_id=viewRange)
+
     else:
         if sum_by_date == 'on':
             ads_brand = AdvProducts.objects.filter(user_id__in=users, account=account).values("advertised_sku").distinct().exclude(advertised_sku='')
@@ -529,8 +520,7 @@ def export_brand_sku(request):
                                  month_str=month_str, week_str=week_str, end_week_str=end_week_str)
         else:
             ads_brand = AdvProducts.objects.values("year_str", "month", "week", "advertised_sku").annotate(test_sum=Sum('day_advertised_sku_sales')).filter(user_id__in=users, account=account).exclude(advertised_sku='')
-        if viewRange:
-            ads_brand = ads_brand.filter(user_id=viewRange)
+
     if searchCol == 'SKU':
         fields = [
             'Account',
