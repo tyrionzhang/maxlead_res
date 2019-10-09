@@ -78,9 +78,9 @@ def brand_sku(request):
     user_list = UserProfile.objects.filter(state=1)
     if not user.user.is_superuser and not user_group.user.username == 'Ads':
         user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
-        if user_list:
-            for val in user_list:
-                users.append(val.user_id)
+    if user_list:
+        for val in user_list:
+            users.append(val.user_id)
 
     brand_list = []
     brand_list_obj = AdsBrand.objects.filter(user_id__in=users).order_by('brand', '-id')
@@ -501,9 +501,9 @@ def export_brand_sku(request):
     user_list = UserProfile.objects.filter(state=1)
     if not user.user.is_superuser and not user_group.user.username == 'Ads':
         user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
-        if user_list:
-            for val in user_list:
-                users.append(val.user_id)
+    if user_list:
+        for val in user_list:
+            users.append(val.user_id)
 
     if searchCol == 'brand':
         if sum_by_date  == 'on':

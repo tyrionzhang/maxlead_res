@@ -105,9 +105,9 @@ def kwd_alert(request):
     user_list = UserProfile.objects.filter(state=1)
     if not user.user.is_superuser and not user_group.user.username == 'Ads':
         user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
-        if user_list:
-            for val in user_list:
-                users.append(val.user_id)
+    if user_list:
+        for val in user_list:
+            users.append(val.user_id)
 
     range_type_str = ''
     if start_month and range_type == 'Monthly':
@@ -514,9 +514,9 @@ def export_kwd_alert(request):
     user_list = UserProfile.objects.filter(state=1)
     if not user.user.is_superuser and not user_group.user.username == 'Ads':
         user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
-        if user_list:
-            for val in user_list:
-                users.append(val.user_id)
+    if user_list:
+        for val in user_list:
+            users.append(val.user_id)
     range_type_str = ''
     if start_month and range_type == 'Monthly':
         range_type_str = "%s-%s" % (start_month, end_month_month)
