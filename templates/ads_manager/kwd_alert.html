@@ -5,13 +5,13 @@
                 <h2>Kwd Alert</h2>
                 <form method="get" action="" name="listSearchForm" autocomplete="autocomplete" autofocus="autofocus">
                     <input type="search" name="listKwd" value="{{ listKwd }}" />
-                    <input type="submit" value="Search" />
                     <select name="search_key" id="">
                         <option value="all">ALL</option>
                         <option value="campaign">Campaign</option>
                         <option value="targeting">Targeting</option>
                         <option value="search_term">Search Term </option>
-                    </select><br />
+                    </select>
+                    <input type="submit" value="Search" /><br />
                          Account:
                     <select name="account" id="">
                         <option value="1">1账号</option>
@@ -25,15 +25,16 @@
                     <input type="radio" name="range_type" value="Monthly" class="range-type" {% if range_type == 'Monthly' %}checked{% endif %}> Monthly
                     <input type="radio" name="range_type" value="Weekly" class="range-type" {% if range_type == 'Weekly' %}checked{% endif %}> Weekly
                     <input type="checkbox" name="sum_by_date" {% if sum_by_date == 'on' %}checked{% endif %}> Sum By Date
+                    <input type="radio" name="conventers" value="All" class="conventers" {% if conventers == 'All' %}checked{% endif %}> All
+                    <input type="radio" name="conventers" value="new" class="conventers" {% if conventers == 'new' %}checked{% endif %}> New Conventers
+                    <input type="radio" name="conventers" value="rising" class="conventers" {% if conventers == 'rising' %}checked{% endif %}> Rising Conventers
+                    <input type="radio" name="conventers" value="non" class="conventers" {% if conventers == 'non' %}checked{% endif %}> Non Conventers
+                    <br>
                     <label>日期:</label>
                     <input type="week" name="week" value="{{ week }}" />
                     <input type="week" name="end_week" value="{{ end_week }}" />
                     <input type="month" name="month" value="{{ month }}"  style="display: none"/>
                     <input type="month" name="end_month" value="{{ end_month }}"  style="display: none"/>
-                    <input type="radio" name="conventers" value="All" class="conventers" {% if conventers == 'All' %}checked{% endif %}> All
-                    <input type="radio" name="conventers" value="new" class="conventers" {% if conventers == 'new' %}checked{% endif %}> New Conventers
-                    <input type="radio" name="conventers" value="rising" class="conventers" {% if conventers == 'rising' %}checked{% endif %}> Rising Conventers
-                    <input type="radio" name="conventers" value="non" class="conventers" {% if conventers == 'non' %}checked{% endif %}> Non Conventers
                     Threshold:
                     <input type="text" name="threshold" value="{{ threshold }}">
                     <input type="hidden" name="order_type"  value="{{ order_type }}" class="">
@@ -46,7 +47,7 @@
                     <tr id="th-task">
                         <th><input type="checkbox" name="selectallListing" value="all" id="selectAllListing"/></th>
                         {% for val in fields %}
-                        <th>{{ fields|get_item:val }}</th>
+                        <th>{{ val.1 }}</th>
                         {% endfor %}
                     </tr>
                     <tr><td colspan="13"><hr></td></tr>
@@ -55,7 +56,7 @@
                     <tr>
                         <td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td>
                         {% for v in fields %}
-                            <td>{{ val|get_item:v }}</td>
+                            <td>{{ val|get_item:v.0 }}</td>
                         {% endfor %}
                     </tr>
                     {% endfor %}

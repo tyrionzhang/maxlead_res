@@ -29,7 +29,7 @@ def kwd_alert(request):
     end_week = request.GET.get('end_week', '')
     month = request.GET.get('month', '')
     end_month = request.GET.get('end_month', '')
-    conventers = request.GET.get('conventers', '')
+    conventers = request.GET.get('conventers', 'All')
     threshold = request.GET.get('threshold', 0)
     threshold = float(threshold)
     order_type = request.GET.get('order_type', '')
@@ -103,33 +103,33 @@ def kwd_alert(request):
 
     if viewRange:
         viewRange = int(viewRange)
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+    user_group = user.group
     users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
+    user_list = UserProfile.objects.filter(state=1)
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
+
     range_type_str = ''
     if start_month and range_type == 'Monthly':
         range_type_str = "%s-%s" % (start_month, end_month_month)
     if start_week and range_type == 'Weekly':
         range_type_str = "%s-%s" % (start_week, end_week_week)
-    fields = {
-        'account': 'Account',
-        'date_range': 'Date Range',
-        'campaign_name': 'Campaign Name',
-        'ad_group_name': 'Ad Group',
-        'customer_search_term': 'Search Term',
-        'impressions': 'Impressions',
-        'clicks': 'Clicks',
-        'spend': 'Spend',
-        'day_total_orders': '7 Day Total Orders',
-        'day_total_sales': '7 Day Total Sales',
-        'acos': 'ACoS'
-    }
+    fields = [
+        ('account', 'Account'),
+        ('date_range', 'Date Range'),
+        ('campaign_name', 'Campaign Name'),
+        ('ad_group_name', 'Ad Group'),
+        ('customer_search_term', 'Search Term'),
+        ('impressions', 'Impressions'),
+        ('clicks', 'Clicks'),
+        ('spend', 'Spend'),
+        ('day_total_orders', '7 Day Total Orders'),
+        ('day_total_sales', '7 Day Total Sales'),
+        ('acos', 'ACoS')
+    ]
     data_li = []
     if sum_by_date == 'on':
         sTeam_obj = SearchTeam.objects.values('account', 'campaign_name', 'ad_group_name', 'customer_search_term'). \
@@ -517,15 +517,14 @@ def export_kwd_alert(request):
 
     if viewRange:
         viewRange = int(viewRange)
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+    user_group = user.group
     users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
+    user_list = UserProfile.objects.filter(state=1)
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
     range_type_str = ''
     if start_month and range_type == 'Monthly':
         range_type_str = "%s-%s" % (start_month, end_month_month)

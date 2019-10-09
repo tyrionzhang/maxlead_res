@@ -45,6 +45,10 @@ $(document).ready(function(){
             $('input[name="week"]').attr('min', y+'-W01');
         }
     });
+
+    $('body').click(function () {
+        $('.ul-select').hide();
+    });
 });
 
 function comparer(index) {

@@ -43,16 +43,18 @@ def data(request):
     order_dasc = request.GET.get('order_dasc', '')
     if viewRange:
         viewRange = int(viewRange)
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+    ads_data = AdsData.objects.all().order_by('-created')
+    user_group = user.group
     users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
-    ads_data = AdsData.objects.filter(user_id__in=users).order_by('-created')
+    user_list = []
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = UserProfile.objects.filter(state=1)
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
+        ads_data = ads_data.filter(user_id__in=users)
+
     if viewRange:
         ads_data = ads_data.filter(user_id=viewRange)
 
@@ -217,6 +219,7 @@ def data_import(request):
                         if i > 0:
                             # AdsBrand
                             brand_check = AdsBrand.objects.filter(user=user.user, asin=val[0])
+                            val[3] = val[3].upper()
                             if brand_check:
                                 brand_check.update(brand=val[3])
 

@@ -56,29 +56,29 @@ def details(request):
     last_month = None
     start_last_week = None
     end_last_week = None
-    fields = {
-        'account': 'Account',
-        'date_range': 'Date Range',
-        'asin': 'ASIN',
-        'sku': 'SKU',
-        'brand': 'Brand',
-        'impressions_sum': 'Impressions',
-        'clicks_sum': 'Clicks',
-        'ctr': 'CTR',
-        'sp_spend': 'Spend',
-        'self_units': 'Self Units',
-        'self_sales': 'Self Sales',
-        'cr': 'CR',
-        'other_units': 'Other Units',
-        'other_sales': 'Other Sales',
-        'sp_sales': 'SP Sales',
-        'all_sales': 'All Sales',
-        'all_spend_sales': 'All Spend/All Sales',
-        'sp_sales_sales': 'SP Sales/All Sales',
-        'other_self': 'Other > Self',
-        'hb_cr': u'CR环比下降',
-        'hb_ctr': u'CTR环比下降'
-    }
+    fields = [
+        ('account', 'Account'),
+        ('date_range', 'Date Range'),
+        ('asin', 'ASIN'),
+        ('sku', 'SKU'),
+        ('brand', 'Brand'),
+        ('impressions_sum', 'Impressions'),
+        ('clicks_sum', 'Clicks'),
+        ('ctr', 'CTR'),
+        ('sp_spend', 'Spend'),
+        ('self_units', 'Self Units'),
+        ('self_sales', 'Self Sales'),
+        ('cr', 'CR'),
+        ('other_units', 'Other Units'),
+        ('other_sales', 'Other Sales'),
+        ('sp_sales', 'SP Sales'),
+        ('all_sales', 'All Sales'),
+        ('all_spend_sales', 'All Spend/All Sales'),
+        ('sp_sales_sales', 'SP Sales/All Sales'),
+        ('other_self', 'Other > Self'),
+        ('hb_cr', 'CR环比'),
+        ('hb_ctr', 'CTR环比')
+    ]
     if sum_by_date == 'on':
         if range_type == 'Monthly':
             month_re = month.split('-')
@@ -133,15 +133,14 @@ def details(request):
 
     if viewRange:
         viewRange = int(viewRange)
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+    user_group = user.group
     users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
+    user_list = UserProfile.objects.filter(state=1)
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
 
     brand_list = []
     brand_list_obj = AdsBrand.objects.filter(user_id__in=users).order_by('brand', '-id')
@@ -496,15 +495,14 @@ def export_details(request):
 
     if viewRange:
         viewRange = int(viewRange)
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+    user_group = user.group
     users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
+    user_list = UserProfile.objects.filter(state=1)
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
 
     range_type_str = ''
     if start_month and range_type == 'Monthly':

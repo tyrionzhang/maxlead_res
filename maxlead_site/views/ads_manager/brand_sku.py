@@ -75,15 +75,14 @@ def brand_sku(request):
             end_week_week = datetime.datetime.strptime(end_week_obj, '%Y-%U-%w').strftime("%Y%m%d")
     if viewRange:
         viewRange = int(viewRange)
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+    user_group = user.group
     users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
+    user_list = UserProfile.objects.filter(state=1)
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
 
     brand_list = []
     brand_list_obj = AdsBrand.objects.filter(user_id__in=users).order_by('brand', '-id')
@@ -505,15 +504,15 @@ def export_brand_sku(request):
             end_week_week = datetime.datetime.strptime(end_week_obj, '%Y-%U-%w').strftime("%Y%m%d")
     if viewRange:
         viewRange = int(viewRange)
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+    user_group = user.group
     users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
+    user_list = UserProfile.objects.filter(state=1)
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
+
     if searchCol == 'brand':
         if sum_by_date  == 'on':
             ads_brand = AdsBrand.objects.filter(user_id__in=users).values("brand").distinct().exclude(brand='')

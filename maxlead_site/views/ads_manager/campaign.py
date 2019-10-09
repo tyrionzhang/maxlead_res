@@ -45,22 +45,25 @@ def campaign(request):
     team_list = UserProfile.objects.filter(role=1,state=1).order_by('user__username','-id')
     if viewRange:
         viewRange = int(viewRange)
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
-    users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
+    user_group = user.group
     brand_list = []
-    brand_list_obj = AdsBrand.objects.filter(user_id__in=users).order_by('brand', '-id')
+    brand_list_obj = AdsBrand.objects.all().order_by('brand', '-id')
+    ads_campaign = AdsCampaign.objects.all().order_by('-created', '-id')
+    users = []
+    user_list = []
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = UserProfile.objects.filter(state=1)
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
+        brand_list_obj = brand_list_obj.filter(user_id__in=users)
+        ads_campaign = ads_campaign.filter(user_id__in=users)
+
     if brand_list_obj:
         for val in brand_list_obj:
             if val.brand and not val.brand in brand_list:
                 brand_list.append(val.brand)
-    ads_campaign = AdsCampaign.objects.filter(user_id__in=users).order_by('-created', '-id')
     if viewRange:
         ads_campaign = ads_campaign.filter(user_id=viewRange)
 
@@ -142,8 +145,8 @@ def campaign_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        handleEncoding(file_path)
-        file = open(file_path, 'r', encoding='UTF-8')
+        # handleEncoding(file_path)
+        file = open(file_path, 'r', encoding='gb2312')
         csv_files = csv.reader(file)
         msg = 'Successfully!\n'
         for i, val in enumerate(csv_files, 0):
@@ -155,20 +158,24 @@ def campaign_import(request):
                     account = list (account_li.keys()) [list (account_li.values()).index (val[0])]
                     campaign_check = AdsCampaign.objects.filter(user=user.user, account=account, campaign=val[1])
                     team = User.objects.filter(username=val[2])
+                    val[3] = val[3].upper()
                     brand_check = AdsBrand.objects.filter(user=user.user, brand=val[3])
                     if not brand_check:
                         msg += '第%s行,Brand不存在。\n' % (i + 1)
                         continue
-                    if not team:
+                    if val[2] and not team:
                         msg += '第%s行,Team不存在。\n' % (i + 1)
                         continue
                     if campaign_check:
-                        campaign_check.update(brand=val[3], team=team[0].id)
+                        campaign_check.update(brand=val[3])
+                        if val[2]:
+                            campaign_check.update(team=team[0].id)
                     else:
                         brand_obj = AdsCampaign()
                         brand_obj.id
                         brand_obj.user = user.user
-                        brand_obj.team = team[0].id
+                        if val[2]:
+                            brand_obj.team = team[0].id
                         brand_obj.campaign = val[1]
                         brand_obj.account = account
                         brand_obj.brand = val[3]
@@ -187,16 +194,17 @@ def export_campaign(request):
     if not user:
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
 
-    user_list = UserProfile.objects.filter(state=1)
-    if user.role == 0:
-        user_list = user_list.filter(id=user.id)
-    if user.role == 1:
-        user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+    campaign_data = AdsCampaign.objects.all()
+    user_group = user.group
     users = []
-    if user_list:
-        for val in user_list:
-            users.append(val.user_id)
-    campaign_data = AdsCampaign.objects.filter(user_id__in=users)
+    if not user.user.is_superuser or not user_group.user.username == 'Ads':
+        user_list = UserProfile.objects.filter(state=1)
+        user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+        if user_list:
+            for val in user_list:
+                users.append(val.user_id)
+        campaign_data = campaign_data.filter(user_id__in=users)
+
     if not campaign_data:
         return HttpResponse(json.dumps({'code': 0, 'msg': u'数据不存在!'}), content_type='application/json')
     file_name = 'campaign_%s.csv' % datetime.datetime.now().strftime('%Y-%m-%d')
@@ -289,17 +297,17 @@ def get_campaign(request):
 
     if request.method == 'GET':
         campaign = request.GET.get('campaign', '')
-        user_list = UserProfile.objects.filter(state=1)
-        if user.role == 0:
-            user_list = user_list.filter(id=user.id)
-        if user.role == 1:
-            user_list = user_list.filter(Q(group=user) | Q(id=user.id))
-        users = []
-        if user_list:
-            for val in user_list:
-                users.append(val.user_id)
         campaign_list = []
-        campaign_list_obj = AdsCampaign.objects.filter(user_id__in=users, campaign__contains=campaign).order_by('campaign', '-id')
+        campaign_list_obj = AdsCampaign.objects.filter(campaign__contains=campaign).order_by('campaign', '-id')
+        user_group = user.group
+        users = []
+        if not user.user.is_superuser or not user_group.user.username == 'Ads':
+            user_list = UserProfile.objects.filter(state=1)
+            user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+            if user_list:
+                for val in user_list:
+                    users.append(val.user_id)
+            campaign_list_obj = campaign_list_obj.filter(user_id__in=users)
         if campaign_list_obj:
             for val in campaign_list_obj:
                 if val.campaign and not val.campaign in campaign_list:

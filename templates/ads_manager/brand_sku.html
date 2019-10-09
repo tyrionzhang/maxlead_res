@@ -4,10 +4,15 @@
             <main class="listMgm">
                 <h2>Brand/SKU</h2>
                 <form method="get" action="" name="listSearchForm" autocomplete="autocomplete" autofocus="autofocus">
-                    <input type="search" name="listKwd" value="{{ listKwd }}" />
-                    <input type="submit" value="Search" /><br />
                     <input type="radio" name="searchCol" value="SKU" {% if searchCol == 'SKU' %}checked{% endif %}/>SKU
-                    <input type="radio" name="searchCol" value="brand" {% if searchCol == 'brand' %}checked{% endif %}/>Brand
+                    <input type="radio" name="searchCol" value="brand" {% if searchCol == 'brand' %}checked{% endif %}/>Brand <br><br>
+                    <input type="search" name="listKwd" value="{{ listKwd }}" />
+                    <select name="search_key" id="" disabled="disabled">
+                        <option value="all">ALL</option>
+                        <option value="SKU">SKU</option>
+                        <option value="ASIN">ASIN</option>
+                    </select>
+                    <input type="submit" value="Search" /><br />
                          Account:
                     <select name="account" id="">
                         <option value="1">1账号</option>
@@ -21,13 +26,6 @@
                     <input type="radio" name="range_type" value="Monthly" class="range-type" {% if range_type == 'Monthly' %}checked{% endif %}> Monthly
                     <input type="radio" name="range_type" value="Weekly" class="range-type" {% if range_type == 'Weekly' %}checked{% endif %}> Weekly
                     <input type="checkbox" name="sum_by_date" {% if sum_by_date == 'on' %}checked{% endif %}> Sum By Date
-                    <label>日期:</label>
-                    <input type="week" name="week" value="{{ week }}" />
-                    <input type="week" name="end_week" value="{{ end_week }}" />
-                    <input type="month" name="month" value="{{ month }}"  style="display: none"/>
-                    <input type="month" name="end_month" value="{{ end_month }}"  style="display: none"/>
-                    <input type="hidden" name="order_type"  value="{{ order_type }}" class="">
-                    <input type="hidden" name="order_dasc"  value="{{ order_dasc }}" class="">
                     <label>Brand:</label>
                     <div id="div_sel_block">
                         <input type="text" name="brand" class="input-sel brand_sel" value="{{ brand }}">
@@ -37,11 +35,14 @@
                             {% endfor %}
                         </ul>
                     </div>
-                    <select name="search_key" id="" disabled="disabled">
-                        <option value="all">ALL</option>
-                        <option value="SKU">SKU</option>
-                        <option value="ASIN">ASIN</option>
-                    </select>
+                    <br>
+                    <label>日期:</label>
+                    <input type="week" name="week" value="{{ week }}" />
+                    <input type="week" name="end_week" value="{{ end_week }}" />
+                    <input type="month" name="month" value="{{ month }}"  style="display: none"/>
+                    <input type="month" name="end_month" value="{{ end_month }}"  style="display: none"/>
+                    <input type="hidden" name="order_type"  value="{{ order_type }}" class="">
+                    <input type="hidden" name="order_dasc"  value="{{ order_dasc }}" class="">
                 </form>
                 <div >
                     <button class="funcButtons" type="button" id="export">Export</button>
