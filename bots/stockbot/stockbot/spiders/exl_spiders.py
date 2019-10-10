@@ -19,7 +19,7 @@ class ExlSpider(scrapy.Spider):
     msg_str1 = 'complete\n'
     start_urls = [
         'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}',
-        'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl=%7b340efd05-b1c7-453f-be02-39bebb462163%7d&type=myweb'
+        # 'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl=%7b340efd05-b1c7-453f-be02-39bebb462163%7d&type=myweb'
     ]
     sku_list = []
     stock_names = ['M&L','Match Land','Parts', 'Tradeforce Inc']
@@ -46,7 +46,7 @@ class ExlSpider(scrapy.Spider):
         profile.set_preference('browser.download.dir', settings.DOWNLOAD_DIR)  # 现在文件存放的目录
         profile.set_preference('browser.download.folderList', 2)
         profile.set_preference('browser.download.manager.showWhenStarting', False)
-        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/json,text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
         firefox_options = Options()
         firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
@@ -60,16 +60,16 @@ class ExlSpider(scrapy.Spider):
         btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
         # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
 
-        if type == 'myweb':
-            if elem_name:
-                elem_name[0].send_keys('Dteng')
-            if elem_pass:
-                elem_pass[0].send_keys('Tr@d3')
-        else:
-            if elem_name:
-                elem_name[0].send_keys('Intybot')
-            if elem_pass:
-                elem_pass[0].send_keys('7G1#AJjX')
+        # if type == 'myweb':
+        #     if elem_name:
+        #         elem_name[0].send_keys('Dteng')
+        #     if elem_pass:
+        #         elem_pass[0].send_keys('Tr@d3')
+        # else:
+        if elem_name:
+            elem_name[0].send_keys('Intybot')
+        if elem_pass:
+            elem_pass[0].send_keys('7G1#AJjX')
         btn_login[0].click()
         driver.implicitly_wait(100)
         driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
@@ -82,7 +82,7 @@ class ExlSpider(scrapy.Spider):
         if list_rows:
             length = len(list_rows)
             for i in range(0, length):
-                try:
+                # try:
                     if not i == 0:
                         driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
                         driver.implicitly_wait(100)
@@ -129,8 +129,8 @@ class ExlSpider(scrapy.Spider):
                                 continue
                         f.close()
                         os.remove(files)
-                except:
-                    continue
+                # except:
+                #     continue
 
         try:
             display.stop()
