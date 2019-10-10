@@ -101,8 +101,13 @@ class ExlSpider(scrapy.Spider):
                         if btn_runreport:
                             btn_runreport[0].click()
                             driver.implicitly_wait(100)
-                        Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
-                        driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
+                        while 1:
+                            time.sleep(3)
+                            try:
+                                Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
+                                driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
+                            except:
+                                print('Error Element!')
                         time.sleep(120)
                         files = '%sStockStatus.csv' % settings.DOWNLOAD_DIR
                         f = open(files, 'r', encoding='UTF-8')
