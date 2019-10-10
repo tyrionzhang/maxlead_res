@@ -103,7 +103,7 @@ class ExlSpider(scrapy.Spider):
                             driver.implicitly_wait(100)
                         Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
                         driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
-                        time.sleep(20)
+                        time.sleep(120)
                         files = '%sStockStatus.csv' % settings.DOWNLOAD_DIR
                         f = open(files, 'r', encoding='UTF-8')
                         csv_files = csv.reader(f)
