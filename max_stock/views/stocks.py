@@ -19,7 +19,6 @@ from django.db import connections
 warehouse= {
     'exl' : 'EXL',
     'twu' : 'TWU',
-    'ego' : 'EGO',
     'tfd' : 'TFD',
     'hanover' : 'Hanover',
     'atl' : 'ATL-1',
@@ -39,7 +38,6 @@ def index(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords','').replace('amp;','')
     warehouse = request.GET.get('warehouse','')
-    sel_new = request.GET.get('sel_new','')
     start_date = request.GET.get('start_date','')
     end_date = request.GET.get('end_date','')
     if not warehouse:
@@ -58,7 +56,6 @@ def index(request):
         'user': user,
         'keywords': keywords,
         'warehouse': warehouse,
-        'sel_new': sel_new,
         'start_date': start_date,
         'end_date': end_date,
         'stocks_url': stocks_url,
@@ -75,7 +72,6 @@ def get_stocks(request):
 
     keywords = request.GET.get('keywords', '').replace('amp;', '')
     warehouse = request.GET.get('warehouse', '')
-    sel_new = request.GET.get('sel_new', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
     if not start_date:
@@ -106,8 +102,7 @@ def get_stocks(request):
         warehouse = 'all'
     if not warehouse == 'all':
         stocks = stocks.filter(warehouse=warehouse)
-    if sel_new:
-        stocks = stocks.filter(is_new=sel_new)
+
     select_data = {"d": """date_trunc('day', created)"""}
     stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     items = []
@@ -123,9 +118,6 @@ def get_stocks(request):
         data_list = data_list.filter(created__lte=end_date)
     if keywords:
         data_list = data_list.filter(sku__contains=keywords)
-
-    if sel_new:
-        data_list = data_list.filter(is_new=sel_new)
 
     for val in data_list:
         if val.sku not in items_sku:
@@ -378,7 +370,6 @@ def export_stocks(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords', '').replace('amp;','')
     warehouse = request.GET.get('warehouse', '')
-    sel_new = request.GET.get('sel_new', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
     if not start_date:
@@ -400,8 +391,7 @@ def export_stocks(request):
         warehouse = 'all'
     if not warehouse == 'all':
         stocks = stocks.filter(warehouse=warehouse)
-    if sel_new:
-        stocks = stocks.filter(is_new=sel_new)
+
     select_data = {"d": """date_trunc('day', created)"""}
     stocks = stocks.extra(select=select_data).values('sku', 'd').annotate(count=Count('sku'))
     data = []
@@ -417,8 +407,6 @@ def export_stocks(request):
     if keywords:
         data_list = data_list.filter(sku__contains=keywords)
 
-    if sel_new:
-        data_list = data_list.filter(is_new=sel_new)
 
     for val in data_list:
         if val.sku not in items_sku:
@@ -427,7 +415,6 @@ def export_stocks(request):
                 'sku':val.sku,
                 'exl': 0,
                 'twu': 0,
-                'ego':0,
                 'tfd': 0,
                 'hanover': 0,
                 'atl': 0,
@@ -445,8 +432,6 @@ def export_stocks(request):
                     val.warehouse = 'exl'
                 elif val.warehouse == 'TWU':
                     val.warehouse = 'twu'
-                elif val.warehouse == 'EGO':
-                    val.warehouse = 'ego'
                 elif val.warehouse == 'TFD':
                     val.warehouse = 'tfd'
                 elif val.warehouse == 'Hanover':
@@ -469,12 +454,12 @@ def export_stocks(request):
                     val.warehouse : val.qty,
                     'date' : date_time
                 })
-                sum = v['exl'] + v['twu'] + v['ego'] + v['tfd'] + v['hanover'] + v['pc'] + v['zto'] + v['atl'] + v['rol']
+                sum = v['exl'] + v['twu'] + v['tfd'] + v['hanover'] + v['pc'] + v['zto'] + v['atl'] + v['rol']
                 v.update({'sum': sum})
 
     if data:
-        fields = ['SKU','EXL','TWU','EGO','TFD','Hanover','ATL', 'PC', 'ZTO', 'ROL', 'SUM','Created']
-        data_fields = ['sku','exl','twu','ego','tfd','hanover','atl', 'pc', 'zto', 'rol', 'sum','date']
+        fields = ['SKU','EXL','TWU','TFD','Hanover','ATL', 'PC', 'ZTO', 'ROL', 'SUM','Created']
+        data_fields = ['sku','exl','twu','tfd','hanover','atl', 'pc', 'zto', 'rol', 'sum','date']
         return get_excel_file(request, data, fields, data_fields)
     else:
         return HttpResponse('没有数据~~')
@@ -792,7 +777,6 @@ def sales_vol(request):
             'sku': val['sku'],
             'exl': 0,
             'twu': 0,
-            'ego': 0,
             'tfd': 0,
             'hanover': 0,
             'atl': 0,
@@ -813,11 +797,6 @@ def sales_vol(request):
                     sakes_check = 1
             elif v.warehouse == 'TWU':
                 re['twu'] = v.qty1
-                sum += int(v.qty1)
-                if v.qty1 < 0:
-                    sakes_check = 1
-            elif v.warehouse == 'EGO':
-                re['ego'] = v.qty1
                 sum += int(v.qty1)
                 if v.qty1 < 0:
                     sakes_check = 1
@@ -896,7 +875,6 @@ def stock_sales(request):
                     'sku' : val['sku'],
                     'exl' : 0,
                     'twu' : 0,
-                    'ego' : 0,
                     'tfd' : 0,
                     'hanover' : 0,
                     'pc' : 0,
@@ -914,8 +892,6 @@ def stock_sales(request):
                             re1.update({'exl' : qty1_str % (v.qty1, val['exl'])})
                         elif v.warehouse == 'TWU':
                             re1.update({'twu' : qty1_str % (v.qty1, val['twu'])})
-                        elif v.warehouse == 'EGO':
-                            re1.update({'ego' : qty1_str % (v.qty1, val['ego'])})
                         elif v.warehouse == 'TFD':
                             re1.update({'tfd' : qty1_str % (v.qty1, val['tfd'])})
                         elif v.warehouse == 'Hanover':
@@ -966,16 +942,6 @@ def save_sales(request):
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
                             obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='TWU',
-                                                                  created__contains=date1.strftime('%Y-%m-%d'))
-                            obj1.update(qty=obj1[0].qty + int(sales[1]))
-                            re.update(qty1=obj1[0].qty - re[0].qty)
-                    if not val['ego'] == '0':
-                        sales = val['ego'].split('补货')
-                        date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
-                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='EGO',
-                                                            created__contains=val['date'], qty1__lt=0)
-                        if re:
-                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='EGO',
                                                                   created__contains=date1.strftime('%Y-%m-%d'))
                             obj1.update(qty=obj1[0].qty + int(sales[1]))
                             re.update(qty1=obj1[0].qty - re[0].qty)
@@ -1072,7 +1038,6 @@ def update_data(lists, data = []):
                 'sku': val['sku'],
                 'exl': {'qty': 0, 'is_same': 0},
                 'twu': {'qty': 0, 'is_same': 0},
-                'ego': {'qty': 0, 'is_same': 0},
                 'tfd': {'qty': 0, 'is_same': 0},
                 'hanover': {'qty': 0, 'is_same': 0},
                 'atl': {'qty': 0, 'is_same': 0},
@@ -1094,11 +1059,6 @@ def update_data(lists, data = []):
                     sum += int(v.qty)
                     if threshold_obj and threshold_obj[0].threshold >= v.qty:
                         re['twu'].update({'is_same': 1})
-                elif v.warehouse == 'EGO':
-                    re['ego'].update({'qty': v.qty})
-                    sum += int(v.qty)
-                    if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                        re['ego'].update({'is_same': 1})
                 elif v.warehouse == 'TFD':
                     re['tfd'].update({'qty': v.qty})
                     sum += int(v.qty)
@@ -1141,7 +1101,6 @@ def export_update_data(lists, data = []):
             'sku': val['sku'],
             'exl': '0',
             'twu': '0',
-            'ego': '0',
             'tfd': '0',
             'hanover': '0',
             'atl': '0',
@@ -1157,9 +1116,6 @@ def export_update_data(lists, data = []):
                 sum += int(v.qty)
             elif v.warehouse == 'TWU':
                 re.update({'twu': v.qty})
-                sum += int(v.qty)
-            elif v.warehouse == 'EGO':
-                re.update({'ego': v.qty})
                 sum += int(v.qty)
             elif v.warehouse == 'TFD':
                 re.update({'tfd': v.qty})
