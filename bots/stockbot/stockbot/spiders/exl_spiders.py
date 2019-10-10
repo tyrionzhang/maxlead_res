@@ -2,8 +2,10 @@
 import scrapy,os
 from datetime import *
 import time
+import csv
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import Select
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
@@ -40,10 +42,15 @@ class ExlSpider(scrapy.Spider):
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference('browser.download.dir', settings.DOWNLOAD_DIR)  # 现在文件存放的目录
+        profile.set_preference('browser.download.folderList', 2)
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
         firefox_options = Options()
         firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
-        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
+        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         url = response.url
         type = url[-5:]
         driver.get(url)
@@ -94,40 +101,34 @@ class ExlSpider(scrapy.Spider):
                         if btn_runreport:
                             btn_runreport[0].click()
                             driver.implicitly_wait(100)
-                        iframe1 = driver.find_elements_by_id('ReportFrameStockStatusViewer')
-                        driver.implicitly_wait(100)
-                        if iframe1:
-                            driver.switch_to.frame(iframe1[0])
-                        iframe2 = driver.find_elements_by_id('report')
-                        driver.implicitly_wait(100)
-                        driver.switch_to.frame(iframe2[0])
-                        driver.implicitly_wait(100)
-                        time.sleep(10)
-                        if type == 'myweb':
-                            res = driver.find_elements_by_css_selector('.a366 tr')
-                        else:
-                            res = driver.find_elements_by_css_selector('.a383 tr')
-                        res.pop(1)
-                        res.pop(0)
-                        res.pop()
-                        for val in res:
-                            item = WarehouseStocksItem()
-                            tds = val.find_elements_by_tag_name('td')
-                            if tds:
-                                item['sku'] = tds[0].text
-                                item['warehouse'] = warehouse_name
-                                if warehouse_name == 'Exchange Logistics':
-                                    item['warehouse'] = 'EXL'
-                                if warehouse_name == 'Tradeforce Dayton':
-                                    item['warehouse'] = 'TFD'
-                                if warehouse_name == 'Roll On Logistics':
-                                    item['warehouse'] = 'ROL'
-                                if tds[6].text and not tds[6].text == ' ':
-                                    item['qty'] = tds[6].text
-                                    item['qty'] = item['qty'].replace(',', '')
-                                else:
-                                    item['qty'] = 0
-                                items.append(item)
+                        Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
+                        driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
+                        time.sleep(20)
+                        files = '%sStockStatus.csv' % settings.DOWNLOAD_DIR
+                        f = open(files, 'r', encoding='UTF-8')
+                        csv_files = csv.reader(f)
+                        for i, val in enumerate(csv_files, 0):
+                            try:
+                                if i > 0:
+                                    item = WarehouseStocksItem()
+                                    item['sku'] = val[0]
+                                    item['warehouse'] = warehouse_name
+                                    if warehouse_name == 'Exchange Logistics':
+                                        item['warehouse'] = 'EXL'
+                                    if warehouse_name == 'Tradeforce Dayton':
+                                        item['warehouse'] = 'TFD'
+                                    if warehouse_name == 'Roll On Logistics':
+                                        item['warehouse'] = 'ROL'
+                                    if val[20] and not val[20] == ' ':
+                                        item['qty'] = val[20]
+                                        item['qty'] = int(item['qty'].replace(',', ''))
+                                    else:
+                                        item['qty'] = 0
+                                    items.append(item)
+                            except:
+                                continue
+                        f.close()
+                        os.remove(files)
                 except:
                     continue
 
