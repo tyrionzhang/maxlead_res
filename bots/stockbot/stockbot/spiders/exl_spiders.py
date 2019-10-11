@@ -101,21 +101,30 @@ class ExlSpider(scrapy.Spider):
                         if btn_runreport:
                             btn_runreport[0].click()
                             driver.implicitly_wait(100)
-                        refresh_time = 0
+                        refresh_time = datetime.now()
                         while 1:
-                            if refresh_time > 120:
+                            time.sleep(3)
+                            refre = datetime.now() - refresh_time
+                            if refre.total_seconds() > 120:
                                 driver.refresh()
                                 driver.implicitly_wait(100)
-                                refresh_time = 0
-                            time.sleep(3)
-                            refresh_time += 3
+                                time.sleep(3)
+                                # list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
+                                # list_rows.pop(0)
+                                # list_rows.pop(-1)
+                                # list_rows[i].find_element_by_tag_name('span').click()
+                                # btn_runreport = driver.find_elements_by_id('btnRunRpt')
+                                # if btn_runreport:
+                                #     btn_runreport[0].click()
+                                #     driver.implicitly_wait(100)
+                                refresh_time = datetime.now()
                             try:
                                 Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
                                 break
                             except:
                                 print('Error Element!')
-                                print(driver.current_url)
+                                print(driver.find_elements_by_id('StockStatusViewer'))
 
                         time.sleep(120)
                         files = '%sStockStatus.csv' % settings.DOWNLOAD_DIR
