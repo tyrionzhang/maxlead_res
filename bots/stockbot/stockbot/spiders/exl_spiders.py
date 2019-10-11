@@ -48,7 +48,7 @@ class ExlSpider(scrapy.Spider):
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/json,text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
         firefox_options = Options()
-        firefox_options.add_argument('-headless')
+        # firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         url = response.url
@@ -101,14 +101,21 @@ class ExlSpider(scrapy.Spider):
                         if btn_runreport:
                             btn_runreport[0].click()
                             driver.implicitly_wait(100)
+                        refresh_time = 0
                         while 1:
+                            if refresh_time > 120:
+                                driver.refresh()
+                                driver.implicitly_wait(100)
+                                refresh_time = 0
                             time.sleep(3)
+                            refresh_time += 3
                             try:
                                 Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
                                 break
                             except:
                                 print('Error Element!')
+                                print(driver.current_url)
 
                         time.sleep(120)
                         files = '%sStockStatus.csv' % settings.DOWNLOAD_DIR
