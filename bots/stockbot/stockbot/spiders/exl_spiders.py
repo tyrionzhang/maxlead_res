@@ -176,7 +176,7 @@ class ExlSpider(scrapy.Spider):
             except:
                 continue
         date0 = date_now.strftime('%Y-%m-%d')
-        obj = WarehouseStocks.objects.filter(created__contains=date0)
+        obj = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date0)
         if obj:
             obj.delete()
         WarehouseStocks.objects.bulk_create(querysetlist)
