@@ -48,7 +48,7 @@ class ExlSpider(scrapy.Spider):
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/json,text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
         firefox_options = Options()
-        # firefox_options.add_argument('-headless')
+        firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         url = response.url
