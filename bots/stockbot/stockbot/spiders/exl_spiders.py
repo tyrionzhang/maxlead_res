@@ -151,23 +151,19 @@ class ExlSpider(scrapy.Spider):
             print(e)
 
         querysetlist = []
+        date_now = datetime.now()
         for i, val in enumerate(items, 0):
             try:
                 for n, v in enumerate(items, 0):
                     if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
                         val['qty'] = int(v['qty']) + int(val['qty'])
                         del items[n]
-                date_now = datetime.now()
-                date0 = date_now.strftime('%Y-%m-%d')
-                obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'], created__contains=date0)
                 date1 = date_now - timedelta(days=1)
                 obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
                                                       created__contains=date1.strftime('%Y-%m-%d'))
                 val['qty1'] = 0
                 if obj1:
                     val['qty1'] = obj1[0].qty - int(val['qty'])
-                if obj:
-                    obj.delete()
 
                 querysetlist.append(WarehouseStocks(sku=val['sku'], warehouse=val['warehouse'], qty=val['qty'], qty1=val['qty1']))
 
@@ -179,6 +175,10 @@ class ExlSpider(scrapy.Spider):
                             user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
             except:
                 continue
+        date0 = date_now.strftime('%Y-%m-%d')
+        obj = WarehouseStocks.objects.filter(created__contains=date0)
+        if obj:
+            obj.delete()
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('3pl')
         kill_pid_for_name('postgres')
