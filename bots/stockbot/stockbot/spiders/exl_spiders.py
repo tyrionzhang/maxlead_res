@@ -11,7 +11,7 @@ from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
 from max_stock.views.views import update_spiders_logs
-from maxlead_site.common.common import spiders_send_email,kill_pid_for_name
+from maxlead_site.common.common import spiders_send_email,kill_pid_for_name,to_int
 
 class ExlSpider(scrapy.Spider):
     name = "exl_spider"
@@ -48,7 +48,7 @@ class ExlSpider(scrapy.Spider):
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/json,text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
         firefox_options = Options()
-        # firefox_options.add_argument('-headless')
+        firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         url = response.url
@@ -101,23 +101,13 @@ class ExlSpider(scrapy.Spider):
                         if btn_runreport:
                             btn_runreport[0].click()
                             driver.implicitly_wait(100)
-                        refresh_time = datetime.now()
                         while 1:
-                            time.sleep(3)
-                            refre = datetime.now() - refresh_time
-                            if refre.total_seconds() > 120:
+                            table_re = driver.find_elements_by_id("StockStatusViewer")
+                            if not table_re:
                                 driver.refresh()
+                                driver.switch_to.alert.accept()
                                 driver.implicitly_wait(100)
                                 time.sleep(3)
-                                # list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
-                                # list_rows.pop(0)
-                                # list_rows.pop(-1)
-                                # list_rows[i].find_element_by_tag_name('span').click()
-                                # btn_runreport = driver.find_elements_by_id('btnRunRpt')
-                                # if btn_runreport:
-                                #     btn_runreport[0].click()
-                                #     driver.implicitly_wait(100)
-                                refresh_time = datetime.now()
                             try:
                                 Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
@@ -144,7 +134,7 @@ class ExlSpider(scrapy.Spider):
                                         item['warehouse'] = 'ROL'
                                     if val[20] and not val[20] == ' ':
                                         item['qty'] = val[20]
-                                        item['qty'] = int(item['qty'].replace(',', ''))
+                                        item['qty'] = to_int(item['qty'].replace(',', ''))
                                     else:
                                         item['qty'] = 0
                                     items.append(item)
