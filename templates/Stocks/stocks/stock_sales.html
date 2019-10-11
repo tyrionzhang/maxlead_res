@@ -32,7 +32,6 @@
                             <option value="Hanover">Hanover</option>
                             <option value="ILL">ILL</option>
                             <option value="WA">WA</option>
-                            <option value="EGO">EGO</option>
                             <option value="ATL-1">ATL-1</option>
                             <option value="TFD">TFD</option>
                             <option value="PC">PC</option>
@@ -85,7 +84,6 @@
                     <th>Sku</th>
                     <th>EXL</th>
                     <th>TWU</th>
-                    <th>EGO</th>
                     <th>TFD</th>
                     <th>Hanover</th>
                     <th>ATL</th>
@@ -103,7 +101,6 @@
                     <td>{{ val.sku }}</td>
                     <td class="tr-stock-blue{{ val.exl.is_same }}">{{ val.exl }}</td>
                     <td class="tr-stock-blue{{ val.twu.is_same }}">{{ val.twu }}</td>
-                    <td class="tr-stock-blue{{ val.ego.is_same }}">{{ val.ego }}</td>
                     <td class="tr-stock-blue{{ val.tfd.is_same }}">{{ val.tfd }}</td>
                     <td class="tr-stock-blue{{ val.hanover.is_same }}">{{ val.hanover }}</td>
                     <td class="tr-stock-blue{{ val.atl.is_same }}">{{ val.atl }}</td>
@@ -144,7 +141,6 @@
                         'sku': '{{ val.sku }}',
                         'exl': '{{ val.exl }}',
                         'twu': '{{ val.twu }}',
-                        'ego': '{{ val.ego }}',
                         'tfd': '{{ val.tfd }}',
                         'hanover': '{{ val.hanover }}',
                         'atl': '{{ val.atl }}',

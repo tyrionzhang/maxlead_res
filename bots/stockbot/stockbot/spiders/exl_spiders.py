@@ -82,7 +82,7 @@ class ExlSpider(scrapy.Spider):
         if list_rows:
             length = len(list_rows)
             for i in range(0, length):
-                # try:
+                try:
                     if not i == 0:
                         driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
                         driver.implicitly_wait(100)
@@ -107,14 +107,13 @@ class ExlSpider(scrapy.Spider):
                                 driver.refresh()
                                 driver.switch_to.alert.accept()
                                 driver.implicitly_wait(100)
-                                time.sleep(3)
+                                time.sleep(20)
                             try:
                                 Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
                                 break
                             except:
                                 print('Error Element!')
-                                print(len(items))
 
                         time.sleep(120)
                         files = '%sStockStatus.csv' % settings.DOWNLOAD_DIR
@@ -142,8 +141,8 @@ class ExlSpider(scrapy.Spider):
                                 continue
                         f.close()
                         os.remove(files)
-                # except:
-                #     continue
+                except:
+                    continue
 
         try:
             display.stop()

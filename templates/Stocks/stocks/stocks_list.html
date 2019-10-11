@@ -111,7 +111,6 @@
                 <th style="cursor:pointer;">Sku</th>
                 <th>EXL</th>
                 <th>TWU</th>
-                <th>EGO</th>
                 <th>TFD</th>
                 <th>Hanover</th>
                 <th>ATL</th>
@@ -131,7 +130,6 @@
                 <td>{{ val.sku }}</td>
                 <td class="tr-stock-blue{{ val.EXL.is_same }}">{% if val.EXL.qty %}{{ val.EXL.qty }}{% else %}0{% endif %}</td>
                 <td class="tr-stock-blue{{ val.TWU.is_same }}">{% if val.TWU.qty %}{{ val.TWU.qty }}{% else %}0{% endif %}</td>
-                <td class="tr-stock-blue{{ val.EGO.is_same }}">{% if val.EGO.qty %}{{ val.EGO.qty }}{% else %}0{% endif %}</td>
                 <td class="tr-stock-blue{{ val.TFD.is_same }}">{% if val.TFD.qty %}{{ val.TFD.qty }}{% else %}0{% endif %}</td>
                 <td class="tr-stock-blue{{ val.Hanover.is_same }}">{% if val.Hanover.qty %}{{ val.Hanover.qty }}{% else %}0{% endif %}</td>
                 <td class="tr-stock-blue{{ val.atl.is_same }}">{% if val.atl.qty %}{{ val.atl.qty }}{% else %}0{% endif %}</td>
