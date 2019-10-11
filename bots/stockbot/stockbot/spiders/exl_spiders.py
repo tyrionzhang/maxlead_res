@@ -150,7 +150,7 @@ class ExlSpider(scrapy.Spider):
         except IndexError as e:
             print(e)
 
-
+        querysetlist = []
         for i, val in enumerate(items, 0):
             try:
                 for n, v in enumerate(items, 0):
@@ -163,11 +163,13 @@ class ExlSpider(scrapy.Spider):
                 date1 = date_now - timedelta(days=1)
                 obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
                                                       created__contains=date1.strftime('%Y-%m-%d'))
+                val['qty1'] = 0
                 if obj1:
                     val['qty1'] = obj1[0].qty - int(val['qty'])
                 if obj:
                     obj.delete()
-                yield val
+
+                querysetlist.append(WarehouseStocks(sku=val['sku'], warehouse=val['warehouse'], qty=val['qty'], qty1=val['qty1']))
 
                 threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
                 user = SkuUsers.objects.filter(sku=val['sku'])
@@ -177,6 +179,7 @@ class ExlSpider(scrapy.Spider):
                             user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
             except:
                 continue
+        WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('3pl')
         kill_pid_for_name('postgres')
 
