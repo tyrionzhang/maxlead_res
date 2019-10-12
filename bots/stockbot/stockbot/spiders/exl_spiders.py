@@ -4,6 +4,8 @@ from datetime import *
 import time
 import csv
 import xlrd
+from django.db import connection
+from django.db.utils import OperationalError
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import Select
@@ -188,11 +190,15 @@ class ExlSpider(scrapy.Spider):
                         val['qty'] = int(v['qty']) + int(val['qty'])
                         del items[n]
                 date1 = date_now - timedelta(days=1)
+                date0 = date_now.strftime('%Y-%m-%d')
+                obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],created__contains=date0)
                 obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
                                                       created__contains=date1.strftime('%Y-%m-%d'))
                 val['qty1'] = 0
                 if obj1:
                     val['qty1'] = obj1[0].qty - int(val['qty'])
+                if obj:
+                    obj.delete()
 
                 querysetlist.append(WarehouseStocks(sku=val['sku'], warehouse=val['warehouse'], qty=val['qty'], qty1=val['qty1']))
 
@@ -202,12 +208,11 @@ class ExlSpider(scrapy.Spider):
                     if user:
                         msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                             user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
-            except:
+            except OperationalError:
+                connection.close()
+                connection.cursor()
                 continue
-        date0 = date_now.strftime('%Y-%m-%d')
-        obj = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date0)
-        if obj:
-            obj.delete()
+
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('3pl')
         kill_pid_for_name('postgres')
