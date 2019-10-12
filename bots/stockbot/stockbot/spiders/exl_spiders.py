@@ -3,6 +3,7 @@ import scrapy,os
 from datetime import *
 import time
 import csv
+import xlrd
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import Select
@@ -46,7 +47,8 @@ class ExlSpider(scrapy.Spider):
         profile.set_preference('browser.download.dir', settings.DOWNLOAD_DIR)  # 现在文件存放的目录
         profile.set_preference('browser.download.folderList', 2)
         profile.set_preference('browser.download.manager.showWhenStarting', False)
-        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/json,text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, '
+                                             'text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
         firefox_options = Options()
         firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
@@ -82,7 +84,7 @@ class ExlSpider(scrapy.Spider):
         if list_rows:
             length = len(list_rows)
             for i in range(0, length):
-                try:
+                # try:
                     if not i == 0:
                         driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
                         driver.implicitly_wait(100)
@@ -95,7 +97,7 @@ class ExlSpider(scrapy.Spider):
                     warehouse_type_name = warehouse_type[0].text
                     if warehouse_name:
                         warehouse_name = warehouse_name[0].text
-                    if warehouse_type_name in self.stock_names and warehouse_name and not warehouse_name == 'EGO':
+                    if warehouse_type_name in self.stock_names and warehouse_name:
                         list_rows[i].find_element_by_tag_name('span').click()
                         btn_runreport = driver.find_elements_by_id('btnRunRpt')
                         if btn_runreport:
@@ -109,21 +111,26 @@ class ExlSpider(scrapy.Spider):
                                 driver.implicitly_wait(100)
                                 time.sleep(20)
                             try:
-                                Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('CSV v.2')
+                                Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('EXCELOPENXML')
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
                                 break
                             except:
                                 print('Error Element!')
 
                         time.sleep(120)
-                        files = '%sStockStatus.csv' % settings.DOWNLOAD_DIR
-                        f = open(files, 'r', encoding='UTF-8')
-                        csv_files = csv.reader(f)
-                        for i, val in enumerate(csv_files, 0):
+                        files = '%sStockwithLocation.xlsx' % settings.DOWNLOAD_DIR
+                        data = xlrd.open_workbook(files)  # 打开fname文件
+                        data.sheet_names()  # 获取xls文件中所有sheet的名称
+                        table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+                        nrows = table.nrows
+                        for i in range(nrows):
                             try:
-                                if i > 0:
-                                    item = WarehouseStocksItem()
-                                    item['sku'] = val[0]
+                                i = i+7
+                                if i >= nrows:
+                                    break
+                                item = {}
+                                item['sku'] = table.cell_value(i, 0,)
+                                if item['sku']:
                                     item['warehouse'] = warehouse_name
                                     if warehouse_name == 'Exchange Logistics':
                                         item['warehouse'] = 'EXL'
@@ -131,18 +138,40 @@ class ExlSpider(scrapy.Spider):
                                         item['warehouse'] = 'TFD'
                                     if warehouse_name == 'Roll On Logistics':
                                         item['warehouse'] = 'ROL'
-                                    if val[20] and not val[20] == ' ':
-                                        item['qty'] = val[20]
-                                        item['qty'] = to_int(item['qty'].replace(',', ''))
+                                    if table.cell_value(i, 11,) and not table.cell_value(i, 11,) == ' ':
+                                        item['qty'] = table.cell_value(i, 11,)
+                                        item['qty'] = to_int(item['qty'])
                                     else:
                                         item['qty'] = 0
                                     items.append(item)
                             except:
                                 continue
-                        f.close()
+                        # f = open(files, 'r', encoding='UTF-8')
+                        # csv_files = csv.reader(f)
+                        # for i, val in enumerate(csv_files, 0):
+                        #     try:
+                        #         if i > 0:
+                        #             item = WarehouseStocksItem()
+                        #             item['sku'] = val[0]
+                        #             item['warehouse'] = val[2]
+                        #             if warehouse_name == 'Exchange Logistics':
+                        #                 item['warehouse'] = 'EXL'
+                        #             if warehouse_name == 'Tradeforce Dayton':
+                        #                 item['warehouse'] = 'TFD'
+                        #             if warehouse_name == 'Roll On Logistics':
+                        #                 item['warehouse'] = 'ROL'
+                        #             if val[20] and not val[20] == ' ':
+                        #                 item['qty'] = val[20]
+                        #                 item['qty'] = to_int(item['qty'].replace(',', ''))
+                        #             else:
+                        #                 item['qty'] = 0
+                        #             items.append(item)
+                        #     except:
+                        #         continue
+                        # f.close()
                         os.remove(files)
-                except:
-                    continue
+                # except:
+                #     continue
 
         try:
             display.stop()
