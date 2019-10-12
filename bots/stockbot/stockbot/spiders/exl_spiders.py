@@ -86,7 +86,7 @@ class ExlSpider(scrapy.Spider):
         if list_rows:
             length = len(list_rows)
             for i in range(0, length):
-                # try:
+                try:
                     if not i == 0:
                         driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
                         driver.implicitly_wait(100)
@@ -148,6 +148,7 @@ class ExlSpider(scrapy.Spider):
                                     items.append(item)
                             except:
                                 continue
+                        os.remove(files)
                         # f = open(files, 'r', encoding='UTF-8')
                         # csv_files = csv.reader(f)
                         # for i, val in enumerate(csv_files, 0):
@@ -171,9 +172,8 @@ class ExlSpider(scrapy.Spider):
                         #     except:
                         #         continue
                         # f.close()
-                        os.remove(files)
-                # except:
-                #     continue
+                except:
+                    continue
 
         try:
             display.stop()
