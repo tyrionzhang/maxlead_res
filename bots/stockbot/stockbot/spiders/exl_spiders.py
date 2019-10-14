@@ -235,7 +235,12 @@ class ExlSpider(scrapy.Spider):
             msg4 = f.readline()
             msg5 = f.readline()
             if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n' and msg5 == 'complete\n':
-                spiders_send_email(f, file_path=file_path)
+                try:
+                    spiders_send_email(f, file_path=file_path)
+                except OperationalError:
+                    connection.close()
+                    connection.cursor()
+                    spiders_send_email(f, file_path=file_path)
                 lines = os.popen('pgrep firefox')
                 for path in lines:
                     try:
