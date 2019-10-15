@@ -43,14 +43,14 @@
                 </div>
                 <table cellspacing="0px" id="datas">
                     <tr id="th-task">
-                        <input type="hidden" name="order_type"  value="{{ order_type }}" class="">
-                        <input type="hidden" name="order_dasc"  value="{{ order_dasc }}" class="">
-                        <th>Account</th>
-                        <th>Type</th>
-                        <th>Date Range</th>
-                        <th>Time</th>
-                        <th>Change time</th>
-                        <th>User</th>
+                        <input type="hidden" name="ordder_field"  value="{{ ordder_field }}" class="">
+                        <input type="hidden" name="order_desc"  value="{{ order_desc }}" class="">
+                        <th id="account">Account</th>
+                        <th id="type">Type</th>
+                        <th id="range_type">Date Range</th>
+                        <th id="created">Time</th>
+                        <th id="change_time">Change time</th>
+                        <th id="user">User</th>
                         <th>Action</th>
                     </tr>
                 <tbody id="data_body">
@@ -107,52 +107,36 @@
             </main>
         <script>
             $('#viewRange').hide();
-            var order_type = $("input[name='order_type']");
-            var order_dasc = $("input[name='order_dasc']");
-            if (order_type.val() !== '') {
-                var th_h = $('#th-task').children('th').eq(order_type.val());
-                th_h[0].dasc = order_dasc.val();
-                var table_order = th_h.parents('table').eq(0);
-                var rows_order = table_order.find('tr:gt(0)').toArray().sort(comparer(th_h.index()));
-                if (th_h[0].dasc == 'true') {
-                    rows_order = rows_order.reverse();
-                }
-                $('#data_body').empty().html(rows_order);
-            }
             var table = $('#datas').eq(0);
             table.on('click', 'th', function() {
-                var table = $(this).parents('table').eq(0);
-                order_type.val($(this).index());
-                var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
-                var inp_dasc =  order_dasc.val();
-                if (inp_dasc !== '') {
-                    if (inp_dasc == 'false') {
-                        this.dasc = true
-                    }else {
-                        this.dasc = false
-                    }
-                }else {
-                    this.dasc = !this.dasc;
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var ordder_field = $(this).attr('id');
+                if (!ordder_field){
+                    alert("没有字段" + ordder_field + "的排序~");
+                    return false;
                 }
-                order_dasc.val(this.dasc);
+                $('input[name="ordder_field"]').val(ordder_field);
+                var order_desc_val = $('input[name="order_desc"]').val();
+                if (!order_desc_val) {
+                    order_desc_val = '-'
+                }else {
+                    order_desc_val = ''
+                }
                 {% if data.has_previous %}
-                $('#a_previous').attr("href", "?page={{ data.previous_page_number }}&order_dasc="+this.dasc+
-                    "&order_type="+$(this).index()+"&limit={{ limit }}");
+                $('#a_previous').attr("href", "?page={{ data.previous_page_number }}&order_desc="+order_desc_val+
+                    "&ordder_field="+ordder_field+"&limit={{ limit }}");
                 {% endif %}
 
                 {% if data.has_next %}
-                $('#a_next').attr("href", "?page={{ data.next_page_number }}&order_dasc="+this.dasc+
-                    "&order_type="+$(this).index()+"&limit={{ limit }}");
+                $('#a_next').attr("href", "?page={{ data.next_page_number }}&order_desc="+order_desc_val+
+                    "&ordder_field="+ordder_field+"&limit={{ limit }}");
                 {% endif %}
-                if (this.dasc) {
-                    rows = rows.reverse();
-                }
-                $('#data_body').empty().html(rows);
+                var url = '/admin/maxlead_site/ads_data/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
+                window.location.href = url;
+                return false;
             });
-
-            var th = $('#datas th');
-            var rows = table.find('tr:gt(0)').toArray().sort(comparer(th.index()));
-            $('#data_body').empty().html(rows);
 
             $('#gotoPage').on('click',function () {
                 var page = $('input[name="page"]').val();
@@ -161,7 +145,7 @@
                 var ordder_type = order_type.val();
                 var order_dasc_val = order_dasc.val();
                 var url = '/admin/maxlead_site/ads_data/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+
-                ordder_type+'&limit='+limit+'&viewRange='+viewRange;
+                ordder_type+'&limit='+limit;
                 window.location.href = url;
                 return false;
             });
@@ -173,7 +157,7 @@
                 var ordder_type = order_type.val();
                 var order_dasc_val = order_dasc.val();
                 var url = '/admin/maxlead_site/ads_data/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+
-                ordder_type+'&limit='+limit+'&viewRange='+viewRange;
+                ordder_type+'&limit='+limit;
                 window.location.href = url;
                 return false;
             });

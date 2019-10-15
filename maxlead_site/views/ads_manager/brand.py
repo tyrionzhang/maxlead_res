@@ -40,9 +40,12 @@ def brand(request):
     if not user:
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-    order_type = request.GET.get('order_type', '')
-    order_dasc = request.GET.get('order_dasc', '')
-    ads_brand = AdsBrand.objects.all().order_by('-created')
+    ordder_field = request.GET.get('ordder_field', 'created')
+    order_desc = request.GET.get('order_desc', '-')
+    ads_brand = AdsBrand.objects.all().order_by('-id')
+    if ordder_field:
+        order_by_str = "%s%s" % (order_desc, ordder_field)
+        ads_brand = ads_brand.order_by(order_by_str)
     user_group = user.group
     users = []
     user_list = []
@@ -83,8 +86,8 @@ def brand(request):
             're_limit': int(re_limit),
             'limit': int(limit),
             'page': page,
-            'order_type': order_type,
-            'order_dasc': order_dasc,
+            'ordder_field': ordder_field,
+            'order_desc': order_desc,
             'user': user,
             'avator': user.user.username[0],
             'user_list': user_list

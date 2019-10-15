@@ -39,13 +39,16 @@ def campaign(request):
     if not user:
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-    order_type = request.GET.get('order_type', '')
-    order_dasc = request.GET.get('order_dasc', '')
+    ordder_field = request.GET.get('ordder_field', 'created')
+    order_desc = request.GET.get('order_desc', '-')
     team_list = UserProfile.objects.filter(role=1,state=1).order_by('user__username','-id')
     user_group = user.group
     brand_list = []
     brand_list_obj = AdsBrand.objects.all().order_by('brand', '-id')
-    ads_campaign = AdsCampaign.objects.all().order_by('-created', '-id')
+    ads_campaign = AdsCampaign.objects.all().order_by('-id')
+    if ordder_field:
+        order_by_str = "%s%s" % (order_desc, ordder_field)
+        ads_campaign = ads_campaign.order_by(order_by_str)
     users = []
     user_list = []
     if not user.user.is_superuser and not user_group.user.username == 'Ads':
@@ -102,8 +105,8 @@ def campaign(request):
             'limit': int(limit),
             'page': page,
             'user': user,
-            'order_type': order_type,
-            'order_dasc': order_dasc,
+            'ordder_field': ordder_field,
+            'order_desc': order_desc,
             'avator': user.user.username[0],
             'team_list': team_list,
             'brand_list': brand_list,
@@ -151,16 +154,14 @@ def campaign_import(request):
                     account = list (account_li.keys()) [list (account_li.values()).index (val[0])]
                     campaign_check = AdsCampaign.objects.filter(user=user.user, account=account, campaign=val[1])
                     team = User.objects.filter(username=val[2])
-                    val[3] = val[3].upper()
-                    brand_check = AdsBrand.objects.filter(user=user.user, brand=val[3])
-                    if not brand_check:
-                        msg += '第%s行,Brand不存在。\n' % (i + 1)
-                        continue
+                    if val[3]:
+                        val[3] = val[3].upper()
                     if val[2] and not team:
                         msg += '第%s行,Team不存在。\n' % (i + 1)
                         continue
                     if campaign_check:
-                        campaign_check.update(brand=val[3])
+                        if val[3]:
+                            campaign_check.update(brand=val[3])
                         if val[2]:
                             campaign_check.update(team=team[0].id)
                     else:
@@ -171,7 +172,8 @@ def campaign_import(request):
                             brand_obj.team = team[0].id
                         brand_obj.campaign = val[1]
                         brand_obj.account = account
-                        brand_obj.brand = val[3]
+                        if val[3]:
+                            brand_obj.brand = val[3]
                         brand_obj.save()
             except:
                 msg += '第%s行添加有误。\n' % (i + 1)

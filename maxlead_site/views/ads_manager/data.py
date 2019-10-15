@@ -52,9 +52,15 @@ def data(request):
     if not user:
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
-    order_type = request.GET.get('order_type', '')
-    order_dasc = request.GET.get('order_dasc', '')
-    ads_data = AdsData.objects.all().order_by('-created')
+    ordder_field = request.GET.get('ordder_field', 'created')
+    order_desc = request.GET.get('order_desc', '-')
+    ads_data = AdsData.objects.all().order_by('-id')
+    if ordder_field:
+        if ordder_field == 'range_type':
+            ads_data = ads_data.order_by('%syear_str' % order_desc, '%sweek' % order_desc, '%smonth' % order_desc)
+        else:
+            order_by_str = "%s%s" % (order_desc, ordder_field)
+            ads_data = ads_data.order_by(order_by_str)
     user_group = user.group
     users = []
     user_list = []
@@ -119,8 +125,8 @@ def data(request):
             'limit': int(limit),
             'page': page,
             'user': user,
-            'order_type': order_type,
-            'order_dasc': order_dasc,
+            'ordder_field': ordder_field,
+            'order_desc': order_desc,
             'avator': user.user.username[0],
             'user_list': user_list
         }
