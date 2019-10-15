@@ -37,8 +37,8 @@ def brand_sku(request):
     month = request.GET.get('month', '')
     end_month = request.GET.get('end_month', '')
     brand = request.GET.get('brand', '')
-    order_type = request.GET.get('order_type', '')
-    order_dasc = request.GET.get('order_dasc', '')
+    ordder_field = request.GET.get('ordder_field', 'sp_sales')
+    order_desc = request.GET.get('order_desc', '-')
 
     month_str = None
     end_month_str = None
@@ -165,22 +165,13 @@ def brand_sku(request):
     if int(limit) >= total_count:
         limit = total_count
     if ads_brand:
-        paginator = Paginator(ads_brand, limit)
-        try:
-            data = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            data = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            data = paginator.page(paginator.num_pages)
         data_li = []
         range_type_str = ''
         if start_month and range_type == 'Monthly':
             range_type_str = "%s-%s" % (start_month, end_month_month)
         if start_week and range_type == 'Weekly':
             range_type_str = "%s-%s" % (start_week, end_week_week)
-        for val in data:
+        for val in ads_brand:
             sb_spend = 0
             sp_spend = 0
             self_sales = 0
@@ -395,8 +386,30 @@ def brand_sku(request):
                     'spend_sales': spend_sales,
                     'sp_all_sales': ads_sales_sales
                 })
+
+        for i in range(0, len(data_li)):
+            for n in range(i+1, len(data_li)):
+                if not order_desc:
+                    if float(data_li[i][ordder_field]) > float(data_li[n][ordder_field]):
+                        check = data_li[n]
+                        data_li[n] = data_li[i]
+                        data_li[i] = check
+                else:
+                    if float(data_li[i][ordder_field]) < float(data_li[n][ordder_field]):
+                        check = data_li[i]
+                        data_li[i] = data_li[n]
+                        data_li[n] = check
+        paginator = Paginator(data_li, limit)
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            data = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            data = paginator.page(paginator.num_pages)
         data = {
-            'data': data_li,
+            'data': data,
             'fields': fields,
             'total_count': total_count,
             'total_page': total_page,
@@ -416,8 +429,8 @@ def brand_sku(request):
             'end_month': end_month,
             'brand_list': brand_list,
             'brand': brand,
-            'order_type': order_type,
-            'order_dasc': order_dasc,
+            'ordder_field': ordder_field,
+            'order_desc': order_desc,
             'avator': user.user.username[0]
         }
     else:

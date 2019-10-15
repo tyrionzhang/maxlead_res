@@ -33,19 +33,9 @@ type_li = {
     9 : 'SB Kwd Pla'
 }
 
-# def empty_data(request):
-#     AdsCampaign.objects.all().delete()
-#     AdsData.objects.all().delete()
-#     AdsBrand.objects.all().delete()
-#     SearchTeam.objects.all().delete()
-#     Placement.objects.all().delete()
-#     PurProduct.objects.all().delete()
-#     CampaignPla.objects.all().delete()
-#     KwdPla.objects.all().delete()
-#     Inventory.objects.all().delete()
-#     BizReport.objects.all().delete()
-#     BrandPerformance.objects.all().delete()
-#     return render(request, 'ads_manager/data.html', data)
+def empty_data(request):
+    AdvProducts.objects.all().delete()
+    return render(request, 'ads_manager/data.html', data)
 
 def data(request):
     user = App.get_user_info(request)

@@ -82,7 +82,7 @@
                     </p>
                         <ul>
                             {% if data.has_previous %}
-                            <li><a id="a_previous" href="?page={{ data.previous_page_number }}&order_desc={{ order_desc }}&ordder_field={{ ordder_field }}&limit={{ limit }}&viewRange={{ viewRange }}">previous</a></li>
+                            <li><a id="a_previous" href="?page={{ data.previous_page_number }}&order_desc={{ order_desc }}&ordder_field={{ ordder_field }}&limit={{ limit }}">previous</a></li>
                             {% endif %}
                             <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
                             {% if data.has_next %}
@@ -205,7 +205,7 @@
                 $('#update').attr('style','display:none;');
             });
 
-            $('.brand_sel').change(function () {
+            $('.brand_sel').keyup(function () {
                 var brand = $(this).val();
                 $.get('/admin/maxlead_site/get_brand/',{'brand':brand},function (re) {
                     if(re.code == 1){

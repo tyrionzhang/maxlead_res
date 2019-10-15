@@ -185,7 +185,7 @@
             $('input[name="end_week"]').val("{{ end_week }}");
         }
 
-        $('.brand_sel').change(function () {
+        $('.brand_sel').keyup(function () {
             var brand = $(this).val();
             $.get('/admin/maxlead_site/get_brand/',{'brand':brand},function (re) {
                 if(re.code == 1){

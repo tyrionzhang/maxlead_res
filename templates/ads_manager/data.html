@@ -141,11 +141,10 @@
             $('#gotoPage').on('click',function () {
                 var page = $('input[name="page"]').val();
                 var limit = $('select[name="limit"]').val();
-                var viewRange = $('select[name="viewRange"]').val();
-                var ordder_type = order_type.val();
-                var order_dasc_val = order_dasc.val();
-                var url = '/admin/maxlead_site/ads_data/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+
-                ordder_type+'&limit='+limit;
+                var ordder_field = $('input[name="ordder_field"]').val();
+                var order_desc_val = $('input[name="order_desc"]').val();
+                var url = '/admin/maxlead_site/ads_data/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
                 window.location.href = url;
                 return false;
             });
@@ -153,11 +152,10 @@
             $('select[name="limit"]').on('change',function () {
                 var page = $('input[name="page"]').val();
                 var limit = $('select[name="limit"]').val();
-                var viewRange = $('select[name="viewRange"]').val();
-                var ordder_type = order_type.val();
-                var order_dasc_val = order_dasc.val();
-                var url = '/admin/maxlead_site/ads_data/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+
-                ordder_type+'&limit='+limit;
+                var ordder_field = $('input[name="ordder_field"]').val();
+                var order_desc_val = $('input[name="order_desc"]').val();
+                var url = '/admin/maxlead_site/ads_data/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
                 window.location.href = url;
                 return false;
             });
