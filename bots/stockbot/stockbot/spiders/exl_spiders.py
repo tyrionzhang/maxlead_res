@@ -138,7 +138,7 @@ class ExlSpider(scrapy.Spider):
                                         item['warehouse'] = 'EXL'
                                     if warehouse_name == 'Tradeforce Dayton':
                                         item['warehouse'] = 'TFD'
-                                    if warehouse_name == 'Roll On Logistics':
+                                    if warehouse_name == 'ROL':
                                         item['warehouse'] = 'ROL'
                                     if table.cell_value(i, 11,) and not table.cell_value(i, 11,) == ' ':
                                         item['qty'] = table.cell_value(i, 11,)
