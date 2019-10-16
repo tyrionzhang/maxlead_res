@@ -58,16 +58,16 @@
                         <th id="{{ val.0 }}">{{ val.1 }}</th>
                         {% endfor %}
                     </tr>
-                    <tr><td colspan="21"><hr></td></tr>
+                    <tr><td colspan="22"><hr></td></tr>
                     <tbody id="data_body">
-                    {% for val in data %}
-                    <tr>
-                        <td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td>
-                        {% for v in fields %}
-                            <td>{{ val|get_item:v.0 }}</td>
+                        {% for val in data %}
+                        <tr>
+                            <td><input type="checkbox" name="selectListing" value="{{ val.user_asin.id }}"  /></td>
+                            {% for v in fields %}
+                                <td>{{ val|get_item:v.0 }}</td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                    </tr>
-                    {% endfor %}
                     </tbody>
                 </table>
                 <hr>
