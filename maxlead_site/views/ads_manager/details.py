@@ -38,8 +38,8 @@ def details(request):
     end_month = request.GET.get('end_month', '')
     other_self = request.GET.get('other_self', '')
     brand = request.GET.get('brand', '')
-    order_type = request.GET.get('order_type', '')
-    order_dasc = request.GET.get('order_dasc', '')
+    ordder_field = request.GET.get('ordder_field', 'sp_sales')
+    order_desc = request.GET.get('order_desc', '-')
 
     month_str = None
     end_month_str = None
@@ -165,6 +165,7 @@ def details(request):
             asin_li = AdsBrand.objects.values('asin').filter(user_id__in=users, brand=brand).distinct().exclude(asin='')
             biz_obj = biz_obj.filter(asin__in=asin_li)
 
+    data_li = []
     if biz_obj:
         self_sales = 0
         biz_obj = biz_obj.annotate(all_sales=Sum('ordered_product_sales'))
@@ -314,16 +315,51 @@ def details(request):
                             biz_obj.remove(val)
                             continue
                         val['other_self'] = 'N'
+            data_li.append({
+                'account' : val['account'],
+                'date_range' : val['date_range'],
+                'asin' : val['asin'],
+                'sku' : val['sku'],
+                'brand' : val['brand'],
+                'impressions_sum' : val['impressions_sum'],
+                'clicks_sum' : val['clicks_sum'],
+                'ctr' : val['ctr'],
+                'sp_spend' : val['sp_spend'],
+                'self_units' : val['self_units'],
+                'self_sales' : val['self_sales'],
+                'cr' : val['cr'],
+                'other_units' : val['other_units'],
+                'other_sales' : val['other_sales'],
+                'sp_sales' : val['sp_sales'],
+                'all_sales' : val['all_sales'],
+                'all_spend_sales' : val['all_spend_sales'],
+                'sp_sales_sales' : val['sp_sales_sales'],
+                'other_self' : val['other_self'],
+                'hb_cr' : val['hb_cr'],
+                'hb_ctr' : val['hb_ctr']
+            })
 
+        for i in range(0, len(data_li)):
+            for n in range(i+1, len(data_li)):
+                if not order_desc:
+                    if float(data_li[i][ordder_field]) > float(data_li[n][ordder_field]):
+                        check = data_li[n]
+                        data_li[n] = data_li[i]
+                        data_li[i] = check
+                else:
+                    if float(data_li[i][ordder_field]) < float(data_li[n][ordder_field]):
+                        check = data_li[i]
+                        data_li[i] = data_li[n]
+                        data_li[n] = check
         limit = request.GET.get('limit', 20)
         page = request.GET.get('page', 1)
         re_limit = limit
 
-        total_count = len(biz_obj)
-        total_page = round(len(biz_obj) / int(limit))
+        total_count = len(data_li)
+        total_page = round(len(data_li) / int(limit))
         if int(limit) >= total_count:
             limit = total_count
-        paginator = Paginator(biz_obj, limit)
+        paginator = Paginator(data_li, limit)
         try:
             data = paginator.page(page)
         except PageNotAnInteger:
@@ -353,8 +389,8 @@ def details(request):
             'end_month': end_month,
             'other_self': other_self,
             'brand_list': brand_list,
-            'order_type': order_type,
-            'order_dasc': order_dasc,
+            'ordder_field': ordder_field,
+            'order_desc': order_desc,
             'avator': user.user.username[0]
         }
     else:

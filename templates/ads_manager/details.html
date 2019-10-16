@@ -44,8 +44,8 @@
                     <input type="week" name="end_week" value="{{ end_week }}" />
                     <input type="month" name="month" value="{{ month }}"  style="display: none"/>
                     <input type="month" name="end_month" value="{{ end_month }}"  style="display: none"/>
-                    <input type="hidden" name="order_type"  value="{{ order_type }}" class="">
-                    <input type="hidden" name="order_dasc"  value="{{ order_dasc }}" class="">
+                    <input type="hidden" name="ordder_field"  value="{{ ordder_field }}" class="">
+                    <input type="hidden" name="order_desc"  value="{{ order_desc }}" class="">
 
                 </form>
                 <div >
@@ -55,7 +55,7 @@
                     <tr id="th-task">
                         <th><input type="checkbox" name="selectallListing" value="all" id="selectAllListing"/></th>
                         {% for val in fields %}
-                        <th>{{ val.1 }}</th>
+                        <th id="{{ val.0 }}">{{ val.1 }}</th>
                         {% endfor %}
                     </tr>
                     <tr><td colspan="21"><hr></td></tr>
@@ -67,8 +67,8 @@
                             <td>{{ val|get_item:v.0 }}</td>
                         {% endfor %}
                     </tr>
-                    </tbody>
                     {% endfor %}
+                    </tbody>
                 </table>
                 <hr>
                 <input type="checkbox" name="selectallListing" value="all" id="selectAllListing2"/>
@@ -96,15 +96,15 @@
         <form action="" method="get" name="pageForm" id="page_form">
                 <div id="pagination">
                     <div class="pageNum">
-                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in {{ list_data.paginator.num_pages }} <!--总页数-->pages.
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in {{ data.paginator.num_pages }} <!--总页数-->pages.
                     </p>
                         <ul>
-                            {% if list_data.has_previous %}
-                            <li><a href="?page={{ list_data.previous_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}&viewRange={{ viewRange }}">previous</a></li>
+                            {% if data.has_previous %}
+                            <li><a href="?page={{ data.previous_page_number }}&order_desc={{ order_desc }}&ordder_field={{ ordder_field }}&limit={{ limit }}&listKwd={{ listKwd }}&brand={{ brand }}&account={{ account }}&range_type={{ range_type }}&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}">previous</a></li>
                             {% endif %}
-                            <li>Page {{ list_data.number }} of {{ list_data.paginator.num_pages }}.</li>
-                            {% if list_data.has_next %}
-                            <li><a href="?page={{ list_data.next_page_number }}&limit={{ limit }}&listKwd={{ listKwd }}&searchCol={{ searchCol }}&owner=&buybox={{ buybox }}&status={{ status }}&revstatus={{ revstatus }}&liststatus={{ liststatus }}&viewRange={{ viewRange }}">next</a></li>
+                            <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
+                            {% if data.has_next %}
+                            <li><a href="?page={{ data.next_page_number }}&order_desc={{ order_desc }}&ordder_field={{ ordder_field }}&limit={{ limit }}&listKwd={{ listKwd }}&brand={{ brand }}&account={{ account }}&range_type={{ range_type }}&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}">next</a></li>
                             {% endif %}
                             <li><input type="number" name="page" value="{{ page }}" /></li>
                             <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
@@ -124,47 +124,27 @@
             </main>
         <script>
         $('#viewRange').hide();
-        var order_type = $("input[name='order_type']");
-        var order_dasc = $("input[name='order_dasc']");
-        if (order_type.val() !== '') {
-            var th_h = $('#th-task').children('th').eq(order_type.val());
-            th_h[0].dasc = order_dasc.val();
-            var table_order = th_h.parents('table').eq(0);
-            var rows_order = table_order.find('tr:gt(0)').toArray().sort(comparer(th_h.index()));
-            if (th_h[0].dasc == 'true') {
-                rows_order = rows_order.reverse();
-            }
-            $('#data_body').empty().html(rows_order);
-        }
         var table = $('#datas').eq(0);
         table.on('click', 'th', function() {
-            var table = $(this).parents('table').eq(0);
-            order_type.val($(this).index());
-            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
-            var inp_dasc =  order_dasc.val();
-            if (inp_dasc !== '') {
-                if (inp_dasc == 'false') {
-                    this.dasc = true
-                }else {
-                    this.dasc = false
-                }
+            var param = "&listKwd={{ listKwd }}&brand={{ brand }}&account={{ account }}&range_type={{ range_type }}"+
+                        "&sum_by_date={{ sum_by_date }}&week={{ week }}&end_week={{ end_week }}&month={{ month }}"+
+                        "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
+            var page = $('input[name="page"]').val();
+            var limit = $('select[name="limit"]').val();
+            var ordder_field = $(this).attr('id');
+            $('input[name="ordder_field"]').val(ordder_field);
+            var order_desc_val = $('input[name="order_desc"]').val();
+            if (!order_desc_val) {
+                order_desc_val = '-'
             }else {
-                this.dasc = !this.dasc;
+                order_desc_val = ''
             }
-            order_dasc.val(this.dasc);
-            if (this.dasc) {
-                rows = rows.reverse();
-            }
-            $('#data_body').empty().html(rows);
+            var url = '/admin/maxlead_site/details/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+param+'&limit='+limit;
+            window.location.href = url;
+            return false;
         });
 
-        var th = $('#datas th');
-        var rows = table.find('tr:gt(0)').toArray().sort(comparer(th.index()));
-        $('#data_body').empty().html(rows);
-
-        var viewRange = $('select[name="viewRange"]').val();
-        var viewrange_el = '<input type="hidden" name="viewRange" value="'+viewRange+'">';
-        $('form[name="listSearchForm"]').append(viewrange_el);
         $('select[name="account"]').val({{ account }});
         $('select[name="search_key"]').val('{{ search_key }}');
         var range_type = $("input[name='range_type']:checked").val();
@@ -230,11 +210,10 @@
                         "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
             var page = $('input[name="page"]').val();
             var limit = $('select[name="limit"]').val();
-            var viewRange = $('select[name="viewRange"]').val();
-            var ordder_type = order_type.val();
-            var order_dasc_val = order_dasc.val();
-            var url = '/admin/maxlead_site/details/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+
-                ordder_type+param+'&limit='+limit+'&viewRange='+viewRange;
+            var ordder_field = $('input[name="ordder_field"]').val();
+            var order_desc_val = $('input[name="order_desc"]').val();
+            var url = '/admin/maxlead_site/details/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+param+'&limit='+limit;
             window.location.href = url;
             return false;
         });
@@ -245,11 +224,10 @@
                         "&end_month={{ end_month }}&search_key={{ search_key }}&other_self={{ other_self }}";
             var page = $('input[name="page"]').val();
             var limit = $('select[name="limit"]').val();
-            var viewRange = $('select[name="viewRange"]').val();
-            var ordder_type = order_type.val();
-            var order_dasc_val = order_dasc.val();
-            var url = '/admin/maxlead_site/details/?page='+page+'&order_dasc='+order_dasc_val+'&order_type='+
-                ordder_type+param+'&limit='+limit+'&viewRange='+viewRange;
+            var ordder_field = $('input[name="ordder_field"]').val();
+            var order_desc_val = $('input[name="order_desc"]').val();
+            var url = '/admin/maxlead_site/details/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+param+'&limit='+limit;
             window.location.href = url;
             return false;
         });
