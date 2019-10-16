@@ -33,11 +33,11 @@ class Atl1Spider(scrapy.Spider):
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         msg_str2 = ''
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
+        # from pyvirtualdisplay import Display
+        # display = Display(visible=0, size=(800, 800))
+        # display.start()
         firefox_options = Options()
-        firefox_options.add_argument('-headless')
+        # firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
         driver.get(response.url)
@@ -65,7 +65,7 @@ class Atl1Spider(scrapy.Spider):
                     td_re = val.find_elements_by_tag_name('td')
                     if td_re:
                         item['sku'] = td_re[3].text
-                        item['warehouse'] = td_re[1].text
+                        item['warehouse'] = 'ATL'
                         item['is_new'] = 0
                         if td_re[11].text and not td_re[11].text == ' ':
                             item['qty'] = td_re[11].text
@@ -82,7 +82,7 @@ class Atl1Spider(scrapy.Spider):
             except:
                 continue
 
-        display.stop()
+        # display.stop()
         driver.quit()
 
         for i, val in enumerate(items, 0):
@@ -109,7 +109,7 @@ class Atl1Spider(scrapy.Spider):
                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                         user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
 
-        update_spiders_logs('ATL-1')
+        update_spiders_logs('ATL')
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:

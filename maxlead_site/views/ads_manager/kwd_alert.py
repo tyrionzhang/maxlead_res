@@ -31,8 +31,8 @@ def kwd_alert(request):
     conventers = request.GET.get('conventers', 'All')
     threshold = request.GET.get('threshold', 0)
     threshold = float(threshold)
-    order_type = request.GET.get('order_type', '')
-    order_dasc = request.GET.get('order_dasc', '')
+    ordder_field = request.GET.get('ordder_field', 'day_total_orders')
+    order_desc = request.GET.get('order_desc', '-')
 
     month_str = None
     end_month_str = None
@@ -362,6 +362,19 @@ def kwd_alert(request):
 
 
     if data_li:
+        for i in range(0, len(data_li)):
+            for n in range(i+1, len(data_li)):
+                if not order_desc:
+                    if float(data_li[i][ordder_field]) > float(data_li[n][ordder_field]):
+                        check = data_li[n]
+                        data_li[n] = data_li[i]
+                        data_li[i] = check
+                else:
+                    if float(data_li[i][ordder_field]) < float(data_li[n][ordder_field]):
+                        check = data_li[i]
+                        data_li[i] = data_li[n]
+                        data_li[n] = check
+
         limit = request.GET.get('limit', 20)
         page = request.GET.get('page', 1)
         re_limit = limit
@@ -399,8 +412,8 @@ def kwd_alert(request):
             'end_month': end_month,
             'conventers': conventers,
             'threshold': threshold,
-            'order_type': order_type,
-            'order_dasc': order_dasc,
+            'ordder_field': ordder_field,
+            'order_desc': order_desc,
             'avator': user.user.username[0]
         }
     else:

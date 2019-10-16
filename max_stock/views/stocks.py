@@ -21,7 +21,7 @@ warehouse= {
     'twu' : 'TWU',
     'tfd' : 'TFD',
     'hanover' : 'Hanover',
-    'atl' : 'ATL-1',
+    'atl' : 'ATL',
     'pc' : 'PC',
     'zto' : 'ZTO',
     'rol' : 'ROL'
@@ -127,7 +127,7 @@ def get_stocks(request):
             # threshold_obj = Thresholds.objects.filter(sku=val.sku, warehouse=val.warehouse)
             if v['sku'] == val.sku:
                 is_same = 0
-                if val.warehouse == 'ATL-1':
+                if val.warehouse == 'ATL':
                     val.warehouse = 'atl'
                 # if threshold_obj and threshold_obj[0].threshold >= val.qty:
                 #     is_same = 1
@@ -426,7 +426,7 @@ def export_stocks(request):
         for v in data:
             # threshold_obj = Thresholds.objects.filter(sku=val.sku, warehouse=val.warehouse)
             if v['sku'] == val.sku:
-                if val.warehouse == 'ATL-1':
+                if val.warehouse == 'ATL':
                     val.warehouse = 'atl'
                 elif val.warehouse == 'EXL':
                     val.warehouse = 'exl'
@@ -968,10 +968,10 @@ def save_sales(request):
                     if not val['atl'] == '0':
                         sales = val['atl'].split('补货')
                         date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
-                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL-1',
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL',
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
-                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL-1',
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL',
                                                                   created__contains=date1.strftime('%Y-%m-%d'))
                             obj1.update(qty=obj1[0].qty + int(sales[1]))
                             re.update(qty1=obj1[0].qty - re[0].qty)
