@@ -33,11 +33,11 @@ class Atl1Spider(scrapy.Spider):
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         msg_str2 = ''
-        # from pyvirtualdisplay import Display
-        # display = Display(visible=0, size=(800, 800))
-        # display.start()
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 800))
+        display.start()
         firefox_options = Options()
-        # firefox_options.add_argument('-headless')
+        firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
         driver.get(response.url)
@@ -58,8 +58,7 @@ class Atl1Spider(scrapy.Spider):
         items = []
         for i in range(total_page):
             try:
-                res = driver.find_elements_by_css_selector('.table tr')
-                res.pop(0)
+                res = driver.find_elements_by_css_selector('.table tbody>tr')
                 for val in res:
                     item = WarehouseStocksItem()
                     td_re = val.find_elements_by_tag_name('td')
@@ -75,14 +74,14 @@ class Atl1Spider(scrapy.Spider):
                         items.append(item)
 
                 if i < (total_page - 1):
-                    elem_next_page = 'http://us.hipacking.com/member/instock/stock.html?pageIndex=%s&keyword=&warehouse=1&sort=NormalCount' % (i + 2)
+                    elem_next_page = 'http://us.hipacking.com/member/instock/stock.html?pageIndex=%s&keyword=&warehouse=&sort=NormalCount' % (i + 2)
                     if elem_next_page:
                         driver.get(elem_next_page)
                         driver.implicitly_wait(100)
             except:
                 continue
 
-        # display.stop()
+        display.stop()
         driver.quit()
 
         for i, val in enumerate(items, 0):
