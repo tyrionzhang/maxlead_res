@@ -153,8 +153,8 @@ def fba_import(request):
                     else:
                         carrier = val[42]
                     customer_row = ['T',store_info[0].subsidiary,first_name,last_name,'','B2C Customer',val[10],val[12],
-                                    '', val[24],'',val[25],'',val[28],val[29],val[30],'','',val[16],i]
-                    order_row = ['%s&%s&%s' % (date_range[2:].replace('-',''),val[0],store_id),val[0],shp_date,val[24],
+                                    '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16],i]
+                    order_row = ['%s%s%s' % (date_range[2:].replace('-',''),val[0],store_id),val[0],shp_date,val[24],
                                  'Pending Fulfillment','',store_id,store_info[0].subsidiary,'',val[16],store_info[0].payment,
                                  val[13],store_info[0].location,val[15],rate,amount,0,0,0,0,0,0,i]
                     bill_row = [val[0]]

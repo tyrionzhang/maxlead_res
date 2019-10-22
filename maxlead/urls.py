@@ -129,6 +129,7 @@ urlpatterns = [
     url('^admin/maxlead_site/store_import/', store_info.store_import),
     url('^admin/maxlead_site/save_store/', store_info.save_store),
     url('^admin/maxlead_site/get_store/', store_info.get_store),
+    url('^admin/maxlead_site/store_del/', store_info.store_del),
     url('^admin/maxlead_site/fba_acodtask/', fba_acodtask.fba_acodtask),
     url('^admin/maxlead_site/fba_import/', fba_acodtask.fba_import),
 

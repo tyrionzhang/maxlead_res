@@ -30,10 +30,16 @@
                         <input type="button" value="submit" id="submit"/>  <input id="Cancel" type = "button" onclick="" value="Cancel" />
                     </div>
                 </div>
+                <div class="con-head-right" style="position: absolute; top: 137px; right: 91px;">
+                    <div class="btn btn-green">
+                        <button id="del_store_info">Delete</button>
+                    </div>
+                </div>
                 <table cellspacing="0px" id="datas">
                     <tr id="th-task">
                     <input type="hidden" name="ordder_field"  value="{{ ordder_field }}" class="">
                     <input type="hidden" name="order_desc"  value="{{ order_desc }}" class="">
+                        <th id="th_check_all"><input type="checkbox" id="check_all"></th>
                         <th id="store_id">Store Id</th>
                         <th id="subsidiary">Subsidiary</th>
                         <th id="payment">Payment</th>
@@ -44,7 +50,8 @@
                     </tr>
                 <tbody id="data_body">
                     {% for v in data %}
-                    <tr id="tr_task_{{ v.id }}">
+                    <tr id="tr_store_{{ v.id }}" data-id="{{ v.id }}">
+                        <td><input type="checkbox" class="check_tr"></td>
                         <td>{{ v.store_id }}</td>
                         <td>{{ v.subsidiary }}</td>
                         <td>{{ v.payment }}</td>
@@ -92,21 +99,31 @@
         <script>
             $('#viewRange').hide();
             var table = $('#datas').eq(0);
+            table.on('click', '#check_all', function () {
+                var checked = $(this).prop('checked');
+                if (checked) {
+                  $('.check_tr').prop('checked', true);
+                }else {
+                  $('.check_tr').prop('checked', false);
+                }
+            });
             table.on('click', 'th', function() {
                 var page = $('input[name="page"]').val();
                 var limit = $('select[name="limit"]').val();
                 var ordder_field = $(this).attr('id');
-                $('input[name="ordder_field"]').val(ordder_field);
-                var order_desc_val = $('input[name="order_desc"]').val();
-                if (!order_desc_val) {
-                    order_desc_val = '-'
-                }else {
-                    order_desc_val = ''
+                if (ordder_field != 'th_check_all') {
+                    $('input[name="ordder_field"]').val(ordder_field);
+                    var order_desc_val = $('input[name="order_desc"]').val();
+                    if (!order_desc_val) {
+                        order_desc_val = '-'
+                    }else {
+                        order_desc_val = ''
+                    }
+                    var url = '/admin/maxlead_site/store_info/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                    ordder_field+'&limit='+limit;
+                    window.location.href = url;
+                    return false;
                 }
-                var url = '/admin/maxlead_site/store_info/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
-                ordder_field+'&limit='+limit;
-                window.location.href = url;
-                return false;
             });
 
             function getWeekOfYear(){
@@ -206,6 +223,34 @@
                     }
                 },'json');
                 return false;
+            });
+
+            $('#del_store_info').on('click', function () {
+                if(confirm('确认删除？')){
+                    var elem_tr = $('.check_tr:checked').parents('tr');
+                   var data = new Array();
+                   if (elem_tr.length == 0) {
+                       alert('请选择Store');
+                   }else {
+                       $(this).attr('disabled', 'true');
+                      elem_tr.each(function () {
+                          data.push($(this).data('id'));
+                      });
+                      $.post('/admin/maxlead_site/store_del/',{'ids':JSON.stringify(data)},function (re) {
+                       if(re.code==0 || re.code==1){
+                           alert(re.msg);
+                           if(re.code==1){
+                               window.location.reload();
+                           }
+                       }
+                       if(re.code==66){
+                           window.location.href='/admin/maxlead_site/login/';
+                       }
+                    },'json');
+                    return false;
+                   }
+                }
+
             });
         </script>
 {% endblock %}

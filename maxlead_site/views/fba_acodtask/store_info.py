@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import json,os
-import datetime,csv,codecs
+import datetime,csv
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
-from django.db.models import Q
-from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from maxlead_site.views.app import App
 from maxlead_site.models import StoreInfo
@@ -140,4 +138,22 @@ def get_store(request):
         for val in store_list:
             store_data.append(val.store_id)
         return HttpResponse(json.dumps({'code': 1, 'data': store_data}), content_type='application/json')
+
+@csrf_exempt
+def store_del(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+
+    if request.method == 'POST':
+        ids = request.POST.get('ids','')
+        if not ids:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not exists'}), content_type='application/json')
+        ids = eval(ids)
+        objs = StoreInfo.objects.filter(id__in=ids)
+        if not objs:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not exists'}), content_type='application/json')
+        objs.delete()
+        return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully~'}), content_type='application/json')
+
 

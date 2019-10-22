@@ -621,7 +621,7 @@ class StoreInfo(models.Model):
 
 class FbaAccountingTask(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    store_id = models.ForeignKey(StoreInfo, on_delete=models.DO_NOTHING)
+    store_id = models.ForeignKey(StoreInfo, on_delete=models.CASCADE)
     date_range = models.CharField('Payment', max_length=50, default='')
     path = models.CharField('Path', max_length=255, default='')
     created = models.DateTimeField('Created', auto_now_add=True)
