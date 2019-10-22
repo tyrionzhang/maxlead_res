@@ -191,10 +191,10 @@
                 $('#update').removeAttr('style');
                 var tr = $(this).parents('tr');
                 var id = $(this).data('id');
-                var store_id = tr.children('td').eq(0).html();
-                var subsidiary = tr.children('td').eq(1).html();
-                var payment = tr.children('td').eq(2).html();
-                var location = tr.children('td').eq(3).html();
+                var store_id = tr.children('td').eq(1).html();
+                var subsidiary = tr.children('td').eq(2).html();
+                var payment = tr.children('td').eq(3).html();
+                var location = tr.children('td').eq(4).html();
                 $("input[name='store_id']").val(store_id);
                 $("input[name='subsidiary']").val(subsidiary);
                 $("input[name='payment']").val(payment);
