@@ -34,7 +34,7 @@ def fba_acodtask(request):
     total_page = 0
 
     store_data = []
-    if user.user.is_superuser or user.group.user.username == 'Landy' or user.user.username == 'Landy':
+    if user.user.is_superuser or user.group.user.username == 'Landy' or user.group.user.username == 'admin' or user.user.username == 'Landy':
         store_list = StoreInfo.objects.all().order_by('store_id', '-id')
         for val in store_list:
             store_data.append(val.store_id)

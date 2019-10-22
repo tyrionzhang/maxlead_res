@@ -26,7 +26,7 @@ def store_info(request):
     total_count = 0
     total_page = 0
 
-    if user.user.is_superuser or user.group.user.username == 'Landy' or user.user.username == 'Landy':
+    if user.user.is_superuser or user.group.user.username == 'Landy' or user.group.user.username == 'admin' or user.user.username == 'Landy':
         data = StoreInfo.objects.all()
         if ordder_field:
             order_by_str = "%s%s" % (order_desc, ordder_field)
