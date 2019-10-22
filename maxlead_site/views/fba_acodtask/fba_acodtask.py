@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json,os
 import datetime,csv,threading
+import zipfile
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.db.utils import OperationalError
@@ -103,14 +104,26 @@ def fba_import(request):
         file = open(file_path, 'r', encoding='utf-8')
         csv_files = csv.reader(file)
         msg = 'Successfully!\n'
-        file_name = 'Fba-Account-export%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
-        files_dir = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name)
-        workbook = xlsxwriter.Workbook(files_dir)
-        customer_sheet = workbook.add_worksheet(u"Customer")
-        order_sheet = workbook.add_worksheet(u"Order")
-        bill_sheet = workbook.add_worksheet(u"Bill")
-        tracking_sheet = workbook.add_worksheet(u"Tracking")
-        bold = workbook.add_format({'bold': 1, 'align': 'center'})
+        file_name1 = 'Fba-Account-customer%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        file_name2 = 'Fba-Account-order%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        file_name3 = 'Fba-Account-bill%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        file_name4 = 'Fba-Account-tracking%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        files_dir1 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name1)
+        files_dir2 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name2)
+        files_dir3 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name3)
+        files_dir4 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name4)
+        workbook1 = xlsxwriter.Workbook(files_dir1)
+        workbook2 = xlsxwriter.Workbook(files_dir2)
+        workbook3 = xlsxwriter.Workbook(files_dir3)
+        workbook4 = xlsxwriter.Workbook(files_dir4)
+        customer_sheet = workbook1.add_worksheet(u"Customer")
+        order_sheet = workbook2.add_worksheet(u"Order")
+        bill_sheet = workbook3.add_worksheet(u"Bill")
+        tracking_sheet = workbook4.add_worksheet(u"Tracking")
+        bold1 = workbook1.add_format({'bold': 1, 'align': 'center'})
+        bold2 = workbook2.add_format({'bold': 1, 'align': 'center'})
+        bold3 = workbook3.add_format({'bold': 1, 'align': 'center'})
+        bold4 = workbook4.add_format({'bold': 1, 'align': 'center'})
         customer_title = ['Individual', 'Subsidiary', 'First Name', 'Last Name', 'Sales Rep', 'Category', 'Email',
                           'Mobile Phone', 'Attention', 'Addressee', 'Shipping Phone', 'Address Line1', 'Address Line2',
                           'City', 'State', 'Zipcode', 'Country', 'Default Shipping', 'Currency', 'Sort']
@@ -119,10 +132,10 @@ def fba_import(request):
                        'Item Tax', 'Shipping Fee', 'Selling Fees', 'FBA Fees', 'Other Fees', 'Sort']
         bill_title = ['PO#']
         tracking_title = ['PO#', 'ShipDate', 'Memo', 'Status', 'Carrier', 'Method', 'SKU', 'Tracking', 'Weight', 'Sort']
-        customer_sheet.write_row('A1', customer_title, bold)
-        order_sheet.write_row('A1', order_title, bold)
-        bill_sheet.write_row('A1', bill_title, bold)
-        tracking_sheet.write_row('A1', tracking_title, bold)
+        customer_sheet.write_row('A1', customer_title, bold1)
+        order_sheet.write_row('A1', order_title, bold2)
+        bill_sheet.write_row('A1', bill_title, bold3)
+        tracking_sheet.write_row('A1', tracking_title, bold4)
         for i, val in enumerate(csv_files, 0):
             try:
                 if i > 0:
@@ -167,8 +180,23 @@ def fba_import(request):
                 msg += '第%s行添加有误。\n' % (i + 1)
                 continue
         res = {'code': 1, 'msg': msg}
-        workbook.close()
-        f_path_re = files_dir.split('download')
+        workbook1.close()
+        workbook3.close()
+        workbook2.close()
+        workbook4.close()
+        zip_name = 'Fba-Account-export%s.zip' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        zip_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, zip_name)
+        f = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
+        f.write(files_dir1, file_name1)
+        f.write(files_dir2, file_name2)
+        f.write(files_dir3, file_name3)
+        f.write(files_dir4, file_name4)
+        f.close()
+        os.remove(files_dir1)
+        os.remove(files_dir2)
+        os.remove(files_dir3)
+        os.remove(files_dir4)
+        f_path_re = zip_path.split('download')
         f_path = '/download%s' % f_path_re[1]
         obj = FbaAccountingTask()
         obj.id
@@ -177,6 +205,6 @@ def fba_import(request):
         obj.date_range = date_range
         obj.path = f_path
         obj.save()
-        t = threading.Timer(1800, del_file, [files_dir,obj.id])
+        t = threading.Timer(1800, del_file, [zip_path,obj.id])
         t.start()
     return HttpResponse(json.dumps(res), content_type='application/json')
