@@ -37,6 +37,10 @@
                     <li>Sniffer</li>
                     <li class="subMenu"><a href="/admin/maxlead_site/listings/">Listing</a></li>
                     <a href="/admin/maxlead_site/miner/"><li>Miner</li></a>
+                    {% if user.user.is_superuser or user.group.user.username == 'Landy' or user.user.username == 'Landy' %}
+                    <a href="/admin/maxlead_site/store_info/"><li>Store Info</li></a>
+                    <a href="/admin/maxlead_site/fba_acodtask/"><li>Fba Task</li></a>
+                    {% endif %}
                     <li>Ads Manager</li>
                     <li class="subMenu"><a href="/admin/maxlead_site/ads_data/">Data</a></li>
                     <li class="subMenu"><a href="/admin/maxlead_site/campaign/">Campaign</a></li>

@@ -607,3 +607,24 @@ class Inventory(models.Model):
 
     class Meta:
         db_table = 'inventory'
+
+class StoreInfo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    store_id = models.CharField('Store Id', max_length=255, default='')
+    subsidiary = models.CharField('Subsidiary', max_length=255, default='')
+    payment = models.CharField('Payment', max_length=255, default='')
+    location = models.CharField('Location', max_length=255, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'store_info'
+
+class FbaAccountingTask(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    store_id = models.ForeignKey(StoreInfo, on_delete=models.DO_NOTHING)
+    date_range = models.CharField('Payment', max_length=50, default='')
+    path = models.CharField('Path', max_length=255, default='')
+    created = models.DateTimeField('Created', auto_now_add=True)
+
+    class Meta:
+        db_table = 'fba_account_task'

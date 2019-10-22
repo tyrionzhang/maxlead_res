@@ -234,15 +234,14 @@ def get_brand(request):
 
     if request.method == 'GET':
         brand = request.GET.get('brand','')
-        user_list = UserProfile.objects.filter(state=1)
-        if user.role == 0:
-            user_list = user_list.filter(id=user.id)
-        if user.role == 1:
-            user_list = user_list.filter(Q(group=user) | Q(id=user.id))
+        user_group = user.group
         users = []
-        if user_list:
-            for val in user_list:
-                users.append(val.user_id)
+        if not user.user.is_superuser and not user_group.user.username == 'Ads':
+            user_list = UserProfile.objects.filter(state=1)
+            user_list = user_list.filter(Q(group=user_group) | Q(id=user.id))
+            if user_list:
+                for val in user_list:
+                    users.append(val.user_id)
         brand_list = []
         brand_list_obj = AdsBrand.objects.filter(user_id__in=users, brand__contains=brand).order_by('brand', '-id')
         if brand_list_obj:

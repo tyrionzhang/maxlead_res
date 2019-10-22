@@ -46,7 +46,8 @@ $(document).ready(function(){
         }
     });
 
-    $('body').click(function () {
+    $('body').click(function (e) {
+        if (!$(e.target).attr('class') || $(e.target).attr('class').indexOf('input-sel') == -1)
         $('.ul-select').hide();
     });
 });

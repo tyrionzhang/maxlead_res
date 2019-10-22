@@ -1,0 +1,212 @@
+{% extends "layouts/page_base.html" %}
+    {% block container %}
+            <main class="miner">
+                <h2>Store Info</h2>
+                <button id="addNewMiner" class="headButton" type="button"/>Import</button>
+{#                <button id="export" class="headButton" type="button"/>Export</button>#}
+                <div id="addMinerTask" style="display:none;">
+                    <form method = "post" action="" name="newTaskForm" />
+                    <h3>Import</h3>
+                    <label>请选择文件:</label>
+                    <input type="file" name="my_file"><br><br>
+                    <div class="actionButton">
+                        <input type="button" value="import" id="import"/>  <input id="nmtCancel" type = "button" onclick="" value="Cancel" />
+                    </div>
+                </div>
+                <div id="update" style="display:none;" class="update-block">
+                    <form method = "post" action="" name="newTaskForm" />
+                    <h3>Update Store</h3>
+                    <label>Store Id:</label>
+                    <input type="text" name="store_id" value="" readonly/>
+                    <input type="hidden" name="id" value=""><br><br>
+                    <label>Subsidiary:</label>
+                    <input type="text" name="subsidiary" value=""  readonly/> <br><br>
+                    <label>Payment:</label>
+                    <input type="text" name="payment" value=""/> <br><br>
+                    <label>location:</label>
+                    <input type="text" name="location" value=""/> <br><br>
+                    <br><br>
+                    <div class="actionButton">
+                        <input type="button" value="submit" id="submit"/>  <input id="Cancel" type = "button" onclick="" value="Cancel" />
+                    </div>
+                </div>
+                <table cellspacing="0px" id="datas">
+                    <tr id="th-task">
+                    <input type="hidden" name="ordder_field"  value="{{ ordder_field }}" class="">
+                    <input type="hidden" name="order_desc"  value="{{ order_desc }}" class="">
+                        <th id="store_id">Store Id</th>
+                        <th id="subsidiary">Subsidiary</th>
+                        <th id="payment">Payment</th>
+                        <th id="location">Location</th>
+                        <th id="created">Time</th>
+                        <th id="user">User</th>
+                        <th>Action</th>
+                    </tr>
+                <tbody id="data_body">
+                    {% for v in data %}
+                    <tr id="tr_task_{{ v.id }}">
+                        <td>{{ v.store_id }}</td>
+                        <td>{{ v.subsidiary }}</td>
+                        <td>{{ v.payment }}</td>
+                        <td>{{ v.location }}</td>
+                        <td>{{ v.created }}</td>
+                        <td>{{ v.user.username }}</td>
+                        <td>
+                            <a href="javascript:;" class="minner-del" data-id="{{ v.id }}">update</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+
+
+            <form action="" method="get" name="pageForm" id="page_form">
+                <div id="pagination">
+                    <div class="pageNum">
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in  {{ data.paginator.num_pages }} <!--总页数-->pages.
+                    </p>
+                        <ul>
+                            {% if data.has_previous %}
+                            <li><a id="a_previous" href="?page={{ data.previous_page_number }}&order_desc={{ order_desc }}&ordder_field={{ ordder_field }}&limit={{ limit }}">previous</a></li>
+                            {% endif %}
+                            <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
+                            {% if data.has_next %}
+                            <li><a id="a_next" href="?page={{ data.next_page_number }}&order_desc={{ order_desc }}&ordder_field={{ ordder_field }}&limit={{ limit }}">next</a></li>
+                            {% endif %}
+                            <li><input type="number" name="page" value="{{ page }}" /></li>
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                        </ul>
+
+                    <div class="qtyUpdater">
+                        <select name="limit">
+                            <option value="20" {% if re_limit == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if re_limit == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if re_limit == 100 %}selected{% endif %}>100</option>
+                        </select> results per page.
+                    </div>
+
+                    </div>
+                </div>
+            </form>
+            </main>
+        <script>
+            $('#viewRange').hide();
+            var table = $('#datas').eq(0);
+            table.on('click', 'th', function() {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var ordder_field = $(this).attr('id');
+                $('input[name="ordder_field"]').val(ordder_field);
+                var order_desc_val = $('input[name="order_desc"]').val();
+                if (!order_desc_val) {
+                    order_desc_val = '-'
+                }else {
+                    order_desc_val = ''
+                }
+                var url = '/admin/maxlead_site/store_info/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
+                window.location.href = url;
+                return false;
+            });
+
+            function getWeekOfYear(){
+              var today = new Date();
+              var firstDay = new Date(today.getFullYear(),0, 1);
+              var dayOfWeek = firstDay.getDay(); 
+              var spendDay= 1;
+              if (dayOfWeek !=0) {
+                spendDay=7-dayOfWeek+1;
+              }
+              firstDay = new Date(today.getFullYear(),0, 1+spendDay);
+              var d =Math.ceil((today.valueOf()- firstDay.valueOf())/ 86400000);
+              var result =Math.ceil(d/7);
+              return result+1;
+            }
+
+            $('#gotoPage').on('click',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var ordder_field = $('input[name="ordder_field"]').val();
+                var order_desc_val = $('input[name="order_desc"]').val();
+                var url = '/admin/maxlead_site/store_info/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
+                window.location.href = url;
+                return false;
+            });
+
+            $('select[name="limit"]').on('change',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var ordder_field = $('input[name="ordder_field"]').val();
+                var order_desc_val = $('input[name="order_desc"]').val();
+                var url = '/admin/maxlead_site/store_info/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
+                window.location.href = url;
+                return false;
+            });
+
+            $('#addNewMiner').click(function () {
+                $('#import').removeAttr('disabled');
+            });
+            $('#import').on('click', function () {
+                var form_data = new FormData();
+                var file_info = $('input[name="my_file"]')[0].files[0];
+                $(this).attr('disabled', 'true');
+                form_data.append('my_file',file_info);
+                $.ajax({
+                    url:'/admin/maxlead_site/store_import/',
+                    type:'POST',
+                    data: form_data,
+                    processData: false,  // tell jquery not to process the data
+                    contentType: false, // tell jquery not to set contentType
+                    success: function(callback) {
+                        alert(callback.msg);
+                        window.location.reload();
+                    }
+                });
+                return false;
+            });
+            {#$('#export').on('click',function () {#}
+            {#    var url = '/admin/maxlead_site/export_campaign/';#}
+            {#    window.location.href=url;#}
+            {#});#}
+            $('body').on('click', '.minner-del', function () {
+                $('#update').removeAttr('style');
+                var tr = $(this).parents('tr');
+                var id = $(this).data('id');
+                var store_id = tr.children('td').eq(0).html();
+                var subsidiary = tr.children('td').eq(1).html();
+                var payment = tr.children('td').eq(2).html();
+                var location = tr.children('td').eq(3).html();
+                $("input[name='store_id']").val(store_id);
+                $("input[name='subsidiary']").val(subsidiary);
+                $("input[name='payment']").val(payment);
+                $("input[name='location']").val(location);
+                $("input[name='id']").val(id);
+                $('#submit').removeAttr();
+            });
+
+            $('#Cancel').click(function () {
+                $('#update').attr('style','display:none;');
+            });
+
+            $('#submit').click(function () {
+                var data = {
+                    'id' : $('input[name="id"]').val(),
+                    'payment' : $('input[name="payment"]').val(),
+                    'location' : $('input[name="location"]').val()
+                };
+                $(this).attr('disabled', 'true');
+                $.post('/admin/maxlead_site/save_store/',data,function (re) {
+                    if(re.code == 1){
+                        alert(re.msg);
+                        window.location.reload();
+                    }else {
+                        alert(re.msg);
+                    }
+                },'json');
+                return false;
+            });
+        </script>
+{% endblock %}
+

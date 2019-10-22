@@ -1,0 +1,239 @@
+{% extends "layouts/page_base.html" %}
+    {% block container %}
+            <main class="miner">
+                <h2>Fba Task</h2>
+                <button id="addNewMiner" class="headButton" type="button"/>Import</button>
+{#                <button id="export" class="headButton" type="button"/>Export</button>#}
+                <div id="addMinerTask" style="display:none;">
+                    <form method = "post" action="" name="newTaskForm" />
+                    <h3>Import</h3>
+                    <label>Store ID:</label>
+                    <div id="div_sel_block">
+                        <input type="text" name="store_id" class="input-sel store_sel">
+                        <ul class="ul-select" id="ul_store" style="display: none">
+                            {% for val in store_list %}
+                            <li class="select-li">{{ val }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <label>Date Range:</label>
+                    <input type="month" name="date_range" value="{{ date_range }}" class="range-type"/><br><br>
+                    <label>请选择文件:</label>
+                    <input type="file" name="my_file"><br><br>
+                    <div class="actionButton">
+                        <input type="button" value="import" id="import"/>  <input id="nmtCancel" type = "button" onclick="" value="Cancel" />
+                    </div>
+                </div>
+                <div id="update" style="display:none;" class="update-block">
+                    <form method = "post" action="" name="newTaskForm" />
+                    <h3>Update Store</h3>
+                    <label>Store Id:</label>
+                    <input type="text" name="store_id" value="" readonly/>
+                    <input type="hidden" name="id" value=""><br><br>
+                    <label>Subsidiary:</label>
+                    <input type="text" name="subsidiary" value=""  readonly/> <br><br>
+                    <label>Payment:</label>
+                    <input type="text" name="payment" value=""/> <br><br>
+                    <label>location:</label>
+                    <input type="text" name="location" value=""/> <br><br>
+                    <br><br>
+                    <div class="actionButton">
+                        <input type="button" value="submit" id="submit"/>  <input id="Cancel" type = "button" onclick="" value="Cancel" />
+                    </div>
+                </div>
+                <table cellspacing="0px" id="datas">
+                    <tr id="th-task">
+                    <input type="hidden" name="ordder_field"  value="{{ ordder_field }}" class="">
+                    <input type="hidden" name="order_desc"  value="{{ order_desc }}" class="">
+                        <th id="store_id">Store Id</th>
+                        <th id="date_range">Date Range</th>
+                        <th id="user">User</th>
+                        <th id="created">Time</th>
+                        <th>Action</th>
+                    </tr>
+                <tbody id="data_body">
+                    {% for v in data %}
+                    <tr id="tr_task_{{ v.id }}">
+                        <td>{{ v.store_id.store_id }}</td>
+                        <td>{{ v.date_range }}</td>
+                        <td>{{ v.user.username }}</td>
+                        <td>{{ v.created }}</td>
+                        <td>
+                            {% if v.path %}
+                                <a href="{{ v.path }}" class="">Download</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+
+
+            <form action="" method="get" name="pageForm" id="page_form">
+                <div id="pagination">
+                    <div class="pageNum">
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in  {{ data.paginator.num_pages }} <!--总页数-->pages.
+                    </p>
+                        <ul>
+                            {% if data.has_previous %}
+                            <li><a id="a_previous" href="?page={{ data.previous_page_number }}&order_desc={{ order_desc }}&ordder_field={{ ordder_field }}&limit={{ limit }}">previous</a></li>
+                            {% endif %}
+                            <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
+                            {% if data.has_next %}
+                            <li><a id="a_next" href="?page={{ data.next_page_number }}&order_desc={{ order_desc }}&ordder_field={{ ordder_field }}&limit={{ limit }}">next</a></li>
+                            {% endif %}
+                            <li><input type="number" name="page" value="{{ page }}" /></li>
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                        </ul>
+
+                    <div class="qtyUpdater">
+                        <select name="limit">
+                            <option value="20" {% if re_limit == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if re_limit == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if re_limit == 100 %}selected{% endif %}>100</option>
+                        </select> results per page.
+                    </div>
+
+                    </div>
+                </div>
+            </form>
+            </main>
+        <script>
+            $('#viewRange').hide();
+            var table = $('#datas').eq(0);
+            table.on('click', 'th', function() {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var ordder_field = $(this).attr('id');
+                $('input[name="ordder_field"]').val(ordder_field);
+                var order_desc_val = $('input[name="order_desc"]').val();
+                if (!order_desc_val) {
+                    order_desc_val = '-'
+                }else {
+                    order_desc_val = ''
+                }
+                var url = '/admin/maxlead_site/fba_acodtask/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
+                window.location.href = url;
+                return false;
+            });
+
+            {#$('.range-type').click(function () {#}
+            {#    var date = new Date();  //创建对象#}
+            {#    var y = date.getFullYear();#}
+            {#    var max_month = date.getMonth() + 1;#}
+            {#    if (max_month < 10) {#}
+            {#        max_month = '0' + max_month;#}
+            {#    }#}
+            {#    $('input[name="date_range"]').attr('max', y + '-' + max_month);#}
+            {#    $('input[name="date_range"]').attr('min', y + '-01');#}
+            {#});#}
+
+            $('#gotoPage').on('click',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var ordder_field = $('input[name="ordder_field"]').val();
+                var order_desc_val = $('input[name="order_desc"]').val();
+                var url = '/admin/maxlead_site/fba_acodtask/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
+                window.location.href = url;
+                return false;
+            });
+
+            $('select[name="limit"]').on('change',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var ordder_field = $('input[name="ordder_field"]').val();
+                var order_desc_val = $('input[name="order_desc"]').val();
+                var url = '/admin/maxlead_site/fba_acodtask/?page='+page+'&order_desc='+order_desc_val+'&ordder_field='+
+                ordder_field+'&limit='+limit;
+                window.location.href = url;
+                return false;
+            });
+
+            $('#addNewMiner').click(function () {
+                $('#import').removeAttr('disabled');
+            });
+            $('#import').on('click', function () {
+                var form_data = new FormData();
+                var file_info = $('input[name="my_file"]')[0].files[0];
+                var store_id = $('input[name="store_id"]').val();
+                var date_range = $('input[name="date_range"]').val();
+                $(this).attr('disabled', 'true');
+                form_data.append('my_file',file_info);
+                form_data.append('store_id',store_id);
+                form_data.append('date_range',date_range);
+                $.ajax({
+                    url:'/admin/maxlead_site/fba_import/',
+                    type:'POST',
+                    data: form_data,
+                    processData: false,  // tell jquery not to process the data
+                    contentType: false, // tell jquery not to set contentType
+                    success: function(callback) {
+                        alert(callback.msg);
+                        window.location.reload();
+                    }
+                });
+                return false;
+            });
+            {#$('#export').on('click',function () {#}
+            {#    var url = '/admin/maxlead_site/export_campaign/';#}
+            {#    window.location.href=url;#}
+            {#});#}
+            $('body').on('click', '.minner-del', function () {
+                $('#update').removeAttr('style');
+                var tr = $(this).parents('tr');
+                var id = $(this).data('id');
+                var store_id = tr.children('td').eq(0).html();
+                var subsidiary = tr.children('td').eq(1).html();
+                var payment = tr.children('td').eq(2).html();
+                var location = tr.children('td').eq(3).html();
+                $("input[name='store_id']").val(store_id);
+                $("input[name='subsidiary']").val(subsidiary);
+                $("input[name='payment']").val(payment);
+                $("input[name='location']").val(location);
+                $("input[name='id']").val(id);
+                $('#submit').removeAttr();
+            });
+
+            $('#Cancel').click(function () {
+                $('#update').attr('style','display:none;');
+            });
+
+            $('#submit').click(function () {
+                var data = {
+                    'id' : $('input[name="id"]').val(),
+                    'payment' : $('input[name="payment"]').val(),
+                    'location' : $('input[name="location"]').val()
+                };
+                $(this).attr('disabled', 'true');
+                $.post('/admin/maxlead_site/save_store/',data,function (re) {
+                    if(re.code == 1){
+                        alert(re.msg);
+                        window.location.reload();
+                    }else {
+                        alert(re.msg);
+                    }
+                },'json');
+                return false;
+            });
+
+            $('.store_sel').keyup(function () {
+                var store_id = $(this).val();
+                $.get('/admin/maxlead_site/get_store/',{'store_id':store_id},function (re) {
+                    if(re.code == 1){
+                        var el = '';
+                        for (var index in re.data){
+                            el += '<li class="select-li">'+ re.data[index]+'</li>';
+                        }
+                        $('#ul_store').html(el);
+                        $('#ul_store').show();
+                    }else {
+                        alert(re.msg);
+                    }
+
+                },'json');
+            });
+        </script>
+{% endblock %}
+

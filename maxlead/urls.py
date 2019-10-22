@@ -27,6 +27,8 @@ from maxlead_site.views.ads_manager import brand
 from maxlead_site.views.ads_manager import brand_sku as brandSku
 from maxlead_site.views.ads_manager import details
 from maxlead_site.views.ads_manager import kwd_alert
+from maxlead_site.views.fba_acodtask import store_info
+from maxlead_site.views.fba_acodtask import fba_acodtask
 
 # views of max_stock
 from max_stock.views import views as stock_views
@@ -121,6 +123,14 @@ urlpatterns = [
     url('^admin/maxlead_site/export_details/', details.export_details),
     url('^admin/maxlead_site/kwd_alert/', kwd_alert.kwd_alert),
     url('^admin/maxlead_site/export_kwd_alert/', kwd_alert.export_kwd_alert),
+
+    #Fba Accounting Task
+    url('^admin/maxlead_site/store_info/', store_info.store_info),
+    url('^admin/maxlead_site/store_import/', store_info.store_import),
+    url('^admin/maxlead_site/save_store/', store_info.save_store),
+    url('^admin/maxlead_site/get_store/', store_info.get_store),
+    url('^admin/maxlead_site/fba_acodtask/', fba_acodtask.fba_acodtask),
+    url('^admin/maxlead_site/fba_import/', fba_acodtask.fba_import),
 
     # urls of max_stock
     url('^admin/max_stock/stock_spiders/', stock_views.stock_spiders),
