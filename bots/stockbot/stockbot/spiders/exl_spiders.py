@@ -222,7 +222,6 @@ class ExlSpider(scrapy.Spider):
 
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('3pl')
-        kill_pid_for_name('postgres')
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
