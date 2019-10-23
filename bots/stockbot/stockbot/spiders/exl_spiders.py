@@ -210,16 +210,16 @@ class ExlSpider(scrapy.Spider):
                 continue
 
         date0 = date_now.strftime('%Y-%m-%d')
-        obj = False
+        obj = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date0)
         try:
-            obj = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date0)
+            if obj:
+                obj.delete()
         except OperationalError:
             connection.close()
             connection.cursor()
-            obj = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date0)
+            if obj:
+                obj.delete()
 
-        if obj:
-            obj.delete()
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('3pl')
         kill_pid_for_name('postgres')
