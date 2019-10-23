@@ -217,6 +217,7 @@ class ExlSpider(scrapy.Spider):
         except OperationalError:
             connection.close()
             connection.cursor()
+            obj = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date0)
             if obj:
                 obj.delete()
 
