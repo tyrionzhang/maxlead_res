@@ -4,7 +4,7 @@ import os
 from datetime import *
 from django.db.models import Count
 from maxlead_site.models import UserAsins,UserProfile
-from max_stock.models import UserEmailMsg
+from max_stock.models import UserEmailMsg,SkuUsers,Thresholds
 from maxlead_site.common.npextractor import NPExtractor
 from maxlead import settings
 from django.core.mail import send_mail
@@ -197,3 +197,16 @@ def to_int(str):
             return int(float(str))
         except ValueError:  #如果报错，说明即不是浮点，也不是int字符串。   是一个真正的字符串
             return False
+
+def warehouse_threshold_msgs(qtys,warehouse=None):
+    users = SkuUsers.objects.all().annotate(s=Count("sku"), u=Count("user"))
+    thresholds = Thresholds.objects.filter(warehouse__in=warehouse)
+    msg_str2 = ''
+    for val in thresholds:
+        t_key = val.warehouse + val.sku
+        if t_key in qtys and val.threshold >= int(qtys[t_key]) and users:
+            for usr in users:
+                if usr.sku == val.sku and usr[0].user.email:
+                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
+                        usr[0].user.email, val.sku, val.warehouse, qtys[t_key], val.threshold)
+    return msg_str2

@@ -5,6 +5,7 @@ import time
 import csv
 import xlrd
 from django.db import connection
+from django.db.models import Count
 from django.db.utils import OperationalError
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
@@ -14,7 +15,7 @@ from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
 from max_stock.views.views import update_spiders_logs
-from maxlead_site.common.common import spiders_send_email,kill_pid_for_name,to_int
+from maxlead_site.common.common import spiders_send_email,kill_pid_for_name,to_int,warehouse_threshold_msgs
 
 class ExlSpider(scrapy.Spider):
     name = "exl_spider"
@@ -41,7 +42,6 @@ class ExlSpider(scrapy.Spider):
 
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
-        msg_str2 = ''
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
@@ -183,27 +183,34 @@ class ExlSpider(scrapy.Spider):
 
         querysetlist = []
         date_now = datetime.now()
+        date1 = date_now - timedelta(days=1)
+        old_list_qty = {}
+        old_list = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date1.strftime('%Y-%m-%d'))
+        for val in old_list:
+            o_key = val.warehouse + val.sku
+            old_list_qty.update({
+                o_key : val.qty
+            })
+
+        new_qtys = {}
         for i, val in enumerate(items, 0):
             try:
                 for n, v in enumerate(items, 0):
                     if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
                         val['qty'] = int(v['qty']) + int(val['qty'])
                         del items[n]
-                date1 = date_now - timedelta(days=1)
-                obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
-                                                      created__contains=date1.strftime('%Y-%m-%d'))
                 val['qty1'] = 0
-                if obj1:
-                    val['qty1'] = obj1[0].qty - int(val['qty'])
+                if old_list_qty:
+                    key1 = val['warehouse'] + val['sku']
+                    if key1 in old_list_qty:
+                        val['qty1'] = old_list_qty[key1] - int(val['qty'])
 
                 querysetlist.append(WarehouseStocks(sku=val['sku'], warehouse=val['warehouse'], qty=val['qty'], qty1=val['qty1']))
 
-                # threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
-                # user = SkuUsers.objects.filter(sku=val['sku'])
-                # if threshold and threshold[0].threshold >= int(val['qty']):
-                #     if user:
-                #         msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
-                #             user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+                new_key = val['warehouse'] + val['sku']
+                new_qtys.update({
+                    new_key: val['qty']
+                })
             except OperationalError:
                 connection.close()
                 connection.cursor()
@@ -223,6 +230,8 @@ class ExlSpider(scrapy.Spider):
 
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('3pl')
+
+        msg_str2 = warehouse_threshold_msgs(new_qtys, ['EXL', 'TFD', 'ROL'])
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
