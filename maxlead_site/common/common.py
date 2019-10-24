@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import threading
 from datetime import *
 from django.db.models import Count
 from django.db import connection
@@ -236,3 +237,11 @@ def warehouse_date_data(warehouse):
             o_key: val.qty
         })
     return old_list_qty
+
+def restart_postgres():
+    t = threading.Timer(900.0, restart_postgres)
+    try:
+        connection.cursor()
+    except OperationalError:
+        os.popen('service postgresql-9.3 start')
+    t.start()
