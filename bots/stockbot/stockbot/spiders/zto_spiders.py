@@ -96,7 +96,6 @@ class ZtoSpider(scrapy.Spider):
                         print(e)
                         continue
                 if i < total_page - 1:
-                    time.sleep(3)
                     elem_next_page = driver.find_elements_by_class_name('btn-next')
                     if elem_next_page:
                         elem_next_page[0].click()
