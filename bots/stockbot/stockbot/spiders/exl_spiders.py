@@ -5,17 +5,15 @@ import time
 import csv
 import xlrd
 from django.db import connection
-from django.db.models import Count
 from django.db.utils import OperationalError
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import Select
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
-from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
 from max_stock.views.views import update_spiders_logs
-from maxlead_site.common.common import spiders_send_email,kill_pid_for_name,to_int,warehouse_threshold_msgs
+from maxlead_site.common.common import spiders_send_email,kill_pid_for_name,to_int,warehouse_threshold_msgs,warehouse_date_data
 
 class ExlSpider(scrapy.Spider):
     name = "exl_spider"
@@ -182,16 +180,7 @@ class ExlSpider(scrapy.Spider):
             print(e)
 
         querysetlist = []
-        date_now = datetime.now()
-        date1 = date_now - timedelta(days=1)
-        old_list_qty = {}
-        old_list = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date1.strftime('%Y-%m-%d'))
-        for val in old_list:
-            o_key = val.warehouse + val.sku
-            old_list_qty.update({
-                o_key : val.qty
-            })
-
+        old_list_qty = warehouse_date_data(['EXL', 'TFD', 'ROL'])
         new_qtys = {}
         for i, val in enumerate(items, 0):
             try:
@@ -215,18 +204,6 @@ class ExlSpider(scrapy.Spider):
                 connection.close()
                 connection.cursor()
                 continue
-
-        date0 = date_now.strftime('%Y-%m-%d')
-        obj = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date0)
-        try:
-            if obj:
-                obj.delete()
-        except OperationalError:
-            connection.close()
-            connection.cursor()
-            obj = WarehouseStocks.objects.filter(warehouse__in=['EXL', 'TFD', 'ROL'], created__contains=date0)
-            if obj:
-                obj.delete()
 
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('3pl')

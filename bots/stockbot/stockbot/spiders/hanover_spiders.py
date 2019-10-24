@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import scrapy,os
-from datetime import *
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
-from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
 from max_stock.views.views import update_spiders_logs
-from maxlead_site.common.common import spiders_send_email
+from maxlead_site.common.common import spiders_send_email,warehouse_threshold_msgs,warehouse_date_data
 
 class HanoverSpider(scrapy.Spider):
     name = "hanover_spider"
@@ -33,7 +31,6 @@ class HanoverSpider(scrapy.Spider):
 
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
-        msg_str2 = ''
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
@@ -61,6 +58,9 @@ class HanoverSpider(scrapy.Spider):
         driver.implicitly_wait(100)
         total_page = driver.find_elements_by_css_selector('#navigationTR nobr')[0].text
         total_page = int(total_page.split(' ')[-1])
+
+        old_list_qty = warehouse_date_data(['Hanover'])
+        new_qtys = {}
         for i in range(total_page):
             try:
                 res = driver.find_elements_by_css_selector('#ViewManyListTable tr')
@@ -79,25 +79,17 @@ class HanoverSpider(scrapy.Spider):
                             item['qty'] = item['qty'].replace(',','')
                         else:
                             item['qty'] = 0
-                        date_now = datetime.now()
-                        date0 = date_now.strftime('%Y-%m-%d')
-                        obj = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
-                                                             created__contains=date0)
-                        date1 = date_now - timedelta(days=1)
-                        obj1 = WarehouseStocks.objects.filter(sku=item['sku'], warehouse=item['warehouse'],
-                                                              created__contains=date1.strftime('%Y-%m-%d'))
-                        if obj1:
-                            item['qty1'] = obj1[0].qty - int(item['qty'])
-                        if obj:
-                            obj.delete()
-                        yield item
+                        item['qty1'] = 0
+                        if old_list_qty:
+                            key1 = item['warehouse'] + item['sku']
+                            if key1 in old_list_qty:
+                                item['qty1'] = old_list_qty[key1] - int(item['qty'])
 
-                        threshold = Thresholds.objects.filter(sku=item['sku'], warehouse=item['warehouse'])
-                        user = SkuUsers.objects.filter(sku=item['sku'])
-                        if threshold and threshold[0].threshold >= int(item['qty']):
-                            if user:
-                                msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % ( user[0].user.email,
-                                                        item['sku'], item['warehouse'], item['qty'], threshold[0].threshold)
+                        new_key = item['warehouse'] + item['sku']
+                        new_qtys.update({
+                            new_key: item['qty']
+                        })
+                        yield item
                 if i < total_page:
                     elem_next_page = driver.find_elements_by_id('Next')
                     if elem_next_page:
@@ -108,6 +100,7 @@ class HanoverSpider(scrapy.Spider):
         display.stop()
         driver.quit()
         update_spiders_logs('Hanover')
+        msg_str2 = warehouse_threshold_msgs(new_qtys, ['Hanover'])
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy,os
-from datetime import *
+from django.db import connection
+from django.db.utils import OperationalError
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
@@ -8,7 +9,7 @@ from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.models import Thresholds,SkuUsers,WarehouseStocks
 from max_stock.views.views import update_spiders_logs
-from maxlead_site.common.common import spiders_send_email
+from maxlead_site.common.common import spiders_send_email,warehouse_date_data,warehouse_threshold_msgs
 
 class Atl1Spider(scrapy.Spider):
     name = "atl1_spider"
@@ -56,6 +57,7 @@ class Atl1Spider(scrapy.Spider):
         total_page = driver.find_elements_by_css_selector('.nav-list-wrapper span:nth-child(2)>b')[0].text
         total_page = int(total_page)
         items = []
+
         for i in range(total_page):
             try:
                 res = driver.find_elements_by_css_selector('.table tbody>tr')
@@ -84,31 +86,35 @@ class Atl1Spider(scrapy.Spider):
         display.stop()
         driver.quit()
 
+        querysetlist = []
+        old_list_qty = warehouse_date_data(['ATL'])
+        new_qtys = {}
         for i, val in enumerate(items, 0):
-            for n, v in enumerate(items, 0):
-                if v['sku'] == val['sku'] and not i == n:
-                    val['qty'] = int(v['qty']) + int(val['qty'])
-                    del items[n]
-            date_now = datetime.now()
-            date0 = date_now.strftime('%Y-%m-%d')
-            obj = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'], created__contains=date0)
-            date1 = date_now - timedelta(days=1)
-            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse=val['warehouse'],
-                                                  created__contains=date1.strftime('%Y-%m-%d'))
-            if obj1:
-                val['qty1'] = obj1[0].qty - int(val['qty'])
-            if obj:
-                obj.delete()
-            yield val
+            try:
+                for n, v in enumerate(items, 0):
+                    if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
+                        val['qty'] = int(v['qty']) + int(val['qty'])
+                        del items[n]
+                val['qty1'] = 0
+                if old_list_qty:
+                    key1 = val['warehouse'] + val['sku']
+                    if key1 in old_list_qty:
+                        val['qty1'] = old_list_qty[key1] - int(val['qty'])
 
-            threshold = Thresholds.objects.filter(sku=val['sku'], warehouse=val['warehouse'])
-            user = SkuUsers.objects.filter(sku=val['sku'])
-            if threshold and threshold[0].threshold >= int(val['qty']):
-                if user:
-                    msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
-                        user[0].user.email, val['sku'], val['warehouse'], val['qty'], threshold[0].threshold)
+                querysetlist.append(WarehouseStocks(sku=val['sku'], warehouse=val['warehouse'], qty=val['qty'], qty1=val['qty1']))
 
+                new_key = val['warehouse'] + val['sku']
+                new_qtys.update({
+                    new_key: val['qty']
+                })
+            except OperationalError:
+                connection.close()
+                connection.cursor()
+                continue
+
+        WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('ATL')
+        msg_str2 = warehouse_threshold_msgs(new_qtys, ['ATL'])
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:

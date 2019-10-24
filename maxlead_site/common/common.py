@@ -3,8 +3,10 @@
 import os
 from datetime import *
 from django.db.models import Count
+from django.db import connection
+from django.db.utils import OperationalError
 from maxlead_site.models import UserAsins,UserProfile
-from max_stock.models import UserEmailMsg,SkuUsers,Thresholds
+from max_stock.models import UserEmailMsg,SkuUsers,Thresholds,WarehouseStocks
 from maxlead_site.common.npextractor import NPExtractor
 from maxlead import settings
 from django.core.mail import send_mail
@@ -206,7 +208,31 @@ def warehouse_threshold_msgs(qtys,warehouse=None):
         t_key = val.warehouse + val.sku
         if t_key in qtys and val.threshold >= int(qtys[t_key]) and users:
             for usr in users:
-                if usr.sku == val.sku and usr[0].user.email:
+                if usr.sku == val.sku and usr.user.email:
                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
-                        usr[0].user.email, val.sku, val.warehouse, qtys[t_key], val.threshold)
+                        usr.user.email, val.sku, val.warehouse, qtys[t_key], val.threshold)
     return msg_str2
+
+def warehouse_date_data(warehouse):
+    date_now = datetime.now()
+    date0 = date_now.strftime('%Y-%m-%d')
+    obj = WarehouseStocks.objects.filter(warehouse__in=warehouse, created__contains=date0)
+    try:
+        if obj:
+            obj.delete()
+    except OperationalError:
+        connection.close()
+        connection.cursor()
+        obj = WarehouseStocks.objects.filter(warehouse__in=warehouse, created__contains=date0)
+        if obj:
+            obj.delete()
+
+    date1 = date_now - timedelta(days=1)
+    old_list_qty = {}
+    old_list = WarehouseStocks.objects.filter(warehouse__in=warehouse, created__contains=date1.strftime('%Y-%m-%d'))
+    for val in old_list:
+        o_key = val.warehouse + val.sku
+        old_list_qty.update({
+            o_key: val.qty
+        })
+    return old_list_qty
