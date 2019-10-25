@@ -101,7 +101,7 @@ def fba_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        file = open(file_path, 'r', encoding='utf-8')
+        file = open(file_path, 'r')
         csv_files = csv.reader(file)
         msg = 'Successfully!\n'
         file_name1 = 'Fba-Account-customer%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
