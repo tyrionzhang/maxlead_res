@@ -21,7 +21,7 @@ from maxlead_site.common.common import restart_postgres
 
 os.popen('scrapyd')
 
-time_re5 = int(get_send_time('06:10'))
+time_re5 = int(get_send_time('08:10'))
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
 t4.start()
 
