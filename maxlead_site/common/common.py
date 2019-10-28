@@ -243,6 +243,6 @@ def restart_postgres():
     try:
         connection.cursor()
     except OperationalError:
-        os.popen('service postgresql-9.3 start')
+        os.system('service postgresql-9.3 start')
         print(u'启动数据库~')
     t.start()
