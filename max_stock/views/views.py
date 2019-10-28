@@ -231,8 +231,12 @@ def help_page(request):
 
     return render(request, "Stocks/users_sku/help_page.html")
 
-def update_spiders_logs(name, is_done=0):
-    obj = SpidersLogs.objects.filter(is_done=0)
+def update_spiders_logs(name, is_done=0, log_id=None):
+
+    if log_id:
+        obj = SpidersLogs.objects.filter(id=log_id)
+    else:
+        obj = SpidersLogs.objects.filter(is_done=0)
     if obj:
         now_time = datetime.now().strftime("%m-%d %H:%M:%S")
         now_time1 = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -275,15 +279,15 @@ def check_spiders():
         des = obj[0].description
         spiders = []
         if 'ZTO' not in des:
-            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider')
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider -d log_id=%s' % obj[0].id)
         if 'ATL' not in des:
-            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider')
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider -d log_id=%s' % obj[0].id)
         if 'Hanover' not in des:
-            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider')
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d log_id=%s' % obj[0].id)
         if 'TWU' not in des:
-            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider')
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d log_id=%s' % obj[0].id)
         if '3pl' not in des:
-            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider')
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d log_id=%s' % obj[0].id)
         if spiders:
             os.chdir(work_path)
             os.popen('scrapyd-deploy')

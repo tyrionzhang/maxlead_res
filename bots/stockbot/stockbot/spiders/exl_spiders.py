@@ -23,19 +23,13 @@ class ExlSpider(scrapy.Spider):
         # 'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl=%7b340efd05-b1c7-453f-be02-39bebb462163%7d&type=myweb'
     ]
     sku_list = []
+    log_id = None
     stock_names = ['M&L','Match Land','Parts']
 
-    # def __init__(self, username=None, *args, **kwargs):
-    #     super(ExlSpider, self).__init__(*args, **kwargs)
-    #     file_name = 'userSkus_txt.txt'
-    #     if username:
-    #         file_name = 'userSkus_txt_%s.txt' % username
-    #     file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, file_name)
-    #     with open(file_path, "r") as f:
-    #         sku_list = f.read()
-    #         f.close()
-    #     if sku_list:
-    #         self.sku_list = eval(sku_list)
+    def __init__(self, log_id=None, *args, **kwargs):
+        super(ExlSpider, self).__init__(*args, **kwargs)
+        if log_id:
+            self.log_id = int(log_id)
 
     def parse(self, response):
         file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
@@ -207,7 +201,7 @@ class ExlSpider(scrapy.Spider):
                 continue
 
         WarehouseStocks.objects.bulk_create(querysetlist)
-        update_spiders_logs('3pl')
+        update_spiders_logs('3pl', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['EXL', 'TFD', 'ROL'])
         check_spiders()
 

@@ -11,17 +11,12 @@ class TwuSpider(scrapy.Spider):
     sku_list = []
     msg_str1 = 'complete\n'
 
-    # def __init__(self, username=None, *args, **kwargs):
-    #     super(TwuSpider, self).__init__(*args, **kwargs)
-    #     file_name = 'userSkus_txt.txt'
-    #     if username:
-    #         file_name = 'userSkus_txt_%s.txt' % username
-    #     file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, file_name)
-    #     with open(file_path, "r") as f:
-    #         sku_list = f.read()
-    #         f.close()
-    #     if sku_list:
-    #         self.sku_list = eval(sku_list)
+    log_id = None
+
+    def __init__(self, log_id=None, *args, **kwargs):
+        super(TwuSpider, self).__init__(*args, **kwargs)
+        if log_id:
+            self.log_id = int(log_id)
 
     def start_requests(self):
         return [Request("http://www.thewarehouseusadata.com/maxlead/inventory.php", meta={'cookiejar': 1}, callback=self.post_login)]
@@ -83,7 +78,7 @@ class TwuSpider(scrapy.Spider):
                         new_key: item['qty']
                     })
                     yield item
-        update_spiders_logs('TWU')
+        update_spiders_logs('TWU', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['TWU'])
 
         if not os.path.isfile(file_path):
