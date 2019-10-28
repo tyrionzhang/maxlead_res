@@ -246,7 +246,7 @@ def update_spiders_logs(name, is_done=0, log_id=None):
             is_done = 1
         if is_done:
             obj.update(is_done=is_done, end_time=now_time1)
-        return obj
+        return obj[0].id
 
 def kill_postgres_on_type():
     t = threading.Timer(86400.0, kill_postgres_on_type)
@@ -270,9 +270,12 @@ def run_zto_spiders():
     os.chdir(settings.ROOT_PATH)
     t.start()
 
-def check_spiders():
-    date_now = datetime.now().strftime('%Y-%m-%d')
-    obj = SpidersLogs.objects.filter(created__contains=date_now).order_by('-created')
+def check_spiders(new_log=None):
+    if new_log:
+        obj = SpidersLogs.objects.filter(id=new_log)
+    else:
+        date_now = datetime.now().strftime('%Y-%m-%d')
+        obj = SpidersLogs.objects.filter(created__contains=date_now).order_by('-created')
     if obj:
         os.popen('killall -9 firefox')
         work_path = settings.STOCHS_SPIDER_URL

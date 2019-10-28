@@ -201,9 +201,9 @@ class ExlSpider(scrapy.Spider):
                 continue
 
         WarehouseStocks.objects.bulk_create(querysetlist)
-        update_spiders_logs('3pl', log_id=self.log_id)
+        new_log = update_spiders_logs('3pl', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['EXL', 'TFD', 'ROL'])
-        check_spiders()
+        check_spiders(new_log)
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
