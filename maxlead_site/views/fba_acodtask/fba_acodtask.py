@@ -139,7 +139,7 @@ def fba_import(request):
         bill_sheet.write_row('A1', bill_title, bold3)
         tracking_sheet.write_row('A1', tracking_title, bold4)
 
-        i = 1
+        i = 0
         check_li = {}
         while line:
             try:
