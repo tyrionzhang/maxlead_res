@@ -56,9 +56,9 @@ class ExlSpider(scrapy.Spider):
         url = response.url
         driver.get(url)
         time.sleep(3)
-        elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
-        elem_pass = driver.find_elements_by_id('Loginmodule1_Password')
-        btn_login = driver.find_elements_by_id('Loginmodule1_Submit1')
+        elem_name = driver.find_elements_by_id('login')
+        elem_pass = driver.find_elements_by_id('password')
+        btn_login = driver.find_elements_by_css_selector('input[type="submit"]')
         # sel_stock = driver.find_elements_by_id('StockStatusViewer__ctl1__ctl5__ctl0')
 
         # if type == 'myweb':
