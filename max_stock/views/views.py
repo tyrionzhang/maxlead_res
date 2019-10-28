@@ -265,3 +265,30 @@ def run_zto_spiders():
     os.popen(cmd_str5)
     os.chdir(settings.ROOT_PATH)
     t.start()
+
+def check_spiders():
+    date_now = datetime.now().strftime('%Y-%m-%d')
+    obj = SpidersLogs.objects.filter(created__contains=date_now).order_by('-created')
+    if obj:
+        os.popen('killall -9 firefox')
+        work_path = settings.STOCHS_SPIDER_URL
+        des = obj[0].description
+        spiders = []
+        if 'ZTO' not in des:
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=zto_spider')
+        if 'ATL' not in des:
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=atl1_spider')
+        if 'Hanover' not in des:
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider')
+        if 'TWU' not in des:
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider')
+        if '3pl' not in des:
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider')
+        if spiders:
+            os.chdir(work_path)
+            os.popen('scrapyd-deploy')
+            for val in spiders:
+                os.popen(val)
+                time.sleep(300)
+        os.chdir(settings.ROOT_PATH)
+        os.popen('killall -9 firefox')

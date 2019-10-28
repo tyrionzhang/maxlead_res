@@ -239,9 +239,10 @@ def warehouse_date_data(warehouse):
     return old_list_qty
 
 def restart_postgres():
-    t = threading.Timer(900.0, restart_postgres)
+    t = threading.Timer(300.0, restart_postgres)
     try:
         connection.cursor()
     except OperationalError:
         os.popen('service postgresql-9.3 start')
+        print(u'启动数据库~')
     t.start()

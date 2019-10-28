@@ -2,7 +2,6 @@
 import scrapy,os
 from datetime import *
 import time
-import csv
 import xlrd
 from django.db import connection
 from django.db.utils import OperationalError
@@ -12,7 +11,7 @@ from selenium.webdriver.support.ui import Select
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
-from max_stock.views.views import update_spiders_logs
+from max_stock.views.views import update_spiders_logs,check_spiders
 from maxlead_site.common.common import spiders_send_email,kill_pid_for_name,to_int,warehouse_threshold_msgs,warehouse_date_data
 
 class ExlSpider(scrapy.Spider):
@@ -209,8 +208,8 @@ class ExlSpider(scrapy.Spider):
 
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('3pl')
-
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['EXL', 'TFD', 'ROL'])
+        check_spiders()
 
         if not os.path.isfile(file_path):
             with open(file_path, "w+") as f:
