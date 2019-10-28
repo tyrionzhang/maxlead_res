@@ -238,6 +238,7 @@ def update_spiders_logs(name, is_done=0, log_id=None):
     else:
         obj = SpidersLogs.objects.filter(is_done=0)
     if obj:
+        id = obj[0].id
         now_time = datetime.now().strftime("%m-%d %H:%M:%S")
         now_time1 = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         des_str = obj[0].description + '%s的数据已拉取完毕,时间%s<br>' % (name, now_time)
@@ -246,7 +247,7 @@ def update_spiders_logs(name, is_done=0, log_id=None):
             is_done = 1
         if is_done:
             obj.update(is_done=is_done, end_time=now_time1)
-        return obj[0].id
+        return id
 
 def kill_postgres_on_type():
     t = threading.Timer(86400.0, kill_postgres_on_type)
