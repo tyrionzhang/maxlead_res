@@ -33,6 +33,8 @@ def fba_acodtask(request):
     re_limit = limit
     total_count = 0
     total_page = 0
+    if int(page) <= 0:
+        page = 1
 
     store_data = []
     if user.user.is_superuser or user.group.user.username == 'Landy' or user.group.user.username == 'admin' or user.user.username == 'Landy':
@@ -71,7 +73,7 @@ def fba_acodtask(request):
         'user': user,
         'ordder_field': ordder_field,
         'order_desc': order_desc,
-        'date_range': datetime.datetime.now().strftime('%Y-%m'),
+        'date_range': datetime.datetime.now().strftime('%Y-%m-%d'),
         'avator': user.user.username[0],
         'store_list': store_data
     }
@@ -93,7 +95,7 @@ def fba_import(request):
             return HttpResponse(json.dumps({'code': 0, 'msg': u'Store Id error!'}), content_type='application/json')
         if not myfile:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'File is empty!'}),content_type='application/json')
-        if myfile.name[-3:] != 'csv':
+        if myfile.name[-3:] != 'txt':
             return HttpResponse(json.dumps({'code': 0, 'msg': u'File type error!'}), content_type='application/json')
 
         file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'excel_stocks', myfile.name)
@@ -102,7 +104,7 @@ def fba_import(request):
             f.write(chunk)
         f.close()
         file = open(file_path, 'r', encoding='unicode_escape')
-        csv_files = csv.reader(file)
+        line = file.readline()
         msg = 'Successfully!\n'
         file_name1 = 'Fba-Account-customer%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
         file_name2 = 'Fba-Account-order%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
@@ -136,49 +138,72 @@ def fba_import(request):
         order_sheet.write_row('A1', order_title, bold2)
         bill_sheet.write_row('A1', bill_title, bold3)
         tracking_sheet.write_row('A1', tracking_title, bold4)
-        for i, val in enumerate(csv_files, 0):
+
+        i = 1
+        check_li = {}
+        while line:
             try:
-                if i > 0:
-                    buyer_name = val[11]
-                    b_name = buyer_name.find(' ')
-                    if b_name == -1:
-                        first_name = buyer_name
-                        last_name = ''
-                    else:
-                        first_name = buyer_name[:b_name]
-                        last_name = buyer_name[b_name+1:]
-                    shp_date = ''
-                    if val[8]:
-                        shp_date_re = val[8][:10].split('-')
-                        shp_date = '%s/%s/%s' % (shp_date_re[2], shp_date_re[1], shp_date_re[0])
-                    if not val[17]:
-                        val[17] = 0
-                    if not val[40]:
-                        val[40] = 0
-                    amount = float(val[17]) + float(val[40])
-                    rate = 0
-                    if val[15]:
-                        rate = amount/float(val[15])
-                    amount = '%.2f' % amount
-                    rate = '%.2f' % rate
-                    if store_info[0].subsidiary == 'MaxLead International Limited : Match Land International limited':
-                        carrier = val[42] + '-1'
-                    else:
-                        carrier = val[42]
-                    customer_row = ['T',store_info[0].subsidiary,first_name,last_name,'','B2C Customer',val[10],val[12],
-                                    '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16],i]
-                    order_row = ['%s%s%s' % (date_range[2:].replace('-',''),val[0],store_id),val[0],shp_date,val[24],
-                                 'Pending Fulfillment','',store_id,store_info[0].subsidiary,'',val[16],store_info[0].payment,
-                                 val[13],store_info[0].location,val[15],rate,amount,0,0,0,0,0,0,i]
-                    bill_row = [val[0]]
-                    tracking_row = [val[0],shp_date,'','C',carrier,carrier,val[13],val[43],1,i]
-                    customer_sheet.write_row('A%s' % str(i+1), customer_row)
-                    order_sheet.write_row('A%s' % str(i+1), order_row)
-                    bill_sheet.write_row('A%s' % str(i+1), bill_row)
-                    tracking_sheet.write_row('A%s' % str(i+1), tracking_row)
+                val = line.split('\t')
+                if val[0] == 'amazon-order-id':
+                    line = file.readline()
+                    continue
+                if val[0][0:1] == 'S':
+                    line = file.readline()
+                    continue
+                i += 1
+                buyer_name = val[11]
+                b_name = buyer_name.find(' ')
+                if b_name == -1:
+                    first_name = buyer_name
+                    last_name = 'ML'
+                else:
+                    first_name = buyer_name[:b_name]
+                    last_name = buyer_name[b_name+1:]
+                shp_date = ''
+                if val[8]:
+                    shp_date_re = val[8][:10].split('-')
+                    shp_date = '%s/%s/%s' % (shp_date_re[2], shp_date_re[1], shp_date_re[0])
+                if not val[17]:
+                    val[17] = 0
+                if not val[40]:
+                    val[40] = 0
+                amount = float(val[17]) + float(val[40])
+                rate = 0
+                if val[15]:
+                    rate = amount/float(val[15])
+                amount = '%.2f' % amount
+                rate = '%.2f' % rate
+                if store_info[0].subsidiary == 'MaxLead International Limited : Match Land International limited':
+                    carrier = val[42] + '-1'
+                else:
+                    carrier = val[42]
+                po_sku = val[0] + val[13]
+                if po_sku in check_li:
+                    check_li.update({
+                        po_sku : check_li[po_sku] + 1
+                    })
+                else:
+                    check_li.update({
+                        po_sku : 0
+                    })
+                sort = check_li[po_sku]
+                customer_row = ['T',store_info[0].subsidiary,first_name,last_name,'','B2C Customer',val[10],val[12],
+                                '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16],sort]
+                order_row = ['%s%s%s' % (date_range[2:].replace('-',''),val[0],store_id),val[0],shp_date,val[24],
+                             'Pending Fulfillment','',store_id,store_info[0].subsidiary,'',val[16],store_info[0].payment,
+                             val[13],store_info[0].location,val[15],rate,amount,0,0,0,0,0,0,sort]
+                bill_row = [val[0]]
+                tracking_row = [val[0],shp_date,'','C',carrier,carrier,val[13],val[43],1,sort]
+                customer_sheet.write_row('A%s' % str(i+1), customer_row)
+                order_sheet.write_row('A%s' % str(i+1), order_row)
+                bill_sheet.write_row('A%s' % str(i+1), bill_row)
+                tracking_sheet.write_row('A%s' % str(i+1), tracking_row)
+                line = file.readline()
             except OperationalError:
                 msg += '第%s行添加有误。\n' % (i + 1)
                 continue
+
+        file.close()
         res = {'code': 1, 'msg': msg}
         workbook1.close()
         workbook3.close()
