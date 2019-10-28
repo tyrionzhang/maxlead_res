@@ -20,11 +20,11 @@ class ExlSpider(scrapy.Spider):
 
     msg_str1 = 'complete\n'
     start_urls = [
-        'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl={073abe7b-9d71-414d-9933-c71befa9e569}',
+        'https://secure-wms.com/smartui/?tplguid={073abe7b-9d71-414d-9933-c71befa9e569}',
         # 'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl=%7b340efd05-b1c7-453f-be02-39bebb462163%7d&type=myweb'
     ]
     sku_list = []
-    stock_names = ['M&L','Match Land','Parts', 'Tradeforce Inc']
+    stock_names = ['M&L','Match Land','Parts']
 
     # def __init__(self, username=None, *args, **kwargs):
     #     super(ExlSpider, self).__init__(*args, **kwargs)
@@ -54,7 +54,6 @@ class ExlSpider(scrapy.Spider):
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         url = response.url
-        type = url[-5:]
         driver.get(url)
         time.sleep(3)
         elem_name = driver.find_elements_by_id('Loginmodule1_UserName')
@@ -74,9 +73,12 @@ class ExlSpider(scrapy.Spider):
             elem_pass[0].send_keys('7G1#AJjX')
         btn_login[0].click()
         driver.implicitly_wait(100)
-        driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
+        driver.get('https://secure-wms.com/WebUI/V1/V1Link/StockStatusReport.aspx')
         driver.implicitly_wait(100)
         time.sleep(3)
+        close_guide = driver.find_elements_by_id('pendo-close-guide-cf441504')
+        if close_guide:
+            close_guide[0].click()
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
         list_rows.pop(-1)
@@ -86,7 +88,7 @@ class ExlSpider(scrapy.Spider):
             for i in range(0, length):
                 try:
                     if not i == 0:
-                        driver.get('https://secure-wms.com/PresentationTier/StockStatusReport.aspx')
+                        driver.get('https://secure-wms.com/WebUI/V1/V1Link/StockStatusReport.aspx')
                         driver.implicitly_wait(100)
                         time.sleep(3)
                         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
