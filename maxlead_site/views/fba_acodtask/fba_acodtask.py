@@ -3,10 +3,9 @@ import json,os
 import datetime,threading
 import zipfile
 import time
+import csv
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
-from django.db.utils import OperationalError
-import xlsxwriter
 from io import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from maxlead_site.views.app import App
@@ -110,26 +109,14 @@ def fba_import(request):
         file = open(file_path, 'r', encoding='unicode_escape')
         line = file.readline()
         msg = 'Successfully!\n'
-        file_name1 = 'Fba-Account-customer%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
-        file_name2 = 'Fba-Account-order%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
-        file_name3 = 'Fba-Account-bill%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
-        file_name4 = 'Fba-Account-tracking%s.xlsx' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        file_name1 = 'Fba-Account-customer%s.csv' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        file_name2 = 'Fba-Account-order%s.csv' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        file_name3 = 'Fba-Account-bill%s.csv' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
+        file_name4 = 'Fba-Account-tracking%s.csv' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
         files_dir1 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name1)
         files_dir2 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name2)
         files_dir3 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name3)
         files_dir4 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name4)
-        workbook1 = xlsxwriter.Workbook(files_dir1)
-        workbook2 = xlsxwriter.Workbook(files_dir2)
-        workbook3 = xlsxwriter.Workbook(files_dir3)
-        workbook4 = xlsxwriter.Workbook(files_dir4)
-        customer_sheet = workbook1.add_worksheet(u"Customer")
-        order_sheet = workbook2.add_worksheet(u"Order")
-        bill_sheet = workbook3.add_worksheet(u"Bill")
-        tracking_sheet = workbook4.add_worksheet(u"Tracking")
-        bold1 = workbook1.add_format({'bold': 1, 'align': 'center'})
-        bold2 = workbook2.add_format({'bold': 1, 'align': 'center'})
-        bold3 = workbook3.add_format({'bold': 1, 'align': 'center'})
-        bold4 = workbook4.add_format({'bold': 1, 'align': 'center'})
         customer_title = ['Individual', 'Subsidiary', 'First Name', 'Last Name', 'Sales Rep', 'Category', 'Email',
                           'Mobile Phone', 'Attention', 'Addressee', 'Shipping Phone', 'Address Line1', 'Address Line2',
                           'City', 'State', 'Zipcode', 'Country', 'Default Shipping', 'Currency', 'Sort']
@@ -138,85 +125,108 @@ def fba_import(request):
                        'Item Tax', 'Shipping Fee', 'Selling Fees', 'FBA Fees', 'Other Fees', 'Sort']
         bill_title = ['PO#']
         tracking_title = ['PO#', 'ShipDate', 'Memo', 'Status', 'Carrier', 'Method', 'SKU', 'Tracking', 'Weight', 'Sort']
-        customer_sheet.write_row('A1', customer_title, bold1)
-        order_sheet.write_row('A1', order_title, bold2)
-        bill_sheet.write_row('A1', bill_title, bold3)
-        tracking_sheet.write_row('A1', tracking_title, bold4)
-
         i = 0
         check_li = {}
+        customer_row = []
+        order_row = []
+        bill_row = []
+        tracking_row = []
         while line:
-            try:
-                val = line.split('\t')
-                if val[0] == 'amazon-order-id':
-                    line = file.readline()
-                    continue
-                if val[0][0:1] == 'S':
-                    line = file.readline()
-                    continue
-                i += 1
-                buyer_name = val[11]
-                b_name = buyer_name.find(' ')
-                if b_name == -1:
-                    first_name = buyer_name
-                    last_name = 'ML'
-                else:
-                    first_name = buyer_name[:b_name]
-                    last_name = buyer_name[b_name+1:]
-                shp_date = ''
-                if val[8]:
-                    shp_date_re = val[8][:10].split('-')
-                    shp_date = '%s/%s/%s' % (shp_date_re[2], shp_date_re[1], shp_date_re[0])
-                    shp_date1 = shp_date_re[0][-2:] + shp_date_re[1]
-                    shp_date_str = time.mktime(time.strptime(shp_date, '%d/%m/%Y'))
-                    if float(shp_date_str) < float(date_range_str) or float(shp_date_str) > float(date_range_end_str):
+            line = file.readline()
+            if line:
+                try:
+                    val = line.split('\t')
+                    if val[0][0:1] == 'S':
                         continue
-                if not val[17]:
-                    val[17] = 0
-                if not val[40]:
-                    val[40] = 0
-                amount = float(val[17]) + float(val[40])
-                rate = 0
-                if val[15]:
-                    rate = amount/float(val[15])
-                amount = '%.2f' % amount
-                rate = '%.2f' % rate
-                if store_info[0].subsidiary == 'MaxLead International Limited : Match Land International limited':
-                    carrier = val[42] + '-1'
-                else:
-                    carrier = val[42]
-                po_sku = val[0] + val[13]
-                if po_sku in check_li:
-                    check_li.update({
-                        po_sku : check_li[po_sku] + 1
-                    })
-                else:
-                    check_li.update({
-                        po_sku : 0
-                    })
-                sort = check_li[po_sku]
-                customer_row = ['T',store_info[0].subsidiary,first_name,last_name,'','B2C Customer',val[10],val[12],
-                                '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16],sort]
-                order_row = ['%s#%s#%s' % (shp_date1,val[0],store_id),val[0],shp_date,val[24],
-                             'Pending Fulfillment','',store_id,store_info[0].subsidiary,'',val[16],store_info[0].payment,
-                             val[13],store_info[0].location,val[15],rate,amount,0,0,0,0,0,0,sort]
-                bill_row = [val[0]]
-                tracking_row = [val[0],shp_date,'','C',carrier,carrier,val[13],val[43],1,sort]
-                customer_sheet.write_row('A%s' % str(i+1), customer_row)
-                order_sheet.write_row('A%s' % str(i+1), order_row)
-                bill_sheet.write_row('A%s' % str(i+1), bill_row)
-                tracking_sheet.write_row('A%s' % str(i+1), tracking_row)
-                line = file.readline()
-            except OperationalError:
-                msg += '第%s行添加有误。\n' % (i + 1)
-                continue
+                    i += 1
+                    buyer_name = val[11]
+                    b_name = buyer_name.find(' ')
+                    if b_name == -1:
+                        first_name = buyer_name
+                        last_name = 'ML'
+                    else:
+                        first_name = buyer_name[:b_name]
+                        last_name = buyer_name[b_name+1:]
+                    shp_date = ''
+                    if val[8]:
+                        shp_date_re = val[8][:10].split('-')
+                        shp_date = '%s/%s/%s' % (shp_date_re[2], shp_date_re[1], shp_date_re[0])
+                        shp_date1 = shp_date_re[0][-2:] + shp_date_re[1]
+                        shp_date_str = time.mktime(time.strptime(shp_date, '%d/%m/%Y'))
+                        if float(shp_date_str) < float(date_range_str) or float(shp_date_str) > float(date_range_end_str):
+                            continue
+                    else:
+                        continue
+                    if not val[17]:
+                        val[17] = 0
+                    if not val[40]:
+                        val[40] = 0
+                    amount = float(val[17]) + float(val[40])
+                    rate = 0
+                    if val[15]:
+                        rate = amount/float(val[15])
+                    amount = '%.2f' % amount
+                    rate = '%.2f' % rate
+                    if store_info[0].subsidiary == 'MaxLead International Limited : Match Land International limited':
+                        carrier = val[42] + '-1'
+                    else:
+                        carrier = val[42]
+                    po_sku = val[0] + val[13]
+                    if po_sku in check_li:
+                        check_li.update({
+                            po_sku : check_li[po_sku] + 1
+                        })
+                    else:
+                        check_li.update({
+                            po_sku : 0
+                        })
+                    sort = check_li[po_sku]
+                    customer_row.append(['T',store_info[0].subsidiary,first_name,last_name,'','B2C Customer',val[10],val[12],
+                                    '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16],sort])
+                    order_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id),val[0],shp_date,val[24],
+                                 'Pending Fulfillment','',store_id,store_info[0].subsidiary,'',val[16],store_info[0].payment,
+                                 val[13],store_info[0].location,val[15],rate,amount,0,0,0,0,0,0,sort])
+                    bill_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id)])
+                    tracking_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id),shp_date,'','C',carrier,carrier,val[13],val[43],1,sort])
+                except:
+                    msg += '第%s行添加有误。\n' % (i + 1)
+                    continue
+
+        if customer_row:
+            with open(files_dir1, "w", newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                # 先写入columns_name
+                writer.writerow(customer_title)
+                # 写入多行用writerows
+                writer.writerows(customer_row)
+            csvfile.close()
+
+            with open(files_dir2, "w", newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                # 先写入columns_name
+                writer.writerow(order_title)
+                # 写入多行用writerows
+                writer.writerows(order_row)
+            csvfile.close()
+
+            with open(files_dir3, "w", newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                # 先写入columns_name
+                writer.writerow(bill_title)
+                # 写入多行用writerows
+                writer.writerows(bill_row)
+            csvfile.close()
+
+            with open(files_dir4, "w", newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                # 先写入columns_name
+                writer.writerow(tracking_title)
+                # 写入多行用writerows
+                writer.writerows(tracking_row)
+            csvfile.close()
 
         file.close()
         res = {'code': 1, 'msg': msg}
-        workbook1.close()
-        workbook3.close()
-        workbook2.close()
-        workbook4.close()
         zip_name = 'Fba-Account-export%s.zip' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
         zip_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, zip_name)
         f = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
