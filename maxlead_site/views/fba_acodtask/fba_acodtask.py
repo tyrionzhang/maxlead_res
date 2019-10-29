@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import json,os
-import datetime,csv,threading
+import datetime,threading
 import zipfile
+import time
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from django.db.utils import OperationalError
@@ -90,6 +91,9 @@ def fba_import(request):
         myfile = request.FILES.get('my_file','')
         store_id = request.POST.get('store_id','')
         date_range = request.POST.get('date_range','')
+        date_range_end = request.POST.get('date_range_end','')
+        date_range_str = time.mktime(time.strptime(date_range,'%Y-%m-%d'))
+        date_range_end_str = time.mktime(time.strptime(date_range_end,'%Y-%m-%d'))
         store_info = StoreInfo.objects.filter(store_id=store_id)
         if not store_info:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'Store Id error!'}), content_type='application/json')
@@ -163,6 +167,10 @@ def fba_import(request):
                 if val[8]:
                     shp_date_re = val[8][:10].split('-')
                     shp_date = '%s/%s/%s' % (shp_date_re[2], shp_date_re[1], shp_date_re[0])
+                    shp_date1 = shp_date_re[0][-2:] + shp_date_re[1]
+                    shp_date_str = time.mktime(time.strptime(shp_date, '%d/%m/%Y'))
+                    if float(shp_date_str) < float(date_range_str) or float(shp_date_str) > float(date_range_end_str):
+                        continue
                 if not val[17]:
                     val[17] = 0
                 if not val[40]:
@@ -189,7 +197,7 @@ def fba_import(request):
                 sort = check_li[po_sku]
                 customer_row = ['T',store_info[0].subsidiary,first_name,last_name,'','B2C Customer',val[10],val[12],
                                 '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16],sort]
-                order_row = ['%s%s%s' % (date_range[2:].replace('-',''),val[0],store_id),val[0],shp_date,val[24],
+                order_row = ['%s#%s#%s' % (shp_date1,val[0],store_id),val[0],shp_date,val[24],
                              'Pending Fulfillment','',store_id,store_info[0].subsidiary,'',val[16],store_info[0].payment,
                              val[13],store_info[0].location,val[15],rate,amount,0,0,0,0,0,0,sort]
                 bill_row = [val[0]]

@@ -16,8 +16,11 @@
                             {% endfor %}
                         </ul>
                     </div>
+                    <br><br>
                     <label>Date Range:</label>
-                    <input type="date" name="date_range" value="{{ date_range }}" class="range-type"/><br><br>
+                    <input type="date" name="date_range" value="{{ date_range }}" class="range-type"/>
+                    <input type="date" name="date_range_end" value="{{ date_range }}" class="range-type"/>
+                    <br><br>
                     <label>请选择文件:</label>
                     <input type="file" name="my_file"><br><br>
                     <div class="actionButton">
@@ -159,10 +162,12 @@
                 var file_info = $('input[name="my_file"]')[0].files[0];
                 var store_id = $('input[name="store_id"]').val();
                 var date_range = $('input[name="date_range"]').val();
+                var date_range_end = $('input[name="date_range_end"]').val();
                 $(this).attr('disabled', 'true');
                 form_data.append('my_file',file_info);
                 form_data.append('store_id',store_id);
                 form_data.append('date_range',date_range);
+                form_data.append('date_range_end',date_range_end);
                 $.ajax({
                     url:'/admin/maxlead_site/fba_import/',
                     type:'POST',
