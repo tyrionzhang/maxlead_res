@@ -22,8 +22,11 @@ from maxlead_site.common.common import restart_postgres
 os.popen('scrapyd')
 
 time_re5 = int(get_send_time('08:10'))
+time_re51 = int(get_send_time('21:00'))
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
+t41 = threading.Timer(float('%.1f' % time_re51), run_command_queue)
 t4.start()
+t41.start()
 
 time_re_pc = int(get_send_time('05:00'))
 t4_pc = threading.Timer(float('%.1f' % time_re_pc), copy_stocks_of_pc)
@@ -35,10 +38,6 @@ t.start()
 time_tr_re = int(get_send_time('15:00'))
 t_tr = threading.Timer(float('%.1f' % time_tr_re), get_tracking_order_status)
 t_tr.start()
-
-time_t_kil_re = int(get_send_time('09:00'))
-t_kil_pid = threading.Timer(float('%.1f' % time_tr_re), kill_postgres_on_type)
-t_kil_pid.start()
 
 time_del_ord_re = int(get_send_time('01:00'))
 t_del_ord_pid = threading.Timer(float('%.1f' % time_del_ord_re), del_orders)
