@@ -147,12 +147,11 @@ def fba_import(request):
                     else:
                         first_name = buyer_name[:b_name]
                         last_name = buyer_name[b_name+1:]
-                    shp_date = ''
                     if val[8]:
                         shp_date_re = val[8][:10].split('-')
-                        shp_date = '%s/%s/%s' % (shp_date_re[2], shp_date_re[1], shp_date_re[0])
+                        shp_date = '%s/%s/%s' % (shp_date_re[1], shp_date_re[2], shp_date_re[0])
                         shp_date1 = shp_date_re[0][-2:] + shp_date_re[1]
-                        shp_date_str = time.mktime(time.strptime(shp_date, '%d/%m/%Y'))
+                        shp_date_str = time.mktime(time.strptime(shp_date, '%m/%d/%Y'))
                         if float(shp_date_str) < float(date_range_str) or float(shp_date_str) > float(date_range_end_str):
                             continue
                     else:
@@ -185,7 +184,7 @@ def fba_import(request):
                                     '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16],sort])
                     order_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id),val[0],shp_date,val[24],
                                  'Pending Fulfillment','',store_id,store_info[0].subsidiary,'',val[16],store_info[0].payment,
-                                 val[13],store_info[0].location,val[15],rate,amount,0,0,0,0,0,0,sort])
+                                 val[13],store_info[0].location,val[15],rate,amount,'',0,0,0,0,0,sort])
                     bill_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id)])
                     tracking_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id),shp_date,'','C',carrier,carrier,val[13],val[43],1,sort])
                 except:
