@@ -243,6 +243,22 @@ def restart_postgres():
     try:
         connection.cursor()
     except OperationalError:
+        lines = os.popen('ps -ef | grep %s' % 'postgres')
+        for path in lines:
+            try:
+                client = path.split(' ')
+                progress = path.split(' ')[1]
+                if progress:
+                    os.popen('kill %s' % progress)
+
+                if "idle" in client:
+                    progress = path.split(' ')[2]
+                    if not progress:
+                        progress = path.split(' ')[1]
+                    if progress:
+                        os.popen('kill %s' % progress)
+            except:
+                continue
         os.system('service postgresql-9.3 start')
         print(u'启动数据库~')
     t.start()
