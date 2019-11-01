@@ -119,12 +119,12 @@ def fba_import(request):
         files_dir4 = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, file_name4)
         customer_title = ['Individual', 'Subsidiary', 'First Name', 'Last Name', 'Sales Rep', 'Category', 'Email',
                           'Mobile Phone', 'Attention', 'Addressee', 'Shipping Phone', 'Address Line1', 'Address Line2',
-                          'City', 'State', 'Zipcode', 'Country', 'Default Shipping', 'Currency', 'Sort']
+                          'City', 'State', 'Zipcode', 'Country', 'Default Shipping', 'Currency']
         order_title = ['Externalid','PO#', 'Date', 'Customer', 'Status', 'Memo', 'StoreID', 'Subsidiary', 'Walmart Order#',
                        'Currency', 'Payment Method', 'SKU', 'Location', 'Quantity', 'Rate', 'Amount', 'TaxCode',
                        'Item Tax', 'Shipping Fee', 'Selling Fees', 'FBA Fees', 'Other Fees', 'Sort']
         bill_title = ['PO#']
-        tracking_title = ['PO#', 'ShipDate', 'Memo', 'Status', 'Carrier', 'Method', 'SKU', 'Tracking', 'Weight', 'Sort']
+        tracking_title = ['PO#', 'ShipDate', 'Memo', 'Status', 'Carrier', 'Method', 'SKU', 'Tracking', 'Weight']
         i = 0
         check_li = {}
         customer_row = []
@@ -181,12 +181,12 @@ def fba_import(request):
                         })
                     sort = check_li[po_sku]
                     customer_row.append(['T',store_info[0].subsidiary,first_name,last_name,'','B2C Customer',val[10],val[12],
-                                    '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16],sort])
+                                    '', val[24],'',val[25],'',val[28],val[29],val[30],'United States','T',val[16]])
                     order_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id),val[0],shp_date,val[24],
                                  'Pending Fulfillment','',store_id,store_info[0].subsidiary,'',val[16],store_info[0].payment,
                                  val[13],store_info[0].location,val[15],rate,amount,'',0,0,0,0,0,sort])
                     bill_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id)])
-                    tracking_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id),shp_date,'','C',carrier,carrier,val[13],val[43],1,sort])
+                    tracking_row.append(['%s#%s#%s' % (shp_date1,val[0],store_id),shp_date,'','C',carrier,carrier,val[13],'',1])
                 except:
                     msg += '第%s行添加有误。\n' % (i + 1)
                     continue

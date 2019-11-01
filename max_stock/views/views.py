@@ -308,9 +308,9 @@ def check_spiders(new_log=None):
 def get_kit_skus():
     headers = {
         'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
-        'Cookie' : 'NS_VER=2019.2.0; JSESSIONID=6s6xDsglOdukXqj7oNT2-sAAaCC0v8MEQclWEp-AlWOZzUEWmYwCyzmvGwTegwVYDhVKbyo2MNH0CJa--kkpPJyOkks1B9CGWUwO1s1sfFONbF2EYvVcAseCYCQEHsLj!532044835'
+        'Authorization': 'NLAuth nlauth_account=5339579, nlauth_email=rudy.zhangwei@cdsht.cn, nlauth_signature=Maxlead123, nlauth_role=3'
     }
-    url = 'https://debugger.na2.netsuite.com/app/site/hosting/restlet.nl?script=376&deploy=1&start_date=%s&end_date=%s'
+    url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=376&deploy=1&start_date=%s&end_date=%s'
     kit_obj = KitSkus.objects.all().order_by('-created')
     start_date = '10/24/2019'
     if kit_obj:
