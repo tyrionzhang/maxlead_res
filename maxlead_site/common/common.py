@@ -241,7 +241,8 @@ def warehouse_date_data(warehouse):
 def restart_postgres():
     t = threading.Timer(300.0, restart_postgres)
     try:
-        connection.cursor()
+        curs = connection.cursor()
+        curs.close()
     except OperationalError:
         lines = os.popen('ps -ef | grep %s' % 'postgres')
         for path in lines:
