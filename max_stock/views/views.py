@@ -1,14 +1,17 @@
 import os,sched,calendar
 from datetime import *
 import queue
+import json
 import threading
 import time
+import requests
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from maxlead_site.views.app import App
 from maxlead import settings
 from maxlead_site.models import UserProfile
 from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg,SpidersLogs
+from max_stock.models import KitSkus
 from django.http import HttpResponse
 from max_stock.views.stocks import covered_stocks
 from maxlead_site.common.common import kill_pid_for_name
@@ -301,3 +304,29 @@ def check_spiders(new_log=None):
                 time.sleep(300)
         os.chdir(settings.ROOT_PATH)
         os.popen('killall -9 firefox')
+
+def get_kit_skus():
+    headers = {
+        'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
+        'Cookie' : 'NS_VER=2019.2.0; JSESSIONID=6s6xDsglOdukXqj7oNT2-sAAaCC0v8MEQclWEp-AlWOZzUEWmYwCyzmvGwTegwVYDhVKbyo2MNH0CJa--kkpPJyOkks1B9CGWUwO1s1sfFONbF2EYvVcAseCYCQEHsLj!532044835'
+    }
+    url = 'https://debugger.na2.netsuite.com/app/site/hosting/restlet.nl?script=376&deploy=1&start_date=%s&end_date=%s'
+    kit_obj = KitSkus.objects.all().order_by('-created')
+    start_date = '10/24/2019'
+    if kit_obj:
+        start_date = kit_obj[0].created.strftime("%m/%d/%Y")
+    url = url % (start_date, datetime.now().strftime("%m/%d/%Y"))
+    res = requests.get(url, headers=headers)
+    res = json.loads(res.content.decode())
+    querylist = []
+    for val in res:
+        try:
+            che = KitSkus.objects.filter(kit=val['kit'])
+            if che:
+                che.update(sku=val['sku'])
+            else:
+                querylist.append(KitSkus(kit=val['kit'], sku=val['sku']))
+        except:
+            continue
+    if querylist:
+        KitSkus.objects.bulk_create(querylist)

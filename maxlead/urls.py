@@ -40,6 +40,8 @@ from max_stock.views import setting
 from max_stock.views import employees
 from max_stock.views import tracking_orders
 from max_stock.views import order_email_temp as emailTmp,order_items
+from max_stock.views import sfp_temp
+from max_stock.views import sfp_items
 from django.views import static
 from maxlead import settings
 
@@ -174,6 +176,17 @@ urlpatterns = [
     url('^admin/max_stock/import_sku/', skus.import_sku),
     url('^admin/max_stock/del_sku/', skus.del_sku),
     url('^admin/max_stock/logs/', skus.logs),
+    url('^admin/max_stock/sfp_temp/', sfp_temp.sfp_temp),
+    url('^admin/max_stock/import_stemp/', sfp_temp.import_stemp),
+    url('^admin/max_stock/save_stemp/', sfp_temp.save_stemp),
+    url('^admin/max_stock/export_stemp/', sfp_temp.export_stemp),
+    url('^admin/max_stock/import_kit/', sfp_temp.import_kit),
+    url('^admin/max_stock/sfp/', sfp_items.sfp_items),
+    url('^admin/max_stock/import_sitem/', sfp_items.import_sitem),
+    url('^admin/max_stock/export_sfp/', sfp_items.export_sfp),
+    url('^admin/max_stock/save_sfp/', sfp_items.save_sfp),
+
+
     url('^admin/auto_email/code_index/', auto_email.code_index),
     url('^admin/auto_email/code_save/', auto_email.code_save),
     url('^admin/auto_email/orders/', auto_email.orders),

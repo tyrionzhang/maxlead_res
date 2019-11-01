@@ -188,6 +188,31 @@ class SpidersLogs(models.Model):
     class Meta:
         db_table = 'spiders_logs'
 
+class KitSkus(models.Model):
+    kit = models.CharField('Kit', max_length=522, default='')
+    sku = models.CharField('sku', max_length=522, default='')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'kit_skus'
+
+class Sfps(models.Model):
+    item = models.CharField('Item', max_length=522, default='')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'sfps'
+
+class SfpTemps(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1)
+    sfp_temp = models.CharField('Sfp Temp', max_length=522, default='')
+    warehouse = models.CharField('Warehouse', max_length=522, default='')
+    inactive = models.CharField('Inactive', max_length=1, default='N')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'sfp_temps'
+
 
 
 

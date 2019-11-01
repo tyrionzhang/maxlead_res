@@ -72,6 +72,18 @@ MENUS = [
         'parent' : 'Warehouse'
     },
     {
+        'name' : 'Sfp Temp',
+        'url' : '/admin/max_stock/sfp_temp/',
+        'elem_id' : 'sfp_temp',
+        'parent' : 'Warehouse'
+    },
+    {
+        'name' : 'Sfp Exports',
+        'url' : '/admin/max_stock/sfp/',
+        'elem_id' : 'sfp_exports',
+        'parent' : 'Warehouse'
+    },
+    {
         'name' : 'Codes',
         'url' : '/admin/auto_email/code_index/',
         'elem_id' : 'codes',
