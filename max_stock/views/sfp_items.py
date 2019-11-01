@@ -2,10 +2,7 @@
 import os,json
 import xlrd
 from django.shortcuts import render,HttpResponse
-from datetime import *
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.db.models import Q
 from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
 from max_stock.models import KitSkus,Sfps,Thresholds,WarehouseStocks,SfpTemps
@@ -41,43 +38,44 @@ def sfp_items(request):
                 sku_list.append(kit_chec[0].sku)
     th_re = Thresholds.objects.filter(sku__in=sku_list)
     date_re = WarehouseStocks.objects.filter(sku__in=sku_list).order_by('-created')
-    ware_re = WarehouseStocks.objects.filter(sku__in=sku_list,created__contains=date_re[0].created.strftime('%Y-%m-%d'))
-    th_li = {}
-    sku_ware = {}
-    for val in th_re:
-        if val.warehouse == 'Hanover':
-            val.warehouse = 'HW'
-        th_li.update({
-            val.sku+val.warehouse : val.threshold
-        })
-    for val in ware_re:
-        if val.warehouse == 'Hanover':
-            val.warehouse = 'HW'
-        if val.sku not in th_li or th_li[val.sku+val.warehouse] < 30:
-            chec_th = 30
-        else:
-            chec_th = th_li[val.sku + val.warehouse]
-        if val.qty >= chec_th:
-            if val.sku in sku_ware:
-                sku_ware[val.sku] = sku_ware[val.sku] + val.warehouse + ','
-            else:
-                sku_ware.update({
-                    val.sku : val.warehouse + ','
-                })
-    for val in data_re:
-        if val['sku'] in sku_ware:
-            wares = sku_ware[val['sku']][0:-1]
-            sfp_t = SfpTemps.objects.filter(warehouse=wares).exclude(inactive='Y')
-            if sfp_t:
-                val.update({'sfp': sfp_t[0].sfp_temp})
-            else:
-                val.update({'sfp': ''})
-            val.update({'whs' : wares})
-        else:
-            val.update({
-                'whs': '',
-                'sfp': ''
+    if date_re:
+        ware_re = WarehouseStocks.objects.filter(sku__in=sku_list,created__contains=date_re[0].created.strftime('%Y-%m-%d'))
+        th_li = {}
+        sku_ware = {}
+        for val in th_re:
+            if val.warehouse == 'Hanover':
+                val.warehouse = 'HW'
+            th_li.update({
+                val.sku+val.warehouse : val.threshold
             })
+        for val in ware_re:
+            if val.warehouse == 'Hanover':
+                val.warehouse = 'HW'
+            if val.sku not in th_li or th_li[val.sku+val.warehouse] < 30:
+                chec_th = 30
+            else:
+                chec_th = th_li[val.sku + val.warehouse]
+            if val.qty >= chec_th:
+                if val.sku in sku_ware:
+                    sku_ware[val.sku] = sku_ware[val.sku] + val.warehouse + ','
+                else:
+                    sku_ware.update({
+                        val.sku : val.warehouse + ','
+                    })
+        for val in data_re:
+            if val['sku'] in sku_ware:
+                wares = sku_ware[val['sku']][0:-1]
+                sfp_t = SfpTemps.objects.filter(warehouse=wares).exclude(inactive='Y')
+                if sfp_t:
+                    val.update({'sfp': sfp_t[0].sfp_temp})
+                else:
+                    val.update({'sfp': ''})
+                val.update({'whs' : wares})
+            else:
+                val.update({
+                    'whs': '',
+                    'sfp': ''
+                })
 
     data = {
         'data': data_re,
