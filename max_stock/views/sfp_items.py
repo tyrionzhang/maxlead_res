@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import os,json
 import xlrd
+import time
+import threading
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
 from max_stock.models import KitSkus,Sfps,Thresholds,WarehouseStocks,SfpTemps
-from maxlead_site.common.excel_world import get_excel_file
+from django.http import StreamingHttpResponse
 from maxlead import settings
 
 @csrf_exempt
@@ -190,21 +192,30 @@ def export_sfp(request):
                 'whs': '',
                 'sfp': ''
             })
-    fields = [
-        'Kit',
-        'SKU',
-        'WHS',
-        'SFP',
-    ]
-
-    data_fields = [
-        'kit',
-        'sku',
-        'whs',
-        'sfp'
-    ]
-
-    return get_excel_file(request, data_re, fields, data_fields)
+    contents = ''
+    for val in data_re:
+        contents += '%s	%s\n' % (val['sku'], val['sfp'])
+    if contents:
+        file_name = 'SFP-%s.txt' % (time.strftime('%Y-%m-%d-%H%M%S'))
+        with open(file_name, 'w') as f:
+            f.write('sku	merchant_shipping_group_name\n')
+            f.write(contents)
+            f.close()
+        def file_iterator(file_name):
+            with open(file_name) as f:
+                while True:
+                    c = f.read()
+                    if c:
+                        yield c
+                    else:
+                        break
+                f.close()
+        response = StreamingHttpResponse(file_iterator(file_name))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(file_name)
+        t = threading.Timer(300.0, remove_file,[file_name])
+        t.start()
+        return response
 
 @csrf_exempt
 def save_sfp(request):
@@ -221,3 +232,6 @@ def save_sfp(request):
         sfp_obj.item = item
         sfp_obj.save()
         return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
+
+def remove_file(path):
+    os.remove(path)

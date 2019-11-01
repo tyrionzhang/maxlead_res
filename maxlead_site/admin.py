@@ -2,7 +2,7 @@
 from django.http import HttpResponse
 import xlsxwriter as xlsw
 from io import *
-import json,time
+import os,time
 from django.contrib import admin
 from maxlead_site.models import UserAsins,AsinReviews,Reviews,UserProfile
 
@@ -74,7 +74,6 @@ def get_excel_file(self, request, queryset):
         response = HttpResponse(output.read(),
                                 content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         response['Content-Disposition'] = "attachment; filename=%s" % file_name
-
         return response
 
 get_excel_file.short_description = "下载数据表"
