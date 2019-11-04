@@ -214,17 +214,20 @@ def export_sfp(request):
     for val in data_re:
         if val['sku'] in sku_ware:
             wares = sku_ware[val['sku']][0:-1]
-            wares_re = itertools.permutations(wares.split(','))
-            sfp_t = ''
-            for w_val in wares_re:
-                check_w = ','.join(w_val)
-                if check_w in sfps_re:
-                    sfp_t = sfps_re[check_w]
-                    break
-            if sfp_t:
-                val.update({'sfp': sfp_t})
+            if wares == 'EXL' or wares == 'TWU':
+                val.update({'sfp': 'Prime template--TX ONLY'})
             else:
-                val.update({'sfp': 'Default Amazon Template'})
+                wares_re = itertools.permutations(wares.split(','))
+                sfp_t = ''
+                for w_val in wares_re:
+                    check_w = ','.join(w_val)
+                    if check_w in sfps_re:
+                        sfp_t = sfps_re[check_w]
+                        break
+                if sfp_t:
+                    val.update({'sfp': sfp_t})
+                else:
+                    val.update({'sfp': 'Default Amazon Template'})
             val.update({'whs': wares})
         else:
             val.update({
