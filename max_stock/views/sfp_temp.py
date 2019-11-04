@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from max_stock.models import SfpTemps,KitSkus
 from maxlead_site.common.excel_world import get_excel_file
 from maxlead import settings
+from max_stock.views.views import get_kit_skus
 
 @csrf_exempt
 def sfp_temp(request):
@@ -79,6 +80,7 @@ def import_stemp(request):
         nrows = table.nrows
         msg = ''
         querylist = []
+        check_data = []
         for i in range(nrows):
             try:
                 if i + 1 < nrows:
@@ -89,7 +91,9 @@ def import_stemp(request):
                     if chec:
                         chec.update(warehouse=warehouse, inactive=inactive, user=user.user)
                     else:
-                        querylist.append(SfpTemps(sfp_temp=sfp_temp, warehouse=warehouse, inactive=inactive, user=user.user))
+                        if sfp_temp not in check_data:
+                            check_data.append(sfp_temp)
+                            querylist.append(SfpTemps(sfp_temp=sfp_temp, warehouse=warehouse, inactive=inactive, user=user.user))
             except:
                 msg += '第%s行添加有误。<br>' % (i + 1)
             continue
@@ -160,16 +164,20 @@ def import_kit(request):
         nrows = table.nrows
         msg = ''
         querylist = []
+        edit_list = []
         for i in range(nrows):
             try:
                 if i + 1 < nrows:
                     kit = table.cell_value(i + 1, 0, )
                     sku = table.cell_value(i + 1, 1, )
-                    chec = KitSkus.objects.filter(kit=kit)
+                    key = kit + sku
+                    chec = KitSkus.objects.filter(key=key)
                     if chec:
-                        chec.update(sku=sku)
+                        chec.update(sku=sku, kit=kit)
                     else:
-                        querylist.append(KitSkus(kit=kit, sku=sku))
+                        if key not in edit_list:
+                            edit_list.append(key)
+                            querylist.append(KitSkus(kit=kit, sku=sku, key=key))
             except:
                 msg += '第%s行添加有误。<br>' % (i + 1)
             continue
@@ -177,3 +185,15 @@ def import_kit(request):
             KitSkus.objects.bulk_create(querylist)
         os.remove(file_path)
         return HttpResponse(json.dumps({'code': 1, 'msg': msg}), content_type='application/json')
+
+@csrf_exempt
+def update_kits(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date', '')
+        start_date = start_date[0:10]
+        # kits = KitSkus.objects.all().delete()
+        get_kit_skus(start_date)
+    return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')

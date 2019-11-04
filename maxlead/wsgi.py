@@ -16,7 +16,6 @@ django.setup()
 from django.core.wsgi import get_wsgi_application
 from maxlead_site.views.views import download_listings,get_send_time,spiders2
 from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc,kill_postgres_on_type,del_orders
-from max_stock.views.views import get_kit_skus
 from max_stock.views.tracking_orders import get_tracking_order_status
 from maxlead_site.common.common import restart_postgres
 
@@ -47,8 +46,6 @@ t_del_ord_pid.start()
 t_restart_postgres = threading.Timer(1.0, restart_postgres)
 t_restart_postgres.start()
 
-t_get_kit = threading.Timer(1.0, get_kit_skus)
-t_get_kit.start()
 # os.chdir(settings.PROXY_URL)
 # os.popen('python main.py')
 # os.chdir(settings.ROOT_PATH)

@@ -24,18 +24,20 @@ def sfp_items(request):
     data_re = []
     sku_list = []
     kits_re = {}
-    kits = KitSkus.objects.all()
+    kits = KitSkus.objects.all().order_by('-id', '-created')
     for val in kits:
         kits_re.update({
             val.kit: val.sku
         })
     for val in res:
         if val.item in kits_re:
-            data_re.append({
-                'kit': val.item,
-                'sku': kits_re[val.item]
-            })
-            sku_list.append(kits_re[val.item])
+            kits = KitSkus.objects.filter(kit=val.item)
+            for k_val in kits:
+                data_re.append({
+                    'kit': val.item,
+                    'sku': k_val.sku
+                })
+                sku_list.append(k_val.sku)
         else:
             data_re.append({
                 'kit': '',
@@ -77,17 +79,20 @@ def sfp_items(request):
         for val in data_re:
             if val['sku'] in sku_ware:
                 wares = sku_ware[val['sku']][0:-1]
-                wares_re = itertools.permutations(wares.split(','))
-                sfp_t = ''
-                for w_val in wares_re:
-                    check_w = ','.join(w_val)
-                    if check_w in sfps_re:
-                        sfp_t = sfps_re[check_w]
-                        break
-                if sfp_t:
-                    val.update({'sfp': sfp_t})
+                if wares == 'EXL' or wares == 'TWU':
+                    val.update({'sfp': 'Prime template--TX ONLY'})
                 else:
-                    val.update({'sfp': 'Default Amazon Template'})
+                    wares_re = itertools.permutations(wares.split(','))
+                    sfp_t = ''
+                    for w_val in wares_re:
+                        check_w = ','.join(w_val)
+                        if check_w in sfps_re:
+                            sfp_t = sfps_re[check_w]
+                            break
+                    if sfp_t:
+                        val.update({'sfp': sfp_t})
+                    else:
+                        val.update({'sfp': 'Default Amazon Template'})
                 val.update({'whs' : wares})
             else:
                 val.update({
@@ -97,6 +102,7 @@ def sfp_items(request):
 
     data = {
         'data': data_re,
+        'kit_date': kits[0].created.strftime('%m/%d/%Y %H:%M:%S'),
         'title': "Sfp Items",
         'user': user
     }
@@ -161,11 +167,13 @@ def export_sfp(request):
         })
     for val in res:
         if val.item in kits_re:
-            data_re.append({
-                'kit': val.item,
-                'sku': kits_re[val.item]
-            })
-            sku_list.append(kits_re[val.item])
+            kits = KitSkus.objects.filter(kit=val.item)
+            for k_val in kits:
+                data_re.append({
+                    'kit': val.item,
+                    'sku': k_val.sku
+                })
+                sku_list.append(k_val.sku)
         else:
             data_re.append({
                 'kit': '',
@@ -225,7 +233,11 @@ def export_sfp(request):
             })
     contents = ''
     for val in data_re:
-        contents += '%s	%s\n' % (val['sku'], val['sfp'])
+        if val['kit']:
+            sku = val['kit']
+        else:
+            sku = val['sku']
+        contents += '%s	%s\n' % (sku, val['sfp'])
     if contents:
         file_name = 'SFP-%s.txt' % (time.strftime('%Y-%m-%d-%H%M%S'))
         with open(file_name, 'w') as f:

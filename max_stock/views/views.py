@@ -305,27 +305,29 @@ def check_spiders(new_log=None):
         os.chdir(settings.ROOT_PATH)
         os.popen('killall -9 firefox')
 
-def get_kit_skus():
+def get_kit_skus(start_date=None):
     headers = {
         'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
         'Authorization': 'NLAuth nlauth_account=5339579, nlauth_email=rudy.zhangwei@cdsht.cn, nlauth_signature=Maxlead123, nlauth_role=3'
     }
     url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=376&deploy=1&start_date=%s&end_date=%s'
-    kit_obj = KitSkus.objects.all().order_by('-created')
-    start_date = '10/24/2019'
-    if kit_obj:
-        start_date = kit_obj[0].created.strftime("%m/%d/%Y")
+    if not start_date:
+        kit_obj = KitSkus.objects.all().order_by('-created')
+        start_date = '10/24/2019'
+        if kit_obj:
+            start_date = kit_obj[0].created.strftime("%m/%d/%Y")
     url = url % (start_date, datetime.now().strftime("%m/%d/%Y"))
     res = requests.get(url, headers=headers)
     res = json.loads(res.content.decode())
     querylist = []
     for val in res:
         try:
-            che = KitSkus.objects.filter(kit=val['kit'])
+            key = val['kit'] + val['sku']
+            che = KitSkus.objects.filter(key=key)
             if che:
-                che.update(sku=val['sku'])
+                che.update(sku=val['sku'], kit=val['kit'])
             else:
-                querylist.append(KitSkus(kit=val['kit'], sku=val['sku']))
+                querylist.append(KitSkus(kit=val['kit'], sku=val['sku'], key=key))
         except:
             continue
     if querylist:

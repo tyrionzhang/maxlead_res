@@ -191,6 +191,7 @@ class SpidersLogs(models.Model):
 class KitSkus(models.Model):
     kit = models.CharField('Kit', max_length=522, default='')
     sku = models.CharField('sku', max_length=522, default='')
+    key = models.CharField('Key', max_length=522, default='')
     created = models.DateTimeField('Create Date', auto_now_add=True)
 
     class Meta:

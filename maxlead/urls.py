@@ -181,6 +181,7 @@ urlpatterns = [
     url('^admin/max_stock/save_stemp/', sfp_temp.save_stemp),
     url('^admin/max_stock/export_stemp/', sfp_temp.export_stemp),
     url('^admin/max_stock/import_kit/', sfp_temp.import_kit),
+    url('^admin/max_stock/update_kits/', sfp_temp.update_kits),
     url('^admin/max_stock/sfp/', sfp_items.sfp_items),
     url('^admin/max_stock/import_sitem/', sfp_items.import_sitem),
     url('^admin/max_stock/export_sfp/', sfp_items.export_sfp),
