@@ -320,11 +320,15 @@ def get_kit_skus(start_date=None):
     res = requests.get(url, headers=headers)
     res = json.loads(res.content.decode())
     querylist = []
+    kits = KitSkus.objects.all()
+    kit_keys = []
+    for val in kits:
+        kit_keys.append(val.key)
     for val in res:
         try:
             key = val['kit'] + val['sku']
-            che = KitSkus.objects.filter(key=key)
-            if che:
+            if key in kit_keys:
+                che = KitSkus.objects.filter(key=key)
                 che.update(sku=val['sku'], kit=val['kit'])
             else:
                 querylist.append(KitSkus(kit=val['kit'], sku=val['sku'], key=key))

@@ -165,14 +165,18 @@ def import_kit(request):
         msg = ''
         querylist = []
         edit_list = []
+        kit_keys = []
+        kits = KitSkus.objects.all()
+        for val in kits:
+            kit_keys.append(val.key)
         for i in range(nrows):
             try:
                 if i + 1 < nrows:
                     kit = table.cell_value(i + 1, 0, )
                     sku = table.cell_value(i + 1, 1, )
                     key = kit + sku
-                    chec = KitSkus.objects.filter(key=key)
-                    if chec:
+                    if key in kit_keys:
+                        chec = KitSkus.objects.filter(key=key)
                         chec.update(sku=sku, kit=kit)
                     else:
                         if key not in edit_list:
@@ -194,6 +198,5 @@ def update_kits(request):
     if request.method == 'POST':
         start_date = request.POST.get('start_date', '')
         start_date = start_date[0:10]
-        # kits = KitSkus.objects.all().delete()
         get_kit_skus(start_date)
     return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
