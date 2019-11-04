@@ -82,9 +82,9 @@ def import_stemp(request):
         for i in range(nrows):
             try:
                 if i + 1 < nrows:
-                    sfp_temp = table.cell_value(i + 1, 0, )
-                    warehouse = table.cell_value(i + 1, 1, )
-                    inactive = table.cell_value(i + 1, 2, )
+                    sfp_temp = table.cell_value(i + 1, 0, ).strip()
+                    warehouse = table.cell_value(i + 1, 1, ).strip()
+                    inactive = table.cell_value(i + 1, 2, ).strip()
                     chec = SfpTemps.objects.filter(sfp_temp=sfp_temp)
                     if chec:
                         chec.update(warehouse=warehouse, inactive=inactive, user=user.user)

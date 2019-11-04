@@ -196,8 +196,24 @@ class ExlSpider(scrapy.Spider):
                     new_key: val['qty']
                 })
             except OperationalError:
-                connection.close()
                 connection.cursor()
+                for n, v in enumerate(items, 0):
+                    if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
+                        val['qty'] = int(v['qty']) + int(val['qty'])
+                        del items[n]
+                val['qty1'] = 0
+                if old_list_qty:
+                    key1 = val['warehouse'] + val['sku']
+                    if key1 in old_list_qty:
+                        val['qty1'] = old_list_qty[key1] - int(val['qty'])
+
+                querysetlist.append(WarehouseStocks(sku=val['sku'], warehouse=val['warehouse'], qty=val['qty'], qty1=val['qty1']))
+
+                new_key = val['warehouse'] + val['sku']
+                new_qtys.update({
+                    new_key: val['qty']
+                })
+                connection.close()
                 continue
 
         WarehouseStocks.objects.bulk_create(querysetlist)

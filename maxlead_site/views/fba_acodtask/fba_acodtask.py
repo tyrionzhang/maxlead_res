@@ -4,6 +4,7 @@ import datetime,threading
 import zipfile
 import time
 import csv
+from chardet.universaldetector import UniversalDetector
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from io import *
@@ -12,6 +13,17 @@ from maxlead_site.views.app import App
 from maxlead_site.models import FbaAccountingTask,StoreInfo
 from maxlead import settings
 from django.views.decorators.csrf import csrf_exempt
+
+def check_chart(path):
+    detector = UniversalDetector()
+    detector.reset()
+    for each in open(path, 'rb'):
+        detector.feed(each)
+        if detector.done:
+            break
+    detector.close()
+    fileencoding = detector.result['encoding']
+    return fileencoding
 
 def del_file(file_path, id):
     if os.path.isfile(file_path):
@@ -48,6 +60,7 @@ def fba_acodtask(request):
         if data:
             for val in data:
                 val.created = val.created.strftime('%Y-%m-%d %H:%M:%S')
+                val.date_range = '%s/%s' % (val.date_range, val.date_range_end)
 
             total_count = len(data)
             total_page = round(len(data) / int(limit))
@@ -106,7 +119,8 @@ def fba_import(request):
         for chunk in myfile.chunks():
             f.write(chunk)
         f.close()
-        file = open(file_path, 'r', encoding='utf-8')
+        char_str = check_chart(file_path)
+        file = open(file_path, 'r', encoding=char_str)
         line = file.readline()
         msg = 'Successfully!\n'
         file_name1 = 'Fba-Account-customer%s.csv' % (datetime.datetime.now().strftime('%Y-%m-%d %H%M%S'))
@@ -223,6 +237,9 @@ def fba_import(request):
                 # 写入多行用writerows
                 writer.writerows(tracking_row)
             csvfile.close()
+        else:
+            file.close()
+            return HttpResponse(json.dumps({'code': 1, 'msg': '没有符合条件的数据.'}), content_type='application/json')
 
         file.close()
         res = {'code': 1, 'msg': msg}
@@ -245,6 +262,7 @@ def fba_import(request):
         obj.user = user.user
         obj.store_id = store_info[0]
         obj.date_range = date_range
+        obj.date_range_end = date_range_end
         obj.path = f_path
         obj.save()
         t = threading.Timer(1800, del_file, [zip_path,obj.id])

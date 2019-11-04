@@ -3,6 +3,7 @@ import os,json
 import xlrd
 import time
 import threading
+import itertools
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from maxlead_site.views.app import App
@@ -22,26 +23,29 @@ def sfp_items(request):
         res = res.filter(item__contains=keywords)
     data_re = []
     sku_list = []
+    kits_re = {}
+    kits = KitSkus.objects.all()
+    for val in kits:
+        kits_re.update({
+            val.kit: val.sku
+        })
     for val in res:
-        kit_chec = KitSkus.objects.filter(kit=val.item)
-        if kit_chec:
+        if val.item in kits_re:
             data_re.append({
-                'kit' : val.item,
-                'sku' : kit_chec[0].sku
+                'kit': val.item,
+                'sku': kits_re[val.item]
             })
-            sku_list.append(kit_chec[0].sku)
+            sku_list.append(kits_re[val.item])
         else:
-            kit_chec = KitSkus.objects.filter(sku=val.item)
-            if kit_chec:
-                data_re.append({
-                    'kit': '',
-                    'sku': kit_chec[0].sku
-                })
-                sku_list.append(kit_chec[0].sku)
+            data_re.append({
+                'kit': '',
+                'sku': val.item
+            })
+            sku_list.append(val.item)
     th_re = Thresholds.objects.filter(sku__in=sku_list)
-    date_re = WarehouseStocks.objects.filter(sku__in=sku_list).order_by('-created')
+    date_re = WarehouseStocks.objects.filter(sku__in=sku_list).order_by('-created')[0]
     if date_re:
-        ware_re = WarehouseStocks.objects.filter(sku__in=sku_list,created__contains=date_re[0].created.strftime('%Y-%m-%d'))
+        ware_re = WarehouseStocks.objects.filter(sku__in=sku_list,created__contains=date_re.created.strftime('%Y-%m-%d'))
         th_li = {}
         sku_ware = {}
         for val in th_re:
@@ -64,19 +68,31 @@ def sfp_items(request):
                     sku_ware.update({
                         val.sku : val.warehouse + ','
                     })
+        sfps_re = {}
+        sfps = SfpTemps.objects.all().exclude(inactive='Y')
+        for val in sfps:
+            sfps_re.update({
+                val.warehouse : val.sfp_temp
+            })
         for val in data_re:
             if val['sku'] in sku_ware:
                 wares = sku_ware[val['sku']][0:-1]
-                sfp_t = SfpTemps.objects.filter(warehouse=wares).exclude(inactive='Y')
+                wares_re = itertools.permutations(wares.split(','))
+                sfp_t = ''
+                for w_val in wares_re:
+                    check_w = ','.join(w_val)
+                    if check_w in sfps_re:
+                        sfp_t = sfps_re[check_w]
+                        break
                 if sfp_t:
-                    val.update({'sfp': sfp_t[0].sfp_temp})
+                    val.update({'sfp': sfp_t})
                 else:
-                    val.update({'sfp': ''})
+                    val.update({'sfp': 'Default Amazon Template'})
                 val.update({'whs' : wares})
             else:
                 val.update({
                     'whs': '',
-                    'sfp': ''
+                    'sfp': 'Default Amazon Template'
                 })
 
     data = {
@@ -137,25 +153,28 @@ def export_sfp(request):
         res = res.filter(item__contains=keywords)
     data_re = []
     sku_list = []
+    kits_re = {}
+    kits = KitSkus.objects.all()
+    for val in kits:
+        kits_re.update({
+            val.kit : val.sku
+        })
     for val in res:
-        kit_chec = KitSkus.objects.filter(kit=val.item)
-        if kit_chec:
+        if val.item in kits_re:
             data_re.append({
                 'kit': val.item,
-                'sku': kit_chec[0].sku
+                'sku': kits_re[val.item]
             })
-            sku_list.append(kit_chec[0].sku)
+            sku_list.append(kits_re[val.item])
         else:
-            kit_chec = KitSkus.objects.filter(sku=val.item)
-            if kit_chec:
-                data_re.append({
-                    'kit': '',
-                    'sku': kit_chec[0].sku
-                })
-                sku_list.append(kit_chec[0].sku)
+            data_re.append({
+                'kit': '',
+                'sku': val.item
+            })
+            sku_list.append(val.item)
     th_re = Thresholds.objects.filter(sku__in=sku_list)
-    date_re = WarehouseStocks.objects.filter(sku__in=sku_list).order_by('-created')
-    ware_re = WarehouseStocks.objects.filter(sku__in=sku_list, created__contains=date_re[0].created.strftime('%Y-%m-%d'))
+    date_re = WarehouseStocks.objects.filter(sku__in=sku_list).order_by('-created')[0]
+    ware_re = WarehouseStocks.objects.filter(sku__in=sku_list, created__contains=date_re.created.strftime('%Y-%m-%d'))
     th_li = {}
     sku_ware = {}
     for val in th_re:
@@ -178,19 +197,31 @@ def export_sfp(request):
                 sku_ware.update({
                     val.sku: val.warehouse + ','
                 })
+    sfps_re = {}
+    sfps = SfpTemps.objects.all().exclude(inactive='Y')
+    for val in sfps:
+        sfps_re.update({
+            val.warehouse: val.sfp_temp
+        })
     for val in data_re:
         if val['sku'] in sku_ware:
             wares = sku_ware[val['sku']][0:-1]
-            sfp_t = SfpTemps.objects.filter(warehouse=wares).exclude(inactive='Y')
+            wares_re = itertools.permutations(wares.split(','))
+            sfp_t = ''
+            for w_val in wares_re:
+                check_w = ','.join(w_val)
+                if check_w in sfps_re:
+                    sfp_t = sfps_re[check_w]
+                    break
             if sfp_t:
-                val.update({'sfp': sfp_t[0].sfp_temp})
+                val.update({'sfp': sfp_t})
             else:
-                val.update({'sfp': ''})
+                val.update({'sfp': 'Default Amazon Template'})
             val.update({'whs': wares})
         else:
             val.update({
                 'whs': '',
-                'sfp': ''
+                'sfp': 'Default Amazon Template'
             })
     contents = ''
     for val in data_re:
