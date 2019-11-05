@@ -25,6 +25,7 @@ def sfp_items(request):
     sku_list = []
     kits_re = {}
     kits = KitSkus.objects.all().order_by('-id', '-created')
+    kit_date = kits[0].created.strftime('%m/%d/%Y %H:%M:%S')
     for val in kits:
         kits_re.update({
             val.kit: val.sku
@@ -59,10 +60,11 @@ def sfp_items(request):
         for val in ware_re:
             if val.warehouse == 'Hanover':
                 val.warehouse = 'HW'
-            if val.sku not in th_li or th_li[val.sku+val.warehouse] < 30:
+            sku_key = val.sku + val.warehouse
+            if sku_key not in th_li or th_li[sku_key] < 30:
                 chec_th = 30
             else:
-                chec_th = th_li[val.sku + val.warehouse]
+                chec_th = th_li[sku_key]
             if val.qty >= chec_th:
                 if val.sku in sku_ware:
                     sku_ware[val.sku] = sku_ware[val.sku] + val.warehouse + ','
@@ -76,6 +78,7 @@ def sfp_items(request):
             sfps_re.update({
                 val.warehouse : val.sfp_temp
             })
+        res = {}
         for val in data_re:
             if val['sku'] in sku_ware:
                 wares = sku_ware[val['sku']][0:-1]
@@ -100,9 +103,38 @@ def sfp_items(request):
                     'sfp': 'Default Amazon Template'
                 })
 
+            if not val['kit']:
+                val['kit'] = 'kit'+ val['sku']
+                is_kit = 0
+            else:
+                is_kit = 1
+            if val['kit'] not in res:
+                res.update({
+                    val['kit'] : {
+                        'sku' : val['sku'],
+                        'is_kit' : is_kit,
+                        'whs' : val['whs'],
+                        'sfp' : val['sfp']
+                    }
+                })
+            else:
+                sku_str = res[val['kit']]['sku'] + ','+ val['sku']
+                if len(val['whs']) < len(res[val['kit']]['whs']):
+                    whs = val['whs']
+                    sfp = val['sfp']
+                else:
+                    whs = res[val['kit']]['whs']
+                    sfp = res[val['kit']]['sfp']
+                res[val['kit']].update({
+                    'sku': sku_str,
+                    'is_kit': is_kit,
+                    'whs': whs,
+                    'sfp': sfp
+                })
+
     data = {
-        'data': data_re,
-        'kit_date': kits[0].created.strftime('%m/%d/%Y %H:%M:%S'),
+        'data': res,
+        'kit_date': kit_date,
         'title': "Sfp Items",
         'user': user
     }
@@ -194,10 +226,11 @@ def export_sfp(request):
     for val in ware_re:
         if val.warehouse == 'Hanover':
             val.warehouse = 'HW'
-        if val.sku not in th_li or th_li[val.sku + val.warehouse] < 30:
+        sku_key = val.sku + val.warehouse
+        if sku_key not in th_li or th_li[sku_key] < 30:
             chec_th = 30
         else:
-            chec_th = th_li[val.sku + val.warehouse]
+            chec_th = th_li[sku_key]
         if val.qty >= chec_th:
             if val.sku in sku_ware:
                 sku_ware[val.sku] = sku_ware[val.sku] + val.warehouse + ','
@@ -211,6 +244,7 @@ def export_sfp(request):
         sfps_re.update({
             val.warehouse: val.sfp_temp
         })
+    res = {}
     for val in data_re:
         if val['sku'] in sku_ware:
             wares = sku_ware[val['sku']][0:-1]
@@ -234,10 +268,40 @@ def export_sfp(request):
                 'whs': '',
                 'sfp': 'Default Amazon Template'
             })
+
+        if not val['kit']:
+            val['kit'] = 'kit' + val['sku']
+            is_kit = 0
+        else:
+            is_kit = 1
+        if val['kit'] not in res:
+            res.update({
+                val['kit']: {
+                    'sku': val['sku'],
+                    'is_kit': is_kit,
+                    'whs': val['whs'],
+                    'sfp': val['sfp']
+                }
+            })
+        else:
+            sku_str = res[val['kit']]['sku'] + ',' + val['sku']
+            if len(val['whs']) < len(res[val['kit']]['whs']):
+                whs = val['whs']
+                sfp = val['sfp']
+            else:
+                whs = res[val['kit']]['whs']
+                sfp = res[val['kit']]['sfp']
+            res[val['kit']].update({
+                'sku': sku_str,
+                'is_kit': is_kit,
+                'whs': whs,
+                'sfp': sfp
+            })
+
     contents = ''
-    for val in data_re:
-        if val['kit']:
-            sku = val['kit']
+    for key, val in res.items():
+        if val['is_kit']:
+            sku = key
         else:
             sku = val['sku']
         contents += '%s	%s\n' % (sku, val['sfp'])

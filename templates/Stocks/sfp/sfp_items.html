@@ -44,9 +44,9 @@
                     <th>WHS </th>
                     <th>SFP </th>
                 </tr>
-                {% for val in data %}
+                {% for key,val in data.items %}
                 <tr>
-                    <td>{{ val.kit }}</td>
+                    <td>{% if val.is_kit %} {{ key }} {% endif %}</td>
                     <td>{{ val.sku }}</td>
                     <td>{{ val.whs }}</td>
                     <td>{{ val.sfp }}</td>

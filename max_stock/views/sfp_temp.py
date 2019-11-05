@@ -164,27 +164,20 @@ def import_kit(request):
         nrows = table.nrows
         msg = ''
         querylist = []
-        edit_list = []
         kit_keys = []
-        kits = KitSkus.objects.all()
-        for val in kits:
-            kit_keys.append(val.key)
         for i in range(nrows):
             try:
                 if i + 1 < nrows:
                     kit = table.cell_value(i + 1, 0, )
                     sku = table.cell_value(i + 1, 1, )
-                    key = kit + sku
-                    if key in kit_keys:
-                        chec = KitSkus.objects.filter(key=key)
-                        chec.update(sku=sku, kit=kit)
-                    else:
-                        if key not in edit_list:
-                            edit_list.append(key)
-                            querylist.append(KitSkus(kit=kit, sku=sku, key=key))
+                    kit_keys.append(kit)
+                    querylist.append(KitSkus(kit=kit, sku=sku))
             except:
                 msg += '第%s行添加有误。<br>' % (i + 1)
             continue
+        del_li = KitSkus.objects.filter(kit__in=kit_keys)
+        if del_li:
+            del_li.delete()
         if querylist:
             KitSkus.objects.bulk_create(querylist)
         os.remove(file_path)
