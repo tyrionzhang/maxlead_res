@@ -21,33 +21,35 @@ def sfp_items(request):
     res = Sfps.objects.filter(user_id=user.user.id)
     if keywords:
         res = res.filter(item__contains=keywords)
-    data_re = []
-    sku_list = []
-    kits_re = {}
+
     kits = KitSkus.objects.all().order_by('-id', '-created')
     kit_date = kits[0].created.strftime('%m/%d/%Y %H:%M:%S')
-    for val in kits:
-        kits_re.update({
-            val.kit: val.sku
-        })
-    for val in res:
-        if val.item in kits_re:
-            kits = KitSkus.objects.filter(kit=val.item)
-            for k_val in kits:
-                data_re.append({
-                    'kit': val.item,
-                    'sku': k_val.sku
-                })
-                sku_list.append(k_val.sku)
-        else:
-            data_re.append({
-                'kit': '',
-                'sku': val.item
+    if res:
+        sku_list = []
+        data_re = []
+        kits_re = {}
+        for val in kits:
+            kits_re.update({
+                val.kit: val.sku
             })
-            sku_list.append(val.item)
-    th_re = Thresholds.objects.filter(sku__in=sku_list)
-    date_re = WarehouseStocks.objects.filter(sku__in=sku_list).order_by('-created')[0]
-    if date_re:
+        for val in res:
+            if val.item in kits_re:
+                kits = KitSkus.objects.filter(kit=val.item)
+                for k_val in kits:
+                    data_re.append({
+                        'kit': val.item,
+                        'sku': k_val.sku
+                    })
+                    sku_list.append(k_val.sku)
+            else:
+                data_re.append({
+                    'kit': '',
+                    'sku': val.item
+                })
+                sku_list.append(val.item)
+        th_re = Thresholds.objects.filter(sku__in=sku_list)
+        date_re = WarehouseStocks.objects.filter(sku__in=sku_list).order_by('-created')[0]
+
         ware_re = WarehouseStocks.objects.filter(sku__in=sku_list,created__contains=date_re.created.strftime('%Y-%m-%d'))
         th_li = {}
         sku_ware = {}
@@ -189,6 +191,8 @@ def export_sfp(request):
     res = Sfps.objects.filter(user_id=user.user.id)
     if keywords:
         res = res.filter(item__contains=keywords)
+    if not res:
+        return HttpResponseRedirect("/admin/max_stock/sfp/")
     data_re = []
     sku_list = []
     kits_re = {}
