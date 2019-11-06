@@ -198,6 +198,7 @@ class KitSkus(models.Model):
         db_table = 'kit_skus'
 
 class Sfps(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1)
     item = models.CharField('Item', max_length=522, default='')
     created = models.DateTimeField('Create Date', auto_now_add=True)
 

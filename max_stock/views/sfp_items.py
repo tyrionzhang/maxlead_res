@@ -18,7 +18,7 @@ def sfp_items(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords', '').replace('amp;','')
-    res = Sfps.objects.all()
+    res = Sfps.objects.filter(user_id=user.user.id)
     if keywords:
         res = res.filter(item__contains=keywords)
     data_re = []
@@ -170,7 +170,7 @@ def import_sitem(request):
                     if chec:
                         msg += '第%s行已存在。<br>' % (i + 1)
                     else:
-                        querylist.append(Sfps(item=item))
+                        querylist.append(Sfps(item=item, user=user.user))
             except:
                 msg += '第%s行添加有误。<br>' % (i + 1)
             continue
@@ -186,7 +186,7 @@ def export_sfp(request):
         return HttpResponseRedirect("/admin/maxlead_site/login/")
 
     keywords = request.GET.get('keywords', '').replace('amp;', '')
-    res = Sfps.objects.all()
+    res = Sfps.objects.filter(user_id=user.user.id)
     if keywords:
         res = res.filter(item__contains=keywords)
     data_re = []
@@ -339,6 +339,7 @@ def save_sfp(request):
             return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is exists！'}), content_type='application/json')
         sfp_obj = Sfps()
         sfp_obj.id
+        sfp_obj.user = user.user
         sfp_obj.item = item
         sfp_obj.save()
         return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
