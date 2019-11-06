@@ -77,6 +77,14 @@ def sfp_items(request):
         sfps_re = {}
         sfps = SfpTemps.objects.all().exclude(inactive='Y')
         for val in sfps:
+            if 'TWU,EXL' in val.warehouse:
+                val.warehouse = val.warehouse.replace('TWU,EXL', 'TX')
+            elif 'EXL,TWU' in val.warehouse:
+                val.warehouse = val.warehouse.replace('EXL,TWU', 'TX')
+            elif 'EXL' in val.warehouse:
+                val.warehouse = val.warehouse.replace('EXL', 'TX')
+            elif 'TWU' in val.warehouse:
+                val.warehouse = val.warehouse.replace('TWU', 'TX')
             sfps_re.update({
                 val.warehouse : val.sfp_temp
             })
@@ -84,9 +92,18 @@ def sfp_items(request):
         for val in data_re:
             if val['sku'] in sku_ware:
                 wares = sku_ware[val['sku']][0:-1]
+                val.update({'whs': wares})
                 if wares == 'EXL' or wares == 'TWU':
                     val.update({'sfp': 'Prime template--TX ONLY'})
                 else:
+                    if 'TWU,EXL' in wares:
+                        wares = wares.replace('TWU,EXL', 'TX')
+                    elif 'EXL,TWU' in wares:
+                        wares = wares.replace('EXL,TWU', 'TX')
+                    elif 'EXL' in wares:
+                        wares = wares.replace('EXL', 'TX')
+                    elif 'TWU' in wares:
+                        wares = wares.replace('TWU', 'TX')
                     wares_re = itertools.permutations(wares.split(','))
                     sfp_t = ''
                     for w_val in wares_re:
@@ -98,7 +115,6 @@ def sfp_items(request):
                         val.update({'sfp': sfp_t})
                     else:
                         val.update({'sfp': 'Default Amazon Template'})
-                val.update({'whs' : wares})
             else:
                 val.update({
                     'whs': '',
@@ -245,6 +261,14 @@ def export_sfp(request):
     sfps_re = {}
     sfps = SfpTemps.objects.all().exclude(inactive='Y')
     for val in sfps:
+        if 'TWU,EXL' in val.warehouse:
+            val.warehouse = val.warehouse.replace('TWU,EXL', 'TX')
+        elif 'EXL,TWU' in val.warehouse:
+            val.warehouse = val.warehouse.replace('EXL,TWU', 'TX')
+        elif 'EXL' in val.warehouse:
+            val.warehouse = val.warehouse.replace('EXL', 'TX')
+        elif 'TWU' in val.warehouse:
+            val.warehouse = val.warehouse.replace('TWU', 'TX')
         sfps_re.update({
             val.warehouse: val.sfp_temp
         })
@@ -252,9 +276,18 @@ def export_sfp(request):
     for val in data_re:
         if val['sku'] in sku_ware:
             wares = sku_ware[val['sku']][0:-1]
+            val.update({'whs': wares})
             if wares == 'EXL' or wares == 'TWU':
                 val.update({'sfp': 'Prime template--TX ONLY'})
             else:
+                if 'TWU,EXL' in wares:
+                    wares = wares.replace('TWU,EXL', 'TX')
+                elif 'EXL,TWU' in wares:
+                    wares = wares.replace('EXL,TWU', 'TX')
+                elif 'EXL' in wares:
+                    wares = wares.replace('EXL', 'TX')
+                elif 'TWU' in wares:
+                    wares = wares.replace('TWU', 'TX')
                 wares_re = itertools.permutations(wares.split(','))
                 sfp_t = ''
                 for w_val in wares_re:
@@ -266,7 +299,6 @@ def export_sfp(request):
                     val.update({'sfp': sfp_t})
                 else:
                     val.update({'sfp': 'Default Amazon Template'})
-            val.update({'whs': wares})
         else:
             val.update({
                 'whs': '',
