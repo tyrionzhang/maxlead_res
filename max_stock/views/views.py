@@ -276,12 +276,13 @@ def run_zto_spiders():
     t.start()
 
 def check_spiders(new_log=None):
+    date_now = datetime.now().strftime('%Y-%m-%d')
     if new_log:
         obj = SpidersLogs.objects.filter(id=new_log)
     else:
-        date_now = datetime.now().strftime('%Y-%m-%d')
         obj = SpidersLogs.objects.filter(created__contains=date_now).order_by('-created')
     if obj:
+        exl_re = WarehouseStocks.objects.filter(created__contains=date_now, warehouse='EXL')
         os.popen('killall -9 firefox')
         work_path = settings.STOCHS_SPIDER_URL
         des = obj[0].description
@@ -295,6 +296,8 @@ def check_spiders(new_log=None):
         if 'TWU' not in des:
             spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d log_id=%s' % obj[0].id)
         if '3pl' not in des:
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d log_id=%s' % obj[0].id)
+        if not exl_re:
             spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d log_id=%s' % obj[0].id)
         if spiders:
             os.chdir(work_path)
