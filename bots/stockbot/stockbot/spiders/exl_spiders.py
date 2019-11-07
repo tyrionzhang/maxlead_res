@@ -69,7 +69,7 @@ class ExlSpider(scrapy.Spider):
         driver.get('https://secure-wms.com/WebUI/V1/V1Link/StockStatusReport.aspx')
         driver.implicitly_wait(100)
         time.sleep(3)
-        close_guide = driver.find_elements_by_id('pendo-close-guide-f65b1092')
+        close_guide = driver.find_elements_by_css_selector('#pendo-guide-container>button')
         if close_guide:
             print('---------------Click f65b1092!!!!')
             close_guide[0].click()
