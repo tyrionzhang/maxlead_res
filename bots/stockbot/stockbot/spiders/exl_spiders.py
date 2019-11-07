@@ -69,8 +69,9 @@ class ExlSpider(scrapy.Spider):
         driver.get('https://secure-wms.com/WebUI/V1/V1Link/StockStatusReport.aspx')
         driver.implicitly_wait(100)
         time.sleep(3)
-        close_guide = driver.find_elements_by_id('pendo-close-guide-cf441504')
+        close_guide = driver.find_elements_by_id('pendo-close-guide-f65b1092')
         if close_guide:
+            print('---------------Click f65b1092!!!!')
             close_guide[0].click()
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
