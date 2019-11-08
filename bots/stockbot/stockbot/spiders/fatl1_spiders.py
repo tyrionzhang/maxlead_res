@@ -53,7 +53,6 @@ class Fatl1Spider(scrapy.Spider):
             try:
                 if i + 1 < nrows:
                     sku = table.cell_value(i + 1, 0, )
-                    qty = int(table.cell_value(i + 1, 1, ))
                     if i + 1 == 1:
                         key_el = driver.find_element_by_id('keyword')
                         serc_el = driver.find_element_by_id('avdSearch')
@@ -67,10 +66,6 @@ class Fatl1Spider(scrapy.Spider):
                         fba_trspot = driver.find_elements_by_css_selector('.page-nav>button')
                         fba_trspot[1].click()
                         driver.implicitly_wait(100)
-                        prdut_tr = driver.find_elements_by_css_selector('.product-table>tbody>tr')
-                        prdut_tr[i].find_elements_by_tag_name('input')[0].send_keys(sku)
-                        prdut_tr[i].find_elements_by_tag_name('input')[1].clear()
-                        prdut_tr[i].find_elements_by_tag_name('input')[1].send_keys(qty)
                         if nrows > 1:
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
@@ -90,18 +85,23 @@ class Fatl1Spider(scrapy.Spider):
                         if not chcBox:
                             continue
                         chcBox[0].click()
-                        driver.switch_to.default_content()
+                        driver.refresh()
                         driver.implicitly_wait(100)
                         time.sleep(3)
-                        close_a = driver.find_element_by_class_name('layui-layer-setwin').find_element_by_tag_name('a')
-                        close_a.click()
-                        prdut_tr = driver.find_elements_by_css_selector('.product-table>tbody>tr')
-                        prdut_tr[i].find_elements_by_tag_name('input')[0].send_keys(sku)
-                        prdut_tr[i].find_elements_by_tag_name('input')[1].clear()
-                        prdut_tr[i].find_elements_by_tag_name('input')[1].send_keys(qty)
                         if nrows > 1 and i < (range(nrows)[-1] - 1):
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
+            except:
+                continue
+        for i in range(nrows):
+            try:
+                if i + 1 < nrows:
+                    sku = table.cell_value(i + 1, 0, )
+                    qty = int(table.cell_value(i + 1, 1, ))
+                    prdut_tr = driver.find_elements_by_css_selector('.product-table>tbody>tr')
+                    prdut_tr[i].find_elements_by_tag_name('input')[0].send_keys(sku)
+                    prdut_tr[i].find_elements_by_tag_name('input')[1].clear()
+                    prdut_tr[i].find_elements_by_tag_name('input')[1].send_keys(qty)
             except:
                 continue
         file_input = driver.find_elements_by_css_selector("input[name='docfile']")
