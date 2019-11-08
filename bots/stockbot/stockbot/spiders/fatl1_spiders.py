@@ -12,12 +12,9 @@ class Fatl1Spider(scrapy.Spider):
     start_urls = [
         'http://us.hipacking.com/member/passport'
     ]
-    # log_id = None
 
-    def __init__(self, pdf_file=None, xlsx_file=None, *args, **kwargs):
+    def __init__(self, xlsx_file=None, *args, **kwargs):
         super(Fatl1Spider, self).__init__(*args, **kwargs)
-        if pdf_file:
-            self.pdf_file = pdf_file
         if xlsx_file:
             self.xlsx_file = xlsx_file
 
@@ -44,7 +41,6 @@ class Fatl1Spider(scrapy.Spider):
         driver.implicitly_wait(100)
 
         xlsx_path = os.path.join(max_settings.BASE_DIR, max_settings.DOWNLOAD_URL, 'fba_transport', self.xlsx_file)
-        pdf_path = os.path.join(max_settings.BASE_DIR, max_settings.DOWNLOAD_URL, 'fba_transport', self.pdf_file)
         data = xlrd.open_workbook(xlsx_path)  # 打开fname文件
         data.sheet_names()  # 获取xls文件中所有sheet的名称
         table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
@@ -104,12 +100,9 @@ class Fatl1Spider(scrapy.Spider):
                             driver.implicitly_wait(100)
             except:
                 continue
-        file_input = driver.find_elements_by_css_selector("input[name='docfile']")
-        file_input[0].send_keys(pdf_path)
         driver.find_element_by_id('submit').click()
         driver.implicitly_wait(100)
         time.sleep(5)
-        os.remove(pdf_path)
         os.remove(xlsx_path)
         display.stop()
         driver.quit()

@@ -48,17 +48,13 @@ def run_fba_trans(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     file_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'fba_transport')
     files = os.listdir(file_path)
-    if len(files) != 2:
+    if len(files) != 1:
         return HttpResponse(json.dumps({'code': 0, 'msg': u'文件不存在/正在运行~'}), content_type='application/json')
-    for val in files:
-        if val[-3:] == 'pdf':
-            pdf_file = val
-        else:
-            xlsx_file = val
+    xlsx_file = files[0]
     work_path = settings.STOCHS_SPIDER_URL
     os.chdir(work_path)
     os.popen('scrapyd-deploy')
-    cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=fatl1_spider -d pdf_file=%s -d xlsx_file=%s' % (pdf_file, xlsx_file)
+    cmd_str = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=fatl1_spider -d xlsx_file=%s' % xlsx_file
     os.popen(cmd_str)
     os.chdir(settings.ROOT_PATH)
     return HttpResponse(json.dumps({'code': 1, 'msg': 'Running~'}), content_type='application/json')
