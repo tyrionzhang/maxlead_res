@@ -84,6 +84,12 @@ MENUS = [
         'parent' : 'Warehouse'
     },
     {
+        'name' : 'FBA Transport',
+        'url' : '/admin/max_stock/fba_transport/',
+        'elem_id' : 'fba_transport',
+        'parent' : 'Warehouse'
+    },
+    {
         'name' : 'Codes',
         'url' : '/admin/auto_email/code_index/',
         'elem_id' : 'codes',
