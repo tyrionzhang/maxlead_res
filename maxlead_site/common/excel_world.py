@@ -93,9 +93,9 @@ def get_excel_file1(self, data,fields,data_fields=[],prefix=''):
         headings = []
 
         file_name = '%s%s.xlsx' % (time.strftime('%Y-%m-%d %H%M%S'),prefix)
-        path_name1 = settings.DOWNLOAD_URL + '/miner_excel/' + file_name
-        dir_path = settings.BASE_DIR + '/'+settings.DOWNLOAD_URL+'miner_excel/'
-        path_name = dir_path + file_name
+        path_name1 = os.path.join(settings.DOWNLOAD_URL, 'miner_excel', file_name)
+        dir_path = os.path.join(settings.BASE_DIR, settings.DOWNLOAD_URL, 'miner_excel')
+        path_name = os.path.join(dir_path, file_name)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         exist_file = os.path.exists(path_name)
