@@ -24,11 +24,11 @@ class Fatl1Spider(scrapy.Spider):
             self.xlsx_file = xlsx_file
 
     def parse(self, response):
-        # from pyvirtualdisplay import Display
-        # display = Display(visible=0, size=(800, 800))
-        # display.start()
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 800))
+        display.start()
         firefox_options = Options()
-        # firefox_options.add_argument('-headless')
+        firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
         driver.get(response.url)
@@ -111,5 +111,5 @@ class Fatl1Spider(scrapy.Spider):
         driver.find_element_by_id('submit').click()
         os.remove(pdf_path)
         os.remove(xlsx_path)
-        # display.stop()
+        display.stop()
         driver.quit()
