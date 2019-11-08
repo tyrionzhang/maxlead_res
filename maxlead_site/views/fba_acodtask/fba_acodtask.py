@@ -184,7 +184,7 @@ def fba_import(request):
                         carrier = val[42] + '-1'
                     else:
                         carrier = val[42]
-                    po_sku = val[0] + val[13]
+                    po_sku = val[0]
                     if po_sku in check_li:
                         check_li.update({
                             po_sku : check_li[po_sku] + 1
