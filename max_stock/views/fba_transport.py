@@ -73,6 +73,6 @@ def init_fba_transport(request):
     if not files:
         return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfully~'}), content_type='application/json')
     for val in files:
-        path = file_path + '\\' + val
+        path = os.path.join(file_path, val)
         os.remove(path)
     return HttpResponse(json.dumps({'code': 1, 'msg': 'Successfully~'}), content_type='application/json')
