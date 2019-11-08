@@ -107,6 +107,8 @@ class Fatl1Spider(scrapy.Spider):
         file_input = driver.find_elements_by_css_selector("input[name='docfile']")
         file_input[0].send_keys(pdf_path)
         driver.find_element_by_id('submit').click()
+        driver.implicitly_wait(100)
+        time.sleep(5)
         os.remove(pdf_path)
         os.remove(xlsx_path)
         display.stop()
