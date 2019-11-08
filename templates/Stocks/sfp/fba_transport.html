@@ -89,6 +89,7 @@
           $('#user_import').on('click',function () {
                 $('.wrap-paper').removeClass('hide');
                 $('#import_modal').removeClass('hide');
+                $('#btn_import_modal').removeAttr('disabled');
             });
             $('body').on('click','.wrap-paper' , function(){
                 $('.wrap-paper').addClass('hide');
@@ -98,6 +99,7 @@
         });
 
         $('#btn_import_modal').on('click', function () {
+            $(this).attr("disabled", true);
             var form_data = new FormData();
             var file_info =$('input[name="myfile"]')[0].files;
             var myfiles = [];
