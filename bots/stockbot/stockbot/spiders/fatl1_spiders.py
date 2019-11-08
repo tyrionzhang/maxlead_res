@@ -6,8 +6,6 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
-from max_stock.models import Thresholds,SkuUsers,WarehouseStocks
-from maxlead_site.views.fba_acodtask.fba_acodtask import check_chart
 
 class Fatl1Spider(scrapy.Spider):
     name = "fatl1_spider"
@@ -28,7 +26,7 @@ class Fatl1Spider(scrapy.Spider):
         display = Display(visible=0, size=(800, 800))
         display.start()
         firefox_options = Options()
-        # firefox_options.add_argument('-headless')
+        firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
         driver.get(response.url)
