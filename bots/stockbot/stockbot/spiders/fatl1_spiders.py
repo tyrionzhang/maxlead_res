@@ -28,7 +28,7 @@ class Fatl1Spider(scrapy.Spider):
         display = Display(visible=0, size=(800, 800))
         display.start()
         firefox_options = Options()
-        firefox_options.add_argument('-headless')
+        # firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
         driver.get(response.url)
