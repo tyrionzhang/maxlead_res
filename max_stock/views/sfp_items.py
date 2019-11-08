@@ -63,8 +63,8 @@ def sfp_items(request):
             if val.warehouse == 'Hanover':
                 val.warehouse = 'HW'
             sku_key = val.sku + val.warehouse
-            if sku_key not in th_li or th_li[sku_key] < 30:
-                chec_th = 30
+            if sku_key not in th_li or th_li[sku_key] < 10:
+                chec_th = 10
             else:
                 chec_th = th_li[sku_key]
             if val.qty >= chec_th:
@@ -83,8 +83,14 @@ def sfp_items(request):
                 val.warehouse = val.warehouse.replace('EXL,TWU', 'TX')
             elif 'EXL' in val.warehouse:
                 val.warehouse = val.warehouse.replace('EXL', 'TX')
+                if 'TWU' in val.warehouse:
+                    val.warehouse = val.warehouse.replace('TWU', '')
+                    val.warehouse = val.warehouse.replace(',,', ',')
             elif 'TWU' in val.warehouse:
                 val.warehouse = val.warehouse.replace('TWU', 'TX')
+                if 'EXL' in val.warehouse:
+                    val.warehouse = val.warehouse.replace('EXL', '')
+                    val.warehouse = val.warehouse.replace(',,', ',')
             sfps_re.update({
                 val.warehouse : val.sfp_temp
             })
@@ -102,8 +108,14 @@ def sfp_items(request):
                         wares = wares.replace('EXL,TWU', 'TX')
                     elif 'EXL' in wares:
                         wares = wares.replace('EXL', 'TX')
+                        if 'TWU' in wares:
+                            wares = wares.replace('TWU', '')
+                            wares = wares.replace(',,', '')
                     elif 'TWU' in wares:
                         wares = wares.replace('TWU', 'TX')
+                        if 'EXL' in wares:
+                            wares = wares.replace('EXL', '')
+                            wares = wares.replace(',,', ',')
                     wares_re = itertools.permutations(wares.split(','))
                     sfp_t = ''
                     for w_val in wares_re:
@@ -184,7 +196,7 @@ def import_sitem(request):
             try:
                 if i + 1 < nrows:
                     item = table.cell_value(i + 1, 0, )
-                    chec = Sfps.objects.filter(item=item)
+                    chec = Sfps.objects.filter(item=item, user=user.user)
                     if chec:
                         msg += '第%s行已存在。<br>' % (i + 1)
                     else:
@@ -247,8 +259,8 @@ def export_sfp(request):
         if val.warehouse == 'Hanover':
             val.warehouse = 'HW'
         sku_key = val.sku + val.warehouse
-        if sku_key not in th_li or th_li[sku_key] < 30:
-            chec_th = 30
+        if sku_key not in th_li or th_li[sku_key] < 10:
+            chec_th = 10
         else:
             chec_th = th_li[sku_key]
         if val.qty >= chec_th:
@@ -267,8 +279,14 @@ def export_sfp(request):
             val.warehouse = val.warehouse.replace('EXL,TWU', 'TX')
         elif 'EXL' in val.warehouse:
             val.warehouse = val.warehouse.replace('EXL', 'TX')
+            if 'TWU' in val.warehouse:
+                val.warehouse = val.warehouse.replace('TWU', '')
+                val.warehouse = val.warehouse.replace(',,', ',')
         elif 'TWU' in val.warehouse:
             val.warehouse = val.warehouse.replace('TWU', 'TX')
+            if 'EXL' in val.warehouse:
+                val.warehouse = val.warehouse.replace('EXL', '')
+                val.warehouse = val.warehouse.replace(',,', ',')
         sfps_re.update({
             val.warehouse: val.sfp_temp
         })
@@ -286,8 +304,14 @@ def export_sfp(request):
                     wares = wares.replace('EXL,TWU', 'TX')
                 elif 'EXL' in wares:
                     wares = wares.replace('EXL', 'TX')
+                    if 'TWU' in wares:
+                        wares = wares.replace('TWU', '')
+                        wares = wares.replace(',,', '')
                 elif 'TWU' in wares:
                     wares = wares.replace('TWU', 'TX')
+                    if 'EXL' in wares:
+                        wares = wares.replace('EXL', '')
+                        wares = wares.replace(',,', ',')
                 wares_re = itertools.permutations(wares.split(','))
                 sfp_t = ''
                 for w_val in wares_re:
@@ -370,7 +394,7 @@ def save_sfp(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
         item = request.POST.get('item', '')
-        check = Sfps.objects.filter(item=item)
+        check = Sfps.objects.filter(item=item, user=user.user)
         if check:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is exists！'}), content_type='application/json')
         sfp_obj = Sfps()
