@@ -24,7 +24,6 @@ class HanoverSpider(scrapy.Spider):
             self.log_id = int(log_id)
 
     def parse(self, response):
-        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
@@ -95,23 +94,4 @@ class HanoverSpider(scrapy.Spider):
         driver.quit()
         update_spiders_logs('Hanover', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['Hanover'])
-
-        if not os.path.isfile(file_path):
-            with open(file_path, "w+") as f:
-                f.close()
-        with open(file_path, "r+") as f:
-            old = f.read()
-            f.seek(0)
-            f.write(self.msg_str1)
-            f.write(old)
-            f.write(msg_str2)
-            f.close()
-
-        with open(file_path, "r") as f:
-            msg1 = f.readline()
-            msg2 = f.readline()
-            msg3 = f.readline()
-            msg4 = f.readline()
-            if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n':
-                spiders_send_email(f, file_path=file_path)
 

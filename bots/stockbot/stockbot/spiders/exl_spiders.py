@@ -19,8 +19,7 @@ class ExlSpider(scrapy.Spider):
 
     msg_str1 = 'complete\n'
     start_urls = [
-        'https://secure-wms.com/smartui/?tplguid={073abe7b-9d71-414d-9933-c71befa9e569}',
-        # 'https://secure-wms.com/PresentationTier/LoginForm.aspx?3pl=%7b340efd05-b1c7-453f-be02-39bebb462163%7d&type=myweb'
+        'https://secure-wms.com/smartui/?tplguid={073abe7b-9d71-414d-9933-c71befa9e569}'
     ]
     sku_list = []
     log_id = None
@@ -32,7 +31,6 @@ class ExlSpider(scrapy.Spider):
             self.log_id = int(log_id)
 
     def parse(self, response):
-        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
@@ -221,37 +219,10 @@ class ExlSpider(scrapy.Spider):
         new_log = update_spiders_logs('3pl', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['EXL', 'TFD', 'ROL'])
         check_spiders(new_log)
-
-        if not os.path.isfile(file_path):
-            with open(file_path, "w+") as f:
-                f.close()
-        with open(file_path, "r+") as f:
-            old = f.read()
-            f.seek(0)
-            f.write(self.msg_str1)
-            f.write(old)
-            f.write(msg_str2)
-            f.close()
-
-        with open(file_path, "r") as f:
-            msg1 = f.readline()
-            msg2 = f.readline()
-            msg3 = f.readline()
-            msg4 = f.readline()
-            msg5 = f.readline()
-            if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n' and msg5 == 'complete\n':
-                try:
-                    spiders_send_email(f, file_path=file_path)
-                except OperationalError:
-                    connection.close()
-                    connection.cursor()
-                    spiders_send_email(f, file_path=file_path)
-                lines = os.popen('pgrep firefox')
-                for path in lines:
-                    try:
-                        progress = path.split(' ')[0]
-                        if progress:
-                            os.popen('kill %s' % progress)
-                    except:
-                        continue
+        try:
+            spiders_send_email()
+        except OperationalError:
+            connection.close()
+            connection.cursor()
+            spiders_send_email()
 

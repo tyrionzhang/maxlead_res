@@ -46,7 +46,6 @@ class TwuSpider(scrapy.Spider):
 
     def parse_page(self, response):
         res = response.css('article')[0].css('table[width="100%"]>tr')
-        file_path = os.path.join(max_settings.BASE_DIR, max_settings.THRESHOLD_TXT, 'threshold_txt.txt')
         new_qtys = {}
         if res:
             fields = res[1].css('td::text').extract()
@@ -80,23 +79,3 @@ class TwuSpider(scrapy.Spider):
                     yield item
         update_spiders_logs('TWU', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['TWU'])
-
-        if not os.path.isfile(file_path):
-            with open(file_path, "w+") as f:
-                f.close()
-        with open(file_path, "r+") as f:
-            old = f.read()
-            f.seek(0)
-            f.write(self.msg_str1)
-            f.write(old)
-            f.write(msg_str2)
-            f.close()
-
-        with open(file_path, "r") as f:
-            msg1 = f.readline()
-            msg2 = f.readline()
-            msg3 = f.readline()
-            msg4 = f.readline()
-            msg5 = f.readline()
-            if msg1 == 'complete\n' and msg2 == 'complete\n' and msg3 == 'complete\n' and msg4 == 'complete\n' and msg5 == 'complete\n':
-                spiders_send_email(f, file_path=file_path)

@@ -215,6 +215,16 @@ class SfpTemps(models.Model):
     class Meta:
         db_table = 'sfp_temps'
 
+class FbaTransportTask(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1)
+    status = models.CharField('State', max_length=522, default='')
+    file_path = models.CharField('File Path', max_length=522, default='')
+    description = models.TextField('Description', default='')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'fba_transport_task'
+
 
 
 

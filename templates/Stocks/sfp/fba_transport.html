@@ -31,23 +31,25 @@
             <div class="clear"></div>
         </div>
         <div class="con-body">
-{#            <table id="datas" class="tb-datas">#}
-{#                <tr id="tr-head">#}
-{#                    <th>Kit</th>#}
-{#                    <th>Sku</th>#}
-{#                    <th>WHS </th>#}
-{#                    <th>SFP </th>#}
-{#                </tr>#}
-{#                {% for key,val in data.items %}#}
-{#                <tr>#}
-{#                    <td>{% if val.is_kit %} {{ key }} {% endif %}</td>#}
-{#                    <td>{{ val.sku }}</td>#}
-{#                    <td>{{ val.whs }}</td>#}
-{#                    <td>{{ val.sfp }}</td>#}
-{#                </tr>#}
-{#                {% endfor %}#}
-{##}
-{#            </table>#}
+            <table id="datas" class="tb-datas">
+                <tr id="tr-head">
+                    <th><input type="checkbox" id="check_all"></th>
+                    <th>File</th>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>State </th>
+                </tr>
+                {% for val in data %}
+                <tr data-id="{{ val.id }}">
+                    <td><input type="checkbox" class="check_tr"></td>
+                    <td>{{ val.file_name }}</td>
+                    <td>{{ val.created }}</td>
+                    <td>{{ val.user.username }}</td>
+                    <td>{{ val.status }}</td>
+                </tr>
+                {% endfor %}
+
+            </table>
         </div>
     </div>
     <div class="save-threshold hide save-block-info" id="save_user">
@@ -74,6 +76,15 @@
     </div>
     <script>
         $(document).ready(function(){
+            $('#check_all').on('click', function () {
+                  var checked = $(this).prop('checked');
+                  if (checked) {
+                      $('.check_tr').prop('checked', true);
+                  }else {
+                      $('.check_tr').prop('checked', false);
+                  }
+            });
+
             $('#import_modal').on('click', '#user_sku_import', function () {
                 window.location.reload();
             });
@@ -96,6 +107,34 @@
                 $('#import_modal').addClass('hide');
                 $('#save_user').addClass('hide');
             });
+        });
+
+        $('#run_fba_transport').on('click', function () {
+            var elem_tr = $('.check_tr:checked').parents('tr');
+            var data = new Array();
+            if (elem_tr.length == 0) {
+               alert('请选择任务!');
+            }else {
+                $(this).attr('disabled', 'true');
+                elem_tr.each(function () {
+                    data.push($(this).data('id'));
+                });
+                var datas = {
+                    'ids':  JSON.stringify(data)
+                };
+                $.post('/admin/max_stock/run_fba_trans/',datas,function (re) {
+                if(re.code==0 || re.code==1){
+                    alert(re.msg);
+                    if(re.code==1){
+                        window.location.reload();
+                     }
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+           }
         });
 
         $('#btn_import_modal').on('click', function () {
@@ -124,23 +163,6 @@
                     $('#import_msg').append('<input type="button" id="user_sku_import" value="确定">');
                 }
             });
-            return false;
-        });
-
-        $('#run_fba_transport').on('click', function () {
-            if (confirm('Run FBA transport？')) {
-                $.post('/admin/max_stock/run_fba_trans/',{},function (re) {
-                   if(re.code==0 || re.code==1){
-                       alert(re.msg);
-                       if(re.code==1){
-                           window.location.reload();
-                       }
-                   }
-                   if(re.code==66){
-                       window.location.href='/admin/max_stock/login/';
-                   }
-                },'json');
-            }
             return false;
         });
 

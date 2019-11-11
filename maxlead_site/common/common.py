@@ -146,7 +146,7 @@ def get_send_time(time_str):
         t_re = (time_saturday - time_now).total_seconds()
     return t_re
 
-def spiders_send_email(f_obj, file_path=None):
+def spiders_send_email():
     msg_list = UserEmailMsg.objects.filter(is_send=0)
     if msg_list:
         msg_str = ''
@@ -154,20 +154,14 @@ def spiders_send_email(f_obj, file_path=None):
         from_email = settings.EMAIL_HOST_USER
         msg_dict = {}
         for val in msg_list:
-            msg_obj = UserEmailMsg.objects.filter(id=val.id)
-            if val.user.email:
-                msg_dict.update({val.user.email:''})
-                msg_dict[val.user.email] += val.content
-                msg_str += val.content
-                msg_obj.update(is_send=1)
-            else:
-                msg_obj.delete()
+            msg_dict.update({val.user.email:''})
+            msg_dict[val.user.email] += val.content
+            msg_str += val.content
         for key in msg_dict:
             send_mail(subject, msg_dict[key], from_email, [key], fail_silently=False)
         if msg_str:
             send_mail(subject, msg_str, from_email, ['shipping.gmi@gmail.com'], fail_silently=False)
-    f_obj.close()
-    os.remove(file_path)
+        msg_list.update(is_send=1)
 
 def kill_pid_for_name(name, type=0, select_type=False):
     lines = os.popen('ps -ef | grep %s' % name)
@@ -205,11 +199,23 @@ def warehouse_threshold_msgs(qtys,warehouse=None):
     users = SkuUsers.objects.all().annotate(s=Count("sku"), u=Count("user"))
     thresholds = Thresholds.objects.filter(warehouse__in=warehouse)
     msg_str2 = ''
+    c_time = datetime.now().strftime("%Y-%m-%d")
     for val in thresholds:
         t_key = val.warehouse + val.sku
         if t_key in qtys and val.threshold >= int(qtys[t_key]) and users:
             for usr in users:
                 if usr.sku == val.sku and usr.user.email:
+                    m_str = 'SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s' % (
+                        val.sku, val.warehouse, qtys[t_key], val.threshold)
+                    check = UserEmailMsg.objects.filter(user=usr.user, sku=val.sku, warehouse=val.warehouse, content=m_str, created__contains=c_time)
+                    if not check:
+                        obj = UserEmailMsg()
+                        obj.id
+                        obj.user = usr.user
+                        obj.sku = val.sku
+                        obj.warehouse = val.warehouse
+                        obj.content = m_str
+                        obj.save()
                     msg_str2 += '%s=>SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n|' % (
                         usr.user.email, val.sku, val.warehouse, qtys[t_key], val.threshold)
     return msg_str2

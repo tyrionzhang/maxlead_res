@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
+from max_stock.models import FbaTransportTask
 
 class Fatl1Spider(scrapy.Spider):
     name = "fatl1_spider"
@@ -39,12 +40,17 @@ class Fatl1Spider(scrapy.Spider):
         driver.implicitly_wait(100)
         driver.get('http://us.hipacking.com/member/instock/stock.html')
         driver.implicitly_wait(100)
+        btn_msg = driver.find_elements_by_class_name('layui-layer-btn0')
+        if btn_msg:
+            btn_msg[0].click()
 
         xlsx_path = os.path.join(max_settings.BASE_DIR, max_settings.DOWNLOAD_URL, 'fba_transport', self.xlsx_file)
         data = xlrd.open_workbook(xlsx_path)  # 打开fname文件
         data.sheet_names()  # 获取xls文件中所有sheet的名称
         table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
         nrows = table.nrows
+        num = 'start'
+        dec_str = ''
         for i in range(nrows):
             try:
                 if i + 1 < nrows:
@@ -58,15 +64,18 @@ class Fatl1Spider(scrapy.Spider):
                         driver.implicitly_wait(100)
                         chcBox = driver.find_elements_by_css_selector('.table>tbody>tr>td>input')
                         if not chcBox:
+                            dec_str += '%s<br>' % sku
                             continue
+                        else:
+                            num = 0
                         chcBox[0].click()
                         fba_trspot = driver.find_elements_by_css_selector('.page-nav>button')
                         fba_trspot[1].click()
                         driver.implicitly_wait(100)
                         prdut_tr = driver.find_elements_by_css_selector('.product-table>tbody>tr')
-                        prdut_tr[i].find_elements_by_tag_name('input')[0].send_keys(sku)
-                        prdut_tr[i].find_elements_by_tag_name('input')[1].clear()
-                        prdut_tr[i].find_elements_by_tag_name('input')[1].send_keys(qty)
+                        prdut_tr[num].find_elements_by_tag_name('input')[0].send_keys(sku)
+                        prdut_tr[num].find_elements_by_tag_name('input')[1].clear()
+                        prdut_tr[num].find_elements_by_tag_name('input')[1].send_keys(qty)
                         if nrows > 1:
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
@@ -84,25 +93,47 @@ class Fatl1Spider(scrapy.Spider):
                         driver.implicitly_wait(100)
                         chcBox = driver.find_elements_by_css_selector('.table>tbody>tr>td>input')
                         if not chcBox:
+                            dec_str += '%s<br>' % sku
                             continue
+                        else:
+                            if num == 'start':
+                                num = 0
+                            else:
+                                num += 1
                         chcBox[0].click()
                         driver.switch_to.default_content()
                         driver.implicitly_wait(100)
                         time.sleep(3)
                         close_a = driver.find_element_by_class_name('layui-layer-setwin').find_element_by_tag_name('a')
                         close_a.click()
-                        prdut_tr = driver.find_elements_by_css_selector('.product-table>tbody>tr')
-                        prdut_tr[i].find_elements_by_tag_name('input')[0].send_keys(sku)
-                        prdut_tr[i].find_elements_by_tag_name('input')[1].clear()
-                        prdut_tr[i].find_elements_by_tag_name('input')[1].send_keys(qty)
+                        while 1:
+                            try:
+                                prdut_tr = driver.find_elements_by_css_selector('.product-table>tbody>tr')
+                                prdut_tr[num].find_elements_by_tag_name('input')[0].send_keys(sku)
+                                prdut_tr[num].find_elements_by_tag_name('input')[1].clear()
+                                prdut_tr[num].find_elements_by_tag_name('input')[1].send_keys(qty)
+                                break
+                            except:
+                                time.sleep(3)
                         if nrows > 1 and i < (range(nrows)[-1] - 1):
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
             except:
+                dec_str += '%s<br>' % sku
                 continue
         driver.find_element_by_id('submit').click()
         driver.implicitly_wait(100)
-        time.sleep(5)
+        while 1:
+            try:
+                che_num = driver.find_element_by_id('number').get_attribute("value")
+                break
+            except:
+                time.sleep(3)
         os.remove(xlsx_path)
+        obj = FbaTransportTask.objects.filter(file_path=xlsx_path)
+        if obj:
+            obj.update(status='Done')
+            if dec_str:
+                obj.update(description=dec_str)
         display.stop()
         driver.quit()
