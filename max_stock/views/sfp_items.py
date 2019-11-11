@@ -77,20 +77,14 @@ def sfp_items(request):
         sfps_re = {}
         sfps = SfpTemps.objects.all().exclude(inactive='Y')
         for val in sfps:
-            if 'TWU,EXL' in val.warehouse:
-                val.warehouse = val.warehouse.replace('TWU,EXL', 'TX')
-            elif 'EXL,TWU' in val.warehouse:
-                val.warehouse = val.warehouse.replace('EXL,TWU', 'TX')
-            elif 'EXL' in val.warehouse:
-                val.warehouse = val.warehouse.replace('EXL', 'TX')
-                if 'TWU' in val.warehouse:
-                    val.warehouse = val.warehouse.replace('TWU', '')
-                    val.warehouse = val.warehouse.replace(',,', ',')
-            elif 'TWU' in val.warehouse:
-                val.warehouse = val.warehouse.replace('TWU', 'TX')
-                if 'EXL' in val.warehouse:
-                    val.warehouse = val.warehouse.replace('EXL', '')
-                    val.warehouse = val.warehouse.replace(',,', ',')
+            if 'TWU' in val.warehouse or 'EXL' in val.warehouse:
+                w_list = val.warehouse.split(',')
+                w_list.append('TX')
+                if 'TWU' in w_list:
+                    w_list.remove('TWU')
+                if 'EXL' in w_list:
+                    w_list.remove('EXL')
+                val.warehouse = ','.join(w_list)
             sfps_re.update({
                 val.warehouse : val.sfp_temp
             })
@@ -102,20 +96,14 @@ def sfp_items(request):
                 if wares == 'EXL' or wares == 'TWU':
                     val.update({'sfp': 'Prime template--TX ONLY'})
                 else:
-                    if 'TWU,EXL' in wares:
-                        wares = wares.replace('TWU,EXL', 'TX')
-                    elif 'EXL,TWU' in wares:
-                        wares = wares.replace('EXL,TWU', 'TX')
-                    elif 'EXL' in wares:
-                        wares = wares.replace('EXL', 'TX')
-                        if 'TWU' in wares:
-                            wares = wares.replace('TWU', '')
-                            wares = wares.replace(',,', '')
-                    elif 'TWU' in wares:
-                        wares = wares.replace('TWU', 'TX')
-                        if 'EXL' in wares:
-                            wares = wares.replace('EXL', '')
-                            wares = wares.replace(',,', ',')
+                    if 'TWU' in wares or 'EXL' in wares:
+                        w_list = wares.split(',')
+                        w_list.append('TX')
+                        if 'TWU' in w_list:
+                            w_list.remove('TWU')
+                        if 'EXL' in w_list:
+                            w_list.remove('EXL')
+                        wares = ','.join(w_list)
                     wares_re = itertools.permutations(wares.split(','))
                     sfp_t = ''
                     for w_val in wares_re:
@@ -273,20 +261,14 @@ def export_sfp(request):
     sfps_re = {}
     sfps = SfpTemps.objects.all().exclude(inactive='Y')
     for val in sfps:
-        if 'TWU,EXL' in val.warehouse:
-            val.warehouse = val.warehouse.replace('TWU,EXL', 'TX')
-        elif 'EXL,TWU' in val.warehouse:
-            val.warehouse = val.warehouse.replace('EXL,TWU', 'TX')
-        elif 'EXL' in val.warehouse:
-            val.warehouse = val.warehouse.replace('EXL', 'TX')
-            if 'TWU' in val.warehouse:
-                val.warehouse = val.warehouse.replace('TWU', '')
-                val.warehouse = val.warehouse.replace(',,', ',')
-        elif 'TWU' in val.warehouse:
-            val.warehouse = val.warehouse.replace('TWU', 'TX')
-            if 'EXL' in val.warehouse:
-                val.warehouse = val.warehouse.replace('EXL', '')
-                val.warehouse = val.warehouse.replace(',,', ',')
+        if 'TWU' in val.warehouse or 'EXL' in val.warehouse:
+            w_list = val.warehouse.split(',')
+            w_list.append('TX')
+            if 'TWU' in w_list:
+                w_list.remove('TWU')
+            if 'EXL' in w_list:
+                w_list.remove('EXL')
+            val.warehouse = ','.join(w_list)
         sfps_re.update({
             val.warehouse: val.sfp_temp
         })
@@ -298,20 +280,14 @@ def export_sfp(request):
             if wares == 'EXL' or wares == 'TWU':
                 val.update({'sfp': 'Prime template--TX ONLY'})
             else:
-                if 'TWU,EXL' in wares:
-                    wares = wares.replace('TWU,EXL', 'TX')
-                elif 'EXL,TWU' in wares:
-                    wares = wares.replace('EXL,TWU', 'TX')
-                elif 'EXL' in wares:
-                    wares = wares.replace('EXL', 'TX')
-                    if 'TWU' in wares:
-                        wares = wares.replace('TWU', '')
-                        wares = wares.replace(',,', '')
-                elif 'TWU' in wares:
-                    wares = wares.replace('TWU', 'TX')
-                    if 'EXL' in wares:
-                        wares = wares.replace('EXL', '')
-                        wares = wares.replace(',,', ',')
+                if 'TWU' in wares or 'EXL' in wares:
+                    w_list = wares.split(',')
+                    w_list.append('TX')
+                    if 'TWU' in w_list:
+                        w_list.remove('TWU')
+                    if 'EXL' in w_list:
+                        w_list.remove('EXL')
+                    wares = ','.join(w_list)
                 wares_re = itertools.permutations(wares.split(','))
                 sfp_t = ''
                 for w_val in wares_re:
