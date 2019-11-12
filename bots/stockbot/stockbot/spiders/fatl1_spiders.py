@@ -123,11 +123,15 @@ class Fatl1Spider(scrapy.Spider):
                 continue
         driver.find_element_by_id('submit').click()
         driver.implicitly_wait(100)
+        done_time = 0
         while 1:
             try:
                 che_num = driver.find_element_by_id('number').get_attribute("value")
                 break
             except:
+                done_time += 3
+                if done_time > 200:
+                    break
                 time.sleep(3)
         os.remove(xlsx_path)
         obj = FbaTransportTask.objects.filter(file_path=xlsx_path)
