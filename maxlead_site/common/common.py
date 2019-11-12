@@ -205,7 +205,7 @@ def warehouse_threshold_msgs(qtys,warehouse=None):
         if t_key in qtys and val.threshold >= int(qtys[t_key]) and users:
             for usr in users:
                 if usr.sku == val.sku and usr.user.email:
-                    m_str = 'SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s' % (
+                    m_str = 'SKU:%s,Warehouse:%s,QTY:%s,Early warning value:%s \n' % (
                         val.sku, val.warehouse, qtys[t_key], val.threshold)
                     check = UserEmailMsg.objects.filter(user=usr.user, sku=val.sku, warehouse=val.warehouse, content=m_str, created__contains=c_time)
                     if not check:
