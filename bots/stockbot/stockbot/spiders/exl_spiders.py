@@ -31,9 +31,9 @@ class ExlSpider(scrapy.Spider):
             self.log_id = int(log_id)
 
     def parse(self, response):
-        # from pyvirtualdisplay import Display
-        # display = Display(visible=0, size=(800, 800))
-        # display.start()
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(800, 800))
+        display.start()
         profile = webdriver.FirefoxProfile()
         profile.set_preference('browser.download.dir', settings.DOWNLOAD_DIR)  # 现在文件存放的目录
         profile.set_preference('browser.download.folderList', 2)
@@ -41,7 +41,7 @@ class ExlSpider(scrapy.Spider):
         profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, '
                                              'text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel')
         firefox_options = Options()
-        # firefox_options.add_argument('-headless')
+        firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         url = response.url
@@ -172,7 +172,7 @@ class ExlSpider(scrapy.Spider):
                     continue
 
         try:
-            # display.stop()
+            display.stop()
             driver.quit()
         except IndexError as e:
             print(e)
