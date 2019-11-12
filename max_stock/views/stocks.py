@@ -118,19 +118,25 @@ def get_stocks(request):
         data_list = data_list.filter(created__lte=end_date)
     if keywords:
         data_list = data_list.filter(sku__contains=keywords)
+    threshold_objs = Thresholds.objects.filter(sku__in=d_list)
+    th_re = {}
+    for th_v in threshold_objs:
+        th_re.update({
+            th_v.sku + th_v.warehouse : th_v.threshold
+        })
 
     for val in data_list:
         if val.sku not in items_sku:
             items_sku.append(val.sku)
             items.append({'sku':val.sku})
         for v in items:
-            # threshold_obj = Thresholds.objects.filter(sku=val.sku, warehouse=val.warehouse)
             if v['sku'] == val.sku:
                 is_same = 0
                 if val.warehouse == 'ATL':
                     val.warehouse = 'atl'
-                # if threshold_obj and threshold_obj[0].threshold >= val.qty:
-                #     is_same = 1
+                th_key = val.sku + val.warehouse
+                if th_key in th_re and th_re[th_key] >= val.qty:
+                    is_same = 1
                 date_time = val.created.strftime('%Y-%m-%d %H:%M:%S')
                 if val.warehouse == warehouse:
                     date_time = val.created.strftime('%Y-%m-%d %H:%M:%S')

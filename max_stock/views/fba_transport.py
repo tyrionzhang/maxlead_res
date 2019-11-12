@@ -15,7 +15,7 @@ def fba_transport(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     res = FbaTransportTask.objects.all().order_by('-id', '-created')
     for val in res:
-        val.file_name = val.file_path.split('\\')[-1]
+        val.file_name = val.file_path.split('/')[-1]
     data = {
         'data': res,
         'title': "FBA Transport",
@@ -62,7 +62,7 @@ def run_fba_trans(request):
         os.chdir(work_path)
         msg = 'Running~\n'
         for val in obj:
-            xlsx_file = val.file_path.split('\\')[-1]
+            xlsx_file = val.file_path.split('/')[-1]
             if not os.path.isfile(val.file_path):
                 msg += '文件%s不存在\n' % xlsx_file
                 continue
