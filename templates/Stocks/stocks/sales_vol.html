@@ -42,6 +42,8 @@
                             <option value="TFD">TFD</option>
                             <option value="PC">PC</option>
                             <option value="ZTO">ZTO</option>
+                            <option value="ROL">ROL</option>
+                            <option value="ONT">ONT</option>
                         </select>
                     </label>
                 </div>
@@ -129,6 +131,14 @@
                     <td class="tr-stock-blue sales_num">
                         <span>{{ val.zto }}</span>
                         <input name='zto' type='text' value='' class="hide sales-input"/>
+                    </td>
+                    <td class="tr-stock-blue sales_num">
+                        <span>{{ val.rol }}</span>
+                        <input name='rol' type='text' value='' class="hide sales-input"/>
+                    </td>
+                    <td class="tr-stock-blue sales_num">
+                        <span>{{ val.ont }}</span>
+                        <input name='ont' type='text' value='' class="hide sales-input"/>
                     </td>
                     <td>{{ val.sum }}</td>
                     <td>{{ val.date }}</td>

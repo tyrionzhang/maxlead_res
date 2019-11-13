@@ -58,7 +58,11 @@ class Atl1Spider(scrapy.Spider):
                     td_re = val.find_elements_by_tag_name('td')
                     if td_re:
                         item['sku'] = td_re[3].text
-                        item['warehouse'] = 'ATL'
+                        w_name = td_re[1].text
+                        if w_name == 'ONT-2':
+                            item['warehouse'] = 'ONT'
+                        else:
+                            item['warehouse'] = 'ATL'
                         item['is_new'] = 0
                         if td_re[11].text and not td_re[11].text == ' ':
                             item['qty'] = td_re[11].text
@@ -79,7 +83,7 @@ class Atl1Spider(scrapy.Spider):
         driver.quit()
 
         querysetlist = []
-        old_list_qty = warehouse_date_data(['ATL'])
+        old_list_qty = warehouse_date_data(['ATL', 'ONT'])
         new_qtys = {}
         for i, val in enumerate(items, 0):
             try:
@@ -106,4 +110,4 @@ class Atl1Spider(scrapy.Spider):
 
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('ATL', log_id=self.log_id)
-        msg_str2 = warehouse_threshold_msgs(new_qtys, ['ATL'])
+        msg_str2 = warehouse_threshold_msgs(new_qtys, ['ATL', 'ONT'])
