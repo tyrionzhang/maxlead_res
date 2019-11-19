@@ -37,6 +37,7 @@
                     <th>File</th>
                     <th>Time</th>
                     <th>User</th>
+                    <th>Description</th>
                     <th>State </th>
                 </tr>
                 {% for val in data %}
@@ -45,6 +46,7 @@
                     <td>{{ val.file_name }}</td>
                     <td>{{ val.created }}</td>
                     <td>{{ val.user.username }}</td>
+                    <td>{{ val.description }}</td>
                     <td>{{ val.status }}</td>
                 </tr>
                 {% endfor %}

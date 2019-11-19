@@ -64,9 +64,19 @@ class Fatl1Spider(scrapy.Spider):
                         driver.implicitly_wait(100)
                         chcBox = driver.find_elements_by_css_selector('.table>tbody>tr>td>input')
                         if not chcBox:
-                            dec_str += '%s<br>' % sku
+                            dec_str += '%s;' % sku
+                            if nrows > 1:
+                                driver.find_element_by_id('add_productA').click()
+                                driver.implicitly_wait(100)
                             continue
                         else:
+                            qty1 = driver.find_elements_by_css_selector('.table>tbody>tr>td')[9].text
+                            if int(qty1) < int(qty):
+                                dec_str += 'sku:%s库存不足,数据未处理.' % sku
+                                if nrows > 1:
+                                    driver.find_element_by_id('add_productA').click()
+                                    driver.implicitly_wait(100)
+                                break
                             num = 0
                         chcBox[0].click()
                         fba_trspot = driver.find_elements_by_css_selector('.page-nav>button')
@@ -79,13 +89,17 @@ class Fatl1Spider(scrapy.Spider):
                         if nrows > 1:
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
-                            time.sleep(3)
                     else:
-                        iframe1 = driver.find_elements_by_tag_name('iframe')
-                        if iframe1:
-                            driver.switch_to.frame(iframe1[0])
-                            driver.implicitly_wait(100)
-                            time.sleep(3)
+                        while 1:
+                            try:
+                                iframe1 = driver.find_elements_by_tag_name('iframe')
+                                if iframe1:
+                                    driver.switch_to.frame(iframe1[0])
+                                    driver.implicitly_wait(100)
+                                    time.sleep(3)
+                                    break
+                            except:
+                                time.sleep(3)
                         key_el = driver.find_element_by_id('keyword')
                         serc_el = driver.find_element_by_id('avdSearch')
                         key_el.clear()
@@ -94,9 +108,25 @@ class Fatl1Spider(scrapy.Spider):
                         driver.implicitly_wait(100)
                         chcBox = driver.find_elements_by_css_selector('.table>tbody>tr>td>input')
                         if not chcBox:
-                            dec_str += '%s<br>' % sku
+                            dec_str += '%s;' % sku
+                            if nrows > 1 and i < (range(nrows)[-1] - 1):
+                                driver.find_element_by_id('add_productA').click()
+                                driver.implicitly_wait(100)
                             continue
                         else:
+                            qty1 = driver.find_elements_by_css_selector('.table>tbody>tr>td')[7].text
+                            if int(qty1) < int(qty):
+                                dec_str += 'sku:%s库存不足;' % sku
+                                driver.switch_to.default_content()
+                                driver.implicitly_wait(100)
+                                time.sleep(3)
+                                close_a = driver.find_element_by_class_name(
+                                    'layui-layer-setwin').find_element_by_tag_name('a')
+                                close_a.click()
+                                if nrows > 1 and i < (range(nrows)[-1] - 1):
+                                    driver.find_element_by_id('add_productA').click()
+                                    driver.implicitly_wait(100)
+                                continue
                             if num == 'start':
                                 num = 0
                             else:
@@ -119,9 +149,8 @@ class Fatl1Spider(scrapy.Spider):
                         if nrows > 1 and i < (range(nrows)[-1] - 1):
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
-                            time.sleep(3)
             except:
-                dec_str += '%s<br>' % sku
+                dec_str += '%s;' % sku
                 continue
         driver.find_element_by_id('submit').click()
         driver.implicitly_wait(100)
