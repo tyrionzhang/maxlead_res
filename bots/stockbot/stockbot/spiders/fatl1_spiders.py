@@ -79,6 +79,7 @@ class Fatl1Spider(scrapy.Spider):
                         if nrows > 1:
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
+                            time.sleep(3)
                     else:
                         iframe1 = driver.find_elements_by_tag_name('iframe')
                         if iframe1:
@@ -118,6 +119,7 @@ class Fatl1Spider(scrapy.Spider):
                         if nrows > 1 and i < (range(nrows)[-1] - 1):
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
+                            time.sleep(3)
             except:
                 dec_str += '%s<br>' % sku
                 continue
