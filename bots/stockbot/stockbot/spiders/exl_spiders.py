@@ -124,6 +124,8 @@ class ExlSpider(scrapy.Spider):
                                     break
                                 item = {}
                                 item['sku'] = table.cell_value(i, 0,)
+                                if len(item['sku']) > 225:
+                                    continue
                                 if item['sku']:
                                     item['warehouse'] = warehouse_name
                                     if warehouse_name == 'Exchange Logistics':

@@ -54,10 +54,10 @@ class Fatl1Spider(scrapy.Spider):
         for i in range(nrows):
             try:
                 if i + 1 < nrows:
-                    whs = table.cell_value(i + 1, 0, )
                     sku = table.cell_value(i + 1, 1, )
                     qty = int(table.cell_value(i + 1, 2, ))
                     if i + 1 == 1:
+                        whs = table.cell_value(i + 1, 0, )
                         key_el = driver.find_element_by_id('keyword')
                         key_el.send_keys(sku)
                         if whs == 'ONT':
@@ -65,6 +65,7 @@ class Fatl1Spider(scrapy.Spider):
                         else:
                             driver.find_elements_by_css_selector('#avdSearch ~ button')[0].click()
                         driver.implicitly_wait(100)
+                        time.sleep(3)
                         chcBox = driver.find_elements_by_css_selector('.table>tbody>tr>td>input')
                         if not chcBox:
                             dec_str += '%s;' % sku
@@ -109,6 +110,7 @@ class Fatl1Spider(scrapy.Spider):
                         key_el.send_keys(sku)
                         serc_el.click()
                         driver.implicitly_wait(100)
+                        time.sleep(3)
                         chcBox = driver.find_elements_by_css_selector('.table>tbody>tr>td>input')
                         if not chcBox:
                             dec_str += '%s;' % sku

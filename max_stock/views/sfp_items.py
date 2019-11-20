@@ -37,12 +37,14 @@ def sfp_items(request):
                 kits = KitSkus.objects.filter(kit=val.item)
                 for k_val in kits:
                     data_re.append({
+                        'id': val.id,
                         'kit': val.item,
                         'sku': k_val.sku
                     })
                     sku_list.append(k_val.sku)
             else:
                 data_re.append({
+                    'id': val.id,
                     'kit': '',
                     'sku': val.item
                 })
@@ -129,6 +131,7 @@ def sfp_items(request):
             if val['kit'] not in res:
                 res.update({
                     val['kit'] : {
+                        'id' : val['id'],
                         'sku' : val['sku'],
                         'is_kit' : is_kit,
                         'whs' : val['whs'],
@@ -382,3 +385,16 @@ def save_sfp(request):
 
 def remove_file(path):
     os.remove(path)
+
+@csrf_exempt
+def del_items(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids', '')
+        obj = Sfps.objects.filter(id__in=eval(ids[0]))
+        if not obj:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not exist！'}), content_type='application/json')
+        obj.delete()
+        return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
