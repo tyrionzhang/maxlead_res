@@ -74,7 +74,7 @@ class Fatl1Spider(scrapy.Spider):
                                 driver.implicitly_wait(100)
                             continue
                         else:
-                            qty1 = driver.find_elements_by_css_selector('.table>tbody>tr>td')[9].text
+                            qty1 = driver.find_element_by_css_selector('.table>tbody>tr>td:nth-of-type(10)').text
                             if int(qty1) < int(qty):
                                 dec_str += 'sku:%s库存不足,数据未处理.' % sku
                                 if nrows > 1:
@@ -119,7 +119,7 @@ class Fatl1Spider(scrapy.Spider):
                                 driver.implicitly_wait(100)
                             continue
                         else:
-                            qty1 = driver.find_elements_by_css_selector('.table>tbody>tr>td')[7].text
+                            qty1 = driver.find_element_by_css_selector('.table>tbody>tr>td:nth-of-type(8)').text
                             if int(qty1) < int(qty):
                                 dec_str += 'sku:%s库存不足;' % sku
                                 driver.switch_to.default_content()
