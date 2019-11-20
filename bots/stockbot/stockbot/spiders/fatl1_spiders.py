@@ -86,10 +86,11 @@ class Fatl1Spider(scrapy.Spider):
                         fba_trspot = driver.find_elements_by_css_selector('.page-nav>button')
                         fba_trspot[1].click()
                         driver.implicitly_wait(100)
-                        prdut_tr = driver.find_elements_by_css_selector('.product-table>tbody>tr')
-                        prdut_tr[num].find_elements_by_tag_name('input')[0].send_keys(sku)
-                        prdut_tr[num].find_elements_by_tag_name('input')[1].clear()
-                        prdut_tr[num].find_elements_by_tag_name('input')[1].send_keys(qty)
+                        tr_ssel = '.product-table>tbody>tr:nth-of-type(%s)' % (num + 1)
+                        prdut_tr = driver.find_element_by_css_selector(tr_ssel)
+                        prdut_tr.find_elements_by_tag_name('input')[0].send_keys(sku)
+                        prdut_tr.find_elements_by_tag_name('input')[1].clear()
+                        prdut_tr.find_elements_by_tag_name('input')[1].send_keys(qty)
                         if nrows > 1:
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
@@ -144,10 +145,11 @@ class Fatl1Spider(scrapy.Spider):
                         close_a.click()
                         while 1:
                             try:
-                                prdut_tr = driver.find_elements_by_css_selector('.product-table>tbody>tr')
-                                prdut_tr[num].find_elements_by_tag_name('input')[0].send_keys(sku)
-                                prdut_tr[num].find_elements_by_tag_name('input')[1].clear()
-                                prdut_tr[num].find_elements_by_tag_name('input')[1].send_keys(qty)
+                                tr_ssel = '.product-table>tbody>tr:nth-of-type(%s)' % (num + 1)
+                                prdut_tr = driver.find_element_by_css_selector(tr_ssel)
+                                prdut_tr.find_elements_by_tag_name('input')[0].send_keys(sku)
+                                prdut_tr.find_elements_by_tag_name('input')[1].clear()
+                                prdut_tr.find_elements_by_tag_name('input')[1].send_keys(qty)
                                 break
                             except:
                                 time.sleep(3)
