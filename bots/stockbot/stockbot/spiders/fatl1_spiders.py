@@ -159,7 +159,16 @@ class Fatl1Spider(scrapy.Spider):
             except:
                 dec_str += '%s;' % sku
                 continue
-        driver.find_element_by_id('submit').click()
+        sub_btn = driver.find_elements_by_id('submit')
+        if sub_btn:
+            sub_btn.click()
+        else:
+            driver.switch_to.default_content()
+            driver.implicitly_wait(100)
+            time.sleep(3)
+            close_a = driver.find_element_by_class_name('layui-layer-setwin').find_element_by_tag_name('a')
+            close_a.click()
+            driver.find_element_by_id('submit').click()
         driver.implicitly_wait(100)
         done_time = 0
         while 1:
