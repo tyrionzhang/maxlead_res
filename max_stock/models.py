@@ -225,6 +225,18 @@ class FbaTransportTask(models.Model):
     class Meta:
         db_table = 'fba_transport_task'
 
+class Tokens(models.Model):
+    name = models.CharField('Name', max_length=522, default='')
+    access_token = models.TextField('Access Token', default='')
+    refresh_token = models.TextField('Refresh Token', default='')
+    token_type = models.CharField('Token Type', max_length=522, default='')
+    expires_in = models.CharField('Expires In', max_length=522, default='')
+    scope = models.CharField('Scope', max_length=522, default='')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'tokens'
+
 
 
 

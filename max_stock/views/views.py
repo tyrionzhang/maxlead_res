@@ -5,12 +5,13 @@ import json
 import threading
 import time
 import requests
+import base64
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from maxlead_site.views.app import App
 from maxlead import settings
 from maxlead_site.models import UserProfile
-from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg,SpidersLogs
+from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg,SpidersLogs,Tokens
 from max_stock.models import KitSkus
 from django.http import HttpResponse
 from max_stock.views.stocks import covered_stocks
@@ -76,9 +77,9 @@ class perform_command_que(threading.Thread):
         cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=hanover_spider -d username=%s' % self.username
         cmd_str2 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d username=%s' % self.username
 
-        t = threading.Timer(290.0, self.run_atl_spider)
+        t = threading.Timer(270.0, self.run_atl_spider)
         t.start()
-        t1 = threading.Timer(270.0, self.run_exl_spider)
+        t1 = threading.Timer(600.0, self.run_exl_spider)
         t1.start()
 
         os.popen(cmd_str1)
@@ -335,3 +336,37 @@ def get_kit_skus(start_date=None):
         del_li.delete()
     if querylist:
         KitSkus.objects.bulk_create(querylist)
+
+def get_3pl_token():
+    ClientId = '116bf6ac-5208-41fe-a704-7948111fbe4b'
+    ClientSecret = 'vie37zoz+3jWQT+qLNhIY7aK9X+Pnw6V'
+    encode_secret = '%s:%s' % (ClientId, ClientSecret)
+    encode_secret = str(base64.b64encode(encode_secret.encode('utf-8')), 'utf-8')
+    url = 'http://secure-wms.com/AuthServer/api/Token'
+    body = {
+        "grant_type": "client_credentials",
+        "tpl": "{073abe7b-9d71-414d-9933-c71befa9e569}",
+        "user_login_id": "52"
+    }
+    headers = {
+        'Content-Type': "application/json; charset=utf-8",
+        'Accept': "application/json",
+        'Host': "secure-wms.com",
+        'Accept-Language': "Content-Length",
+        'Accept-Encoding': "gzip,deflate,sdch",
+        'Authorization': 'Basic %s' % encode_secret
+    }
+    response = requests.post(url, data=json.dumps(body), headers=headers)
+    if response.status_code == 200:
+        res = json.loads(response.content.decode())
+        pl_token = Tokens.objects.filter(name='3pl')
+        obj = Tokens()
+        if pl_token:
+            pl_token.update(access_token=res['access_token'], created=datetime.now())
+        else:
+            obj.id
+            obj.name = '3pl'
+            obj.access_token = res['access_token']
+            obj.token_type = res['token_type']
+            obj.save()
+        return res['access_token']
