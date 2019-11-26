@@ -161,7 +161,7 @@ class Fatl1Spider(scrapy.Spider):
                 continue
         sub_btn = driver.find_elements_by_id('submit')
         if sub_btn:
-            sub_btn.click()
+            sub_btn[0].click()
         else:
             driver.switch_to.default_content()
             driver.implicitly_wait(100)
