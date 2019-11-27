@@ -66,23 +66,32 @@ class Fatl1Spider(scrapy.Spider):
                             driver.find_elements_by_css_selector('#avdSearch ~ button')[0].click()
                         driver.implicitly_wait(100)
                         time.sleep(3)
-                        chcBox = driver.find_elements_by_css_selector('.table>tbody>tr>td>input')
-                        if not chcBox:
+                        sku_tr = driver.find_elements_by_css_selector('.table>tbody>tr')
+                        if not sku_tr:
                             dec_str += '%s;' % sku
-                            if nrows > 1:
+                            if nrows > 2:
                                 driver.find_element_by_id('add_productA').click()
                                 driver.implicitly_wait(100)
                             continue
                         else:
+                            if len(sku_tr) > 1:
+                                for val in sku_tr:
+                                    sku_tr_name = val.find_element_by_css_selector('td:nth-of-type(4)').text
+                                    if sku_tr_name == sku:
+                                        chc_tr = val
+                                        break
+                            else:
+                                chc_tr = sku_tr[0]
+                            chcBox = chc_tr.find_element_by_tag_name('input')
                             qty1 = driver.find_element_by_css_selector('.table>tbody>tr>td:nth-of-type(10)').text
                             if int(qty1) < int(qty):
                                 dec_str += 'sku:%s库存不足,数据未处理.' % sku
-                                if nrows > 1:
+                                if nrows > 2:
                                     driver.find_element_by_id('add_productA').click()
                                     driver.implicitly_wait(100)
                                 break
                             num = 0
-                        chcBox[0].click()
+                            chcBox.click()
                         fba_trspot = driver.find_elements_by_css_selector('.page-nav>button')
                         fba_trspot[1].click()
                         driver.implicitly_wait(100)
@@ -91,7 +100,7 @@ class Fatl1Spider(scrapy.Spider):
                         prdut_tr.find_elements_by_tag_name('input')[0].send_keys(sku)
                         prdut_tr.find_elements_by_tag_name('input')[1].clear()
                         prdut_tr.find_elements_by_tag_name('input')[1].send_keys(qty)
-                        if nrows > 1:
+                        if nrows > 2:
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
                     else:
@@ -112,14 +121,24 @@ class Fatl1Spider(scrapy.Spider):
                         serc_el.click()
                         driver.implicitly_wait(100)
                         time.sleep(3)
-                        chcBox = driver.find_elements_by_css_selector('.table>tbody>tr>td>input')
-                        if not chcBox:
+                        sku_tr = driver.find_elements_by_css_selector('.table>tbody>tr')
+                        if not sku_tr:
                             dec_str += '%s;' % sku
-                            if nrows > 1 and i < (range(nrows)[-1] - 1):
+                            if nrows > 2 and i < (range(nrows)[-1] - 1):
                                 driver.find_element_by_id('add_productA').click()
                                 driver.implicitly_wait(100)
                             continue
                         else:
+                            if len(sku_tr) > 1:
+                                for val in sku_tr:
+                                    sku_tr_name = val.find_element_by_css_selector('td:nth-of-type(4)').text
+                                    if sku_tr_name == sku:
+                                        chc_tr = val
+                                        break
+                            else:
+                                chc_tr = sku_tr[0]
+                            chcBox = chc_tr.find_element_by_tag_name('input')
+
                             qty1 = driver.find_element_by_css_selector('.table>tbody>tr>td:nth-of-type(8)').text
                             if int(qty1) < int(qty):
                                 dec_str += 'sku:%s库存不足;' % sku
@@ -129,7 +148,7 @@ class Fatl1Spider(scrapy.Spider):
                                 close_a = driver.find_element_by_class_name(
                                     'layui-layer-setwin').find_element_by_tag_name('a')
                                 close_a.click()
-                                if nrows > 1 and i < (range(nrows)[-1] - 1):
+                                if nrows > 2 and i < (range(nrows)[-1] - 1):
                                     driver.find_element_by_id('add_productA').click()
                                     driver.implicitly_wait(100)
                                 continue
@@ -137,7 +156,7 @@ class Fatl1Spider(scrapy.Spider):
                                 num = 0
                             else:
                                 num += 1
-                        chcBox[0].click()
+                            chcBox.click()
                         driver.switch_to.default_content()
                         driver.implicitly_wait(100)
                         time.sleep(3)
@@ -153,16 +172,15 @@ class Fatl1Spider(scrapy.Spider):
                                 break
                             except:
                                 time.sleep(3)
-                        if nrows > 1 and i < (range(nrows)[-1] - 1):
+                        if nrows > 2 and i < (range(nrows)[-1] - 1):
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
             except:
                 dec_str += '%s;' % sku
                 continue
-        sub_btn = driver.find_elements_by_id('submit')
-        if sub_btn:
-            sub_btn[0].click()
-        else:
+        try:
+            driver.find_element_by_id('submit').click()
+        except:
             driver.switch_to.default_content()
             driver.implicitly_wait(100)
             time.sleep(3)
