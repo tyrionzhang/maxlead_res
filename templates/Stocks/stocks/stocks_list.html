@@ -125,9 +125,9 @@
                 {% endif %}
             </tr>
         </thead>
-            {% for val in stock_list %}
         <tbody id="stocks_body">
-            <tr id="stocks_tr">
+            {% for val in stock_list %}
+            <tr>
                 <td>{{ val.sku }}</td>
                 <td class="tr-stock-blue{{ val.EXL.is_same }}">{% if val.EXL.qty %}{{ val.EXL.qty }}{% else %}0{% endif %}</td>
                 <td class="tr-stock-blue{{ val.TWU.is_same }}">{% if val.TWU.qty %}{{ val.TWU.qty }}{% else %}0{% endif %}</td>
