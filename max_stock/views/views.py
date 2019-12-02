@@ -312,7 +312,7 @@ def check_spiders(new_log=None):
 def get_kit_skus(start_date=None):
     headers = {
         'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
-        'Authorization': 'NLAuth nlauth_account=5339579, nlauth_email=rudy.zhangwei@cdsht.cn, nlauth_signature=Maxlead123, nlauth_role=3'
+        'Authorization': 'NLAuth nlauth_account=5339579, nlauth_email=matt.s@gmainland.com, nlauth_signature=NS2805hxml, nlauth_role=3'
     }
     url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=376&deploy=1&start_date=%s&end_date=%s'
     if not start_date:
