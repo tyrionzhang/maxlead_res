@@ -2,6 +2,7 @@
 import scrapy,os,math
 from datetime import *
 import time
+import xlrd
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
@@ -29,10 +30,18 @@ class ZtoSpider(scrapy.Spider):
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
+        profile = webdriver.FirefoxProfile()
+        down_path = os.path.join(settings.DOWNLOAD_DIR, 'zto_tb')
+        profile.set_preference('browser.download.dir', down_path)  # 现在文件存放的目录
+        profile.set_preference('browser.download.folderList', 2)
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk',
+                               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, '
+                               'text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel,application/x-download')
         firefox_options = Options()
         firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
-        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
+        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         driver.get(response.url)
         time.sleep(5)
         elem_name = driver.find_elements_by_name('username')
@@ -50,53 +59,48 @@ class ZtoSpider(scrapy.Spider):
         stock_li.click()
         driver.implicitly_wait(100)
         time.sleep(3)
-        total_count = driver.find_element_by_class_name('el-pagination__total').text
-        total_page = int(total_count.split(' ')[1].replace(',','')) / 10
-        total_page = math.ceil(total_page)
-
+        btn_export = driver.find_element_by_css_selector('.text-right>button:nth-of-type(2)')
+        btn_export.click()
+        time.sleep(100)
         old_list_qty = warehouse_date_data(['ZTO'])
         new_qtys = {}
-        for i in range(total_page):
-            try:
-                res = driver.find_elements_by_css_selector('.el-table tbody>tr')
-                for val in res:
+        files = os.listdir(down_path)
+        if files:
+            f_path = os.path.join(down_path, files[0])
+            if os.path.isfile(f_path):
+                data = xlrd.open_workbook(f_path)  # 打开fname文件
+                data.sheet_names()  # 获取xls文件中所有sheet的名称
+                table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+                nrows = table.nrows
+                for i in range(1, nrows):
                     try:
+                        if i >= nrows:
+                            break
                         item = WarehouseStocksItem()
-                        td_re = val.find_elements_by_tag_name('td')
-                        if td_re:
-                            item['sku'] = td_re[1].text
-                            item['warehouse'] = 'ZTO'
-                            item['is_new'] = 0
-                            if td_re[4].text and not td_re[4].text == ' ':
-                                qty5 = int(td_re[5].text)
-                                item['qty'] = td_re[4].text
-                                item['qty'] = item['qty'].replace(',','')
-                                if qty5:
-                                    item['qty'] = int(item['qty']) - qty5
-                            else:
-                                item['qty'] = 0
-                            item['qty1'] = 0
-                            if old_list_qty:
-                                key1 = item['warehouse'] + item['sku']
-                                if key1 in old_list_qty:
-                                    item['qty1'] = old_list_qty[key1] - int(item['qty'])
-                            new_key = item['warehouse'] + item['sku']
-                            new_qtys.update({
-                                new_key: item['qty']
-                            })
-                            yield item
-                    except IndexError as e:
-                        print(e)
+                        item['sku'] = table.cell_value(i, 1, )
+                        item['warehouse'] = 'ZTO'
+                        item['is_new'] = 0
+                        qty = table.cell_value(i, 3, )
+                        if qty:
+                            qty5 = int(table.cell_value(i, 5, ))
+                            item['qty'] = qty
+                            if qty5:
+                                item['qty'] = int(item['qty']) - qty5
+                        else:
+                            item['qty'] = 0
+                        item['qty1'] = 0
+                        if old_list_qty:
+                            key1 = item['warehouse'] + item['sku']
+                            if key1 in old_list_qty:
+                                item['qty1'] = old_list_qty[key1] - int(item['qty'])
+                        new_key = item['warehouse'] + item['sku']
+                        new_qtys.update({
+                            new_key: item['qty']
+                        })
+                        yield item
+                    except:
                         continue
-                if i < total_page - 1:
-                    elem_next_page = driver.find_elements_by_class_name('btn-next')
-                    if elem_next_page:
-                        elem_next_page[0].click()
-                        driver.implicitly_wait(100)
-                        time.sleep(3)
-            except IndexError as e:
-                print(e)
-                continue
+                os.remove(f_path)
         display.stop()
         driver.quit()
         update_spiders_logs('ZTO', log_id=self.log_id)
