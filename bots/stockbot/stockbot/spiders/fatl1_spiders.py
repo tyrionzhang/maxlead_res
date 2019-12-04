@@ -104,8 +104,11 @@ class Fatl1Spider(scrapy.Spider):
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
                     else:
+                        ifram_ti = 0
                         while 1:
                             try:
+                                if ifram_ti > 200:
+                                    break
                                 iframe1 = driver.find_elements_by_tag_name('iframe')
                                 if iframe1:
                                     driver.switch_to.frame(iframe1[0])
@@ -113,6 +116,7 @@ class Fatl1Spider(scrapy.Spider):
                                     time.sleep(3)
                                     break
                             except:
+                                ifram_ti += 3
                                 time.sleep(3)
                         key_el = driver.find_element_by_id('keyword')
                         serc_el = driver.find_element_by_id('avdSearch')
