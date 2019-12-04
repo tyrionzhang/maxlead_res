@@ -44,10 +44,10 @@ def index(request):
     if not warehouse:
         warehouse = 'all'
     if not start_date:
-        start_date = datetime.now() + timedelta(days=1)
+        start_date = datetime.now()
         start_date = start_date.strftime('%Y-%m-%d')
     if not end_date:
-        end_date = datetime.now()
+        end_date = datetime.now() + timedelta(days=1)
         end_date = end_date.strftime('%Y-%m-%d')
     stocks_url = '/admin/max_stock/get_stocks?%s'
     get_str = ''
