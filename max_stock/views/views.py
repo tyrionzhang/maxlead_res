@@ -341,10 +341,6 @@ def get_kit_skus(start_date=None):
     url = url % (start_date, datetime.now().strftime("%m/%d/%Y"))
 
     headers = create_request_auth_header(http_method, url, params)
-    # headers = {
-    #     'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
-    #     'Authorization': 'NLAuth nlauth_account=5339579, nlauth_email=matt.s@gmainland.com, nlauth_signature=NS2805hxml, nlauth_role=3'
-    # }
     res = requests.get(url, headers=headers)
     res = json.loads(res.content.decode())
     querylist = []
