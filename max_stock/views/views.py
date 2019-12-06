@@ -6,6 +6,7 @@ import threading
 import time
 import requests
 import base64
+import oauth2 as oauth
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from maxlead_site.views.app import App
@@ -28,6 +29,14 @@ week_day = {
     'saturday':'SATURDAY',
     'sunday':'SUNDAY',
 }
+
+token = oauth.Token(key = '1c79c2192f70baf2331237a431f6b038b174d0edb5db2ce7ba41f404a2779ca3',
+                        secret = 'a6019bd5862c26aaf685b537c44a9175b949bfba023c382a32a13d080cbb2cda')
+consumer = oauth.Consumer(key = '0b39ae6243f5fb35a8076e057dd779f440af509cdd393e712cd7029151b9a202',
+                         secret = 'cfbc9759bac8c2cdd51daa19ed82fef6f11251fe556b2564524ab1d5161b16e5')
+http_method = "GET"
+realm = "5339579"
+
 def getNextSaturday():
     today = date.today()
     oneday = timedelta(days = 1)
@@ -309,18 +318,33 @@ def check_spiders(new_log=None):
         os.chdir(settings.ROOT_PATH)
         os.popen('killall -9 firefox')
 
+def create_request_auth_header(method, url, params):
+    req = oauth.Request(method = method, url = url, parameters = params)
+    signature_method = oauth.SignatureMethod_HMAC_SHA1()
+    req.sign_request(signature_method, consumer, token)
+    return req.to_header(realm)
+
 def get_kit_skus(start_date=None):
-    headers = {
-        'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
-        'Authorization': 'NLAuth nlauth_account=5339579, nlauth_email=matt.s@gmainland.com, nlauth_signature=NS2805hxml, nlauth_role=3'
-    }
     url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=376&deploy=1&start_date=%s&end_date=%s'
+    params = {
+        'oauth_version': "1.0",
+        'oauth_nonce': oauth.generate_nonce(),
+        'oauth_timestamp': "%s" % int(time.time()),
+        'oauth_token': token.key,
+        'oauth_consumer_key': consumer.key
+    }
     if not start_date:
         kit_obj = KitSkus.objects.all().order_by('-created')
         start_date = '10/24/2019'
         if kit_obj:
             start_date = kit_obj[0].created.strftime("%m/%d/%Y")
     url = url % (start_date, datetime.now().strftime("%m/%d/%Y"))
+
+    headers = create_request_auth_header(http_method, url, params)
+    # headers = {
+    #     'User-Agent' : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
+    #     'Authorization': 'NLAuth nlauth_account=5339579, nlauth_email=matt.s@gmainland.com, nlauth_signature=NS2805hxml, nlauth_role=3'
+    # }
     res = requests.get(url, headers=headers)
     res = json.loads(res.content.decode())
     querylist = []
