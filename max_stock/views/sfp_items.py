@@ -71,7 +71,8 @@ def sfp_items(request):
                 chec_th = th_li[sku_key]
             if val.qty >= chec_th:
                 if val.sku in sku_ware:
-                    sku_ware[val.sku] = sku_ware[val.sku] + val.warehouse + ','
+                    if val.warehouse not in sku_ware[val.sku]:
+                        sku_ware[val.sku] = sku_ware[val.sku] + val.warehouse + ','
                 else:
                     sku_ware.update({
                         val.sku : val.warehouse + ','
