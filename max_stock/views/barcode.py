@@ -30,7 +30,6 @@ def barcode(request):
     total_page = round(len(res) / int(limit))
     if int(limit) >= total_count:
         limit = total_count
-    data = []
     if res:
         paginator = Paginator(res, limit)
         try:
@@ -43,6 +42,18 @@ def barcode(request):
             data = paginator.page(paginator.num_pages)
         data = {
             'data': data,
+            'total_count': total_count,
+            'total_page': total_page,
+            're_limit': int(re_limit),
+            'limit': int(limit),
+            'page': page,
+            'sync_date': sync_date,
+            'title': "Barcode",
+            'user': user
+        }
+    else:
+        data = {
+            'data': '',
             'total_count': total_count,
             'total_page': total_page,
             're_limit': int(re_limit),
