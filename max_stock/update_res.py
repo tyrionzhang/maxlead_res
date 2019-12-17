@@ -90,6 +90,12 @@ MENUS = [
         'parent' : 'Warehouse'
     },
     {
+        'name' : 'Barcode',
+        'url' : '/admin/max_stock/barcode/',
+        'elem_id' : 'barcode',
+        'parent' : 'Warehouse'
+    },
+    {
         'name' : 'Codes',
         'url' : '/admin/auto_email/code_index/',
         'elem_id' : 'codes',

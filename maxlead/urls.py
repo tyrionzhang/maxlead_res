@@ -43,6 +43,7 @@ from max_stock.views import order_email_temp as emailTmp,order_items
 from max_stock.views import sfp_temp
 from max_stock.views import sfp_items
 from max_stock.views import fba_transport
+from max_stock.views import barcode
 from django.views import static
 from maxlead import settings
 
@@ -192,6 +193,8 @@ urlpatterns = [
     url('^admin/max_stock/import_fba_trans/', fba_transport.import_fba_trans),
     url('^admin/max_stock/run_fba_trans/', fba_transport.run_fba_trans),
     url('^admin/max_stock/init_fba_transport/', fba_transport.init_fba_transport),
+    url('^admin/max_stock/barcode/', barcode.barcode),
+    url('^admin/max_stock/sync_barcode/', barcode.sync_barcode),
 
 
     url('^admin/auto_email/code_index/', auto_email.code_index),

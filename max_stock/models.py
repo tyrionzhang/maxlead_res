@@ -237,6 +237,15 @@ class Tokens(models.Model):
     class Meta:
         db_table = 'tokens'
 
+class Barcodes(models.Model):
+    sku = models.CharField('SKU', max_length=522, default='')
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1)
+    status = models.CharField('Status', max_length=522, default='')
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'barcodes'
+
 
 
 

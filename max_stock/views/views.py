@@ -13,7 +13,7 @@ from maxlead_site.views.app import App
 from maxlead import settings
 from maxlead_site.models import UserProfile
 from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg,SpidersLogs,Tokens
-from max_stock.models import KitSkus
+from max_stock.models import KitSkus,Barcodes
 from django.http import HttpResponse
 from max_stock.views.stocks import covered_stocks
 from maxlead_site.common.common import kill_pid_for_name
@@ -358,35 +358,72 @@ def get_kit_skus(start_date=None):
         KitSkus.objects.bulk_create(querylist)
 
 def get_3pl_token():
-    ClientId = '116bf6ac-5208-41fe-a704-7948111fbe4b'
-    ClientSecret = 'vie37zoz+3jWQT+qLNhIY7aK9X+Pnw6V'
-    encode_secret = '%s:%s' % (ClientId, ClientSecret)
-    encode_secret = str(base64.b64encode(encode_secret.encode('utf-8')), 'utf-8')
-    url = 'http://secure-wms.com/AuthServer/api/Token'
-    body = {
-        "grant_type": "client_credentials",
-        "tpl": "{073abe7b-9d71-414d-9933-c71befa9e569}",
-        "user_login_id": "52"
-    }
-    headers = {
-        'Content-Type': "application/json; charset=utf-8",
-        'Accept': "application/json",
-        'Host': "secure-wms.com",
-        'Accept-Language': "Content-Length",
-        'Accept-Encoding': "gzip,deflate,sdch",
-        'Authorization': 'Basic %s' % encode_secret
-    }
-    response = requests.post(url, data=json.dumps(body), headers=headers)
-    if response.status_code == 200:
-        res = json.loads(response.content.decode())
-        pl_token = Tokens.objects.filter(name='3pl')
-        obj = Tokens()
-        if pl_token:
-            pl_token.update(access_token=res['access_token'], created=datetime.now())
+    pl_token = Tokens.objects.filter(name='3pl')
+    if pl_token:
+        ch_date = datetime.now() - pl_token[0].created
+    if not pl_token or ch_date.seconds > 1800:
+        ClientId = '116bf6ac-5208-41fe-a704-7948111fbe4b'
+        ClientSecret = 'vie37zoz+3jWQT+qLNhIY7aK9X+Pnw6V'
+        encode_secret = '%s:%s' % (ClientId, ClientSecret)
+        encode_secret = str(base64.b64encode(encode_secret.encode('utf-8')), 'utf-8')
+        url = 'http://secure-wms.com/AuthServer/api/Token'
+        body = {
+            "grant_type": "client_credentials",
+            "tpl": "{073abe7b-9d71-414d-9933-c71befa9e569}",
+            "user_login_id": "52"
+        }
+        headers = {
+            'Content-Type': "application/json; charset=utf-8",
+            'Accept': "application/json",
+            'Host': "secure-wms.com",
+            'Accept-Language': "Content-Length",
+            'Accept-Encoding': "gzip,deflate,sdch",
+            'Authorization': 'Basic %s' % encode_secret
+        }
+        response = requests.post(url, data=json.dumps(body), headers=headers)
+        if response.status_code == 200:
+            res = json.loads(response.content.decode())
+            if pl_token:
+                pl_token.update(access_token=res['access_token'], created=datetime.now())
+            else:
+                obj = Tokens()
+                obj.id
+                obj.name = '3pl'
+                obj.access_token = res['access_token']
+                obj.token_type = res['token_type']
+                obj.save()
+            access_token = res['access_token']
         else:
-            obj.id
-            obj.name = '3pl'
-            obj.access_token = res['access_token']
-            obj.token_type = res['token_type']
-            obj.save()
-        return res['access_token']
+            access_token = False
+    else:
+        access_token = pl_token[0].access_token
+    return access_token
+
+def get_barcodes(users=None, start_date=None):
+    url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=384&deploy=1&start_date=%s&end_date=%s'
+    params = {
+        'oauth_version': "1.0",
+        'oauth_nonce': oauth.generate_nonce(),
+        'oauth_timestamp': "%s" % int(time.time()),
+        'oauth_token': token.key,
+        'oauth_consumer_key': consumer.key
+    }
+    if not start_date:
+        ba_obj = Barcodes.objects.all().order_by('-created')
+        start_date = '11/01/2019'
+        if ba_obj:
+            start_date = ba_obj[0].created.strftime("%m/%d/%Y")
+    url = url % (start_date, datetime.now().strftime("%m/%d/%Y"))
+
+    headers = create_request_auth_header(http_method, url, params)
+    res = requests.get(url, headers=headers)
+    res = json.loads(res.content.decode())
+    if res:
+        querysetlist = []
+        for val in res:
+            check_re = Barcodes.objects.filter(sku=val['sku'])
+            if not check_re:
+                querysetlist.append(Barcodes(sku=val['sku'], user=users))
+        if querysetlist:
+            Barcodes.objects.bulk_create(querysetlist)
+    return res
