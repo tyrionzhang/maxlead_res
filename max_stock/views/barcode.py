@@ -3,6 +3,7 @@ import os,json
 import datetime
 import requests
 import threading
+from urllib.parse import quote,unquote
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from maxlead_site.views.app import App
@@ -93,14 +94,21 @@ def run_update_barcode(user, start_date=None):
         res = []
         for val in barcs:
             try:
+                print(datetime.datetime.now(), 'Work is running~')
                 if val['customer'] == 'MaxLead International Limited':
                     customer = 3
                 else:
                     customer = 7
-                url_itemid = 'https://secure-wms.com/customers/%s/items?rql=Sku=in=(%s)'
+                url_itemid = 'https://secure-wms.com/customers/%s/items?rql=Sku==%s'
                 url_put = 'https://secure-wms.com/customers/%s/items/%s'
                 url_itemid = url_itemid % (customer, val['sku'])
                 item = requests.get(url_itemid, headers=headers)
+                if item.status_code != 200:
+                    url_itemid = 'https://secure-wms.com/customers/%s/items?rql=Sku==*%s'
+                    sku_r = quote(val['sku'], 'utf-8').replace('%', '%25')
+                    url_itemid = url_itemid % (customer, sku_r)
+                    item = requests.get(url_itemid, headers=headers)
+
                 if item.status_code != 200:
                     res.append({
                         'sku': val['sku'],
@@ -130,7 +138,6 @@ def run_update_barcode(user, start_date=None):
                         'sku': val['sku'],
                         'status': 'Y'
                     })
-                    print(datetime.datetime.now(), 'Work is running~')
                     continue
                 else:
                     res.append({
@@ -143,7 +150,7 @@ def run_update_barcode(user, start_date=None):
                     'sku': val['sku'],
                     'status': 'N'
                 })
-                print(datetime.datetime.now(), e)
+                print(datetime.datetime.now(), 'SKU:%s |' % val['sku'], e)
                 continue
         if res:
             y_li = []
