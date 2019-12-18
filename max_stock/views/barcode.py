@@ -4,14 +4,14 @@ import datetime
 import time
 import requests
 import threading
-from urllib.parse import quote,unquote
+from urllib.parse import quote
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from max_stock.models import Barcodes
-from maxlead import settings
+from maxlead_site.models import UserProfile
 from max_stock.views.views import get_barcodes,get_3pl_token
 
 @csrf_exempt
@@ -74,7 +74,7 @@ def sync_barcode(request):
         return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
     if request.method == 'POST':
         start_date = request.POST.get('start_date', '')
-        start_date = start_date[0:10]
+        start_date = start_date[0:16]
         time.sleep(3)
         t = threading.Timer(1.0, run_update_barcode, [user, start_date])
         t.start()
@@ -170,3 +170,14 @@ def run_update_barcode(user, start_date=None):
                 Barcodes.objects.filter(sku__in=n_li).update(user=user.user, status='N')
             if i_li:
                 Barcodes.objects.filter(sku__in=i_li).update(user=user.user, status='Invalid')
+
+def auto_update_barcode():
+    t = threading.Timer(21600.0, auto_update_barcode)
+    res = Barcodes.objects.all().order_by('status', '-id', '-created')
+    if not res:
+        sync_date = '11/01/2019 10:15'
+    else:
+        sync_date = res[0].created.strftime('%m/%d/%Y %H:%M')
+    user = UserProfile.objects.filter(user__is_superuser=1)[0]
+    run_update_barcode(user, sync_date)
+    t.start()

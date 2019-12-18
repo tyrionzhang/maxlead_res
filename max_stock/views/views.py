@@ -412,8 +412,8 @@ def get_barcodes(users=None, start_date=None):
         ba_obj = Barcodes.objects.all().order_by('-created')
         start_date = '11/01/2019'
         if ba_obj:
-            start_date = ba_obj[0].created.strftime("%m/%d/%Y")
-    url = url % (start_date, datetime.now().strftime("%m/%d/%Y"))
+            start_date = ba_obj[0].created.strftime("%m/%d/%Y %H:%M")
+    url = url % (start_date, datetime.now().strftime("%m/%d/%Y %H:%M"))
 
     headers = create_request_auth_header(http_method, url, params)
     res = requests.get(url, headers=headers)
