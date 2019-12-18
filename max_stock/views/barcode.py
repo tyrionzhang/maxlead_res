@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os,json
 import datetime
+import time
 import requests
 import threading
 from urllib.parse import quote,unquote
@@ -74,10 +75,10 @@ def sync_barcode(request):
     if request.method == 'POST':
         start_date = request.POST.get('start_date', '')
         start_date = start_date[0:10]
-        start_date = '11/01/2019 10:15'
-        t = threading.Timer(3.0, run_update_barcode, [user, start_date])
+        time.sleep(3)
+        t = threading.Timer(1.0, run_update_barcode, [user, start_date])
         t.start()
-    return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
+    return HttpResponse(json.dumps({'code': 1, 'msg': u'Task is running！'}), content_type='application/json')
 
 def run_update_barcode(user, start_date=None):
     barcs = get_barcodes(user.user, start_date)
