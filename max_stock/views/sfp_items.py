@@ -88,6 +88,22 @@ def sfp_items(request):
                 if 'EXL' in w_list:
                     w_list.remove('EXL')
                 val.warehouse = ','.join(w_list)
+            if 'HW' in val.warehouse or 'TFD' in val.warehouse:
+                w_list = val.warehouse.split(',')
+                w_list.append('NJ')
+                if 'HW' in w_list:
+                    w_list.remove('HW')
+                if 'TFD' in w_list:
+                    w_list.remove('TFD')
+                val.warehouse = ','.join(w_list)
+            if 'ONT' in val.warehouse or 'ZTO' in val.warehouse:
+                w_list = val.warehouse.split(',')
+                w_list.append('CA')
+                if 'ONT' in w_list:
+                    w_list.remove('ONT')
+                if 'ZTO' in w_list:
+                    w_list.remove('ZTO')
+                val.warehouse = ','.join(w_list)
             sfps_re.update({
                 val.warehouse : val.sfp_temp
             })
@@ -98,6 +114,10 @@ def sfp_items(request):
                 val.update({'whs': wares})
                 if wares == 'EXL' or wares == 'TWU':
                     val.update({'sfp': 'Prime template--TX ONLY'})
+                elif wares == 'HW' or wares == 'TFD':
+                    val.update({'sfp': 'Prime template--NJ ONLY'})
+                elif wares == 'ONT' or wares == 'ZTO':
+                    val.update({'sfp': 'Prime template--CA ONLY'})
                 else:
                     if 'TWU' in wares or 'EXL' in wares:
                         w_list = wares.split(',')
@@ -106,6 +126,22 @@ def sfp_items(request):
                             w_list.remove('TWU')
                         if 'EXL' in w_list:
                             w_list.remove('EXL')
+                        wares = ','.join(w_list)
+                    if 'HW' in wares or 'TFD' in wares:
+                        w_list = wares.split(',')
+                        w_list.append('NJ')
+                        if 'HW' in w_list:
+                            w_list.remove('HW')
+                        if 'TFD' in w_list:
+                            w_list.remove('TFD')
+                        wares = ','.join(w_list)
+                    if 'ONT' in wares or 'ZTO' in wares:
+                        w_list = wares.split(',')
+                        w_list.append('CA')
+                        if 'ONT' in w_list:
+                            w_list.remove('ONT')
+                        if 'ZTO' in w_list:
+                            w_list.remove('ZTO')
                         wares = ','.join(w_list)
                     wares_re = itertools.permutations(wares.split(','))
                     sfp_t = ''
