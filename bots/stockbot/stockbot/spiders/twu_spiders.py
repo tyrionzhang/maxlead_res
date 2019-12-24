@@ -48,34 +48,35 @@ class TwuSpider(scrapy.Spider):
         res = response.css('article')[0].css('table[width="100%"]>tr')
         new_qtys = {}
         if res:
-            fields = res[1].css('td::text').extract()
             res.pop(1)
             res.pop(0)
-            fields.pop(0)
 
             old_list_qty = warehouse_date_data(['TWU'])
             for val in res:
-                item = WarehouseStocksItem()
-                items = val.css('td::text').extract()
-                if items:
-                    item['sku'] = items[0]
-                    item['warehouse'] = 'TWU'
-                    item['is_new'] = 0
-                    if items[11] and not items[11] == ' ':
-                        item['qty'] = items[11]
-                        item['qty'] = item['qty'].replace(',', '')
-                    else:
-                        item['qty'] = 0
-                    item['qty1'] = 0
-                    if old_list_qty:
-                        key1 = item['warehouse'] + item['sku']
-                        if key1 in old_list_qty:
-                            item['qty1'] = old_list_qty[key1] - int(item['qty'])
+                try:
+                    item = WarehouseStocksItem()
+                    items = val.css('td::text').extract()
+                    if items:
+                        item['sku'] = items[0]
+                        item['warehouse'] = 'TWU'
+                        item['is_new'] = 0
+                        if items[-1] and not items[-1] == ' ':
+                            item['qty'] = items[-1]
+                            item['qty'] = item['qty'].replace(',', '')
+                        else:
+                            item['qty'] = 0
+                        item['qty1'] = 0
+                        if old_list_qty:
+                            key1 = item['warehouse'] + item['sku']
+                            if key1 in old_list_qty:
+                                item['qty1'] = old_list_qty[key1] - int(item['qty'])
 
-                    new_key = item['warehouse'] + item['sku']
-                    new_qtys.update({
-                        new_key: item['qty']
-                    })
-                    yield item
+                        new_key = item['warehouse'] + item['sku']
+                        new_qtys.update({
+                            new_key: item['qty']
+                        })
+                        yield item
+                except:
+                    continue
         update_spiders_logs('TWU', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['TWU'])

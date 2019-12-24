@@ -271,6 +271,7 @@ def kill_postgres_on_type():
 def del_orders():
     t = threading.Timer(86400.0, del_orders)
     data = OrderItems.objects.filter(is_email=0)
+    os.popen('rm -rf /home/techsupp/www/maxlead_res/download/*.txt')
     if data:
         data.delete()
     t.start()
