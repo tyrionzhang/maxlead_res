@@ -94,7 +94,7 @@ def get_tracking_order_status():
     t = threading.Timer(86400.0, get_tracking_order_status)
     from maxlead_site.common.common import kill_pid_for_name
     kill_pid_for_name('postgres')
-    lists = TrackingOrders.objects.all().exclude(status='Delivered')
+    lists = TrackingOrders.objects.all().exclude(Q(status='Delivered')| Q(tracking_num=''))
     start_date = time.mktime((datetime.datetime.now() + datetime.timedelta(days=-5)).timetuple())
     if lists:
         data = []
