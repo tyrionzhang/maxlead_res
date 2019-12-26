@@ -269,7 +269,7 @@ def kill_postgres_on_type():
     t.start()
 
 def del_orders():
-    t = threading.Timer(86400.0, del_orders)
+    t = threading.Timer(604800.0, del_orders)
     data = OrderItems.objects.filter(is_email=0)
     if data:
         data.delete()
