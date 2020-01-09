@@ -269,3 +269,27 @@ def restart_postgres():
         os.system('service postgresql-9.3 start')
         print(u'启动数据库~')
     t.start()
+
+def restart_web():
+    t = threading.Timer(1296000.0, restart_web)
+    os.popen('uwsgi --stop /home/techsupp/www/maxlead_res/uwsgi.pid')
+    lines = os.popen('lsof -i:%s' % 38000)
+    for i, v in enumerate(lines,1):
+        if i > 1:
+            try:
+                progress = v.split(' ')[3]
+                if progress:
+                    os.popen('kill %s' % progress)
+            except:
+                continue
+    lines = os.popen('lsof -i:%s' % 6800)
+    for i, v in enumerate(lines, 1):
+        if i > 1:
+            try:
+                progress = v.split(' ')[1]
+                if progress:
+                    os.popen('kill %s' % progress)
+            except:
+                continue
+    os.popen('uwsgi --ini  /home/techsupp/www/maxlead_res/max_conf.ini')
+    t.start()

@@ -18,7 +18,7 @@ from maxlead_site.views.views import download_listings,get_send_time,spiders2
 from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc,kill_postgres_on_type,del_orders,del_logs
 from max_stock.views.tracking_orders import get_tracking_order_status
 from max_stock.views.barcode import auto_update_barcode
-from maxlead_site.common.common import restart_postgres
+from maxlead_site.common.common import restart_postgres,restart_web
 
 os.popen('scrapyd')
 
@@ -48,6 +48,10 @@ t_del_ord_pid.start()
 time_del_log_re = int(get_send_time('02:00'))
 t_del_log_pid = threading.Timer(float('%.1f' % time_del_log_re), del_logs)
 t_del_log_pid.start()
+
+time_restart_web_re = int(get_send_time('04:00'))
+t_restart_web = threading.Timer(1.0, restart_web)
+t_restart_web.start()
 
 t_restart_postgres = threading.Timer(1.0, restart_postgres)
 t_restart_postgres.start()
