@@ -92,24 +92,22 @@ def get_tracking_order_status():
     # billing_date = datetime.datetime.now().strftime("%b.%y")
     # lists = TrackingOrders.objects.filter(billing_date__contains=billing_date)
     t = threading.Timer(86400.0, get_tracking_order_status)
-    from maxlead_site.common.common import kill_pid_for_name
-    kill_pid_for_name('postgres')
     lists = TrackingOrders.objects.all().exclude(Q(status='Delivered')| Q(tracking_num=''))
     start_date = time.mktime((datetime.datetime.now() + datetime.timedelta(days=-5)).timetuple())
     if lists:
         data = []
         for val in lists:
-            headers = {
-                'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"
-            }
-            url = 'http://shipit-api.herokuapp.com/api/carriers/%s/%s'
-            if len(val.tracking_num) > 12:
-                carrier = 'ups'
-            else:
-                carrier = 'fedex'
-            url = url % (carrier, val.tracking_num)
-            res = requests.get(url, headers=headers)
             try:
+                headers = {
+                    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"
+                }
+                url = 'http://shipit-api.herokuapp.com/api/carriers/%s/%s'
+                if len(val.tracking_num) > 12:
+                    carrier = 'ups'
+                else:
+                    carrier = 'fedex'
+                url = url % (carrier, val.tracking_num)
+                res = requests.get(url, headers=headers)
                 res = json.loads(res.content.decode())
                 if 'activities' in res:
                     activities = res['activities']
@@ -240,7 +238,7 @@ def get_tracking_order_status():
                 log_obj.description = e
                 log_obj.save()
     t.start()
-    return True
+    pass
 
 @csrf_exempt
 def tracking_orders_export(request):
