@@ -49,10 +49,6 @@ time_del_log_re = int(get_send_time('02:00'))
 t_del_log_pid = threading.Timer(float('%.1f' % time_del_log_re), del_logs)
 t_del_log_pid.start()
 
-time_restart_web_re = int(get_send_time('04:00'))
-t_restart_web = threading.Timer(10.0, restart_web)
-t_restart_web.start()
-
 t_restart_postgres = threading.Timer(1.0, restart_postgres)
 t_restart_postgres.start()
 
