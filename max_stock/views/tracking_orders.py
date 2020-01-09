@@ -214,23 +214,31 @@ def get_tracking_order_status():
                 'shipment_late',
                 'delivery_late'
             ]
-            file_path = get_excel_file1(1, data, fields, data_fields)
-            file_path = os.path.join(settings.BASE_DIR, file_path)
-            subject = '报告邮件'
-            text_content = '未扫描状态的订单汇总。.'
-            html_content = '<p>这是一封<strong>未扫描状态的订单汇总</strong>。</p>'
-            from_email = settings.DEFAULT_FROM_EMAIL
-            msg = EmailMultiAlternatives(subject, text_content, from_email, ['landy.zhang@gmainland.com', 'nicole.yan@gmainland.com', 'rudy.zhangwei@gmainland.com'])
-            msg.attach_alternative(html_content, "text/html")
-            # 发送附件
-            # text = open(file_path, 'rb').read()
-            file_name = os.path.basename(file_path)
-            # 对文件进行编码处理
-            # b = make_header([(file_name, 'utf-8')]).encode('utf-8')
-            # msg.attach(b, text)
-            msg.attach_file(file_path)
-            msg.send()
-            os.remove(file_path)
+            try:
+                file_path = get_excel_file1(1, data, fields, data_fields)
+                file_path = os.path.join(settings.BASE_DIR, file_path)
+                subject = '报告邮件'
+                text_content = '未扫描状态的订单汇总。.'
+                html_content = '<p>这是一封<strong>未扫描状态的订单汇总</strong>。</p>'
+                from_email = settings.DEFAULT_FROM_EMAIL
+                msg = EmailMultiAlternatives(subject, text_content, from_email, ['landy.zhang@gmainland.com', 'nicole.yan@gmainland.com', 'rudy.zhangwei@gmainland.com'])
+                msg.attach_alternative(html_content, "text/html")
+                # 发送附件
+                # text = open(file_path, 'rb').read()
+                file_name = os.path.basename(file_path)
+                # 对文件进行编码处理
+                # b = make_header([(file_name, 'utf-8')]).encode('utf-8')
+                # msg.attach(b, text)
+                msg.attach_file(file_path)
+                msg.send()
+                os.remove(file_path)
+            except Exception as e:
+                log_obj = StockLogs()
+                log_obj.id
+                log_obj.user_id = 1
+                log_obj.fun = 'tracking 邮件发送Error'
+                log_obj.description = e
+                log_obj.save()
     t.start()
     return True
 
