@@ -3,6 +3,8 @@ import scrapy,os
 from datetime import *
 import time
 import xlrd
+import requests
+import json
 from django.db import connection
 from django.db.utils import OperationalError
 from selenium import webdriver
@@ -11,7 +13,7 @@ from selenium.webdriver.support.ui import Select
 from bots.stockbot.stockbot import settings
 from maxlead import settings as max_settings
 from max_stock.models import WarehouseStocks,Thresholds,SkuUsers
-from max_stock.views.views import update_spiders_logs,check_spiders
+from max_stock.views.views import update_spiders_logs,check_spiders,get_3pl_token
 from maxlead_site.common.common import spiders_send_email,kill_pid_for_name,to_int,warehouse_threshold_msgs,warehouse_date_data
 
 class ExlSpider(scrapy.Spider):
@@ -31,6 +33,38 @@ class ExlSpider(scrapy.Spider):
             self.log_id = int(log_id)
 
     def parse(self, response):
+        items = []
+        token_str = get_3pl_token()
+        if token_str:
+            url1 = 'https://secure-wms.com/inventory/stocksummaries?pgsiz=500&pgnum=1&rql=facilityId=in=(1, 2, 3)'
+            headers = {
+                'Content-Type': "application/json; charset=utf-8",
+                'Accept': "application/hal+json",
+                'Host': "secure-wms.com",
+                'Accept-Language': "en-US,en;q=0.8",
+                'Accept-Encoding': "gzip,deflate,sdch",
+                'Authorization': 'Bearer %s' % token_str
+            }
+            # ware = requests.get('https://secure-wms.com/properties/facilities/summaries?customerId=3', headers=headers)
+            while 1:
+                res_3pl = requests.get(url1, headers=headers)
+                if res_3pl.status_code == 200:
+                    res = json.loads(res_3pl.content.decode())
+                    for val in res['summaries']:
+                        item = {}
+                        item['sku'] = val['itemIdentifier']['sku']
+                        if val['facilityId'] == 1:
+                            item['warehouse'] = 'EXL'
+                        elif val['facilityId'] == 3:
+                            item['warehouse'] = 'TFD'
+                        else:
+                            item['warehouse'] = 'ROL'
+                        item['qty'] = to_int(val['available'])
+                        items.append(item)
+                    if 'next' not in res['_links']:
+                        break
+                    url1 = 'https://secure-wms.com%s' % res['_links']['next']['href']
+
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
@@ -74,7 +108,6 @@ class ExlSpider(scrapy.Spider):
         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
         list_rows.pop(0)
         list_rows.pop(-1)
-        items = []
         if list_rows:
             length = len(list_rows)
             for i in range(0, length):
@@ -91,7 +124,7 @@ class ExlSpider(scrapy.Spider):
                     warehouse_type_name = warehouse_type[0].text
                     if warehouse_name:
                         warehouse_name = warehouse_name[0].text
-                    if warehouse_type_name in self.stock_names and warehouse_name:
+                    if warehouse_type_name in self.stock_names and warehouse_name and warehouse_name == 'ROL':
                         list_rows[i].find_element_by_tag_name('span').click()
                         btn_runreport = driver.find_elements_by_id('btnRunRpt')
                         if btn_runreport:
@@ -128,10 +161,10 @@ class ExlSpider(scrapy.Spider):
                                     continue
                                 if item['sku']:
                                     item['warehouse'] = warehouse_name
-                                    if warehouse_name == 'Exchange Logistics':
-                                        item['warehouse'] = 'EXL'
-                                    if warehouse_name == 'Tradeforce Dayton':
-                                        item['warehouse'] = 'TFD'
+                                    # if warehouse_name == 'Exchange Logistics':
+                                    #     item['warehouse'] = 'EXL'
+                                    # if warehouse_name == 'Tradeforce Dayton':
+                                    #     item['warehouse'] = 'TFD'
                                     if warehouse_name == 'ROL':
                                         item['warehouse'] = 'ROL'
                                     if table.cell_value(i, 11,) and not table.cell_value(i, 11,) == ' ':
