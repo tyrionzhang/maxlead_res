@@ -140,7 +140,7 @@
                 $('#btn_user').attr('disabled', 'true');
             });
 
-            $('body').on('change', '#kit_el', function () {
+            $('body').on('keyup', '#kit_el', function () {
                 var kit = $(this).val();
                 $('input[name="kit"]').val(kit)
             });
