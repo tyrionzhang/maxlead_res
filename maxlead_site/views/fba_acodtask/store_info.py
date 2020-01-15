@@ -117,12 +117,14 @@ def save_store(request):
 
     if request.method == 'POST':
         id = request.POST.get('id','')
+        store_id = request.POST.get('store_id','')
+        subsidiary = request.POST.get('subsidiary','')
         payment = request.POST.get('payment','')
         location = request.POST.get('location','')
         store_obj = StoreInfo.objects.filter(id=id)
         if not store_obj:
             return HttpResponse(json.dumps({'code': 0, 'msg': u'数据不存在！'}), content_type='application/json')
-        store_obj.update(payment=payment,location=location)
+        store_obj.update(store_id=store_id,subsidiary=subsidiary,payment=payment,location=location)
         return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully!'}), content_type='application/json')
 
 @csrf_exempt

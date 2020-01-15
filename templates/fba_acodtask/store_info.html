@@ -17,10 +17,10 @@
                     <form method = "post" action="" name="newTaskForm" />
                     <h3>Update Store</h3>
                     <label>Store Id:</label>
-                    <input type="text" name="store_id" value="" readonly/>
+                    <input type="text" name="store_id" value="" />
                     <input type="hidden" name="id" value=""><br><br>
                     <label>Subsidiary:</label>
-                    <input type="text" name="subsidiary" value=""  readonly/> <br><br>
+                    <input type="text" name="subsidiary" value="" /> <br><br>
                     <label>Payment:</label>
                     <input type="text" name="payment" value=""/> <br><br>
                     <label>location:</label>
@@ -210,6 +210,8 @@
             $('#submit').click(function () {
                 var data = {
                     'id' : $('input[name="id"]').val(),
+                    'store_id' : $('input[name="store_id"]').val(),
+                    'subsidiary' : $('input[name="subsidiary"]').val(),
                     'payment' : $('input[name="payment"]').val(),
                     'location' : $('input[name="location"]').val()
                 };

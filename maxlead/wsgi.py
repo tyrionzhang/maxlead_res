@@ -18,7 +18,7 @@ from maxlead_site.views.views import download_listings,get_send_time,spiders2
 from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc,kill_postgres_on_type,del_orders,del_logs
 from max_stock.views.tracking_orders import get_tracking_order_status
 from max_stock.views.barcode import auto_update_barcode
-from maxlead_site.common.common import restart_postgres,restart_web
+from maxlead_site.common.common import restart_postgres
 
 os.popen('scrapyd')
 
