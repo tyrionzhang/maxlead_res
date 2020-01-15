@@ -17,7 +17,7 @@ def add_kit_sku(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     keywords = request.GET.get('keywords','')
     type = request.GET.get('type', '')
-    res = KitSkuRes.objects.all().order_by('-id', '-created')
+    res = KitSkuRes.objects.filter(user=user.user).order_by('-id', '-created')
     if keywords:
         if type == 'kit':
             res = res.filter(kit__icontains=keywords)
