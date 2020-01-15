@@ -94,7 +94,7 @@
 			<label class="lab-post-param">
                 <div class="kit_item">
                     <span>Kit SKU:</span>
-                    <input type="text" name="kit">
+                    <input type="text" name="kit" id="kit_el">
                     <span>Inventory SKU:</span>
                     <input type="text" name="sku">
                     <span>qty:</span>
@@ -138,6 +138,11 @@
                 $('#save_user').removeClass('hide');
                 $('#form_user')[0].reset();
                 $('#btn_user').attr('disabled', 'true');
+            });
+
+            $('body').on('change', '#kit_el', function () {
+                var kit = $(this).val();
+                $('input[name="kit"]').val(kit)
             });
 
             $('body').on('click','.wrap-paper' , function(){
