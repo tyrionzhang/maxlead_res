@@ -125,9 +125,10 @@ def save_kit_sku(request):
             'qty1': qty1,
             'lines': eval(data)
         }
-        skus = ''
+        skus = []
         for val in eval(data):
-            skus += '%s,' % val['sku']
+            skus.append(val['sku'])
+        skus = ','.join(skus)
         re = api_save_kit_sku(res)
         if re['code'] == 1001:
             return HttpResponse(json.dumps({'code': 0, 'msg': re['msg']}), content_type='application/json')
