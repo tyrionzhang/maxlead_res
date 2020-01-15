@@ -44,6 +44,7 @@ from max_stock.views import sfp_temp
 from max_stock.views import sfp_items
 from max_stock.views import fba_transport
 from max_stock.views import barcode
+from max_stock.views import add_kit_sku
 from django.views import static
 from maxlead import settings
 
@@ -195,6 +196,9 @@ urlpatterns = [
     url('^admin/max_stock/init_fba_transport/', fba_transport.init_fba_transport),
     url('^admin/max_stock/barcode/', barcode.barcode),
     url('^admin/max_stock/sync_barcode/', barcode.sync_barcode),
+    url('^admin/max_stock/add_kit_sku/', add_kit_sku.add_kit_sku),
+    url('^admin/max_stock/check_kit_sku/', add_kit_sku.check_kit_sku),
+    url('^admin/max_stock/save_kit_sku/', add_kit_sku.save_kit_sku),
 
 
     url('^admin/auto_email/code_index/', auto_email.code_index),

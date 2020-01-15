@@ -96,6 +96,12 @@ MENUS = [
         'parent' : 'Warehouse'
     },
     {
+        'name' : 'Add KitSKU ',
+        'url' : '/admin/max_stock/add_kit_sku/',
+        'elem_id' : 'add_kit_sku',
+        'parent' : 'Warehouse'
+    },
+    {
         'name' : 'Codes',
         'url' : '/admin/auto_email/code_index/',
         'elem_id' : 'codes',

@@ -246,6 +246,15 @@ class Barcodes(models.Model):
     class Meta:
         db_table = 'barcodes'
 
+class KitSkuRes(models.Model):
+    kit = models.CharField('Kit', max_length=522, default='')
+    sku = models.CharField('sku', max_length=522, default='')
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=1)
+    created = models.DateTimeField('Create Date', auto_now_add=True)
+
+    class Meta:
+        db_table = 'kit_sku_res'
+
 
 
 

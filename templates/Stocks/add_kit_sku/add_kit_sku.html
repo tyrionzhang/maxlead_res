@@ -1,0 +1,236 @@
+{% extends "Stocks/layouts/base.html" %}
+{% block container %}
+    <div id="main" data-name="add_kit_sku">
+        <div class="con-head">
+            <h1>{{ title }}</h1>
+            <form action="/admin/max_stock/add_kit_sku/">
+                <div class="text-box" style="width:386px">
+                    <label>
+                        <span>Search:</span>
+                        <input type="text" name="keywords" value="{{ keywords }}">
+                        <select name="type">
+                            <option value="kit" {% if type == 'kit' %} selected {% endif %}>Kit SKU</option>
+                            <option value="sku" {% if type == 'sku' %} selected {% endif %}>Inv SKU</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="text-box-btn">
+                    <label>
+                        <input type="submit" value="Search">
+                    </label>
+                </div>
+            </form>
+            <div class="con-head-right">
+{#                <div class="btn btn-blue">#}
+{#                    <button id="init_fba_transport">Init</button>#}
+{#                </div>#}
+{#                <div class="btn btn-blue">#}
+{#                    <button id="user_import">Import</button>#}
+{#                </div>#}
+{#                <div class="btn btn-green">#}
+{#                    <span id="sync_date">{{ sync_date }}</span>#}
+{#                </div>#}
+                <div class="btn btn-blue">
+                    <button id="user_add">Add Kit</button>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="con-body">
+            <table id="datas" class="tb-datas">
+                <tr id="tr-head">
+                    <th><input type="checkbox" id="check_all"></th>
+                    <th>Kit SKU</th>
+                    <th>Inventory SKU</th>
+                    <th>User</th>
+                    <th>Date </th>
+                </tr>
+                {% for val in data %}
+                <tr data-id="{{ val.id }}">
+                    <td><input type="checkbox" class="check_tr"></td>
+                    <td>{{ val.kit }}</td>
+                    <td>{{ val.sku }}</td>
+                    <td>{{ val.user.username }}</td>
+                    <td>{{ val.created }}</td>
+                </tr>
+                {% endfor %}
+
+            </table>
+            <form action="" method="get" name="pageForm" id="page_form">
+                <div id="pagination">
+                    <div class="pageNum">
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in  {{ data.paginator.num_pages }} <!--总页数-->pages.
+                    </p>
+                        <ul>
+                            {% if data.has_previous %}
+                            <li><a href="?page={{ data.previous_page_number }}&limit={{ limit }}&keywords={{ keywords }}&type={{ type }}">previous</a></li>
+                            {% endif %}
+                            <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
+                            {% if data.has_next %}
+                            <li><a href="?page={{ data.next_page_number }}&limit={{ limit }}&keywords={{ keywords }}&type={{ type }}">next</a></li>
+                            {% endif %}
+                            <li><input type="number" name="page" value="{{ page }}" /></li>
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                        </ul>
+
+                    <div class="qtyUpdater">
+                        <select name="limit">
+                            <option value="20" {% if re_limit == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if re_limit == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if re_limit == 100 %}selected{% endif %}>100</option>
+                        </select> results per page.
+                    </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="save-threshold hide save-block-info" id="save_user" style="width: 700px">
+		<form action="" id="form_user">
+			<span class="btn-close">x</span>
+			<h2 style="margin: 0 0px 0 164px;">Add kitSKU</h2>
+			<label class="lab-post-param">
+                <div class="kit_item">
+                    <span>Kit SKU:</span>
+                    <input type="text" name="kit">
+                    <span>Inventory SKU:</span>
+                    <input type="text" name="sku">
+                    <span>qty:</span>
+                    <input type="text" name="qty" size="1" value="1">
+                    <button class="btn_add_kit_el">+</button>
+                </div>
+                <br class="br">
+                <div>
+                    <span>Department: <span id="depart"></span> </span><br>
+                    <span>Sales Person: <span id="sals_pers"></span> </span>
+                </div>
+                <br>
+                <input type="submit" value="Search" id="btn_check_kit">
+                <input type="submit" value="Save" id="btn_user" style="float: right">
+            </label>
+        </form>
+    </div>
+
+    <div class="hide" id="import_modal">
+        <form id="import_form" method="post" enctype="multipart/form-data">
+            <input type="file" name="myfile" multiple="multiple">
+            <input type="submit" value="Submit" id="btn_import_modal">
+        </form>
+        <div id="import_msg"></div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $('#check_all').on('click', function () {
+                  var checked = $(this).prop('checked');
+                  if (checked) {
+                      $('.check_tr').prop('checked', true);
+                  }else {
+                      $('.check_tr').prop('checked', false);
+                  }
+            });
+
+            $('input[name="keywords"]').val('{{ keywords }}');
+
+            $('#user_add').on('click',function () {
+                $('.wrap-paper').removeClass('hide');
+                $('#save_user').removeClass('hide');
+                $('#form_user')[0].reset();
+                $('#btn_user').attr('disabled', 'true');
+            });
+
+            $('body').on('click','.wrap-paper' , function(){
+                $('.wrap-paper').addClass('hide');
+                $('#import_modal').addClass('hide');
+                $('#save_user').addClass('hide');
+            });
+            
+            $('body').on('click', '.btn_add_kit_el', function () {
+                var kit = $(this).parent().children('input[name="kit"]').val();
+                var el = '<div class="kit_item"><span>Kit SKU:</span>\n' +
+                    '                <input type="text" readonly="readonly" name="kit" value='+kit+'>\n' +
+                    '                <span>Inventory SKU:</span>\n' +
+                    '                <input type="text" name="sku">\n' +
+                    '                <span>qty:</span>\n' +
+                    '                <input type="text" name="qty" size="1" value="1">\n' +
+                    '                <button class="btn_add_kit_el">+</button><button class="btn_remove_kit_el">-</button></div>';
+                $(this).parent().after(el);
+                $(this).remove();
+                return false
+            });
+            $('body').on('click', '.btn_remove_kit_el', function () {
+                if ($(this).parent().next().attr('class') == 'br') {
+                    $(this).parent().prev().append('<button class="btn_add_kit_el">+</button>');
+                }
+                $(this).parent().remove();
+                return false
+            })
+        });
+
+        $('#gotoPage').on('click',function () {
+            var page = $('input[name="page"]').val();
+            var limit = $('select[name="limit"]').val();
+            var keywords = $('input[name="keywords"]').val();
+            var type = $('select[name="type"]').val();
+            var url = '/admin/max_stock/add_kit_sku/?page='+page+'&limit='+limit+'&keywords='+keywords+'&type='+type;
+            window.location.href = url;
+            return false;
+        });
+
+        $('#btn_check_kit').click(function () {
+            var kit_item = $('.kit_item');
+            var data = new Array();
+            kit_item.each(function () {
+                data.push({
+                    'kit': $(this).children('input[name="kit"]').val(),
+                    'sku': $(this).children('input[name="sku"]').val()
+                })
+            });
+            $.post('/admin/max_stock/check_kit_sku/',{'data':JSON.stringify(data)},function (re) {
+               if(re.code==1){
+                   $('#depart').html(re.data['department']);
+                   $('#sals_pers').html(re.data['sales_person']);
+                   $('#btn_user').removeAttr('disabled');
+               }else {
+                   alert(re.msg);
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+
+        $('#btn_user').click(function () {
+            var kit_item = $('.kit_item');
+            var data = new Array();
+            var kit = '';
+            var sku1 = '';
+            var qty1 = '';
+            kit_item.each(function (i, el) {
+                if (i == 0) {
+                    kit = $(this).children('input[name="kit"]').val();
+                    sku1 = $(this).children('input[name="sku"]').val();
+                    qty1 = $(this).children('input[name="qty"]').val();
+                }
+                data.push({
+                    'sku': $(this).children('input[name="sku"]').val(),
+                    'qty': $(this).children('input[name="qty"]').val()
+                })
+            });
+            $.post('/admin/max_stock/save_kit_sku/',{'data':JSON.stringify(data),'sku1': sku1,'qty1':qty1, 'kit': kit},function (re) {
+               if(re.code==1){
+                   alert(re.msg);
+                   window.location.reload();
+               }else {
+                   alert(re.msg);
+               }
+               if(re.code==66){
+                   window.location.href='/admin/max_stock/login/';
+               }
+            },'json');
+            return false;
+        });
+    </script>
+{% endblock %}

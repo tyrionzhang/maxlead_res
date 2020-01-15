@@ -433,3 +433,70 @@ def get_barcodes(users=None, start_date=None):
         if querysetlist:
             Barcodes.objects.bulk_create(querysetlist)
     return res
+
+def search_kits(kit):
+    url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=396&deploy=1&kit_sku=%s'
+    params = {
+        'oauth_version': "1.0",
+        'oauth_nonce': oauth.generate_nonce(),
+        'oauth_timestamp': "%s" % int(time.time()),
+        'oauth_token': token.key,
+        'oauth_consumer_key': consumer.key
+    }
+    url = url % kit
+
+    headers = create_request_auth_header(http_method, url, params)
+    res = requests.get(url, headers=headers)
+    if res.status_code != 200:
+        return 11111
+    res = json.loads(res.content.decode())
+    return res
+
+def api_save_kit_sku(data):
+    url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=396&deploy=1'
+    params = {
+        'oauth_version': "1.0",
+        'oauth_nonce': oauth.generate_nonce(),
+        'oauth_timestamp': "%s" % int(time.time()),
+        'oauth_token': token.key,
+        'oauth_consumer_key': consumer.key
+    }
+    body = {
+        'kit_items': data
+    }
+    http_method = 'POST'
+    headers = create_request_auth_header(http_method, url, params)
+    response = requests.post(url, json=body, headers=headers)
+    res = {'code': 1001}
+    if response.status_code != 200:
+        response = json.loads(response.content.decode())
+        if 'error' in response:
+            res.update({
+                'code' : 1001,
+                'msg' :  response['error']['message']
+            })
+        return res
+    response = json.loads(response.content.decode())
+    res.update({
+        'code': 1,
+        'id': response
+    })
+    return res
+
+def search_inv_sku(sku):
+    url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=397&deploy=1&sku=%s'
+    params = {
+        'oauth_version': "1.0",
+        'oauth_nonce': oauth.generate_nonce(),
+        'oauth_timestamp': "%s" % int(time.time()),
+        'oauth_token': token.key,
+        'oauth_consumer_key': consumer.key
+    }
+    url = url % sku
+
+    headers = create_request_auth_header(http_method, url, params)
+    res = requests.get(url, headers=headers)
+    if res.status_code != 200:
+        return 11111
+    res = json.loads(res.content.decode())
+    return res
