@@ -121,10 +121,16 @@ def save_kit_sku(request):
         sku1 = request.POST.get('sku1', '')
         qty1 = request.POST.get('qty1', '')
         kit = request.POST.get('kit', '')
+        stockdescription = request.POST.get('stockdescription', '')
+        department = request.POST.get('department', '')
+        sales_person = request.POST.get('sales_person', '')
         res = {
             'kit': kit,
             'sku1': sku1,
             'qty1': qty1,
+            'stockdescription': stockdescription,
+            'department': department,
+            'sales_person': sales_person,
             'lines': eval(data)
         }
         skus = []

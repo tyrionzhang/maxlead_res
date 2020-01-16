@@ -92,6 +92,8 @@
 			<span class="btn-close">x</span>
 			<h2 style="margin: 0 0px 0 164px;">Add kitSKU</h2>
 			<label class="lab-post-param">
+                <span>用于账号:</span>
+                <input type="text" name="stockdescription">
                 <div class="kit_item">
                     <span>Kit SKU:</span>
                     <input type="text" name="kit" id="kit_el">
@@ -236,7 +238,19 @@
                     'qty': $(this).children('input[name="qty"]').val()
                 })
             });
-            $.post('/admin/max_stock/save_kit_sku/',{'data':JSON.stringify(data),'sku1': sku1,'qty1':qty1, 'kit': kit},function (re) {
+            var stockdescription = $('input[name="stockdescription"]').val();
+            var department = $('#depart').html();
+            var sales_person = $('#sals_pers').html();
+            var inp_data = {
+                'data':JSON.stringify(data),
+                'sku1': sku1,
+                'qty1':qty1,
+                'stockdescription':stockdescription,
+                'department':department,
+                'sales_person':sales_person,
+                'kit': kit
+            };
+            $.post('/admin/max_stock/save_kit_sku/',inp_data,function (re) {
                if(re.code==1){
                    alert(re.msg);
                    window.location.reload();
