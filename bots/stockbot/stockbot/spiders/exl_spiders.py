@@ -228,7 +228,7 @@ class ExlSpider(scrapy.Spider):
         try:
             spiders_send_email()
         except OperationalError:
-            connection.close()
             connection.cursor()
             spiders_send_email()
+            connection.close()
 

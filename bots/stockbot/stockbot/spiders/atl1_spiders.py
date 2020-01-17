@@ -104,8 +104,8 @@ class Atl1Spider(scrapy.Spider):
                     new_key: val['qty']
                 })
             except OperationalError:
-                connection.close()
                 connection.cursor()
+                connection.close()
                 continue
 
         WarehouseStocks.objects.bulk_create(querysetlist)
