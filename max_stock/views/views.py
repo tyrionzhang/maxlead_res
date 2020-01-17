@@ -30,8 +30,8 @@ week_day = {
     'sunday':'SUNDAY',
 }
 
-token = oauth.Token(key = '1c79c2192f70baf2331237a431f6b038b174d0edb5db2ce7ba41f404a2779ca3',
-                        secret = 'a6019bd5862c26aaf685b537c44a9175b949bfba023c382a32a13d080cbb2cda')
+token = oauth.Token(key = '4128dc9a862902943fe34a68b4e5b68ee99c602fab06c4fff0af0dc17586502a',
+                        secret = '4f261caea8fc4db83312015788e03d3d06d8b9c4c28b4976a85b124fad316046')
 consumer = oauth.Consumer(key = '0b39ae6243f5fb35a8076e057dd779f440af509cdd393e712cd7029151b9a202',
                          secret = 'cfbc9759bac8c2cdd51daa19ed82fef6f11251fe556b2564524ab1d5161b16e5')
 http_method = "GET"
