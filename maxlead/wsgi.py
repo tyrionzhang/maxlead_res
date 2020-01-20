@@ -41,18 +41,18 @@ time_tr_re = int(get_send_time('16:00'))
 t_tr = threading.Timer(float('%.1f' % time_tr_re), get_tracking_order_status)
 t_tr.start()
 
-time_del_ord_re = int(get_send_time('01:00'))
+time_del_ord_re = int(get_send_time('01:00')) + 432000
 t_del_ord_pid = threading.Timer(float('%.1f' % time_del_ord_re), del_orders)
 t_del_ord_pid.start()
 
-time_del_log_re = int(get_send_time('02:00'))
+time_del_log_re = int(get_send_time('02:00')) + 604800
 t_del_log_pid = threading.Timer(float('%.1f' % time_del_log_re), del_logs)
 t_del_log_pid.start()
 
 t_restart_postgres = threading.Timer(1.0, restart_postgres)
 t_restart_postgres.start()
 
-t_barcode = threading.Timer(1.0, auto_update_barcode)
+t_barcode = threading.Timer(21600.0, auto_update_barcode)
 t_barcode.start()
 
 # os.chdir(settings.PROXY_URL)
