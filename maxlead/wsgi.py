@@ -56,8 +56,8 @@ t_del_log_pid.start()
 t_restart_postgres = threading.Timer(1.0, restart_postgres)
 t_restart_postgres.start()
 
-t_barcode = threading.Timer(21600.0, auto_update_barcode)
-t_barcode.start()
+# t_barcode = threading.Timer(21600.0, auto_update_barcode)
+# t_barcode.start()
 
 # os.chdir(settings.PROXY_URL)
 # os.popen('python main.py')
