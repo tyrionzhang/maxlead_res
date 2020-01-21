@@ -10,7 +10,6 @@ from maxlead_site.models import AdsData,AdsCampaign,SearchTeam,Placement,PurProd
 from maxlead import settings
 from chardet import detect
 
-import pyocr
 import importlib
 import sys
 importlib.reload(sys)
