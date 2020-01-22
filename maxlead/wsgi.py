@@ -14,8 +14,8 @@ import django
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 from django.core.wsgi import get_wsgi_application
-from maxlead_site.views.views import download_listings,get_send_time,spiders2
-from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc,kill_postgres_on_type,del_orders,del_logs
+from maxlead_site.views.views import get_send_time,spiders2
+from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc,del_orders,del_logs
 from max_stock.views.tracking_orders import get_tracking_order_status
 from max_stock.views.barcode import auto_update_barcode
 from maxlead_site.common.common import restart_postgres
@@ -23,11 +23,11 @@ from maxlead_site.common.common import restart_postgres
 os.popen('scrapyd')
 
 time_re5 = int(get_send_time('08:10'))
-time_re51 = int(get_send_time('22:00'))
+# time_re51 = int(get_send_time('22:00'))
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
-t41 = threading.Timer(float('%.1f' % time_re51), run_command_queue)
+# t41 = threading.Timer(float('%.1f' % time_re51), run_command_queue)
 t4.start()
-t41.start()
+# t41.start()
 
 time_re_pc = int(get_send_time('08:50'))
 t4_pc = threading.Timer(float('%.1f' % time_re_pc), copy_stocks_of_pc)
