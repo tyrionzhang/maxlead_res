@@ -23,11 +23,11 @@ from maxlead_site.common.common import restart_postgres
 os.popen('scrapyd')
 
 time_re5 = int(get_send_time('08:10'))
-# time_re51 = int(get_send_time('22:00'))
+time_re51 = int(get_send_time('22:00'))
 t4 = threading.Timer(float('%.1f' % time_re5), run_command_queue)
-# t41 = threading.Timer(float('%.1f' % time_re51), run_command_queue)
+t41 = threading.Timer(float('%.1f' % time_re51), run_command_queue)
 t4.start()
-# t41.start()
+t41.start()
 
 time_re_pc = int(get_send_time('08:50'))
 t4_pc = threading.Timer(float('%.1f' % time_re_pc), copy_stocks_of_pc)
