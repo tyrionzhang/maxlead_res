@@ -49,7 +49,7 @@ time_del_log_re = int(get_send_time('02:00')) + 604800
 t_del_log_pid = threading.Timer(float('%.1f' % time_del_log_re), del_logs)
 t_del_log_pid.start()
 
-t_restart_postgres = threading.Timer(1.0, restart_postgres)
+t_restart_postgres = threading.Timer(300.0, restart_postgres)
 t_restart_postgres.start()
 
 # t_barcode = threading.Timer(21600.0, auto_update_barcode)
