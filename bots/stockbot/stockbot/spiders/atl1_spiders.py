@@ -73,7 +73,7 @@ class Atl1Spider(scrapy.Spider):
                         w_name = td_re[1].text
                         if w_name == 'ONT-2':
                             item['warehouse'] = 'ONT'
-                        elif w_name == 'KCM':
+                        elif w_name == 'KCM-4':
                             item['warehouse'] = 'KCM'
                         else:
                             item['warehouse'] = 'ATL'
