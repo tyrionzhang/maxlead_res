@@ -15,7 +15,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'maxlead.settings'
 django.setup()
 from django.core.wsgi import get_wsgi_application
 from maxlead_site.views.views import get_send_time,spiders2
-from max_stock.views.views import run_command_queue,task_save_stocks,copy_stocks_of_pc,del_orders,del_logs
+from max_stock.views.views import run_command_queue,copy_stocks_of_pc,del_orders,del_logs
 from max_stock.views.tracking_orders import get_tracking_order_status
 from max_stock.views.barcode import auto_update_barcode
 from maxlead_site.common.common import restart_postgres
@@ -52,8 +52,8 @@ t_del_log_pid.start()
 t_restart_postgres = threading.Timer(300.0, restart_postgres)
 t_restart_postgres.start()
 
-# t_barcode = threading.Timer(21600.0, auto_update_barcode)
-# t_barcode.start()
+t_barcode = threading.Timer(21600.0, auto_update_barcode)
+t_barcode.start()
 
 # os.chdir(settings.PROXY_URL)
 # os.popen('python main.py')

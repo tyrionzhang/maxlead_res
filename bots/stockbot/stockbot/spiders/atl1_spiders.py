@@ -5,11 +5,10 @@ from django.db.utils import OperationalError
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
-from maxlead import settings as max_settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
-from max_stock.models import Thresholds,SkuUsers,WarehouseStocks
+from max_stock.models import WarehouseStocks
 from max_stock.views.views import update_spiders_logs
-from maxlead_site.common.common import spiders_send_email,warehouse_date_data,warehouse_threshold_msgs
+from maxlead_site.common.common import warehouse_date_data,warehouse_threshold_msgs
 
 class Atl1Spider(scrapy.Spider):
     name = "atl1_spider"
@@ -29,10 +28,23 @@ class Atl1Spider(scrapy.Spider):
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("permissions.default.image", 2)
+        profile.set_preference("network.http.use-cache", False)
+        profile.set_preference("browser.cache.memory.enable", False)
+        profile.set_preference("browser.cache.disk.enable", False)
+        profile.set_preference("browser.sessionhistory.max_total_viewers", 3)
+        profile.set_preference("network.dns.disableIPv6", True)
+        profile.set_preference("Content.notify.interval", 750000)
+        profile.set_preference("content.notify.backoffcount", 3)
+        profile.set_preference("network.http.pipelining", True)
+        profile.set_preference("network.http.proxy.pipelining", True)
+        profile.set_preference("network.http.pipelining.maxrequests", 32)
+
         firefox_options = Options()
         firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
-        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH)
+        driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         driver.get(response.url)
         elem_name = driver.find_elements_by_name('uid')
         elem_pass = driver.find_elements_by_name('pwd')
@@ -61,6 +73,8 @@ class Atl1Spider(scrapy.Spider):
                         w_name = td_re[1].text
                         if w_name == 'ONT-2':
                             item['warehouse'] = 'ONT'
+                        elif w_name == 'KCM':
+                            item['warehouse'] = 'KCM'
                         else:
                             item['warehouse'] = 'ATL'
                         item['is_new'] = 0
@@ -83,7 +97,7 @@ class Atl1Spider(scrapy.Spider):
         driver.quit()
 
         querysetlist = []
-        old_list_qty = warehouse_date_data(['ATL', 'ONT'])
+        old_list_qty = warehouse_date_data(['ATL', 'ONT', 'KCM'])
         new_qtys = {}
         for i, val in enumerate(items, 0):
             try:
@@ -110,4 +124,4 @@ class Atl1Spider(scrapy.Spider):
 
         WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('ATL', log_id=self.log_id)
-        msg_str2 = warehouse_threshold_msgs(new_qtys, ['ATL', 'ONT'])
+        msg_str2 = warehouse_threshold_msgs(new_qtys, ['ATL', 'ONT', 'KCM'])
