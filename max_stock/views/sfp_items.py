@@ -23,7 +23,10 @@ def sfp_items(request):
         res = res.filter(item__contains=keywords)
 
     kits = KitSkus.objects.all().order_by('-id', '-created')
-    kit_date = kits[0].created.strftime('%m/%d/%Y %H:%M:%S')
+    if not kits:
+        kit_date = ''
+    else:
+        kit_date = kits[0].created.strftime('%m/%d/%Y %H:%M:%S')
     if res:
         sku_list = []
         data_re = []
