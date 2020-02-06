@@ -137,23 +137,30 @@ def stock_spiders(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     type = request.GET.get('type','')
     if type == 'now':
-        runLogs = SpidersLogs.objects.filter(is_done=0)
-        if not runLogs:
-            _set_user_sku(request)
-            q = queue.Queue()
-
-            tname = 'stocks_done'
-            reviews = perform_command_que(tname, q, request)
-            reviews.start()
-            reviews.join()
-            msg_str = u'爬虫已运行'
-            SlogsObj = SpidersLogs()
-            SlogsObj.id
-            SlogsObj.user_id = user.user_id
-            SlogsObj.start_time = datetime.now()
-            SlogsObj.save()
-        else:
-            msg_str = u'更新正在进行...'
+        # runLogs = SpidersLogs.objects.filter(is_done=0)
+        # if not runLogs:
+        #     _set_user_sku(request)
+        #     q = queue.Queue()
+        #
+        #     tname = 'stocks_done'
+        #     reviews = perform_command_que(tname, q, request)
+        #     reviews.start()
+        #     reviews.join()
+        #     msg_str = u'爬虫已运行'
+        #     SlogsObj = SpidersLogs()
+        #     SlogsObj.id
+        #     SlogsObj.user_id = user.user_id
+        #     SlogsObj.start_time = datetime.now()
+        #     SlogsObj.save()
+        # else:
+        #     msg_str = u'更新正在进行...'
+        check_spiders()
+        msg_str = u'爬虫已运行'
+        SlogsObj = SpidersLogs()
+        SlogsObj.id
+        SlogsObj.user_id = user.user_id
+        SlogsObj.start_time = datetime.now()
+        SlogsObj.save()
     else:
         time_now = datetime.now()
         time_re = datetime.now() + timedelta(days = 1)
