@@ -305,7 +305,6 @@ def check_spiders(new_log=None):
     else:
         obj = SpidersLogs.objects.filter(created__contains=date_now).order_by('-created')
     if obj:
-        exl_re = WarehouseStocks.objects.filter(created__contains=date_now, warehouse='EXL')
         os.popen('killall -9 firefox')
         work_path = settings.STOCHS_SPIDER_URL
         des = obj[0].description
@@ -320,14 +319,13 @@ def check_spiders(new_log=None):
             spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d log_id=%s' % obj[0].id)
         if '3pl' not in des:
             spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d log_id=%s' % obj[0].id)
-        if not exl_re:
-            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d log_id=%s' % obj[0].id)
         if spiders:
             os.chdir(work_path)
             os.popen('scrapyd-deploy')
-            for val in spiders:
+            for i, val in enumerate(spiders, 1):
                 os.popen(val)
-                time.sleep(300)
+                if i < len(spiders):
+                    time.sleep(300)
         os.chdir(settings.ROOT_PATH)
         os.popen('killall -9 firefox')
 
