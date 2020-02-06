@@ -137,30 +137,23 @@ def stock_spiders(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     type = request.GET.get('type','')
     if type == 'now':
-        # runLogs = SpidersLogs.objects.filter(is_done=0)
-        # if not runLogs:
-        #     _set_user_sku(request)
-        #     q = queue.Queue()
-        #
-        #     tname = 'stocks_done'
-        #     reviews = perform_command_que(tname, q, request)
-        #     reviews.start()
-        #     reviews.join()
-        #     msg_str = u'爬虫已运行'
-        #     SlogsObj = SpidersLogs()
-        #     SlogsObj.id
-        #     SlogsObj.user_id = user.user_id
-        #     SlogsObj.start_time = datetime.now()
-        #     SlogsObj.save()
-        # else:
-        #     msg_str = u'更新正在进行...'
-        check_spiders()
-        msg_str = u'爬虫已运行'
-        SlogsObj = SpidersLogs()
-        SlogsObj.id
-        SlogsObj.user_id = user.user_id
-        SlogsObj.start_time = datetime.now()
-        SlogsObj.save()
+        runLogs = SpidersLogs.objects.filter(is_done=0)
+        if not runLogs:
+            _set_user_sku(request)
+            q = queue.Queue()
+
+            tname = 'stocks_done'
+            reviews = perform_command_que(tname, q, request)
+            reviews.start()
+            reviews.join()
+            msg_str = u'爬虫已运行'
+            SlogsObj = SpidersLogs()
+            SlogsObj.id
+            SlogsObj.user_id = user.user_id
+            SlogsObj.start_time = datetime.now()
+            SlogsObj.save()
+        else:
+            msg_str = u'更新正在进行...'
     else:
         time_now = datetime.now()
         time_re = datetime.now() + timedelta(days = 1)
@@ -305,6 +298,7 @@ def check_spiders(new_log=None):
     else:
         obj = SpidersLogs.objects.filter(created__contains=date_now).order_by('-created')
     if obj:
+        exl_re = WarehouseStocks.objects.filter(created__contains=date_now, warehouse='EXL')
         os.popen('killall -9 firefox')
         work_path = settings.STOCHS_SPIDER_URL
         des = obj[0].description
@@ -319,13 +313,14 @@ def check_spiders(new_log=None):
             spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=twu_spider -d log_id=%s' % obj[0].id)
         if '3pl' not in des:
             spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d log_id=%s' % obj[0].id)
+        if not exl_re:
+            spiders.append('curl http://localhost:6800/schedule.json -d project=stockbot -d spider=exl_spider -d log_id=%s' % obj[0].id)
         if spiders:
             os.chdir(work_path)
             os.popen('scrapyd-deploy')
-            for i, val in enumerate(spiders, 1):
+            for val in spiders:
                 os.popen(val)
-                if i < len(spiders):
-                    time.sleep(300)
+                time.sleep(300)
         os.chdir(settings.ROOT_PATH)
         os.popen('killall -9 firefox')
 
