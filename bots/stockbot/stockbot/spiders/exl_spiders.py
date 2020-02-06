@@ -123,6 +123,8 @@ class ExlSpider(scrapy.Spider):
                                 print('Error Element!')
 
                         time.sleep(120)
+                        driver.refresh()
+                        driver.implicitly_wait(100)
                         files = '%sStockwithLocation.xlsx' % settings.DOWNLOAD_DIR
                         data = xlrd.open_workbook(files)  # 打开fname文件
                         data.sheet_names()  # 获取xls文件中所有sheet的名称
