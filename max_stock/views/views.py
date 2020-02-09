@@ -137,7 +137,11 @@ def stock_spiders(request):
         return HttpResponseRedirect("/admin/max_stock/login/")
     type = request.GET.get('type','')
     kill_firefox = 'killall -s 9 firefox'
+    clear_caches1 = 'sync'
+    clear_caches2 = 'echo 3 >/proc/sys/vm/drop_caches'
     os.popen(kill_firefox)
+    os.popen(clear_caches1)
+    os.popen(clear_caches2)
     if type == 'now':
         runLogs = SpidersLogs.objects.filter(is_done=0)
         if not runLogs:
