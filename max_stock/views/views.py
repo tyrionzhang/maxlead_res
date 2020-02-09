@@ -136,6 +136,8 @@ def stock_spiders(request):
     if not user:
         return HttpResponseRedirect("/admin/max_stock/login/")
     type = request.GET.get('type','')
+    kill_firefox = 'killall -s 9 firefox'
+    os.popen(kill_firefox)
     if type == 'now':
         runLogs = SpidersLogs.objects.filter(is_done=0)
         if not runLogs:
