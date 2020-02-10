@@ -91,8 +91,7 @@ class ExlSpider(scrapy.Spider):
             for i in range(0, length):
                 try:
                     if not i == 0:
-                        driver.refresh()
-                        driver.switch_to.alert.accept()
+                        driver.get('https://secure-wms.com/WebUI/V1/V1Link/StockStatusReport.aspx')
                         driver.implicitly_wait(100)
                         time.sleep(3)
                         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
@@ -124,6 +123,9 @@ class ExlSpider(scrapy.Spider):
                                 print('Error Element!')
 
                         time.sleep(120)
+                        driver.refresh()
+                        driver.switch_to.alert.accept()
+                        driver.implicitly_wait(100)
                         files = '%sStockwithLocation.xlsx' % settings.DOWNLOAD_DIR
                         data = xlrd.open_workbook(files)  # 打开fname文件
                         data.sheet_names()  # 获取xls文件中所有sheet的名称
