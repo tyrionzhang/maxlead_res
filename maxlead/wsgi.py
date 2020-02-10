@@ -55,6 +55,9 @@ t_restart_postgres.start()
 # t_barcode = threading.Timer(21600.0, auto_update_barcode)
 # t_barcode.start()
 
+kill_firefox = 'killall -s 9 firefox'
+os.popen(kill_firefox)
+
 # os.chdir(settings.PROXY_URL)
 # os.popen('python main.py')
 # os.chdir(settings.ROOT_PATH)
