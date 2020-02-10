@@ -88,7 +88,7 @@ class perform_command_que(threading.Thread):
 
         t = threading.Timer(270.0, self.run_atl_spider)
         t.start()
-        t1 = threading.Timer(760.0, self.run_exl_spider)
+        t1 = threading.Timer(860.0, self.run_exl_spider)
         t1.start()
 
         os.popen(cmd_str1)
