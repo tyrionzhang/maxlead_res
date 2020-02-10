@@ -91,6 +91,7 @@ class Atl1Spider(scrapy.Spider):
                         driver.get(elem_next_page)
                         driver.implicitly_wait(100)
                         driver.refresh()
+                        driver.switch_to.alert.accept()
                         driver.implicitly_wait(100)
             except:
                 continue
