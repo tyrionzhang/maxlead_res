@@ -91,6 +91,14 @@ def sfp_items(request):
                 if 'EXL' in w_list:
                     w_list.remove('EXL')
                 val.warehouse = ','.join(w_list)
+            if 'ROL' in val.warehouse or 'KCM' in val.warehouse:
+                w_list = val.warehouse.split(',')
+                w_list.append('MO')
+                if 'ROL' in w_list:
+                    w_list.remove('ROL')
+                if 'KCM' in w_list:
+                    w_list.remove('KCM')
+                val.warehouse = ','.join(w_list)
             if 'HW' in val.warehouse or 'TFD' in val.warehouse:
                 w_list = val.warehouse.split(',')
                 w_list.append('NJ')
@@ -121,6 +129,8 @@ def sfp_items(request):
                     val.update({'sfp': 'Prime template--NJ ONLY'})
                 elif wares == 'ONT' or wares == 'ZTO':
                     val.update({'sfp': 'Prime template--CA ONLY'})
+                elif wares == 'ROL' or wares == 'KCM':
+                    val.update({'sfp': 'Prime template--MO ONLY'})
                 else:
                     if 'TWU' in wares or 'EXL' in wares:
                         w_list = wares.split(',')
@@ -129,6 +139,14 @@ def sfp_items(request):
                             w_list.remove('TWU')
                         if 'EXL' in w_list:
                             w_list.remove('EXL')
+                        wares = ','.join(w_list)
+                    if 'ROL' in wares or 'KCM' in wares:
+                        w_list = wares.split(',')
+                        w_list.append('MO')
+                        if 'ROL' in w_list:
+                            w_list.remove('ROL')
+                        if 'KCM' in w_list:
+                            w_list.remove('KCM')
                         wares = ','.join(w_list)
                     if 'HW' in wares or 'TFD' in wares:
                         w_list = wares.split(',')
@@ -312,6 +330,14 @@ def export_sfp(request):
             if 'EXL' in w_list:
                 w_list.remove('EXL')
             val.warehouse = ','.join(w_list)
+        if 'ROL' in val.warehouse or 'KCM' in val.warehouse:
+            w_list = val.warehouse.split(',')
+            w_list.append('MO')
+            if 'ROL' in w_list:
+                w_list.remove('ROL')
+            if 'KCM' in w_list:
+                w_list.remove('KCM')
+            val.warehouse = ','.join(w_list)
         if 'HW' in val.warehouse or 'TFD' in val.warehouse:
             w_list = val.warehouse.split(',')
             w_list.append('NJ')
@@ -338,6 +364,12 @@ def export_sfp(request):
             val.update({'whs': wares})
             if wares == 'EXL' or wares == 'TWU':
                 val.update({'sfp': 'Prime template--TX ONLY'})
+            elif wares == 'HW' or wares == 'TFD':
+                val.update({'sfp': 'Prime template--NJ ONLY'})
+            elif wares == 'ONT' or wares == 'ZTO':
+                val.update({'sfp': 'Prime template--CA ONLY'})
+            elif wares == 'ROL' or wares == 'KCM':
+                val.update({'sfp': 'Prime template--MO ONLY'})
             else:
                 if 'TWU' in wares or 'EXL' in wares:
                     w_list = wares.split(',')
@@ -346,6 +378,14 @@ def export_sfp(request):
                         w_list.remove('TWU')
                     if 'EXL' in w_list:
                         w_list.remove('EXL')
+                    wares = ','.join(w_list)
+                if 'ROL' in wares or 'KCM' in wares:
+                    w_list = wares.split(',')
+                    w_list.append('MO')
+                    if 'ROL' in w_list:
+                        w_list.remove('ROL')
+                    if 'KCM' in w_list:
+                        w_list.remove('KCM')
                     wares = ','.join(w_list)
                 if 'HW' in wares or 'TFD' in wares:
                     w_list = wares.split(',')

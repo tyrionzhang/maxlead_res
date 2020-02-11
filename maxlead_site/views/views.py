@@ -12,6 +12,7 @@ from maxlead_site.common.common import get_send_time
 from django.http import HttpResponse
 from maxlead_site.models import UserAsins,AsinReviews,Reviews,AsinReviewsBackcup,ReviewsBackcup,Questions,QuestionsBackcup
 from maxlead_site.models import Answers,AnswersBackcup,ListingWacherBackcup,ListingWacher,Listings,ListingsBackcup,CategoryRank,CategoryRankBackcup
+from max_stock.models import SfpTemps
 
 # 第一个参数确定任务的时间，返回从某个特定的时间到现在经历的秒数
 # 第二个参数以某种人为的方式衡量时间
@@ -108,6 +109,8 @@ def test1(request):
     try:
         real_ip = request.META['HTTP_X_FORWARDED_FOR']
         regip = real_ip.split(",")[0]
+        res = SfpTemps.objects.all()
+        res.delete()
     except:
         try:
             regip = request.META['REMOTE_ADDR']
