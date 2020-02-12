@@ -79,6 +79,8 @@ class perform_command_que(threading.Thread):
                 self.username = user.user.username
 
     def run(self):
+        kill_firefox = 'killall -s 9 firefox'
+        os.popen(kill_firefox)
         work_path = settings.STOCHS_SPIDER_URL
         os.chdir(work_path)
         os.popen('scrapyd-deploy')
