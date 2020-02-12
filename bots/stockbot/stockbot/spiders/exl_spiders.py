@@ -75,8 +75,6 @@ class ExlSpider(scrapy.Spider):
             elem_pass[0].send_keys('7G1#AJjX')
         btn_login[0].click()
         driver.implicitly_wait(100)
-        kill_firefox = 'killall -s 9 firefox'
-        os.popen(kill_firefox)
         driver.get('https://secure-wms.com/WebUI/V1/V1Link/StockStatusReport.aspx')
         driver.implicitly_wait(100)
         time.sleep(3)
