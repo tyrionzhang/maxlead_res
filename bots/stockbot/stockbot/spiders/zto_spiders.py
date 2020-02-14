@@ -113,6 +113,12 @@ class ZtoSpider(scrapy.Spider):
                     except:
                         continue
                 os.remove(f_path)
+        try:
+            driver.refresh()
+            driver.switch_to.alert.accept()
+            driver.implicitly_wait(100)
+        except:
+            pass
         display.stop()
         driver.quit()
         update_spiders_logs('ZTO', log_id=self.log_id)

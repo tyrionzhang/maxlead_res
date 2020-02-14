@@ -88,10 +88,14 @@ class HanoverSpider(scrapy.Spider):
                     if elem_next_page:
                         elem_next_page[0].click()
                         driver.implicitly_wait(100)
-                        # driver.refresh()
-                        # driver.implicitly_wait(100)
             except:
                 continue
+        try:
+            driver.refresh()
+            driver.switch_to.alert.accept()
+            driver.implicitly_wait(100)
+        except:
+            pass
         display.stop()
         driver.quit()
         update_spiders_logs('Hanover', log_id=self.log_id)

@@ -93,6 +93,12 @@ class Atl1Spider(scrapy.Spider):
             except:
                 continue
 
+        try:
+            driver.refresh()
+            driver.switch_to.alert.accept()
+            driver.implicitly_wait(100)
+        except:
+            pass
         display.stop()
         driver.quit()
 
