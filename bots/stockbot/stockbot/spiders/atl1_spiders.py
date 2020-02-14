@@ -90,10 +90,6 @@ class Atl1Spider(scrapy.Spider):
                     if elem_next_page:
                         driver.get(elem_next_page)
                         driver.implicitly_wait(100)
-                        driver.refresh()
-                        driver.switch_to.alert.accept()
-                        driver.implicitly_wait(100)
-                        time.sleep(3)
             except:
                 continue
 
