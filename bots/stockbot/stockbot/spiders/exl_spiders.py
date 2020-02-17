@@ -93,13 +93,14 @@ class ExlSpider(scrapy.Spider):
                     if not i == 0:
                         driver.get('https://secure-wms.com/WebUI/V1/V1Link/StockStatusReport.aspx')
                         driver.implicitly_wait(100)
+                        time.sleep(3)
                         try:
                             driver.refresh()
                             driver.switch_to.alert.accept()
                             driver.implicitly_wait(100)
                         except:
                             pass
-                        time.sleep(5)
+                        time.sleep(3)
                         list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
                         list_rows.pop(0)
                         list_rows.pop(-1)
