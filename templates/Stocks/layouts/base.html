@@ -229,14 +229,24 @@
 
     <div class="save_user hide save-block-info" id="run_spiders">
         <span class="btn-close">x</span>
-			<h2 style="margin: 0 0px 0 164px;">请选择爬取仓库</h2>
-        <label class="lab-post-param">
+			<h2 style="margin: auto; text-align: center;">请选择爬取仓库</h2>
+        <br>
+        <label>
             <input type="checkbox" name="run_type" value="twu_spider" class="run_type"/>TWU
+        </label>
+        <label>
             <input type="checkbox" name="run_type" value="hanover_spider" class="run_type"/>HM
+        </label>
+        <label>
             <input type="checkbox" name="run_type" value="atl1_spider" class="run_type"/>ATL
+        </label>
+        <label>
             <input type="checkbox" name="run_type" value="zto_spider" class="run_type"/>ZTO
+        </label>
+        <label>
             <input type="checkbox" name="run_type" value="exl_spider" class="run_type"/>3PL
         </label>
+        <br><br>
         <button id="btn_run_sp">Run</button>
     </div>
 
