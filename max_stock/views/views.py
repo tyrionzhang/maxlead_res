@@ -152,13 +152,13 @@ def stock_spiders(request):
     os.popen(clear_caches1)
     os.popen(clear_caches2)
     if type == 'now':
-        run_type = request.POST.get('run_type', '')
+        run_type = eval(request.POST.get('run_type', ''))
         if run_type:
             work_path = settings.STOCHS_SPIDER_URL
             os.chdir(work_path)
             os.popen('scrapyd-deploy')
             time_re = 1.0
-            for val in eval(run_type):
+            for val in run_type:
                 t = threading.Timer(time_re, run_type_sp, [val])
                 t.start()
                 time_re += 270
