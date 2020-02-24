@@ -227,6 +227,19 @@
 		</form>
     </div>
 
+    <div class="save_user hide save-block-info" id="run_spiders">
+        <span class="btn-close">x</span>
+			<h2 style="margin: 0 0px 0 164px;">请选择爬取仓库</h2>
+        <label class="lab-post-param">
+            <input type="checkbox" name="run_type" value="twu_spider" class="run_type"/>TWU
+            <input type="checkbox" name="run_type" value="hanover_spider" class="run_type"/>HM
+            <input type="checkbox" name="run_type" value="atl1_spider" class="run_type"/>ATL
+            <input type="checkbox" name="run_type" value="zto_spider" class="run_type"/>ZTO
+            <input type="checkbox" name="run_type" value="exl_spider" class="run_type"/>3PL
+        </label>
+        <button id="btn_run_sp">Run</button>
+    </div>
+
     <div class="wrap-k-line hide"></div>
     <div class="wrap color-E hide">
         <div class="k-line k-lineE-1"></div>
@@ -238,8 +251,34 @@
         <script>
             $(document).ready(function(){
                 $('.a-run-spiders').on('click',function () {
-                    if(confirm('Runing spiders?')){
-                        $(this).attr('href','/admin/max_stock/stock_spiders?type=now')
+                    $('.wrap-paper').removeClass('hide');
+                    $('#run_spiders').removeClass('hide');
+                    return false;
+                    {#if(confirm('Runing spiders?')){#}
+                    {#    $(this).attr('href','/admin/max_stock/stock_spiders?type=now')#}
+                });
+                $('#btn_run_sp').click(function () {
+                    var run_type = [];
+                    $('.run_type:checked').each(function(){
+                        run_type.push($(this).val())
+                    });
+                    var data = {
+                        'run_type' : JSON.stringify(run_type),
+                        'type' : 'now'
+                    };
+                    if(run_type){
+                        if(confirm('确认运行？')) {
+                            $.post('/admin/max_stock/stock_spiders/', data, function (re) {
+                                if (re.code == 1) {
+                                    alert(re.msg);
+                                    window.location.reload();
+                                } else if (re.code == 0) {
+                                    alert(re.msg);
+                                } else if(re.code==66){
+                                    window.location.href='/admin/max_stock/login/';
+                                }
+                            }, 'json')
+                        }
                     }
                 });
 
@@ -262,6 +301,7 @@
                 $('body').on('click','.wrap-paper' , function(){
                     $('.wrap-paper').addClass('hide');
                     $('#save_userinfo').addClass('hide');
+                    $('#run_spiders').addClass('hide');
                 });
 
                $('#btn_user_info').on('click',function () {

@@ -9,6 +9,7 @@ import base64
 import oauth2 as oauth
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from maxlead_site.views.app import App
 from maxlead import settings
 from maxlead_site.models import UserProfile
@@ -133,11 +134,17 @@ def run_command_queue():
     t.start()
     pass
 
+def run_type_sp(name):
+    cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=%s' % name
+    os.popen(cmd_str1)
+
+@csrf_exempt
 def stock_spiders(request):
     user = App.get_user_info(request)
     if not user:
-        return HttpResponseRedirect("/admin/max_stock/login/")
-    type = request.GET.get('type','')
+        return HttpResponse(json.dumps({'code': 66}), content_type='application/json')
+
+    type = request.POST.get('type','')
     kill_firefox = 'killall -s 9 firefox'
     clear_caches1 = 'sync'
     clear_caches2 = 'echo 3 >/proc/sys/vm/drop_caches'
@@ -145,23 +152,36 @@ def stock_spiders(request):
     os.popen(clear_caches1)
     os.popen(clear_caches2)
     if type == 'now':
-        runLogs = SpidersLogs.objects.filter(is_done=0)
-        if not runLogs:
-            _set_user_sku(request)
-            q = queue.Queue()
-
-            tname = 'stocks_done'
-            reviews = perform_command_que(tname, q, request)
-            reviews.start()
-            reviews.join()
+        run_type = request.POST.get('run_type', '')
+        if run_type:
+            work_path = settings.STOCHS_SPIDER_URL
+            os.chdir(work_path)
+            os.popen('scrapyd-deploy')
+            time_re = 1.0
+            for val in eval(run_type):
+                t = threading.Timer(time_re, run_type_sp, [val])
+                t.start()
+                time_re += 270
+            os.chdir(settings.ROOT_PATH)
             msg_str = u'爬虫已运行'
-            SlogsObj = SpidersLogs()
-            SlogsObj.id
-            SlogsObj.user_id = user.user_id
-            SlogsObj.start_time = datetime.now()
-            SlogsObj.save()
         else:
-            msg_str = u'更新正在进行...'
+            runLogs = SpidersLogs.objects.filter(is_done=0)
+            if not runLogs:
+                _set_user_sku(request)
+                q = queue.Queue()
+
+                tname = 'stocks_done'
+                reviews = perform_command_que(tname, q, request)
+                reviews.start()
+                reviews.join()
+                msg_str = u'爬虫已运行'
+                SlogsObj = SpidersLogs()
+                SlogsObj.id
+                SlogsObj.user_id = user.user_id
+                SlogsObj.start_time = datetime.now()
+                SlogsObj.save()
+            else:
+                msg_str = u'更新正在进行...'
     else:
         time_now = datetime.now()
         time_re = datetime.now() + timedelta(days = 1)
@@ -179,7 +199,8 @@ def stock_spiders(request):
         save_stocks_t.start()
         time_str = datetime.now() +  timedelta(seconds = int(t_re))
         msg_str = 'Spiders will be runing!The time:%s' % time_str
-    return render(request, "Stocks/spider/home.html", {'msg_str':msg_str})
+    return HttpResponse(json.dumps({'code': 1, 'msg': msg_str}),
+                        content_type='application/json')
 
 def save_logs(data):
     logs = StockLogs()
