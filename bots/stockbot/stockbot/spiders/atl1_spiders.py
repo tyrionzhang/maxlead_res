@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-import scrapy,time
-from django.db import connection
-from django.db.utils import OperationalError
+import scrapy,os,time
+import xlrd
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
-from max_stock.models import WarehouseStocks
 from max_stock.views.views import update_spiders_logs
 from maxlead_site.common.common import warehouse_date_data,warehouse_threshold_msgs
 
@@ -29,6 +27,13 @@ class Atl1Spider(scrapy.Spider):
         display = Display(visible=0, size=(800, 800))
         display.start()
         profile = webdriver.FirefoxProfile()
+        down_path = os.path.join(settings.DOWNLOAD_DIR, 'atl_tb')
+        profile.set_preference('browser.download.dir', down_path)  # 现在文件存放的目录
+        profile.set_preference('browser.download.folderList', 2)
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk',
+                               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, '
+                               'text/csv,application/x-msexcel,application/x-excel,application/excel,application/vnd.ms-excel,application/x-download')
         profile.set_preference("permissions.default.image", 2)
         profile.set_preference("network.http.use-cache", False)
         profile.set_preference("browser.cache.memory.enable", False)
@@ -58,19 +63,27 @@ class Atl1Spider(scrapy.Spider):
         driver.implicitly_wait(100)
         driver.get('http://us.hipacking.com/member/instock/stock.html')
         driver.implicitly_wait(100)
-        total_page = driver.find_elements_by_css_selector('.nav-list-wrapper span:nth-child(2)>b')[0].text
-        total_page = int(total_page)
-        items = []
-
-        for i in range(total_page):
-            try:
-                res = driver.find_elements_by_css_selector('.table tbody>tr')
-                for val in res:
-                    item = WarehouseStocksItem()
-                    td_re = val.find_elements_by_tag_name('td')
-                    if td_re:
-                        item['sku'] = td_re[3].text
-                        w_name = td_re[1].text
+        time.sleep(3)
+        btn_export = driver.find_elements_by_css_selector('.page-nav>button')
+        btn_export[5].click()
+        time.sleep(100)
+        old_list_qty = warehouse_date_data(['ATL', 'ONT', 'KCM'])
+        new_qtys = {}
+        files = os.listdir(down_path)
+        if files:
+            f_path = os.path.join(down_path, files[0])
+            if os.path.isfile(f_path):
+                data = xlrd.open_workbook(f_path)  # 打开fname文件
+                data.sheet_names()  # 获取xls文件中所有sheet的名称
+                table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+                nrows = table.nrows
+                for i in range(1, nrows):
+                    try:
+                        if i >= nrows:
+                            break
+                        item = WarehouseStocksItem()
+                        item['sku'] = table.cell_value(i, 4, )
+                        w_name = table.cell_value(i, 0, )
                         if w_name == 'ONT-2':
                             item['warehouse'] = 'ONT'
                         elif w_name == 'KCM-4':
@@ -78,20 +91,24 @@ class Atl1Spider(scrapy.Spider):
                         else:
                             item['warehouse'] = 'ATL'
                         item['is_new'] = 0
-                        if td_re[11].text and not td_re[11].text == ' ':
-                            item['qty'] = td_re[11].text
-                            item['qty'] = item['qty'].replace(',', '')
+                        qty = table.cell_value(i, 12, )
+                        if qty:
+                            item['qty'] = qty
                         else:
                             item['qty'] = 0
-                        items.append(item)
-
-                if i < (total_page - 1):
-                    elem_next_page = 'http://us.hipacking.com/member/instock/stock.html?pageIndex=%s&keyword=&warehouse=&sort=NormalCount' % (i + 2)
-                    if elem_next_page:
-                        driver.get(elem_next_page)
-                        driver.implicitly_wait(100)
-            except:
-                continue
+                        item['qty1'] = 0
+                        if old_list_qty:
+                            key1 = item['warehouse'] + item['sku']
+                            if key1 in old_list_qty:
+                                item['qty1'] = old_list_qty[key1] - int(item['qty'])
+                        new_key = item['warehouse'] + item['sku']
+                        new_qtys.update({
+                            new_key: item['qty']
+                        })
+                        yield item
+                    except:
+                        continue
+                os.remove(f_path)
 
         try:
             driver.refresh()
@@ -102,32 +119,5 @@ class Atl1Spider(scrapy.Spider):
         display.stop()
         driver.quit()
 
-        querysetlist = []
-        old_list_qty = warehouse_date_data(['ATL', 'ONT', 'KCM'])
-        new_qtys = {}
-        for i, val in enumerate(items, 0):
-            try:
-                for n, v in enumerate(items, 0):
-                    if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
-                        val['qty'] = int(v['qty']) + int(val['qty'])
-                        del items[n]
-                val['qty1'] = 0
-                if old_list_qty:
-                    key1 = val['warehouse'] + val['sku']
-                    if key1 in old_list_qty:
-                        val['qty1'] = old_list_qty[key1] - int(val['qty'])
-
-                querysetlist.append(WarehouseStocks(sku=val['sku'], warehouse=val['warehouse'], qty=val['qty'], qty1=val['qty1']))
-
-                new_key = val['warehouse'] + val['sku']
-                new_qtys.update({
-                    new_key: val['qty']
-                })
-            except OperationalError:
-                connection.cursor()
-                connection.close()
-                continue
-
-        WarehouseStocks.objects.bulk_create(querysetlist)
         update_spiders_logs('ATL', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['ATL', 'ONT', 'KCM'])
