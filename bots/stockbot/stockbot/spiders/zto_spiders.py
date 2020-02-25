@@ -55,75 +55,78 @@ class ZtoSpider(scrapy.Spider):
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         driver.get(response.url)
         time.sleep(5)
-        elem_name = driver.find_elements_by_name('username')
-        elem_pass = driver.find_elements_by_name('password')
-        btn_login = driver.find_elements_by_id('sub-btn')
-
-        if elem_name:
-            elem_name[0].send_keys('ZTLO')
-        if elem_pass:
-            elem_pass[0].send_keys('zto5012us')
-        btn_login[0].click()
-        driver.implicitly_wait(100)
-        time.sleep(3)
-        stock_li = driver.find_element_by_id('stock')
-        stock_li.click()
-        driver.implicitly_wait(100)
-        time.sleep(3)
-        waits = 0
         btn_export = False
-        while 1:
-            time.sleep(waits)
-            try:
-                btn_export = driver.find_element_by_css_selector('.text-right>button:nth-of-type(2)')
-                break
-            except:
-                waits += 5
-                if waits > 120:
+        try:
+            elem_name = driver.find_elements_by_name('username')
+            elem_pass = driver.find_elements_by_name('password')
+            btn_login = driver.find_element_by_id('sub-btn')
+
+            if elem_name:
+                elem_name[0].send_keys('ZTLO')
+            if elem_pass:
+                elem_pass[0].send_keys('zto5012us')
+            btn_login.click()
+            driver.implicitly_wait(100)
+            time.sleep(3)
+            stock_li = driver.find_element_by_id('stock')
+            stock_li.click()
+            driver.implicitly_wait(100)
+            time.sleep(3)
+            waits = 0
+            while 1:
+                time.sleep(waits)
+                try:
+                    btn_export = driver.find_element_by_css_selector('.text-right>button:nth-of-type(2)')
                     break
-                continue
-        if btn_export:
-            btn_export.click()
-            time.sleep(100)
-            old_list_qty = warehouse_date_data(['ZTO'])
-            new_qtys = {}
-            files = os.listdir(down_path)
-            if files:
-                f_path = os.path.join(down_path, files[0])
-                if os.path.isfile(f_path):
-                    data = xlrd.open_workbook(f_path)  # 打开fname文件
-                    data.sheet_names()  # 获取xls文件中所有sheet的名称
-                    table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
-                    nrows = table.nrows
-                    for i in range(1, nrows):
-                        try:
-                            if i >= nrows:
-                                break
-                            item = WarehouseStocksItem()
-                            item['sku'] = table.cell_value(i, 1, )
-                            item['warehouse'] = 'ZTO'
-                            item['is_new'] = 0
-                            qty = table.cell_value(i, 3, )
-                            if qty:
-                                qty5 = int(table.cell_value(i, 5, ))
-                                item['qty'] = qty
-                                if qty5:
-                                    item['qty'] = int(item['qty']) - qty5
-                            else:
-                                item['qty'] = 0
-                            item['qty1'] = 0
-                            if old_list_qty:
-                                key1 = item['warehouse'] + item['sku']
-                                if key1 in old_list_qty:
-                                    item['qty1'] = old_list_qty[key1] - int(item['qty'])
-                            new_key = item['warehouse'] + item['sku']
-                            new_qtys.update({
-                                new_key: item['qty']
-                            })
-                            yield item
-                        except:
-                            continue
-                    os.remove(f_path)
+                except:
+                    waits += 5
+                    if waits > 120:
+                        break
+                    continue
+            if btn_export:
+                btn_export.click()
+                time.sleep(100)
+                old_list_qty = warehouse_date_data(['ZTO'])
+                new_qtys = {}
+                files = os.listdir(down_path)
+                if files:
+                    f_path = os.path.join(down_path, files[0])
+                    if os.path.isfile(f_path):
+                        data = xlrd.open_workbook(f_path)  # 打开fname文件
+                        data.sheet_names()  # 获取xls文件中所有sheet的名称
+                        table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+                        nrows = table.nrows
+                        for i in range(1, nrows):
+                            try:
+                                if i >= nrows:
+                                    break
+                                item = WarehouseStocksItem()
+                                item['sku'] = table.cell_value(i, 1, )
+                                item['warehouse'] = 'ZTO'
+                                item['is_new'] = 0
+                                qty = table.cell_value(i, 3, )
+                                if qty:
+                                    qty5 = int(table.cell_value(i, 5, ))
+                                    item['qty'] = qty
+                                    if qty5:
+                                        item['qty'] = int(item['qty']) - qty5
+                                else:
+                                    item['qty'] = 0
+                                item['qty1'] = 0
+                                if old_list_qty:
+                                    key1 = item['warehouse'] + item['sku']
+                                    if key1 in old_list_qty:
+                                        item['qty1'] = old_list_qty[key1] - int(item['qty'])
+                                new_key = item['warehouse'] + item['sku']
+                                new_qtys.update({
+                                    new_key: item['qty']
+                                })
+                                yield item
+                            except:
+                                continue
+                        os.remove(f_path)
+        except:
+            pass
         try:
             driver.refresh()
             driver.switch_to.alert.accept()
