@@ -53,9 +53,9 @@ class Fatl1Spider(scrapy.Spider):
         driver.implicitly_wait(100)
         driver.get('http://us.hipacking.com/member/instock/stock.html')
         driver.implicitly_wait(100)
-        btn_msg = driver.find_elements_by_class_name('layui-layer-btn0')
-        if btn_msg:
-            btn_msg[0].click()
+        # btn_msg = driver.find_elements_by_class_name('layui-layer-btn0')
+        # if btn_msg:
+        #     btn_msg[0].click()
 
         xlsx_path = os.path.join(max_settings.BASE_DIR, max_settings.DOWNLOAD_URL, 'fba_transport', self.xlsx_file)
         data = xlrd.open_workbook(xlsx_path)  # 打开fname文件
@@ -64,6 +64,7 @@ class Fatl1Spider(scrapy.Spider):
         nrows = table.nrows
         num = 'start'
         dec_str = ''
+        skus = []
         for i in range(nrows):
             try:
                 if i + 1 < nrows:
@@ -108,11 +109,10 @@ class Fatl1Spider(scrapy.Spider):
                         fba_trspot = driver.find_elements_by_css_selector('.page-nav>button')
                         fba_trspot[1].click()
                         driver.implicitly_wait(100)
-                        tr_ssel = '.product-table>tbody>tr:nth-of-type(%s)' % (num + 1)
-                        prdut_tr = driver.find_element_by_css_selector(tr_ssel)
-                        prdut_tr.find_elements_by_tag_name('input')[0].send_keys(sku)
-                        prdut_tr.find_elements_by_tag_name('input')[1].clear()
-                        prdut_tr.find_elements_by_tag_name('input')[1].send_keys(qty)
+                        skus.append({
+                            'sku' : sku,
+                            'qty' : qty
+                        })
                         if nrows > 2:
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
@@ -179,22 +179,30 @@ class Fatl1Spider(scrapy.Spider):
                         time.sleep(3)
                         close_a = driver.find_element_by_class_name('layui-layer-setwin').find_element_by_tag_name('a')
                         close_a.click()
-                        while 1:
-                            try:
-                                tr_ssel = '.product-table>tbody>tr:nth-of-type(%s)' % (num + 1)
-                                prdut_tr = driver.find_element_by_css_selector(tr_ssel)
-                                prdut_tr.find_elements_by_tag_name('input')[0].send_keys(sku)
-                                prdut_tr.find_elements_by_tag_name('input')[1].clear()
-                                prdut_tr.find_elements_by_tag_name('input')[1].send_keys(qty)
-                                break
-                            except:
-                                time.sleep(3)
+                        skus.append({
+                            'sku': sku,
+                            'qty': qty
+                        })
                         if nrows > 2 and i < (range(nrows)[-1] - 1):
                             driver.find_element_by_id('add_productA').click()
                             driver.implicitly_wait(100)
+                if i % 5 == 0 and i != 0:
+                    try:
+                        driver.refresh()
+                        driver.implicitly_wait(100)
+                        if nrows > 2 and i < (range(nrows)[-1] - 1):
+                            driver.find_element_by_id('add_productA').click()
+                            driver.implicitly_wait(100)
+                    except:
+                        pass
             except:
                 dec_str += '%s;' % sku
                 continue
+        prdut_trs = driver.find_elements_by_css_selector('.product-table>tbody>tr')
+        for i,val in enumerate(prdut_trs):
+            val.find_elements_by_tag_name('input')[1].clear()
+            val.find_elements_by_tag_name('input')[0].send_keys(skus[i]['sku'])
+            val.find_elements_by_tag_name('input')[1].send_keys(skus[i]['qty'])
         try:
             driver.find_element_by_id('submit').click()
         except:
