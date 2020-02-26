@@ -52,8 +52,8 @@ t_del_log_pid.start()
 t_restart_postgres = threading.Timer(300.0, restart_postgres)
 t_restart_postgres.start()
 
-# t_barcode = threading.Timer(21600.0, auto_update_barcode)
-# t_barcode.start()
+t_barcode = threading.Timer(21600.0, auto_update_barcode)
+t_barcode.start()
 
 kill_firefox = 'killall -s 9 firefox'
 os.popen(kill_firefox)
