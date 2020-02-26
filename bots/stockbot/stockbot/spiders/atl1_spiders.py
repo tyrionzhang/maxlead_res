@@ -7,11 +7,6 @@ from maxlead_site.common.common import warehouse_date_data,warehouse_threshold_m
 
 class Atl1Spider(scrapy.Spider):
     name = "atl1_spider"
-    sku_list = []
-    msg_str1 = 'complete\n'
-    start_urls = [
-        'http://us.hipacking.com/member/passport'
-    ]
     log_id = None
 
     def __init__(self, log_id=None, *args, **kwargs):
