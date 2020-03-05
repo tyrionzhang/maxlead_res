@@ -132,10 +132,10 @@ class ZtoSpider(scrapy.Spider):
             driver.refresh()
             driver.switch_to.alert.accept()
             driver.implicitly_wait(100)
-            shutil.rmtree(down_path)
-            os.mkdir(down_path)
         except:
             pass
+        shutil.rmtree(down_path)
+        os.mkdir(down_path)
         display.stop()
         driver.quit()
         if files:
