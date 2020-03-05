@@ -56,6 +56,8 @@ class ZtoSpider(scrapy.Spider):
         driver.get(response.url)
         time.sleep(5)
         btn_export = False
+        files = False
+        new_qtys = {}
         try:
             elem_name = driver.find_elements_by_name('username')
             elem_pass = driver.find_elements_by_name('password')
@@ -87,7 +89,6 @@ class ZtoSpider(scrapy.Spider):
                 btn_export.click()
                 time.sleep(100)
                 old_list_qty = warehouse_date_data(['ZTO'])
-                new_qtys = {}
                 files = os.listdir(down_path)
                 if files:
                     f_path = os.path.join(down_path, files[0])
@@ -135,6 +136,6 @@ class ZtoSpider(scrapy.Spider):
             pass
         display.stop()
         driver.quit()
-        if btn_export:
+        if files:
             update_spiders_logs('ZTO', log_id=self.log_id)
             msg_str2 = warehouse_threshold_msgs(new_qtys, ['ZTO'])
