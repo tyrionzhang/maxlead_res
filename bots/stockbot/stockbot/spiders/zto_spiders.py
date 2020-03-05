@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-import scrapy,os,math
+import scrapy,os
 from datetime import *
 import time
 import xlrd
+import shutil
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bots.stockbot.stockbot import settings
 from bots.stockbot.stockbot.items import WarehouseStocksItem
 from max_stock.views.views import update_spiders_logs
-from maxlead_site.common.common import spiders_send_email,warehouse_threshold_msgs,warehouse_date_data
+from maxlead_site.common.common import warehouse_threshold_msgs,warehouse_date_data
 
 class ZtoSpider(scrapy.Spider):
     name = "zto_spider"
@@ -125,13 +126,14 @@ class ZtoSpider(scrapy.Spider):
                                 yield item
                             except:
                                 continue
-                        os.remove(f_path)
         except:
             pass
         try:
             driver.refresh()
             driver.switch_to.alert.accept()
             driver.implicitly_wait(100)
+            shutil.rmtree(down_path)
+            os.mkdir(down_path)
         except:
             pass
         display.stop()
