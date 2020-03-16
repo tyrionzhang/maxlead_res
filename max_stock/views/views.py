@@ -134,8 +134,8 @@ def run_command_queue():
     t.start()
     pass
 
-def run_type_sp(name):
-    cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=%s' % name
+def run_type_sp(name, log_id=None):
+    cmd_str1 = 'curl http://localhost:6800/schedule.json -d project=stockbot -d spider=%s -d log_id=%s' % (name, log_id)
     os.popen(cmd_str1)
 
 @csrf_exempt
@@ -158,8 +158,10 @@ def stock_spiders(request):
             os.chdir(work_path)
             os.popen('scrapyd-deploy')
             time_re = 1.0
+            date_now = datetime.now().strftime('%Y-%m-%d')
+            obj = SpidersLogs.objects.filter(created__contains=date_now).order_by('-created')
             for val in run_type:
-                t = threading.Timer(time_re, run_type_sp, [val])
+                t = threading.Timer(time_re, run_type_sp, [val, obj[0].id])
                 t.start()
                 time_re += 270
             os.chdir(settings.ROOT_PATH)
