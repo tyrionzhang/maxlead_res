@@ -92,7 +92,8 @@ def get_tracking_order_status():
     # billing_date = datetime.datetime.now().strftime("%b.%y")
     # lists = TrackingOrders.objects.filter(billing_date__contains=billing_date)
     t = threading.Timer(86400.0, get_tracking_order_status)
-    lists = TrackingOrders.objects.all().exclude(Q(status='Delivered')| Q(tracking_num=''))
+    re_date = datetime.datetime.now() + datetime.timedelta(days=-30)
+    lists = TrackingOrders.objects.filter(created__gt=re_date).exclude(Q(status='Delivered')| Q(tracking_num=''))
     start_date = time.mktime((datetime.datetime.now() + datetime.timedelta(days=-5)).timetuple())
     if lists:
         data = []
@@ -173,12 +174,12 @@ def get_tracking_order_status():
                                 'first_scan_time': val.first_scan_time,
                                 'delivery_time': val.delivery_time
                             })
-            except Exception as e:
+            except:
                 log_obj = StockLogs()
                 log_obj.id
                 log_obj.user_id = 1
                 log_obj.fun = 'tracking 自动更新状态'
-                log_obj.description = 'Error msg:%s,Tracking number %s' % (e, val.tracking_num)
+                log_obj.description = 'Tracking number %s' % (val.tracking_num)
                 log_obj.save()
                 continue
         if data:
