@@ -301,7 +301,8 @@ def kill_postgres_on_type():
 
 def del_orders():
     t = threading.Timer(604800.0, del_orders)
-    data = OrderItems.objects.filter(is_email=0)
+    last_date = datetime.now() + timedelta(days=-7)
+    data = OrderItems.objects.filter(is_email=0, created__lt=last_date)
     if data:
         data.delete()
     t.start()
