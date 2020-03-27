@@ -3,6 +3,7 @@ import scrapy,os
 from datetime import *
 import time
 import xlrd
+import shutil
 from django.db import connection
 from django.db.utils import OperationalError
 from selenium import webdriver
@@ -34,7 +35,8 @@ class ExlSpider(scrapy.Spider):
         display = Display(visible=0, size=(800, 800))
         display.start()
         profile = webdriver.FirefoxProfile()
-        profile.set_preference('browser.download.dir', settings.DOWNLOAD_DIR)  # 现在文件存放的目录
+        down_path = os.path.join(settings.DOWNLOAD_DIR, 'tpl_tb')
+        profile.set_preference('browser.download.dir', down_path)  # 现在文件存放的目录
         profile.set_preference('browser.download.folderList', 2)
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, '
@@ -130,60 +132,63 @@ class ExlSpider(scrapy.Spider):
                                 print('Error Element!')
 
                         time.sleep(120)
-                        files = '%sStockwithLocation.xlsx' % settings.DOWNLOAD_DIR
-                        data = xlrd.open_workbook(files)  # 打开fname文件
-                        data.sheet_names()  # 获取xls文件中所有sheet的名称
-                        table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
-                        nrows = table.nrows
-                        for i in range(nrows):
-                            try:
-                                i = i+7
-                                if i >= nrows:
-                                    break
-                                item = {}
-                                item['sku'] = table.cell_value(i, 0,)
-                                if len(item['sku']) > 225:
+                        files = os.listdir(down_path)
+                        if files:
+                            f_path = os.path.join(down_path, files[0])
+                            data = xlrd.open_workbook(f_path)  # 打开fname文件
+                            data.sheet_names()  # 获取xls文件中所有sheet的名称
+                            table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
+                            nrows = table.nrows
+                            for i in range(nrows):
+                                try:
+                                    i = i+7
+                                    if i >= nrows:
+                                        break
+                                    item = {}
+                                    item['sku'] = table.cell_value(i, 0,)
+                                    if len(item['sku']) > 225:
+                                        continue
+                                    if item['sku']:
+                                        item['warehouse'] = warehouse_name
+                                        if warehouse_name == 'Exchange Logistics':
+                                            item['warehouse'] = 'EXL'
+                                        if warehouse_name == 'Tradeforce Dayton':
+                                            item['warehouse'] = 'TFD'
+                                        if warehouse_name == 'ROL':
+                                            item['warehouse'] = 'ROL'
+                                        if table.cell_value(i, 11,) and not table.cell_value(i, 11,) == ' ':
+                                            item['qty'] = table.cell_value(i, 11,)
+                                            item['qty'] = to_int(item['qty'])
+                                        else:
+                                            item['qty'] = 0
+                                        items.append(item)
+                                except:
                                     continue
-                                if item['sku']:
-                                    item['warehouse'] = warehouse_name
-                                    if warehouse_name == 'Exchange Logistics':
-                                        item['warehouse'] = 'EXL'
-                                    if warehouse_name == 'Tradeforce Dayton':
-                                        item['warehouse'] = 'TFD'
-                                    if warehouse_name == 'ROL':
-                                        item['warehouse'] = 'ROL'
-                                    if table.cell_value(i, 11,) and not table.cell_value(i, 11,) == ' ':
-                                        item['qty'] = table.cell_value(i, 11,)
-                                        item['qty'] = to_int(item['qty'])
-                                    else:
-                                        item['qty'] = 0
-                                    items.append(item)
-                            except:
-                                continue
-                        os.remove(files)
-                        # f = open(files, 'r', encoding='UTF-8')
-                        # csv_files = csv.reader(f)
-                        # for i, val in enumerate(csv_files, 0):
-                        #     try:
-                        #         if i > 0:
-                        #             item = WarehouseStocksItem()
-                        #             item['sku'] = val[0]
-                        #             item['warehouse'] = val[2]
-                        #             if warehouse_name == 'Exchange Logistics':
-                        #                 item['warehouse'] = 'EXL'
-                        #             if warehouse_name == 'Tradeforce Dayton':
-                        #                 item['warehouse'] = 'TFD'
-                        #             if warehouse_name == 'Roll On Logistics':
-                        #                 item['warehouse'] = 'ROL'
-                        #             if val[20] and not val[20] == ' ':
-                        #                 item['qty'] = val[20]
-                        #                 item['qty'] = to_int(item['qty'].replace(',', ''))
-                        #             else:
-                        #                 item['qty'] = 0
-                        #             items.append(item)
-                        #     except:
-                        #         continue
-                        # f.close()
+                            shutil.rmtree(down_path)
+                            os.mkdir(down_path)
+                            # f = open(files, 'r', encoding='UTF-8')
+                            # csv_files = csv.reader(f)
+                            # for i, val in enumerate(csv_files, 0):
+                            #     try:
+                            #         if i > 0:
+                            #             item = WarehouseStocksItem()
+                            #             item['sku'] = val[0]
+                            #             item['warehouse'] = val[2]
+                            #             if warehouse_name == 'Exchange Logistics':
+                            #                 item['warehouse'] = 'EXL'
+                            #             if warehouse_name == 'Tradeforce Dayton':
+                            #                 item['warehouse'] = 'TFD'
+                            #             if warehouse_name == 'Roll On Logistics':
+                            #                 item['warehouse'] = 'ROL'
+                            #             if val[20] and not val[20] == ' ':
+                            #                 item['qty'] = val[20]
+                            #                 item['qty'] = to_int(item['qty'].replace(',', ''))
+                            #             else:
+                            #                 item['qty'] = 0
+                            #             items.append(item)
+                            #     except:
+                            #         continue
+                            # f.close()
                 except:
                     close_guide = driver.find_elements_by_css_selector('#pendo-guide-container>button')
                     if close_guide:
