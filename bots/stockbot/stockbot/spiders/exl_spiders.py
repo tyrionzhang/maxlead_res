@@ -119,6 +119,7 @@ class ExlSpider(scrapy.Spider):
                             driver.implicitly_wait(100)
                             shutil.rmtree(down_path)
                             os.mkdir(down_path)
+                        tb_time = 0
                         while 1:
                             table_re = driver.find_elements_by_id("StockStatusViewer")
                             try:
@@ -126,11 +127,17 @@ class ExlSpider(scrapy.Spider):
                                     driver.refresh()
                                     driver.switch_to.alert.accept()
                                     driver.implicitly_wait(100)
-                                    time.sleep(20)
+                            except:
+                                pass
+                            time.sleep(10)
+                            tb_time += 10
+                            try:
                                 Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('EXCELOPENXML')
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
                                 break
                             except:
+                                if tb_time > 120:
+                                    break
                                 print('Error Element!')
 
                         time.sleep(120)
