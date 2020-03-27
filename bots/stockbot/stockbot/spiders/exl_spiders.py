@@ -117,14 +117,16 @@ class ExlSpider(scrapy.Spider):
                         if btn_runreport:
                             btn_runreport[0].click()
                             driver.implicitly_wait(100)
+                            shutil.rmtree(down_path)
+                            os.mkdir(down_path)
                         while 1:
                             table_re = driver.find_elements_by_id("StockStatusViewer")
-                            if not table_re:
-                                driver.refresh()
-                                driver.switch_to.alert.accept()
-                                driver.implicitly_wait(100)
-                                time.sleep(20)
                             try:
+                                if not table_re:
+                                    driver.refresh()
+                                    driver.switch_to.alert.accept()
+                                    driver.implicitly_wait(100)
+                                    time.sleep(20)
                                 Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('EXCELOPENXML')
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
                                 break
@@ -164,8 +166,6 @@ class ExlSpider(scrapy.Spider):
                                         items.append(item)
                                 except:
                                     continue
-                            shutil.rmtree(down_path)
-                            os.mkdir(down_path)
                             # f = open(files, 'r', encoding='UTF-8')
                             # csv_files = csv.reader(f)
                             # for i, val in enumerate(csv_files, 0):
