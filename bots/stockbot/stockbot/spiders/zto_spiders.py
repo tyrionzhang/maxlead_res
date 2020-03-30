@@ -83,7 +83,7 @@ class ZtoSpider(scrapy.Spider):
             time.sleep(3)
             waits = 0
             while 1:
-                time.sleep(waits)
+                time.sleep(3)
                 try:
                     btn_export = driver.find_element_by_css_selector('.text-right>button:nth-of-type(2)')
                     break
