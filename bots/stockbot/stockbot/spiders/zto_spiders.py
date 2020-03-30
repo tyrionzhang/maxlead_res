@@ -71,6 +71,12 @@ class ZtoSpider(scrapy.Spider):
             btn_login.click()
             driver.implicitly_wait(100)
             time.sleep(3)
+            try:
+                wrapper_btn = driver.find_elements_by_class_name('el-button--small')
+                if wrapper_btn and wrapper_btn[1].is_displayed():
+                    wrapper_btn[1].click()
+            except:
+                pass
             stock_li = driver.find_element_by_id('stock')
             stock_li.click()
             driver.implicitly_wait(100)
