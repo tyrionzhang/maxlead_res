@@ -94,7 +94,7 @@ class ZtoSpider(scrapy.Spider):
                     continue
             if btn_export:
                 btn_export.click()
-                time.sleep(100)
+                time.sleep(20)
                 old_list_qty = warehouse_date_data(['ZTO'])
                 files = os.listdir(down_path)
                 if files:
