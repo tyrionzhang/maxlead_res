@@ -111,7 +111,7 @@ class ExlSpider(scrapy.Spider):
                     warehouse_type_name = warehouse_type[0].text
                     if warehouse_name:
                         warehouse_name = warehouse_name[0].text
-                    if warehouse_type_name in self.stock_names and warehouse_name:
+                    if warehouse_type_name in self.stock_names and warehouse_name and warehouse_name != 'ROL':
                         list_rows[i].find_element_by_tag_name('span').click()
                         btn_runreport = driver.find_elements_by_id('btnRunRpt')
                         if btn_runreport:
@@ -148,6 +148,10 @@ class ExlSpider(scrapy.Spider):
                             data.sheet_names()  # 获取xls文件中所有sheet的名称
                             table = data.sheet_by_index(0)  # 通过索引获取xls文件第0个sheet
                             nrows = table.nrows
+                            if warehouse_name == 'Exchange Logistics':
+                                warehouse_name = 'EXL'
+                            else:
+                                warehouse_name = 'TFD'
                             for i in range(nrows):
                                 try:
                                     i = i+7
@@ -159,12 +163,8 @@ class ExlSpider(scrapy.Spider):
                                         continue
                                     if item['sku']:
                                         item['warehouse'] = warehouse_name
-                                        if warehouse_name == 'Exchange Logistics':
-                                            item['warehouse'] = 'EXL'
-                                        if warehouse_name == 'Tradeforce Dayton':
-                                            item['warehouse'] = 'TFD'
-                                        if warehouse_name == 'ROL':
-                                            item['warehouse'] = 'ROL'
+                                        # if warehouse_name == 'ROL':
+                                        #     item['warehouse'] = 'ROL'
                                         if table.cell_value(i, 11,) and not table.cell_value(i, 11,) == ' ':
                                             item['qty'] = table.cell_value(i, 11,)
                                             item['qty'] = to_int(item['qty'])
