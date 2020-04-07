@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
-from django.shortcuts import render,render_to_response
+from django.shortcuts import render
 from maxlead_site.views.app import App
 
 class Index:
