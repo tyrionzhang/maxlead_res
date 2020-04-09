@@ -26,7 +26,7 @@ warehouse= {
     'zto' : 'ZTO',
     'ont' : 'ONT',
     'kcm' : 'KCM',
-    'rol' : 'ROL'
+    'atl3' : 'ATL-3'
 }
 
 def on_done(future):
@@ -139,6 +139,8 @@ def get_stocks(request):
                 is_same = 0
                 if val.warehouse == 'ATL':
                     val.warehouse = 'atl'
+                if val.warehouse == 'ATL-3':
+                    val.warehouse = 'atl3'
                 th_key = val.sku + val.warehouse
                 if th_key in th_re and th_re[th_key] >= val.qty:
                     is_same = 1
@@ -431,7 +433,7 @@ def export_stocks(request):
                 'atl': 0,
                 'pc': 0,
                 'zto': 0,
-                'rol': 0,
+                'atl3': 0,
                 'ont': 0,
                 'kcm': 0,
                 'sum':0
@@ -453,8 +455,8 @@ def export_stocks(request):
                     val.warehouse = 'pc'
                 elif val.warehouse == 'ZTO':
                     val.warehouse = 'zto'
-                elif val.warehouse == 'ROL':
-                    val.warehouse = 'rol'
+                elif val.warehouse == 'ATL-3':
+                    val.warehouse = 'atl3'
                 elif val.warehouse == 'ONT':
                     val.warehouse = 'ont'
                 elif val.warehouse == 'KCM':
@@ -471,12 +473,12 @@ def export_stocks(request):
                     val.warehouse : val.qty,
                     'date' : date_time
                 })
-                sum = v['exl'] + v['twu'] + v['tfd'] + v['hanover'] + v['pc'] + v['zto'] + v['atl'] + v['rol'] + v['ont'] + v['kcm']
+                sum = v['exl'] + v['twu'] + v['tfd'] + v['hanover'] + v['pc'] + v['zto'] + v['atl'] + v['atl3'] + v['ont'] + v['kcm']
                 v.update({'sum': sum})
 
     if data:
-        fields = ['SKU','EXL','TWU','TFD','Hanover','ATL', 'PC', 'ZTO', 'ROL', 'ONT', 'KCM', 'SUM','Created']
-        data_fields = ['sku','exl','twu','tfd','hanover','atl', 'pc', 'zto', 'rol', 'ont', 'kcm', 'sum','date']
+        fields = ['SKU','EXL','TWU','TFD','Hanover','ATL', 'PC', 'ZTO', 'ATL-3', 'ONT', 'KCM', 'SUM','Created']
+        data_fields = ['sku','exl','twu','tfd','hanover','atl', 'pc', 'zto', 'atl3', 'ont', 'kcm', 'sum','date']
         return get_excel_file(request, data, fields, data_fields)
     else:
         return HttpResponse('没有数据~~')
@@ -799,7 +801,7 @@ def sales_vol(request):
             'atl': 0,
             'pc': 0,
             'zto': 0,
-            'rol': 0,
+            'atl3': 0,
             'ont': 0,
             'kcm': 0,
             'sum': 0
@@ -839,8 +841,8 @@ def sales_vol(request):
                 sum += int(v.qty1)
                 if v.qty1 < 0:
                     sakes_check = 1
-            elif v.warehouse == 'ROL':
-                re['rol'] = v.qty1
+            elif v.warehouse == 'ATL-3':
+                re['atl3'] = v.qty1
                 sum += int(v.qty1)
                 if v.qty1 < 0:
                     sakes_check = 1
@@ -909,7 +911,7 @@ def stock_sales(request):
                     'pc' : 0,
                     'zto' : 0,
                     'atl' : 0,
-                    'rol' : 0,
+                    'atl3' : 0,
                     'ont' : 0,
                     'kcm' : 0,
                     'date' : val['date'],
@@ -931,8 +933,8 @@ def stock_sales(request):
                             re1.update({'pc' : qty1_str % (v.qty1, val['pc'])})
                         elif v.warehouse == 'ZTO':
                             re1.update({'zto' : qty1_str % (v.qty1, val['zto'])})
-                        elif v.warehouse == 'ROL':
-                            re1.update({'rol' : qty1_str % (v.qty1, val['rol'])})
+                        elif v.warehouse == 'ATL-3':
+                            re1.update({'atl3' : qty1_str % (v.qty1, val['atl3'])})
                         elif v.warehouse == 'ONT':
                             re1.update({'ont' : qty1_str % (v.qty1, val['ont'])})
                         elif v.warehouse == 'KCM':
@@ -1030,13 +1032,13 @@ def save_sales(request):
                                                                   created__contains=date1.strftime('%Y-%m-%d'))
                             obj1.update(qty=obj1[0].qty + int(sales[1]))
                             re.update(qty1=obj1[0].qty - re[0].qty)
-                    if not val['rol'] == '0':
-                        sales = val['rol'].split('补货')
+                    if not val['atl3'] == '0':
+                        sales = val['atl3'].split('补货')
                         date1 = datetime.strptime(val['date'], '%Y-%m-%d') - timedelta(days=1)
-                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ROL',
+                        re = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL-3',
                                                             created__contains=val['date'], qty1__lt=0)
                         if re:
-                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ROL',
+                            obj1 = WarehouseStocks.objects.filter(sku=val['sku'], warehouse='ATL-3',
                                                                   created__contains=date1.strftime('%Y-%m-%d'))
                             obj1.update(qty=obj1[0].qty + int(sales[1]))
                             re.update(qty1=obj1[0].qty - re[0].qty)
@@ -1098,7 +1100,7 @@ def update_data(lists, data = []):
                 'atl': {'qty': 0, 'is_same': 0},
                 'pc': {'qty': 0, 'is_same': 0},
                 'zto': {'qty': 0, 'is_same': 0},
-                'rol': {'qty': 0, 'is_same': 0},
+                'atl3': {'qty': 0, 'is_same': 0},
                 'ont': {'qty': 0, 'is_same': 0},
                 'kcm': {'qty': 0, 'is_same': 0}
             }
@@ -1136,11 +1138,11 @@ def update_data(lists, data = []):
                     sum += int(v.qty)
                     if threshold_obj and threshold_obj[0].threshold >= v.qty:
                         re['zto'].update({'is_same': 1})
-                elif v.warehouse == 'ROL':
-                    re['rol'].update({'qty': v.qty})
+                elif v.warehouse == 'ATL-3':
+                    re['atl3'].update({'qty': v.qty})
                     sum += int(v.qty)
                     if threshold_obj and threshold_obj[0].threshold >= v.qty:
-                        re['rol'].update({'is_same': 1})
+                        re['atl3'].update({'is_same': 1})
                 elif v.warehouse == 'ONT':
                     re['ont'].update({'qty': v.qty})
                     sum += int(v.qty)
@@ -1175,7 +1177,7 @@ def export_update_data(lists, data = []):
             'zto': '0',
             'ont': '0',
             'kcm': '0',
-            'rol': '0'
+            'atl3': '0'
         }
         obj = WarehouseStocks.objects.filter(sku=val['sku'], created__contains=val['d'].strftime('%Y-%m-%d'))
         sum = 0
@@ -1198,8 +1200,8 @@ def export_update_data(lists, data = []):
             elif v.warehouse == 'ZTO':
                 re.update({'zto': v.qty})
                 sum += int(v.qty)
-            elif v.warehouse == 'ROL':
-                re.update({'rol': v.qty})
+            elif v.warehouse == 'ATL-3':
+                re.update({'atl3': v.qty})
                 sum += int(v.qty)
             elif v.warehouse == 'ONT':
                 re.update({'ont': v.qty})

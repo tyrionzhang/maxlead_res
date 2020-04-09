@@ -28,7 +28,7 @@ class Atl1Spider(scrapy.Spider):
         res = json.loads(response.text.encode().decode())
         if res['result']:
             new_qtys = {}
-            old_list_qty = warehouse_date_data(['ATL', 'ONT', 'KCM'])
+            old_list_qty = warehouse_date_data(['ATL', 'ONT', 'KCM', 'ATL-3'])
             for val in res['data']:
                 try:
                     item = WarehouseStocksItem()
@@ -38,6 +38,8 @@ class Atl1Spider(scrapy.Spider):
                         item['warehouse'] = 'ONT'
                     elif w_name == 'KCM-4':
                         item['warehouse'] = 'KCM'
+                    elif w_name == 'ATL-3':
+                        item['warehouse'] = 'ATL-3'
                     else:
                         item['warehouse'] = 'ATL'
                     item['is_new'] = 0
@@ -59,4 +61,4 @@ class Atl1Spider(scrapy.Spider):
                 except:
                     continue
             update_spiders_logs('ATL', log_id=self.log_id)
-            msg_str2 = warehouse_threshold_msgs(new_qtys, ['ATL', 'ONT', 'KCM'])
+            msg_str2 = warehouse_threshold_msgs(new_qtys, ['ATL', 'ONT', 'KCM', 'ATL-3'])
