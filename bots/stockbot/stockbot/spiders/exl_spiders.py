@@ -163,8 +163,6 @@ class ExlSpider(scrapy.Spider):
                                         continue
                                     if item['sku']:
                                         item['warehouse'] = warehouse_name
-                                        # if warehouse_name == 'ROL':
-                                        #     item['warehouse'] = 'ROL'
                                         if table.cell_value(i, 11,) and not table.cell_value(i, 11,) == ' ':
                                             item['qty'] = table.cell_value(i, 11,)
                                             item['qty'] = to_int(item['qty'])
@@ -173,29 +171,6 @@ class ExlSpider(scrapy.Spider):
                                         items.append(item)
                                 except:
                                     continue
-                            # f = open(files, 'r', encoding='UTF-8')
-                            # csv_files = csv.reader(f)
-                            # for i, val in enumerate(csv_files, 0):
-                            #     try:
-                            #         if i > 0:
-                            #             item = WarehouseStocksItem()
-                            #             item['sku'] = val[0]
-                            #             item['warehouse'] = val[2]
-                            #             if warehouse_name == 'Exchange Logistics':
-                            #                 item['warehouse'] = 'EXL'
-                            #             if warehouse_name == 'Tradeforce Dayton':
-                            #                 item['warehouse'] = 'TFD'
-                            #             if warehouse_name == 'Roll On Logistics':
-                            #                 item['warehouse'] = 'ROL'
-                            #             if val[20] and not val[20] == ' ':
-                            #                 item['qty'] = val[20]
-                            #                 item['qty'] = to_int(item['qty'].replace(',', ''))
-                            #             else:
-                            #                 item['qty'] = 0
-                            #             items.append(item)
-                            #     except:
-                            #         continue
-                            # f.close()
                 except:
                     close_guide = driver.find_elements_by_css_selector('#pendo-guide-container>button')
                     if close_guide:
@@ -216,7 +191,7 @@ class ExlSpider(scrapy.Spider):
             print(e)
 
         querysetlist = []
-        old_list_qty = warehouse_date_data(['EXL', 'TFD', 'ROL'])
+        old_list_qty = warehouse_date_data(['EXL', 'TFD'])
         new_qtys = {}
         for i, val in enumerate(items, 0):
             try:
@@ -259,7 +234,7 @@ class ExlSpider(scrapy.Spider):
 
         WarehouseStocks.objects.bulk_create(querysetlist)
         new_log = update_spiders_logs('3pl', log_id=self.log_id)
-        msg_str2 = warehouse_threshold_msgs(new_qtys, ['EXL', 'TFD', 'ROL'])
+        msg_str2 = warehouse_threshold_msgs(new_qtys, ['EXL', 'TFD'])
         check_spiders(new_log)
         try:
             spiders_send_email()
