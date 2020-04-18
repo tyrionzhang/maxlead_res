@@ -112,3 +112,16 @@ def logs(request):
         'user': user,
     }
     return render(request, "Stocks/users_sku/logs.html", data)
+
+@csrf_exempt
+def del_user_sku(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids', '')
+        obj = SkuUsers.objects.filter(id__in=eval(ids[0]))
+        if not obj:
+            return HttpResponse(json.dumps({'code': 0, 'msg': u'Data is not exist！'}), content_type='application/json')
+        obj.delete()
+        return HttpResponse(json.dumps({'code': 1, 'msg': u'Successfully！'}), content_type='application/json')
