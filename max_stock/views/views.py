@@ -12,7 +12,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from maxlead_site.views.app import App
 from maxlead import settings
-from maxlead_res.bots.stocks.stocks import settings as bot_settings
+from bots.stocks.stocks import settings as bot_settings
 from maxlead_site.models import UserProfile
 from max_stock.models import SkuUsers,StockLogs,WarehouseStocks,OldOrderItems,OrderItems,EmailTemplates,UserEmailMsg,SpidersLogs,Tokens
 from max_stock.models import KitSkus,Barcodes
