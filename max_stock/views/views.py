@@ -601,7 +601,7 @@ def mmc_stock_spiders(request):
     db_cur.close()
     conn.close()
     server.close()
-    work_path = settings.STOCHS_SPIDER_URL
+    work_path = settings.MMC_SPIDER_URL
     if spiders:
         os.chdir(work_path)
         os.popen('scrapyd-deploy')
