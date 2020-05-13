@@ -67,7 +67,7 @@ class ZtoSpider(scrapy.Spider):
             if elem_name:
                 elem_name[0].send_keys('ZTLO')
             if elem_pass:
-                elem_pass[0].send_keys('zto5012us')
+                elem_pass[0].send_keys('123456')
             btn_login.click()
             driver.implicitly_wait(100)
             time.sleep(3)
