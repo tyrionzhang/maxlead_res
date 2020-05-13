@@ -549,7 +549,8 @@ def mmc_stock_spiders(request):
         (bot_settings.SSH_HOST, bot_settings.SSH_PORT),  # B机器的配置
         ssh_password=bot_settings.SSH_PASSWORD,
         ssh_username=bot_settings.SSH_USER,
-        remote_bind_address=(bot_settings.MYSQL_HOST, bot_settings.MYSQL_PORT))  # A机器的配置
+        remote_bind_address=(bot_settings.MYSQL_HOST, bot_settings.MYSQL_PORT),
+        local_bind_address = ('127.0.0.1', bot_settings.MYSQL_PORT))  # A机器的配置
     server.start()
     conn = MySQLdb.connect(host='127.0.0.1',  # 此处必须是是127.0.0.1
                                 port=server.local_bind_port,
@@ -561,6 +562,7 @@ def mmc_stock_spiders(request):
     if 'ZTO' in warehouse:
         check_sql = "select id from mmc_spider_status where warehouse='ZTO' and status=1"
         status = db_cur.execute(check_sql)
+        conn.commit()
         if status == 0:
             spiders.append({
                 'cmd_str': 'curl http://localhost:6800/schedule.json -d project=stocks -d spider=zto_spider',
@@ -569,6 +571,7 @@ def mmc_stock_spiders(request):
     if 'ATL' in warehouse:
         check_sql = "select id from mmc_spider_status where warehouse='ATL1' and status=1"
         status = db_cur.execute(check_sql)
+        conn.commit()
         if status == 0:
             spiders.append({
                 'cmd_str': 'curl http://localhost:6800/schedule.json -d project=stocks -d spider=atl1_spider',
@@ -577,6 +580,7 @@ def mmc_stock_spiders(request):
     if 'Hanover' in warehouse:
         check_sql = "select id from mmc_spider_status where warehouse='Hanover' and status=1"
         status = db_cur.execute(check_sql)
+        conn.commit()
         if status == 0:
             spiders.append({
                 'cmd_str': 'curl http://localhost:6800/schedule.json -d project=stocks -d spider=hanover_spider',
@@ -585,6 +589,7 @@ def mmc_stock_spiders(request):
     if 'TWU' in warehouse:
         check_sql = "select id from mmc_spider_status where warehouse='TWU' and status=1"
         status = db_cur.execute(check_sql)
+        conn.commit()
         if status == 0:
             spiders.append({
                 'cmd_str': 'curl http://localhost:6800/schedule.json -d project=stocks -d spider=twu_spider',
@@ -593,6 +598,7 @@ def mmc_stock_spiders(request):
     if '3pl' in warehouse:
         check_sql = "select id from mmc_spider_status where warehouse='3pl' and status=1"
         status = db_cur.execute(check_sql)
+        conn.commit()
         if status == 0:
             spiders.append({
                 'cmd_str': 'curl http://localhost:6800/schedule.json -d project=stocks -d spider=exl_spider',
