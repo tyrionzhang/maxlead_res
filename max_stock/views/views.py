@@ -551,7 +551,7 @@ def mmc_stock_spiders(request):
         ssh_username=bot_settings.SSH_USER,
         remote_bind_address=(bot_settings.MYSQL_HOST, bot_settings.MYSQL_PORT))  # A机器的配置
     server.start()
-    conn = MySQLdb.connect(host='localhost',  # 此处必须是是127.0.0.1
+    conn = MySQLdb.connect(host='127.0.0.1',  # 此处必须是是127.0.0.1
                                 port=server.local_bind_port,
                                 user=bot_settings.MYSQL_USER,
                                 passwd=bot_settings.MYSQL_PASSWORD,
