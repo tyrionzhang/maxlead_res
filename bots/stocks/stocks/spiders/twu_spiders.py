@@ -1,44 +1,22 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from scrapy.http import Request, FormRequest
-import MySQLdb
-from sshtunnel import SSHTunnelForwarder
-from maxlead_res.bots.stocks.stocks import settings
 
 class TwuSpider(scrapy.Spider):
     name = "twu_spider"
-    sku_list = []
-    msg_str1 = 'complete\n'
-
-    log_id = None
-
-    def __init__(self, *args, **kwargs):
-        super(TwuSpider, self).__init__(*args, **kwargs)
-        self.server = SSHTunnelForwarder(
-            (settings.SSH_HOST, settings.SSH_PORT),  # B机器的配置
-            ssh_password=settings.SSH_PASSWORD,
-            ssh_username=settings.SSH_USER,
-            remote_bind_address=(settings.MYSQL_HOST, settings.MYSQL_PORT))  # A机器的配置
-        self.server.start()
-        self.conn = MySQLdb.connect(host='127.0.0.1',  # 此处必须是是127.0.0.1
-                                    port=self.server.local_bind_port,
-                                    user=settings.MYSQL_USER,
-                                    passwd=settings.MYSQL_PASSWORD,
-                                    db=settings.MYSQL_DB_NAME)
-        self.db_cur = self.conn.cursor()
-        check_sql = "select id from mmc_spider_status where warehouse='TWU'"
-        status = self.db_cur.execute(check_sql)
-        sql = "insert into mmc_spider_status (warehouse, status) values('TWU',1)"
-        if status > 0:
-            sql = "update mmc_spider_status set status=1 where warehouse='TWU'"
-        self.db_cur.execute(sql)
-        self.conn.commit()
 
     def start_requests(self):
         return [Request("http://www.thewarehouseusadata.com/maxlead/inventory.php", meta={'cookiejar': 1}, callback=self.post_login)]
 
     def post_login(self, response):
         try:
+            check_sql = "select id from mmc_spider_status where warehouse='TWU'"
+            status = self.db_cur.execute(check_sql)
+            sql = "insert into mmc_spider_status (warehouse, status) values('TWU',1)"
+            if status > 0:
+                sql = "update mmc_spider_status set status=1 where warehouse='TWU'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
             headers = {
                 "Accept": "*/*",
                 "Accept-Encoding": "gzip,deflate",
@@ -59,11 +37,10 @@ class TwuSpider(scrapy.Spider):
                                               callback=self.parse_page,
                                               dont_filter=True
                                               )]
-        finally:
-            self.db_cur.close()
-            self.conn.close()
-            self.server.close()
-
+        except Exception as e:
+            sql = "update mmc_spider_status set status=2 where warehouse='TWU'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
 
     def parse_page(self, response):
         res = response.css('article')[0].css('table[width="100%"]>tr')

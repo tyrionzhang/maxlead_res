@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import time
-import MySQLdb
-from sshtunnel import SSHTunnelForwarder
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from maxlead_res.bots.stocks.stocks import settings
@@ -10,36 +8,29 @@ from maxlead_res.bots.stocks.stocks import settings
 class HanoverSpider(scrapy.Spider):
     name = "hanover_spider"
 
-    msg_str1 = "complete\n"
-    start_urls = [
-        'http://www.telescoassoc.com/prod/hnv/transform.aspx?_h=go&_md=vwInventory&_tpl=vwInventoryList.xsl&_gt=-1&_gs=200&rhash=5adab926c2b523c494&_ha=gmv'
-    ]
-    sku_list = []
-    log_id = None
+    def start_requests(self):
+        try:
+            check_sql = "select id from mmc_spider_status where warehouse='Hanover'"
+            status = self.db_cur.execute(check_sql)
+            sql = "insert into mmc_spider_status (warehouse, status) values('Hanover',1)"
+            if status > 0:
+                sql = "update mmc_spider_status set status=1 where warehouse='Hanover'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
 
-    def __init__(self, *args, **kwargs):
-        super(HanoverSpider, self).__init__(*args, **kwargs)
-        self.server = SSHTunnelForwarder(
-            (settings.SSH_HOST, settings.SSH_PORT),  # B机器的配置
-            ssh_password=settings.SSH_PASSWORD,
-            ssh_username=settings.SSH_USER,
-            remote_bind_address=(settings.MYSQL_HOST, settings.MYSQL_PORT))  # A机器的配置
-        self.server.start()
-        self.conn = MySQLdb.connect(host='127.0.0.1',  # 此处必须是是127.0.0.1
-                                    port=self.server.local_bind_port,
-                                    user=settings.MYSQL_USER,
-                                    passwd=settings.MYSQL_PASSWORD,
-                                    db=settings.MYSQL_DB_NAME)
-        self.db_cur = self.conn.cursor()
-        check_sql = "select id from mmc_spider_status where warehouse='Hanover'"
-        status = self.db_cur.execute(check_sql)
-        sql = "insert into mmc_spider_status (warehouse, status) values('Hanover',1)"
-        if status > 0:
-            sql = "update mmc_spider_status set status=1 where warehouse='Hanover'"
-        self.db_cur.execute(sql)
-        self.conn.commit()
+            url = 'http://www.telescoassoc.com/prod/hnv/transform.aspx?_h=go&_md=vwInventory&_tpl=vwInventoryList.xsl&_gt=-1&_gs=200&rhash=5adab926c2b523c494&_ha=gmv'
 
-    def parse(self, response):
+            # FormRequest 是Scrapy发送POST请求的方法
+            yield scrapy.FormRequest(
+                url=url,
+                callback=self.parse_page
+            )
+        except Exception as e:
+            sql = "update mmc_spider_status set status=2 where warehouse='Hanover'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
+
+    def parse_page(self, response):
         try:
             from pyvirtualdisplay import Display
             display = Display(visible=0, size=(800, 800))
@@ -106,9 +97,7 @@ class HanoverSpider(scrapy.Spider):
             sql = "update mmc_spider_status set status=2, description=%s where warehouse='Hanover'"
             self.db_cur.execute(sql, values)
             self.conn.commit()
-        self.db_cur.close()
-        self.conn.close()
-        self.server.close()
+
         try:
             driver.refresh()
             driver.switch_to.alert.accept()

@@ -4,8 +4,6 @@ from datetime import *
 import time
 import xlrd
 import shutil
-import MySQLdb
-from sshtunnel import SSHTunnelForwarder
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import Select
@@ -14,33 +12,30 @@ from maxlead_res.bots.stocks.stocks import settings
 class ExlSpider(scrapy.Spider):
     name = "exl_spider"
 
-    start_urls = [
-        'https://secure-wms.com/smartui/?tplguid={073abe7b-9d71-414d-9933-c71befa9e569}'
-    ]
+    def start_requests(self):
+        try:
+            check_sql = "select id from mmc_spider_status where warehouse='3pl'"
+            status = self.db_cur.execute(check_sql)
+            sql = "insert into mmc_spider_status (warehouse, status) values('3pl',1)"
+            if status > 0:
+                sql = "update mmc_spider_status set status=1 where warehouse='3pl'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
 
-    def __init__(self, log_id=None, *args, **kwargs):
-        super(ExlSpider, self).__init__(*args, **kwargs)
-        self.server = SSHTunnelForwarder(
-            (settings.SSH_HOST, settings.SSH_PORT),  # B机器的配置
-            ssh_password=settings.SSH_PASSWORD,
-            ssh_username=settings.SSH_USER,
-            remote_bind_address=(settings.MYSQL_HOST, settings.MYSQL_PORT))  # A机器的配置
-        self.server.start()
-        self.conn = MySQLdb.connect(host='127.0.0.1',  # 此处必须是是127.0.0.1
-                                    port=self.server.local_bind_port,
-                                    user=settings.MYSQL_USER,
-                                    passwd=settings.MYSQL_PASSWORD,
-                                    db=settings.MYSQL_DB_NAME)
-        self.db_cur = self.conn.cursor()
-        check_sql = "select id from mmc_spider_status where warehouse='3pl'"
-        status = self.db_cur.execute(check_sql)
-        sql = "insert into mmc_spider_status (warehouse, status) values('3pl',1)"
-        if status > 0:
-            sql = "update mmc_spider_status set status=1 where warehouse='3pl'"
-        self.db_cur.execute(sql)
-        self.conn.commit()
+            url = 'https://secure-wms.com/smartui/?tplguid={073abe7b-9d71-414d-9933-c71befa9e569}'
 
-    def parse(self, response):
+            # FormRequest 是Scrapy发送POST请求的方法
+            yield scrapy.FormRequest(
+                url=url,
+                callback=self.parse_page
+            )
+        except Exception as e:
+            sql = "update mmc_spider_status set status=2 where warehouse='3pl'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
+
+    def parse_page(self, response):
+        items = []
         try:
             from pyvirtualdisplay import Display
             display = Display(visible=0, size=(800, 800))
@@ -98,7 +93,6 @@ class ExlSpider(scrapy.Spider):
             list_rows = driver.find_elements_by_css_selector('#CustomerFacilityGrid_div-rows>span')
             list_rows.pop(0)
             list_rows.pop(-1)
-            items = []
             if list_rows:
                 length = len(list_rows)
                 for i in range(0, length):
@@ -198,7 +192,7 @@ class ExlSpider(scrapy.Spider):
                     pass
                 display.stop()
                 driver.quit()
-            except IndexError as e:
+            except Exception as e:
                 print(e)
         except Exception as e:
             values = (e,)
@@ -206,24 +200,28 @@ class ExlSpider(scrapy.Spider):
             self.db_cur.execute(sql, values)
             self.conn.commit()
 
-        for i, val in enumerate(items, 0):
-            try:
-                for n, v in enumerate(items, 0):
-                    if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
-                        val['qty'] = int(v['qty']) + int(val['qty'])
-                        del items[n]
-                values = (val['warehouse'], val['sku'], val['qty'])
-                sql = "insert into mmc_stocks (warehouse, sku, qty) values (%s, %s, %s)"
-                self.db_cur.execute(sql, values)
-            except:
-                continue
-        self.conn.commit()
-        sql = "update mmc_spider_status set status=3, description='' where warehouse='3pl'"
-        self.db_cur.execute(sql)
-        self.conn.commit()
-        self.db_cur.close()
-        self.conn.close()
-        self.server.close()
+        try:
+            for i, val in enumerate(items, 0):
+                try:
+                    for n, v in enumerate(items, 0):
+                        if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
+                            val['qty'] = int(v['qty']) + int(val['qty'])
+                            del items[n]
+                    values = (val['warehouse'], val['sku'], val['qty'])
+                    sql = "insert into mmc_stocks (warehouse, sku, qty) values (%s, %s, %s)"
+                    self.db_cur.execute(sql, values)
+                except:
+                    continue
+            self.conn.commit()
+            sql = "update mmc_spider_status set status=3, description='' where warehouse='3pl'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
+        except Exception as e:
+            values = (e,)
+            sql = "update mmc_spider_status set status=2, description=%s where warehouse='3pl'"
+            self.db_cur.execute(sql, values)
+            self.conn.commit()
+
 
 
 

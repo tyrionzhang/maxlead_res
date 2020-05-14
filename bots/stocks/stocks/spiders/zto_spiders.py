@@ -4,8 +4,6 @@ from datetime import *
 import time
 import xlrd
 import shutil
-import MySQLdb
-from sshtunnel import SSHTunnelForwarder
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from maxlead_res.bots.stocks.stocks import settings
@@ -13,36 +11,29 @@ from maxlead_res.bots.stocks.stocks import settings
 class ZtoSpider(scrapy.Spider):
     name = "zto_spider"
 
-    msg_str1 = "complete\n"
-    start_urls = [
-        'https://fba3-us.zto.cn/stock'
-    ]
-    sku_list = []
-    log_id = None
+    def start_requests(self):
+        try:
+            check_sql = "select id from mmc_spider_status where warehouse='zto'"
+            status = self.db_cur.execute(check_sql)
+            sql = "insert into mmc_spider_status (warehouse, status) values('ZTO',1)"
+            if status > 0:
+                sql = "update mmc_spider_status set status=1 where warehouse='ZTO'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
 
-    def __init__(self, *args, **kwargs):
-        super(ZtoSpider, self).__init__(*args, **kwargs)
-        self.server = SSHTunnelForwarder(
-                (settings.SSH_HOST, settings.SSH_PORT),  # B机器的配置
-                ssh_password=settings.SSH_PASSWORD,
-                ssh_username=settings.SSH_USER,
-                remote_bind_address=(settings.MYSQL_HOST, settings.MYSQL_PORT))  # A机器的配置
-        self.server.start()
-        self.conn = MySQLdb.connect(host='127.0.0.1',  # 此处必须是是127.0.0.1
-                               port=self.server.local_bind_port,
-                               user=settings.MYSQL_USER,
-                               passwd=settings.MYSQL_PASSWORD,
-                               db=settings.MYSQL_DB_NAME)
-        self.db_cur = self.conn.cursor()
-        check_sql = "select id from mmc_spider_status where warehouse='zto'"
-        status = self.db_cur.execute(check_sql)
-        sql = "insert into mmc_spider_status (warehouse, status) values('ZTO',1)"
-        if status > 0:
-            sql = "update mmc_spider_status set status=1 where warehouse='ZTO'"
-        self.db_cur.execute(sql)
-        self.conn.commit()
+            url = 'https://fba3-us.zto.cn/stock'
 
-    def parse(self, response):
+            # FormRequest 是Scrapy发送POST请求的方法
+            yield scrapy.FormRequest(
+                url=url,
+                callback=self.parse_page
+            )
+        except Exception as e:
+            sql = "update mmc_spider_status set status=2 where warehouse='ZTO'"
+            self.db_cur.execute(sql)
+            self.conn.commit()
+
+    def parse_page(self, response):
         from pyvirtualdisplay import Display
         display = Display(visible=0, size=(800, 800))
         display.start()
@@ -65,12 +56,12 @@ class ZtoSpider(scrapy.Spider):
         try:
             elem_name = driver.find_elements_by_name('username')
             elem_pass = driver.find_elements_by_name('password')
-            btn_login = driver.find_element_by_id('su-btn')
+            btn_login = driver.find_element_by_id('sub-btn')
 
             if elem_name:
                 elem_name[0].send_keys('ZTLO')
             if elem_pass:
-                elem_pass[0].send_keys('zto5012us')
+                elem_pass[0].send_keys('123456')
             btn_login.click()
             driver.implicitly_wait(100)
             time.sleep(3)
@@ -133,9 +124,6 @@ class ZtoSpider(scrapy.Spider):
             sql = "update mmc_spider_status set status=2, description=%s where warehouse='ZTO'"
             self.db_cur.execute(sql, values)
             self.conn.commit()
-        self.db_cur.close()
-        self.conn.close()
-        self.server.close()
         try:
             driver.refresh()
             driver.switch_to.alert.accept()
