@@ -485,7 +485,7 @@ def search_kits(kit):
     res = json.loads(res.content.decode())
     return res
 
-def api_save_kit_sku(data):
+def api_save_kit_sku(data, kit_country):
     url = 'https://5339579.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=396&deploy=1'
     params = {
         'oauth_version': "1.0",
@@ -495,6 +495,7 @@ def api_save_kit_sku(data):
         'oauth_consumer_key': consumer.key
     }
     body = {
+        'kit_country': kit_country,
         'kit_items': data
     }
     http_method = 'POST'

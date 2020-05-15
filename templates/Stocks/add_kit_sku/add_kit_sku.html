@@ -92,15 +92,23 @@
 			<span class="btn-close">x</span>
 			<h2 style="margin: 0 0px 0 164px;">Add kitSKU</h2>
 			<label class="lab-post-param">
+                <div>
+                    <span>用于国家:</span>
+                    <select name="kit_country" id="kit_country">
+                        <option value="" selected>请选择</option>
+                        <option value="US">US</option>
+                        <option value="UK">UK</option>
+                    </select>
+                </div>
                 <span>用于账号:</span>
-                <input type="text" name="stockdescription">
+                <input type="text" name="stockdescription" class="inp-disabled" disabled>
                 <div class="kit_item">
                     <span>Kit SKU:</span>
-                    <input type="text" name="kit" id="kit_el">
+                    <input type="text" name="kit" id="kit_el" class="inp-disabled" disabled>
                     <span>Inventory SKU:</span>
-                    <input type="text" name="sku" class="sku_el">
+                    <input type="text" name="sku" class="sku_el inp-disabled" disabled>
                     <span>qty:</span>
-                    <input type="text" name="qty" size="1" value="1" class="qty_el">
+                    <input type="text" name="qty" size="1" value="1" class="qty_el inp-disabled" disabled>
                     <button class="btn_add_kit_el">+</button>
                 </div>
                 <br class="br">
@@ -239,6 +247,7 @@
                 })
             });
             var stockdescription = $('input[name="stockdescription"]').val();
+            var kit_country = $('select[name="kit_country"]').val();
             var department = $('#depart').html();
             var sales_person = $('#sals_pers').html();
             var inp_data = {
@@ -248,6 +257,7 @@
                 'stockdescription':stockdescription,
                 'department':department,
                 'sales_person':sales_person,
+                'kit_country':kit_country,
                 'kit': kit
             };
             $.post('/admin/max_stock/save_kit_sku/',inp_data,function (re) {
@@ -262,6 +272,14 @@
                }
             },'json');
             return false;
+        });
+        $('#kit_country').change(function () {
+            var value = $(this).val();
+            if(['US', 'UK'].indexOf(value) != -1){
+                $('.inp-disabled').removeAttr("disabled");
+            } else {
+                 $('.inp-disabled').attr("disabled", true);
+            }
         });
     </script>
 {% endblock %}
