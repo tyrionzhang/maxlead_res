@@ -140,7 +140,7 @@ class ExlSpider(scrapy.Spider):
                                     break
                                 print('Error Element!')
 
-                        time.sleep(30)
+                        time.sleep(20)
                         files = os.listdir(down_path)
                         if files:
                             f_path = os.path.join(down_path, files[0])
