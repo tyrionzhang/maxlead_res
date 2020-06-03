@@ -135,9 +135,17 @@ def save_kit_sku(request):
             'lines': eval(data)
         }
         skus = []
+        sku_pages = []
+        sku_dict = {}
         for val in eval(data):
+            page = val['sku'].split('-')[-1][0]
+            sku_dict[page] = val['sku']
+            sku_pages.append(page)
             skus.append(val['sku'])
-        skus = ','.join(skus)
+        if len(skus) > 1:
+            res['custitem35'] = sku_dict[min(sku_pages)]
+        else:
+            res['custitem35'] = skus[0]
         re = api_save_kit_sku(res, kit_country)
         if re['code'] == 1001:
             return HttpResponse(json.dumps({'code': 0, 'msg': re['msg']}), content_type='application/json')
