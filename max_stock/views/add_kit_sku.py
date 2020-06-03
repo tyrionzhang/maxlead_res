@@ -147,6 +147,7 @@ def save_kit_sku(request):
         else:
             res['custitem35'] = skus[0]
         re = api_save_kit_sku(res, kit_country)
+        skus = ','.join(skus)
         if re['code'] == 1001:
             return HttpResponse(json.dumps({'code': 0, 'msg': re['msg']}), content_type='application/json')
         obj = KitSkuRes()
