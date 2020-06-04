@@ -11,6 +11,7 @@ from maxlead_res.bots.stocks.stocks import settings
 
 class ExlSpider(scrapy.Spider):
     name = "exl_spider"
+    stock_names = ['M&L', 'Match Land', 'Parts']
 
     def start_requests(self):
         try:
