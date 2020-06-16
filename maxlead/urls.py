@@ -45,6 +45,7 @@ from max_stock.views import sfp_items
 from max_stock.views import fba_transport
 from max_stock.views import barcode
 from max_stock.views import add_kit_sku
+from max_stock.views import run_spiders
 from django.views import static
 from maxlead import settings
 
@@ -143,7 +144,7 @@ urlpatterns = [
     url('^admin/max_stock/test/', employees.init),
     url('^admin/max_stock/help_page/', stock_views.help_page),
     url('^admin/max_stock/empty_data/', stock_views.empty_data),
-    url('^admin/max_stock/get_mmc_stocks/', stock_views.mmc_stock_spiders),
+    url('^admin/max_stock/get_mmc_stocks/', run_spiders.RunSpiders.as_view()),
     url('^admin/max_stock/login/', stock_users.userLogin),
     url('^admin/max_stock/user_list/', stock_users.user_list),
     url('^admin/max_stock/user_save/', stock_users.user_save),

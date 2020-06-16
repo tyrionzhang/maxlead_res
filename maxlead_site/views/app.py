@@ -54,15 +54,15 @@ class App:
         if 'HTTP_AUTHORIZATION' in self.META:
             auth_re = self.META.get('HTTP_AUTHORIZATION').split()
             if len(auth_re) != 2:
-                return {'code': 400, 'msg': '授权错误'}
+                return {'status': 400, 'msg': '授权错误'}
             if auth_re[0].lower() != "basic":
-                return {'code': 400, 'msg': '授权错误'}
+                return {'status': 400, 'msg': '授权错误'}
             uname, passwd = base64.b64decode(auth_re[1]).decode().split(':')
             user = auth.authenticate(username=uname, password=passwd)
             if user is None or not user.is_active:
-                return {'code': 203, 'msg': '登陆失败/用户错误'}
+                return {'status': 203, 'msg': '登陆失败/用户错误'}
 
             return 200
         else:
-            return {'code': 400, 'msg': '授权错误'}
+            return {'status': 400, 'msg': '授权错误'}
 
