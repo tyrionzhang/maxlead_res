@@ -1,5 +1,7 @@
 import os
 import threading
+import base64
+from django.contrib import auth
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from maxlead_site.views.app import App
@@ -8,13 +10,16 @@ from bots.stocks.stocks import settings as bot_settings
 
 class RunSpiders(APIView):
 
-    def get(self,request, format=None):
+    def get(self,request):
         import MySQLdb
         from sshtunnel import SSHTunnelForwarder
         try:
-            auth_re = App.get_auth(request)
-            if not auth_re == 200:
-                return Response(auth_re)
+            if 'HTTP_AUTHORIZATION' in request.META:
+                auth_re = request.META.get('HTTP_AUTHORIZATION').split()
+                if len(auth_re) != 2 or auth_re[0].lower() != "basic":
+                    return Response({'status': 400, 'msg': '授权错误'})
+            else:
+                return Response({'status': 400, 'msg': '授权错误'})
             warehouse = request.data.get('warehouse')
             if not warehouse:
                 return Response({'status': 200, 'msg': '请选择仓库'})
