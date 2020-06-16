@@ -619,9 +619,11 @@ def mmc_stock_spiders(request):
                 time_re += val['time_re']
         os.chdir(settings.ROOT_PATH)
         os.popen('killall -9 firefox')
-        return HttpResponse(json.dumps({'code': 200, 'msg': '正在运行中'}), content_type='application/json')
+        response = HttpResponse(json.dumps({'code': 200, 'msg': '正在运行中'}), content_type='application/json')
     except Exception as e:
-        return HttpResponse(json.dumps({'code': 500, 'msg': '内部错误'}), content_type='application/json')
+        response = HttpResponse(json.dumps({'code': 500, 'msg': '内部错误'}), content_type='application/json')
+    response["Access-Control-Allow-Origin"] = "*"
+    return response
 
 def run_spider_by_str(cmd_str):
     os.popen(cmd_str)
