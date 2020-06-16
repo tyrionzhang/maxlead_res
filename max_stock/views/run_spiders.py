@@ -1,18 +1,14 @@
 import os
-import json
 import threading
-from django.contrib.auth.models import User
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from maxlead_site.views.app import App
 from maxlead import settings
 from bots.stocks.stocks import settings as bot_settings
-from django.http import HttpResponse
 
 class RunSpiders(APIView):
 
-    def get(self,request):
+    def get(self,request, format=None):
         import MySQLdb
         from sshtunnel import SSHTunnelForwarder
         try:
