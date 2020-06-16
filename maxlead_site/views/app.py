@@ -53,21 +53,16 @@ class App:
     def get_auth(self):
         if 'HTTP_AUTHORIZATION' in self.META:
             auth_re = self.META.get('HTTP_AUTHORIZATION').split()
-            response = False
             if len(auth_re) != 2:
-                response = HttpResponse(json.dumps({'code': 400, 'msg': '授权错误'}), content_type='application/json')
+                return {'code': 400, 'msg': '授权错误'}
             if auth_re[0].lower() != "basic":
-                response = HttpResponse(json.dumps({'code': 400, 'msg': '授权错误'}), content_type='application/json')
+                return {'code': 400, 'msg': '授权错误'}
             uname, passwd = base64.b64decode(auth_re[1]).decode().split(':')
             user = auth.authenticate(username=uname, password=passwd)
             if user is None or not user.is_active:
-                response = HttpResponse(json.dumps({'code': 203, 'msg': '登陆失败/用户错误'}), content_type='application/json')
-            if response:
-                response["Access-Control-Allow-Origin"] = "*"
-                return response
+                return {'code': 203, 'msg': '登陆失败/用户错误'}
+
             return 200
         else:
-            response = HttpResponse(json.dumps({'code': 400, 'msg': '授权错误'}), content_type='application/json')
-        response["Access-Control-Allow-Origin"] = "*"
-        return response
+            return {'code': 400, 'msg': '授权错误'}
 

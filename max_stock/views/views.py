@@ -542,10 +542,14 @@ def mmc_stock_spiders(request):
     try:
         auth_re = App.get_auth(request)
         if not auth_re == 200:
-            return HttpResponse(json.dumps(auth_re), content_type='application/json')
+            response = HttpResponse(json.dumps(auth_re), content_type='application/json')
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
         warehouse = eval(request.GET.get('warehouse'))
         if not warehouse:
-            return HttpResponse(json.dumps({'code': 200, 'msg': '请选择仓库'}), content_type='application/json')
+            response = HttpResponse(json.dumps({'code': 200, 'msg': '请选择仓库'}), content_type='application/json')
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
         server = SSHTunnelForwarder(
             (bot_settings.SSH_HOST, bot_settings.SSH_PORT),  # B机器的配置
             ssh_password=bot_settings.SSH_PASSWORD,
