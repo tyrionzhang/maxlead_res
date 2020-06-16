@@ -99,7 +99,7 @@ class RunSpiders(APIView):
             os.popen('killall -9 firefox')
             return Response({'status': 200, 'msg': '正在运行中'})
         except Exception as e:
-            return Response({'status': 500, 'msg': '内部错误'})
+            return Response({'status': 401, 'msg': '内部错误'})
 
     def run_spider_by_str(cmd_str):
         os.popen(cmd_str)
