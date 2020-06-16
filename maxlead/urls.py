@@ -144,7 +144,7 @@ urlpatterns = [
     url('^admin/max_stock/test/', employees.init),
     url('^admin/max_stock/help_page/', stock_views.help_page),
     url('^admin/max_stock/empty_data/', stock_views.empty_data),
-    url('^admin/max_stock/get_mmc_stocks/', run_spiders.RunSpiders.as_view()),
+    url('^admin/max_stock/get_mmc_stocks/', run_spiders.RunSpiders),
     url('^admin/max_stock/login/', stock_users.userLogin),
     url('^admin/max_stock/user_list/', stock_users.user_list),
     url('^admin/max_stock/user_save/', stock_users.user_save),
