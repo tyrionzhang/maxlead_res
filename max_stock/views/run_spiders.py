@@ -10,12 +10,12 @@ def RunSpiders(request, format=None):
     import MySQLdb
     from sshtunnel import SSHTunnelForwarder
     try:
-        if 'HTTP_AUTHORIZATION' in request.META:
-            auth_re = request.META.get('HTTP_AUTHORIZATION').split()
-            if len(auth_re) != 2 or auth_re[0].lower() != "basic":
-                return Response({'status': 400, 'msg': '授权错误'})
-        else:
-            return Response({'status': 400, 'msg': '授权错误'})
+        # if 'HTTP_AUTHORIZATION' in request.META:
+        #     auth_re = request.META.get('HTTP_AUTHORIZATION').split()
+        #     if len(auth_re) != 2 or auth_re[0].lower() != "basic":
+        #         return Response({'status': 400, 'msg': '授权错误'})
+        # else:
+        #     return Response({'status': 400, 'msg': '授权错误'})
         warehouse = request.POST.get('warehouse')
         if not warehouse:
             return Response({'status': 200, 'msg': '请选择仓库'})
