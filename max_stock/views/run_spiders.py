@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from maxlead import settings
 from bots.stocks.stocks import settings as bot_settings
 
-@api_view(['GET'])
+@api_view(['POST'])
 def RunSpiders(request, format=None):
     import MySQLdb
     from sshtunnel import SSHTunnelForwarder
@@ -16,7 +16,7 @@ def RunSpiders(request, format=None):
                 return Response({'status': 400, 'msg': '授权错误'})
         else:
             return Response({'status': 400, 'msg': '授权错误'})
-        warehouse = request.data.get('warehouse')
+        warehouse = request.POST.get('warehouse')
         if not warehouse:
             return Response({'status': 200, 'msg': '请选择仓库'})
         warehouse = warehouse.split('|')
