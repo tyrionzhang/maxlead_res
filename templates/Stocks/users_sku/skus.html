@@ -50,6 +50,34 @@
                 {% endfor %}
 
             </table>
+            <form action="" method="get" name="pageForm" id="page_form">
+                <div id="pagination">
+                    <div class="pageNum">
+                        <p class="pageStatics"> {{ total_count }} <!--符合当前查询条件的数量-->results in  {{ data.paginator.num_pages }} <!--总页数-->pages.
+                    </p>
+                        <ul>
+                            {% if data.has_previous %}
+                            <li><a href="?page={{ data.previous_page_number }}&limit={{ limit }}&keywords={{ keywords }}">previous</a></li>
+                            {% endif %}
+                            <li>Page {{ data.number }} of {{ data.paginator.num_pages }}.</li>
+                            {% if data.has_next %}
+                            <li><a href="?page={{ data.next_page_number }}&limit={{ limit }}&keywords={{ keywords }}">next</a></li>
+                            {% endif %}
+                            <li><input type="number" name="page" value="{{ page }}" /></li>
+                            <li><input type="submit" name="gotoPage" value="Go" id="gotoPage" /></li>
+                        </ul>
+
+                    <div class="qtyUpdater">
+                        <select name="limit">
+                            <option value="20" {% if re_limit == 20 %}selected{% endif %}>20</option>
+                            <option value="50" {% if re_limit == 50 %}selected{% endif %}>50</option>
+                            <option value="100" {% if re_limit == 100 %}selected{% endif %}>100</option>
+                        </select> results per page.
+                    </div>
+
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
     <div class="save-threshold hide save-block-info" id="save_user">
@@ -86,6 +114,15 @@
     </div>
     <script>
         $(document).ready(function(){
+            $('#gotoPage').on('click',function () {
+                var page = $('input[name="page"]').val();
+                var limit = $('select[name="limit"]').val();
+                var keywords = $('input[name="keywords"]').val();
+                var url = '/admin/max_stock/users_sku/?page='+page+'&limit='+limit+'&keywords='+keywords;
+                window.location.href = url;
+                return false;
+            });
+
             $('#check_all').on('click', function () {
                   var checked = $(this).prop('checked');
                   if (checked) {

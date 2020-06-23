@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import datetime
 from django.shortcuts import render,HttpResponse
 from django.http import HttpResponseRedirect
 from maxlead_site.views.app import App

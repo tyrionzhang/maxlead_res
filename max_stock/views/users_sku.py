@@ -4,6 +4,7 @@ from django.shortcuts import render,HttpResponse
 from datetime import *
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from maxlead_site.views.app import App
 from django.views.decorators.csrf import csrf_exempt
@@ -24,12 +25,50 @@ def sku_list(request):
     if not user.user.is_superuser and not user.stocks_role == '66':
         res = res.filter(user_id=user.user.id)
         user_list = user_list.filter(id=user.user_id)
-    data = {
-        'data': res,
-        'title': "User Sku",
-        'user': user,
-        'user_list': user_list,
-    }
+    limit = request.GET.get('limit', 50)
+    page = request.GET.get('page', 1)
+    re_limit = limit
+    total_count = len(res)
+    total_page = round(len(res) / int(limit))
+    if int(limit) >= total_count:
+        limit = total_count
+    if res:
+        paginator = Paginator(res, limit)
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            data = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            data = paginator.page(paginator.num_pages)
+        data = {
+            'data': data,
+            'total_count': total_count,
+            'total_page': total_page,
+            're_limit': int(re_limit),
+            'limit': int(limit),
+            'page': page,
+            'title': "Add KitSKU",
+            'keywords': keywords,
+            'type': type,
+            'user': user,
+            'user_list': user_list
+        }
+    else:
+        data = {
+            'data': '',
+            'total_count': total_count,
+            'total_page': total_page,
+            're_limit': int(re_limit),
+            'limit': int(limit),
+            'page': page,
+            'title': "Add KitSKU",
+            'keywords': keywords,
+            'type': type,
+            'user': user,
+            'user_list': user_list
+        }
     return render(request, "Stocks/users_sku/skus.html", data)
 
 @csrf_exempt
