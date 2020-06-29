@@ -208,8 +208,14 @@ class ExlSpider(scrapy.Spider):
                         if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
                             val['qty'] = int(v['qty']) + int(val['qty'])
                             del items[n]
-                    values = (val['warehouse'], val['sku'], val['qty'])
-                    sql = "insert into mmc_stocks (warehouse, sku, qty) values (%s, %s, %s)"
+                    values = (val['qty'], val['sku'], val['warehouse'])
+                    qty_sql = "select id from mmc_stocks where commodity_repertory_sku='%s' and warehouse='%s'" % (
+                    val['sku'], val['warehouse'])
+                    qty_re = self.db_cur.execute(qty_sql)
+                    if qty_re > 0:
+                        sql = "update mmc_stocks set qty=%s where commodity_repertory_sku=%s and warehouse=%s"
+                    else:
+                        sql = "insert into mmc_stocks (qty, commodity_repertory_sku, warehouse) values (%s, %s, %s)"
                     self.db_cur.execute(sql, values)
                 except:
                     continue

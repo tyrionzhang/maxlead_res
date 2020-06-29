@@ -36,9 +36,9 @@ class Atl1Spider(scrapy.Spider):
                     sku = val['SellerSKU']
                     w_name = val['WarehouseName']
                     if w_name == 'ONT-2':
-                        warehouse = 'ONT'
+                        warehouse = 'ONT-2'
                     elif w_name == 'KCM-4':
-                        warehouse = 'KCM'
+                        warehouse = 'KCM-4'
                     elif w_name == 'ATL-3':
                         warehouse = 'ATL-3'
                     else:
@@ -46,8 +46,13 @@ class Atl1Spider(scrapy.Spider):
                     qty = val['Stock']
                     if not qty:
                         qty = 0
-                    values = (warehouse, sku, qty)
-                    sql = "insert into mmc_stocks (warehouse, sku, qty) values (%s, %s, %s)"
+                    qty_sql = "select id from mmc_stocks where commodity_repertory_sku='%s' and warehouse='%s'" % (sku, warehouse)
+                    qty_re = self.db_cur.execute(qty_sql)
+                    values = (qty, sku, warehouse)
+                    if qty_re > 0:
+                        sql = "update mmc_stocks set qty=%s where commodity_repertory_sku=%s and warehouse=%s"
+                    else:
+                        sql = "insert into mmc_stocks (qty, commodity_repertory_sku, warehouse) values (%s, %s, %s)"
                     self.db_cur.execute(sql, values)
                 except:
                     continue

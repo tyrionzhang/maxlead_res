@@ -78,8 +78,14 @@ class HanoverSpider(scrapy.Spider):
                             else:
                                 qty = 0
 
-                            values = (warehouse, sku, qty)
-                            sql = "insert into mmc_stocks (warehouse, sku, qty) values (%s, %s, %s)"
+                            qty_sql = "select id from mmc_stocks where commodity_repertory_sku='%s' and warehouse='%s'" % (
+                            sku, warehouse)
+                            qty_re = self.db_cur.execute(qty_sql)
+                            values = (qty, sku, warehouse)
+                            if qty_re > 0:
+                                sql = "update mmc_stocks set qty=%s where commodity_repertory_sku=%s and warehouse=%s"
+                            else:
+                                sql = "insert into mmc_stocks (qty, commodity_repertory_sku, warehouse) values (%s, %s, %s)"
                             self.db_cur.execute(sql, values)
                     if i < total_page:
                         elem_next_page = driver.find_elements_by_id('Next')
