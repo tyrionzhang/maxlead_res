@@ -11,7 +11,9 @@ class TwuSpider(scrapy.Spider):
     def post_login(self, response):
         try:
             check_sql = "select id from mmc_spider_status where warehouse='TWU'"
-            status = self.db_cur.execute(check_sql)
+            self.db_cur.execute(check_sql)
+            self.db_cur.fetchone()
+            status = self.db_cur.rowcount
             sql = "insert into mmc_spider_status (warehouse, status) values('TWU',1)"
             if status > 0:
                 sql = "update mmc_spider_status set status=1 where warehouse='TWU'"
@@ -62,7 +64,9 @@ class TwuSpider(scrapy.Spider):
 
                         qty_sql = "select id from mmc_stocks where commodity_repertory_sku='%s' and warehouse='%s'" % (
                         sku, warehouse)
-                        qty_re = self.db_cur.execute(qty_sql)
+                        self.db_cur.execute(qty_sql)
+                        self.db_cur.fetchone
+                        qty_re = self.db_cur.rowcount
                         values = (qty, sku, warehouse)
                         if qty_re > 0:
                             sql = "update mmc_stocks set qty=%s where commodity_repertory_sku=%s and warehouse=%s"

@@ -16,7 +16,9 @@ class ExlSpider(scrapy.Spider):
     def start_requests(self):
         try:
             check_sql = "select id from mmc_spider_status where warehouse='3pl'"
-            status = self.db_cur.execute(check_sql)
+            self.db_cur.execute(check_sql)
+            self.db_cur.fetchone()
+            status = self.db_cur.rowcount
             sql = "insert into mmc_spider_status (warehouse, status) values('3pl',1)"
             if status > 0:
                 sql = "update mmc_spider_status set status=1 where warehouse='3pl'"
@@ -211,7 +213,9 @@ class ExlSpider(scrapy.Spider):
                     values = (val['qty'], val['sku'], val['warehouse'])
                     qty_sql = "select id from mmc_stocks where commodity_repertory_sku='%s' and warehouse='%s'" % (
                     val['sku'], val['warehouse'])
-                    qty_re = self.db_cur.execute(qty_sql)
+                    self.db_cur.execute(qty_sql)
+                    self.db_cur.fetchone
+                    qty_re = self.db_cur.rowcount
                     if qty_re > 0:
                         sql = "update mmc_stocks set qty=%s where commodity_repertory_sku=%s and warehouse=%s"
                     else:
