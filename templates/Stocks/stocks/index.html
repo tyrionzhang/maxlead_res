@@ -138,6 +138,9 @@
                     <button id="inventory_import">Inventory Import</button>
                 </div>
             {% endif %}
+            <div class="btn btn-green">
+                <button id="export_data">Export Data</button>
+            </div>
                 {% if have_new %}
                 <div class="btn btn-blue">
                     <button id="new_all_save">All Save</button>
@@ -303,6 +306,13 @@
             var end_date = $('input[name="end_date"]').val();
             var url = '/admin/max_stock/export_stocks/?keywords='+keywords+'&warehouse='+warehouse+'&sel_new='
                 +sel_new+'&start_date='+start_date+'&end_date='+end_date;
+            window.location.href=url;
+        });
+
+        $('#export-data').on('click',function () {
+            var start_date = $('input[name="start_date"]').val();
+            var end_date = $('input[name="end_date"]').val();
+            var url = '/admin/max_stock/export_data_by_date/?start_date='+start_date+'&end_date='+end_date;
             window.location.href=url;
         });
 

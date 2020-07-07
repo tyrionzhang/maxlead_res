@@ -176,6 +176,7 @@ urlpatterns = [
     url('^admin/max_stock/covered_new/', stocks.covered_new),
     url('^admin/max_stock/covered_new_all/', stocks.covered_new_all),
     url('^admin/max_stock/covered_give_up/', stocks.covered_give_up),
+    url('^admin/max_stock/export_data_by_date/', stocks.export_data_by_date),
     url('^admin/max_stock/users_sku/', skus.sku_list),
     url('^admin/max_stock/del_user_sku/', skus.del_user_sku),
     url('^admin/max_stock/save_sku/', skus.save_sku),

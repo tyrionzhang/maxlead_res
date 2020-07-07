@@ -1241,3 +1241,36 @@ def del_spiders_logs(request):
         return HttpResponse(json.dumps({'code': 1, 'msg': 'Data does not exist!'}), content_type='application/json')
 
 
+def export_data_by_date(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponseRedirect("/admin/max_stock/login/")
+
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
+    if start_date:
+        start_date = datetime.strptime(start_date, "%Y-%m-%d")
+    if end_date:
+        end_date = datetime.strptime(end_date, "%Y-%m-%d")
+    if not start_date or not end_date:
+        monday = date.today()
+        one_day = timedelta(days=1)
+        ft_day = timedelta(days=7)
+        while monday.weekday() != 0:
+            monday -= one_day
+        end_date = monday - one_day + timedelta(days=1)
+        start_date = monday - ft_day
+    stocks = WarehouseStocks.objects.filter(created__gte=start_date, created__lte=end_date)
+    data = []
+    for val in stocks:
+        data.append({
+            'sku' : val.sku,
+            'warehouse' : val.warehouse,
+            'qty' : val.qty,
+            'date' : val.created.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    fields = ['SKU', 'Warehouse', 'Qty', 'Date']
+    data_fields = ['sku', 'warehouse', 'qty', 'date']
+    return get_excel_file(request, data, fields, data_fields)
+
+
