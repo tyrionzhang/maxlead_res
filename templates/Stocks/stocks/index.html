@@ -309,7 +309,7 @@
             window.location.href=url;
         });
 
-        $('#export-data').on('click',function () {
+        $('#export_data').on('click',function () {
             var start_date = $('input[name="start_date"]').val();
             var end_date = $('input[name="end_date"]').val();
             var url = '/admin/max_stock/export_data_by_date/?start_date='+start_date+'&end_date='+end_date;
