@@ -26,8 +26,13 @@ SECRET_KEY = '2(hp2_0t2&yo^bg@i7ih*wwl22p+mq#uk6y--j4f5&=^+(c3pi'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost'
+    'staffx.pro',
+    'www.staffx.pro',
+    'server.staffx.com',
+    '68.66.232.221',
+    '68.66.232.222',
+    'mail.brandline.us',
+    'goldgg.cn'
 ]
 
 
@@ -46,7 +51,7 @@ INSTALLED_APPS = [
     'django_crontab',
     'django_object_actions',
     'maxlead_site',
-    'max_stock',
+    'max_stock'
 ]
 
 AUTH_PROFILE_MODULE='maxlead_site.UserProfile'
@@ -89,24 +94,6 @@ DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
-
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'maxlead',
-    #     'USER': 'odoo',
-    #     'PASSWORD': '123456',
-    #     'HOST': '68.66.232.221',
-    #     'PORT': '5432',
-    # }
-
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'maxlead',
-    #     'USER': 'odoo',
-    #     'PASSWORD': '123456',
-    #     'HOST': '68.66.232.221',
-    #     'PORT': '5432',
     # }
 
     'default': {
@@ -157,16 +144,15 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/home/techsupp/www/maxlead_res/static_all/'
 STATICFILES_DIRS = (
     os.path.join(os.path.dirname(__file__), '../static/').replace('\\','/'),
 )
 
-SPIDER_URL = 'D:\MyProject\maxlead_res/bots/maxlead_scrapy'
-STOCHS_SPIDER_URL =  'D:\MyProject\maxlead_res/bots/stockbot'
-MMC_SPIDER_URL =  'D:\MyProject\maxlead_res/bots/stocks'
-PROXY_URL =  'D:\MyProject\maxlead_res/proxy_pool_master/Run'
+SPIDER_URL = '/home/techsupp/www/maxlead_res/bots/maxlead_scrapy'
+STOCHS_SPIDER_URL = '/home/techsupp/www/maxlead_res/bots/stockbot'
 
-DOWNLOAD_URL = 'download\\'
+DOWNLOAD_URL = 'download/'
 THRESHOLD_TXT = 'max_stock/'
 DOWNLOADFILES_DIRS = (
     os.path.join(os.path.dirname(__file__), '/download/').replace('\\','/'),
@@ -197,8 +183,8 @@ STOCHS_TIME = 604800
 #         # '-',
 #         # {'app': 'dpost', 'label': u'文章管理', 'icon': 'icon-edit'},
 #         '-',
-#         # 如果使用http这种绝对路径的话，菜单不会展�?，且不会标记为active状�??
-#         # {'url': '/admin/warehouse/test', 'label': u'这是�?个测�?', 'icon': 'icon-lock'},
+#         # 如果使用http这种绝对路径的话，菜单不会展开，且不会标记为active状态
+#         # {'url': '/admin/warehouse/test', 'label': u'这是一个测试', 'icon': 'icon-lock'},
 #         # '-',
 #         # {'label': u'运行爬虫', 'icon': 'icon-tags', 'models': (
 #         #     {'url': '/admin/warehouse/spiders', 'label': u'运行爬虫'},
@@ -211,16 +197,15 @@ CRONJOBS = [
     ('*/5 * * * *', "maxlead_site.cron.RunReview")
 ]
 
-ROOT_URL = "http://127.0.0.1:8000"
-ROOT_PATH = "D:\MyProject\maxlead_res"
+ROOT_URL = "http://staffx.pro"
+ROOT_PATH = "/home/techsupp/www/maxlead_res/"
 
 KEY_STR = "2g4h6f7hhc1de4t6"
 
 EMAIL_USE_SSL = True
-EMAIL_HOST = 'smtp.exmail.qq.com'  # ▒~V~R~B▒~V~R~^~\▒~V~R~X▒~V~R 163 ▒~V~R~T▒~V~R▒~V~R~H~P smtp.163.com
+EMAIL_HOST = 'smtp.exmail.qq.com'  # ▒~B▒~^~\▒~X▒ 163 ▒~T▒▒~H~P smtp.163.com
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'rudy.zhangwei@cdsht.cn' # ▒~V~R~P▒~V~R~O▒~V~R
-EMAIL_HOST_PASSWORD = 'Mc123456'  # ▒~V~R~F▒~V~R| ~A
+EMAIL_HOST_USER = 'rudy.zhangwei@cdsht.cn' # ▒~P▒~O▒
+EMAIL_HOST_PASSWORD = 'Mc123456'  # ▒~F▒| ~A
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 
