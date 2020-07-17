@@ -80,6 +80,6 @@ class TwuSpider(scrapy.Spider):
             self.db_cur.execute(sql)
             self.conn.commit()
         else:
-            sql = "update mmc_spider_status set status=2, description=%s where warehouse='TWU'"
+            sql = "update mmc_spider_status set status=2 where warehouse='TWU'"
             self.db_cur.execute(sql)
             self.conn.commit()

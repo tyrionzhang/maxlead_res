@@ -130,7 +130,7 @@ class ZtoSpider(scrapy.Spider):
                         self.db_cur.execute(sql)
                         self.conn.commit()
         except Exception as e:
-            values = (e,)
+            values = (str(e),)
             sql = "update mmc_spider_status set status=2, description=%s where warehouse='ZTO'"
             self.db_cur.execute(sql, values)
             self.conn.commit()

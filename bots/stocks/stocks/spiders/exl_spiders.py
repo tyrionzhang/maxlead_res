@@ -198,35 +198,36 @@ class ExlSpider(scrapy.Spider):
             except Exception as e:
                 print(e)
         except Exception as e:
-            values = (e,)
+            values = (str(e),)
             sql = "update mmc_spider_status set status=2, description=%s where warehouse='3pl'"
             self.db_cur.execute(sql, values)
             self.conn.commit()
 
         try:
-            for i, val in enumerate(items, 0):
-                try:
-                    for n, v in enumerate(items, 0):
-                        if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
-                            val['qty'] = int(v['qty']) + int(val['qty'])
-                            del items[n]
-                    values = (val['qty'], val['sku'], val['warehouse'])
-                    qty_sql = "select id from mmc_stocks where commodity_repertory_sku='%s' and warehouse='%s'" % (
-                    val['sku'], val['warehouse'])
-                    self.db_cur.execute(qty_sql)
-                    self.db_cur.fetchone
-                    qty_re = self.db_cur.rowcount
-                    if qty_re > 0:
-                        sql = "update mmc_stocks set qty=%s where commodity_repertory_sku=%s and warehouse=%s"
-                    else:
-                        sql = "insert into mmc_stocks (qty, commodity_repertory_sku, warehouse) values (%s, %s, %s)"
-                    self.db_cur.execute(sql, values)
-                except:
-                    continue
-            self.conn.commit()
-            sql = "update mmc_spider_status set status=3, description='' where warehouse='3pl'"
-            self.db_cur.execute(sql)
-            self.conn.commit()
+            if items:
+                for i, val in enumerate(items, 0):
+                    try:
+                        for n, v in enumerate(items, 0):
+                            if v['sku'] == val['sku'] and not i == n and  val['warehouse'] == v['warehouse']:
+                                val['qty'] = int(v['qty']) + int(val['qty'])
+                                del items[n]
+                        values = (val['qty'], val['sku'], val['warehouse'])
+                        qty_sql = "select id from mmc_stocks where commodity_repertory_sku='%s' and warehouse='%s'" % (
+                        val['sku'], val['warehouse'])
+                        self.db_cur.execute(qty_sql)
+                        self.db_cur.fetchone
+                        qty_re = self.db_cur.rowcount
+                        if qty_re > 0:
+                            sql = "update mmc_stocks set qty=%s where commodity_repertory_sku=%s and warehouse=%s"
+                        else:
+                            sql = "insert into mmc_stocks (qty, commodity_repertory_sku, warehouse) values (%s, %s, %s)"
+                        self.db_cur.execute(sql, values)
+                    except:
+                        continue
+                self.conn.commit()
+                sql = "update mmc_spider_status set status=3, description='' where warehouse='3pl'"
+                self.db_cur.execute(sql)
+                self.conn.commit()
         except Exception as e:
             values = (e,)
             sql = "update mmc_spider_status set status=2, description=%s where warehouse='3pl'"
