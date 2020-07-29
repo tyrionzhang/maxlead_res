@@ -16,7 +16,7 @@ class ZtoSpider(scrapy.Spider):
 
     msg_str1 = "complete\n"
     start_urls = [
-        'https://fba3-us.zto.cn/stock'
+        'https://fbs.starpost.cn/stock'
     ]
     sku_list = []
     log_id = None
