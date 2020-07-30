@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-  
 import random
-from scrapy import log
 import logging
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 
@@ -59,7 +58,6 @@ class UserAgent(UserAgentMiddleware):
         }
         ua = random.choice(self.user_agent_list)
         if ua:
-            log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
             request.headers.setdefault('User-Agent', ua)
             request.headers.setdefault('Accept', headers['Accept'])
             request.headers.setdefault('Referer', headers['Referer'])
