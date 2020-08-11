@@ -154,7 +154,8 @@ def spiders_send_email():
         from_email = settings.EMAIL_HOST_USER
         msg_dict = {}
         for val in msg_list:
-            msg_dict.update({val.user.email:''})
+            if val.user.email not in msg_dict:
+                msg_dict.update({val.user.email:''})
             msg_dict[val.user.email] += val.content
             msg_str += val.content
         for key in msg_dict:
