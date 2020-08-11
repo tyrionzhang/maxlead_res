@@ -92,7 +92,8 @@ def get_tracking_order_status():
     # billing_date = datetime.datetime.now().strftime("%b.%y")
     # lists = TrackingOrders.objects.filter(billing_date__contains=billing_date)
     t = threading.Timer(86400.0, get_tracking_order_status)
-    re_date = datetime.datetime.now() + datetime.timedelta(days=-30)
+    datetime_now = datetime.datetime.now()
+    re_date = datetime_now + datetime.timedelta(days=-30)
     lists = TrackingOrders.objects.filter(created__gt=re_date).exclude(Q(status='Delivered')| Q(tracking_num=''))
     start_date = time.mktime((datetime.datetime.now() + datetime.timedelta(days=-5)).timetuple())
     if lists:
@@ -110,6 +111,9 @@ def get_tracking_order_status():
                 url = url % (carrier, val.tracking_num)
                 res = requests.get(url, headers=headers)
                 res = json.loads(res.content.decode())
+                eta = False
+                if 'eta' in res:
+                    eta = datetime.datetime.strptime(res['eta'][0:19], '%Y-%m-%dT%H:%M:%S')
                 if 'activities' in res:
                     activities = res['activities']
                     if activities:
@@ -118,7 +122,10 @@ def get_tracking_order_status():
                         delivery_time = ''
                         shipment_late = ''
                         delivery_late = ''
+                        arrived_date_list = []
                         for v in activities:
+                            if v['details'] == 'Arrived at FedEx location':
+                                arrived_date_list.append(datetime.datetime.strptime(v['datetime'][0:10], '%Y-%m-%d'))
                             if v['details'] == 'Picked up' and carrier == 'fedex':
                                 first_scan_time = datetime.datetime.strptime(v['datetime'], '%Y-%m-%dT%H:%M:%S')
                                 first_scan_time = first_scan_time + datetime.timedelta(hours=-7)
@@ -157,8 +164,23 @@ def get_tracking_order_status():
                         if delivery_late:
                             val.delivery_late = delivery_late
                         val.save()
-
-                        if time.mktime(val.created.timetuple()) >= start_date and (val.status == 'Order Processed: Ready for UPS' or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx'):
+                        update_check = 0
+                        update_status = '正常'
+                        delivered_status = '正常'
+                        if arrived_date_list:
+                            arrived_date_list.sort()
+                            arrived_date = arrived_date_list[0]
+                            billing_date = str(val.billing_date)
+                            billing_date = datetime.datetime.strptime(billing_date, '%Y-%m-%d')
+                            update_check = (arrived_date - billing_date).days
+                            if update_check > 2:
+                                update_status = '异常'
+                        check_delivered = eta and eta < datetime_now and val.status != 'Delivered'
+                        if check_delivered:
+                            delivered_status = '异常'
+                        if (time.mktime(val.created.timetuple()) >= start_date and (val.status == 'Order Processed: Ready for UPS'
+                                or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx')) \
+                                or update_check > 2 or check_delivered:
                             data.append({
                                 'order_num': val.order_num,
                                 'tracking_num': val.tracking_num,
@@ -166,6 +188,8 @@ def get_tracking_order_status():
                                 'account_num': val.account_num,
                                 'description': val.description,
                                 'status': val.status,
+                                'update_status': update_status,
+                                'delivered_status': delivered_status,
                                 'shipment_late': val.shipment_late,
                                 'delivery_late': val.delivery_late,
                                 'billing_date': val.billing_date.strftime('%b.%d'),
@@ -193,6 +217,8 @@ def get_tracking_order_status():
                 'latest-ship-date',
                 'latest-delivery-date',
                 'Status',
+                '动态更新',
+                '预计送达',
                 'First Scan time',
                 'Delivery time',
                 'Shipment Late',
@@ -208,6 +234,8 @@ def get_tracking_order_status():
                 'latest_ship_date',
                 'latest_delivery_date',
                 'status',
+                'update_status',
+                'delivered_status',
                 'first_scan_time',
                 'delivery_time',
                 'shipment_late',
@@ -217,10 +245,10 @@ def get_tracking_order_status():
                 file_path = get_excel_file1(1, data, fields, data_fields)
                 file_path = os.path.join(settings.BASE_DIR, file_path)
                 subject = '报告邮件'
-                text_content = '未扫描状态的订单汇总。.'
-                html_content = '<p>这是一封<strong>未扫描状态的订单汇总</strong>。</p>'
+                text_content = '未扫描状态和异常的订单汇总。'
+                html_content = '<p>这是一封<strong>未扫描状态和异常的订单汇总</strong>。</p>'
                 from_email = settings.DEFAULT_FROM_EMAIL
-                msg = EmailMultiAlternatives(subject, text_content, from_email, ['nicole.yan@gmainland.com'])
+                msg = EmailMultiAlternatives(subject, text_content, from_email, ['rudy.zhangwei@gmainland.com', 'nicole.yan@gmainland.com'])
                 msg.attach_alternative(html_content, "text/html")
                 # 发送附件
                 # text = open(file_path, 'rb').read()

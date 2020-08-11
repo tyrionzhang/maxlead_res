@@ -173,6 +173,7 @@ class TrackingOrders(models.Model):
     first_scan_time = models.DateTimeField('First Scan time', null=True)
     delivery_time = models.DateTimeField('Delivery time', null=True)
     created = models.DateTimeField('Create Date', auto_now_add=True)
+    updated_time = models.DateTimeField('Update Time', auto_now=True)
 
     class Meta:
         db_table = 'tracking_orders'
