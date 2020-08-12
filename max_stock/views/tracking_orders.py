@@ -95,7 +95,6 @@ def get_tracking_order_status():
     datetime_now = datetime.datetime.now()
     re_date = datetime_now + datetime.timedelta(days=-30)
     lists = TrackingOrders.objects.filter(created__gt=re_date).exclude(Q(status='Delivered')| Q(tracking_num=''))
-    start_date = time.mktime((datetime.datetime.now() + datetime.timedelta(days=-5)).timetuple())
     if lists:
         data = []
         for val in lists:
@@ -172,15 +171,17 @@ def get_tracking_order_status():
                             arrived_date = arrived_date_list[0]
                             billing_date = str(val.billing_date)
                             billing_date = datetime.datetime.strptime(billing_date, '%Y-%m-%d')
+                            billing_weekday = billing_date.weekday()
                             update_check = (arrived_date - billing_date).days
-                            if update_check > 2:
+                            if billing_weekday == 4 and update_check > 4:
+                                update_status = '异常'
+                            if billing_weekday != 4 and update_check > 2:
                                 update_status = '异常'
                         check_delivered = eta and eta < datetime_now and val.status != 'Delivered'
                         if check_delivered:
                             delivered_status = '异常'
-                        if (time.mktime(val.created.timetuple()) >= start_date and (val.status == 'Order Processed: Ready for UPS'
-                                or val.status == 'Order processed: ready for ups' or val.status == 'Shipment information sent to FedEx')) \
-                                or update_check > 2 or check_delivered:
+                        if (val.status == 'Order Processed: Ready for UPS' or val.status == 'Order processed: ready for ups'
+                                or val.status == 'Shipment information sent to FedEx') or update_check > 2 or check_delivered:
                             data.append({
                                 'order_num': val.order_num,
                                 'tracking_num': val.tracking_num,
