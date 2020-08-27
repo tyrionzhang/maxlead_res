@@ -3,7 +3,6 @@
 import scrapy,time,datetime
 from bots.maxlead_scrapy.maxlead_scrapy.items import AsinReviewsItem,ReviewsItem
 from maxlead_site.models import UserAsins,AsinReviews
-from scrapy import log
 from django.db.models import Count
 
 
@@ -114,5 +113,4 @@ class ReviewSpider(scrapy.Spider):
             # populate more `item` fields
             return item
         else:
-            self.log('No item received for %s' % response.url,
-                     level=log.WARNING)
+            self.log('No item received for %s' % response.url)

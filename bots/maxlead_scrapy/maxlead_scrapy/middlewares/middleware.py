@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-  
 import random
-from scrapy import log
 import logging
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 from fake_useragent import UserAgent
@@ -49,11 +48,9 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
                 qid = qid[1][:10]
                 request.meta.setdefault('aid', asin_id)
                 request.meta.setdefault('qid', qid)
-                request.meta.setdefault('dont_redirect', True)
                 request.meta.setdefault('dont_filter', True)
             except:
                 pass
-            log.msg('Current UserAgent: ' + ua, level=logging.DEBUG)
             request.headers.setdefault('User-Agent', ua)
             request.headers.setdefault('Accept', headers['Accept'])
             request.headers.setdefault('Referer', headers['Referer'])

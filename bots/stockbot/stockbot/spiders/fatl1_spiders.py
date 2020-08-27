@@ -11,7 +11,7 @@ from max_stock.models import FbaTransportTask
 class Fatl1Spider(scrapy.Spider):
     name = "fatl1_spider"
     start_urls = [
-        'http://us.hipacking.com/member/passport'
+        'https://www.amazon.com/dp/B01FBQHEC4/ref=sr_1_14?ie=UTF8&qid=1598432255&sr=1-14&keywords=B01FBQHEC4&th=1&psc=1&aid=B01FBQHEC4'
     ]
 
     def __init__(self, xlsx_file=None, *args, **kwargs):
@@ -20,9 +20,9 @@ class Fatl1Spider(scrapy.Spider):
             self.xlsx_file = xlsx_file
 
     def parse(self, response):
-        from pyvirtualdisplay import Display
-        display = Display(visible=0, size=(800, 800))
-        display.start()
+        # from pyvirtualdisplay import Display
+        # display = Display(visible=0, size=(800, 800))
+        # display.start()
         profile = webdriver.FirefoxProfile()
         profile.set_preference("permissions.default.image", 2)
         profile.set_preference("network.http.use-cache", False)
@@ -37,7 +37,7 @@ class Fatl1Spider(scrapy.Spider):
         profile.set_preference("network.http.pipelining.maxrequests", 32)
 
         firefox_options = Options()
-        firefox_options.add_argument('-headless')
+        # firefox_options.add_argument('-headless')
         firefox_options.add_argument('--disable-gpu')
         driver = webdriver.Firefox(firefox_options=firefox_options, executable_path=settings.FIREFOX_PATH, firefox_profile=profile)
         driver.get(response.url)
@@ -229,5 +229,5 @@ class Fatl1Spider(scrapy.Spider):
             obj.update(status='Done')
             if dec_str:
                 obj.update(description=dec_str)
-        display.stop()
+        # display.stop()
         driver.quit()
