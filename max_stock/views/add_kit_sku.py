@@ -124,6 +124,7 @@ def save_kit_sku(request):
         department = request.POST.get('department', '')
         sales_person = request.POST.get('sales_person', '')
         kit_country = request.POST.get('kit_country', '')
+        fulfill_type = request.POST.get('fulfill_type', '')
         res = {
             'kit': kit,
             'sku1': sku1,
@@ -145,7 +146,7 @@ def save_kit_sku(request):
             res['custitem35'] = sku_dict[min(sku_pages)]
         else:
             res['custitem35'] = skus[0]
-        re = api_save_kit_sku(res, kit_country)
+        re = api_save_kit_sku(res, kit_country, fulfill_type)
         skus = ','.join(skus)
         if re['code'] == 1001:
             return HttpResponse(json.dumps({'code': 0, 'msg': re['msg']}), content_type='application/json')
