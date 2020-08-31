@@ -293,7 +293,6 @@
             var fulfill_type = $('#fulfill_type').val();
             if(['US', 'UK'].indexOf(value) != -1 && ['1', '2'].indexOf(fulfill_type) != -1){
                 $('.inp-disabled').removeAttr("disabled");
-                $('#btn_user').removeAttr('disabled');
             } else {
                  $('.inp-disabled').attr("disabled", true);
                  $('#btn_user').attr("disabled", true);
