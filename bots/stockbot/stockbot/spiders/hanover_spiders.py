@@ -97,7 +97,7 @@ class HanoverSpider(scrapy.Spider):
         except:
             pass
         display.stop()
-        driver.quit()
+        driver.close()
         update_spiders_logs('Hanover', log_id=self.log_id)
         msg_str2 = warehouse_threshold_msgs(new_qtys, ['Hanover'])
 

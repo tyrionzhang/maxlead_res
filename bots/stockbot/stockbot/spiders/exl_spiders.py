@@ -186,7 +186,7 @@ class ExlSpider(scrapy.Spider):
             except:
                 pass
             display.stop()
-            driver.quit()
+            driver.close()
         except IndexError as e:
             print(e)
 
