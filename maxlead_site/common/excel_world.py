@@ -430,7 +430,7 @@ def read_excel_for_tracking_orders(res,user=None):
     nrows = table.nrows
     for i in range(nrows):
         if i + 1 < nrows:
-            # try:
+            try:
                 tracking_num = table.cell_type(i + 1, 5, )
                 if tracking_num == 2:
                     tracking_num = int(table.cell_value(i + 1, 5, ))
@@ -458,9 +458,9 @@ def read_excel_for_tracking_orders(res,user=None):
                     obj.save()
                 else:
                     msg += '第%s行已存在。<br>' % (i + 1)
-            # except:
-            #     msg += '第%s行添加有误。<br>' % (i + 1)
-            #     continue
+            except:
+                msg += '第%s行添加有误。<br>' % (i + 1)
+                continue
     return {'code': 1, 'msg': msg}
 
 def read_ads_excel(file, user, range_type=None, week=None, month=None, account=None, type=None):
