@@ -22,7 +22,7 @@ def index(request):
     billing_date = request.GET.get('billing_date', '')
     end_date = request.GET.get('end_date', '')
     if not billing_date:
-        billing_date = (datetime.datetime.now() + datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
+        billing_date = datetime.datetime.now() + datetime.timedelta(days=-5)
 
     if user.user.is_superuser or user.stocks_role == '66':
         lists = TrackingOrders.objects.all()
