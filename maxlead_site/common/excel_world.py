@@ -441,13 +441,15 @@ def read_excel_for_tracking_orders(res,user=None):
                     order_num = int(table.cell_value(i + 1, 2, ))
                 else:
                     order_num = table.cell_value(i + 1, 2, )
-                checks = TrackingOrders.objects.filter(tracking_num=tracking_num, order_num=order_num)
+                billing_date = datetime.datetime.strptime(
+                    datetime.datetime.now().strftime('%Y') + table.cell_value(i + 1, 0, ), "%Y%B.%d")
+                checks = TrackingOrders.objects.filter(tracking_num=tracking_num, order_num=order_num, billing_date=billing_date)
                 if not checks:
                     obj = TrackingOrders()
                     obj.id
                     if user:
                         obj.user_id = user
-                    obj.billing_date = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y') + table.cell_value(i + 1, 0, ), "%Y%B.%d")
+                    obj.billing_date = billing_date
                     obj.account_num = table.cell_value(i + 1, 1, )
                     obj.order_num = order_num
                     obj.warehouse = table.cell_value(i + 1, 3, )
