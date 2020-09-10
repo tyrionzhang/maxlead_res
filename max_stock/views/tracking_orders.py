@@ -25,15 +25,15 @@ def index(request):
         billing_date = (datetime.datetime.now() + datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
 
     if user.user.is_superuser or user.stocks_role == '66':
-        lists = TrackingOrders.objects.all()
+        lists = TrackingOrders.objects.get().order_by('-billing_date')
     else:
         lists = TrackingOrders.objects.filter(user_id=user.user_id)
-    if keywords:
-        lists = lists.filter(Q(order_num__contains=keywords)|Q(tracking_num__contains=keywords))
-    if billing_date:
-        lists = lists.filter(billing_date__gt=billing_date)
-    if end_date:
-        lists = lists.filter(billing_date__lte=end_date)
+    # if keywords:
+    #     lists = lists.filter(Q(order_num__contains=keywords)|Q(tracking_num__contains=keywords))
+    # if billing_date:
+    #     lists = lists.filter(billing_date__gt=billing_date)
+    # if end_date:
+    #     lists = lists.filter(billing_date__lte=end_date)
     data = []
     if lists:
         for val in lists:
