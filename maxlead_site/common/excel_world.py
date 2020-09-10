@@ -443,7 +443,7 @@ def read_excel_for_tracking_orders(res,user=None):
                     order_num = table.cell_value(i + 1, 2, )
                 billing_date = datetime.datetime.strptime(
                     datetime.datetime.now().strftime('%Y') + table.cell_value(i + 1, 0, ), "%Y%B.%d")
-                checks = TrackingOrders.objects.filter(tracking_num=tracking_num, order_num=order_num, billing_date=billing_date)
+                checks = TrackingOrders.objects.filter(tracking_num=tracking_num, order_num=order_num)
                 if not checks:
                     obj = TrackingOrders()
                     obj.id
