@@ -136,7 +136,7 @@ class ExlSpider(scrapy.Spider):
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
                                 break
                             except:
-                                if tb_time > 9:
+                                if tb_time > 12:
                                     break
                                 print('Error Element!')
 
