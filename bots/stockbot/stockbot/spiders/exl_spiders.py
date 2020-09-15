@@ -129,14 +129,14 @@ class ExlSpider(scrapy.Spider):
                                     driver.implicitly_wait(100)
                             except:
                                 pass
-                            time.sleep(10)
-                            tb_time += 10
+                            time.sleep(3)
+                            tb_time += 3
                             try:
                                 Select(driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl0")).select_by_value('EXCELOPENXML')
                                 driver.find_element_by_id("StockStatusViewer__ctl1__ctl5__ctl1").click()
                                 break
                             except:
-                                if tb_time > 40:
+                                if tb_time > 9:
                                     break
                                 print('Error Element!')
 
