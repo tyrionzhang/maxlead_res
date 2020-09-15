@@ -142,8 +142,8 @@ class ZtoSpider(scrapy.Spider):
             pass
         shutil.rmtree(down_path)
         os.mkdir(down_path)
-        display.stop()
         driver.close()
+        display.stop()
         if files:
             update_spiders_logs('ZTO', log_id=self.log_id)
             msg_str2 = warehouse_threshold_msgs(new_qtys, ['ZTO'])

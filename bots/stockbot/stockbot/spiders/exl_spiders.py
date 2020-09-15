@@ -185,8 +185,8 @@ class ExlSpider(scrapy.Spider):
                 driver.implicitly_wait(100)
             except:
                 pass
-            display.stop()
             driver.close()
+            display.stop()
         except IndexError as e:
             print(e)
 
