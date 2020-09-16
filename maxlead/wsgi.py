@@ -33,7 +33,7 @@ time_re_pc = int(get_send_time('08:50'))
 t4_pc = threading.Timer(float('%.1f' % time_re_pc), copy_stocks_of_pc)
 t4_pc.start()
 
-t_re = int(get_send_time('22:45'))
+t_re = int(get_send_time('10:25'))
 t = threading.Timer(float('%.1f' % t_re), spiders2)
 t.start()
 
