@@ -131,11 +131,11 @@ def get_stocks(request):
         })
 
     for val in data_list:
-        if val.sku not in items_sku:
+        if val.sku.lower() not in [items_s.lower() for items_s in items_sku]:
             items_sku.append(val.sku)
             items.append({'sku':val.sku})
         for v in items:
-            if v['sku'] == val.sku:
+            if v['sku'].lower() == val.sku.lower():
                 is_same = 0
                 if val.warehouse == 'ATL':
                     val.warehouse = 'atl'
