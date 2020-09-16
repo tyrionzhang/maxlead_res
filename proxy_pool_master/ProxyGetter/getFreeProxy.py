@@ -165,22 +165,22 @@ class GetFreeProxy(object):
 
 if __name__ == '__main__':
     gg = GetFreeProxy()
-    # for e in gg.freeProxyFirst():
-    #     print(e)
-    #
-    # for e in gg.freeProxySecond():
-    #     print(e)
-    #
-    # for e in gg.freeProxyThird():
-    # print(e)
+    for e in gg.freeProxyFirst():
+        print(e)
 
-    # for e in gg.freeProxyFourth():
-    #     print(e)
+    for e in gg.freeProxySecond():
+        print(e)
 
-    # for e in gg.freeProxyFifth():
-    #    print(e)
+    for e in gg.freeProxyThird():
+        print(e)
 
-    # for e in gg.freeProxySixth():
-    #     print(e)
+    for e in gg.freeProxyFourth():
+        print(e)
+
+    for e in gg.freeProxyFifth():
+       print(e)
+
+    for e in gg.freeProxySixth():
+        print(e)
     for e in gg.freeProxySeventh():
         print(e)
