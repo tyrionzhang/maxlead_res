@@ -81,8 +81,9 @@ class ListingSpider(scrapy.Spider):
         if title:
             item['title'] = title[0].text
             sku_res = UserAsins.objects.filter(aid=asin_id)
-            item['sku'] = sku_res[0].sku
-            item['user_asin'] = sku_res[0]
+            if sku_res:
+                item['sku'] = sku_res[0].sku
+                item['user_asin'] = sku_res[0]
             buy_box = sku_res[0].ownership
             item['title'] = item['title'].replace('\n', '').strip()
             item['asin'] = asin_id
