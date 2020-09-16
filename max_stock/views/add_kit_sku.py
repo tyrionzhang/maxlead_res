@@ -80,6 +80,8 @@ def check_kit_sku(request):
             if not val['kit'] or not val['sku']:
                 return HttpResponse(json.dumps({'code': 0, 'msg': u'Kit/SKU is empty！'}),
                                     content_type='application/json')
+            if not val['kit'].isupper():
+                return HttpResponse(json.dumps({'code': 0, 'msg': 'kit必须为全大写'}), content_type='application/json')
             if i == 0:
                 check_str = ' */.\\'
                 for v in check_str:
@@ -125,6 +127,8 @@ def save_kit_sku(request):
         sales_person = request.POST.get('sales_person', '')
         kit_country = request.POST.get('kit_country', '')
         fulfill_type = request.POST.get('fulfill_type', '')
+        if not kit.isupper():
+            return HttpResponse(json.dumps({'code': 0, 'msg': 'kit必须为全大写'}), content_type='application/json')
         res = {
             'kit': kit,
             'sku1': sku1,
