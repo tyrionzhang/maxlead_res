@@ -310,7 +310,7 @@ def del_orders():
 
 def del_logs():
     t = threading.Timer(604800.0, del_orders)
-    os.popen('rm -rf /home/techsupp/www/maxlead_res/download/excel_stocks/* /home/techsupp/www/maxlead_res/logs/* '
+    os.popen('rm -rf /home/techsupp/www/maxlead_res/download/excel_stocks/* /home/techsupp/www/maxlead_res/logs/* /home/techsupp/www/maxlead_res/core.*'
              'rm -rf /home/techsupp/www/maxlead_res/uwsgi.log')
     t.start()
 
