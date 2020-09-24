@@ -253,24 +253,28 @@ def stock_checked(request):
                             v['qty'] += val['qty']
             for i, val in enumerate(res_li, 1):
                 re1 = {}
-                re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'])
-                date_str = datetime.now().strftime("%Y-%m-%d")
-                if re:
-                    try:
-                        re = re.filter(created__contains=val['created'][:10])
-                        date_str = val['created'][:10]
-                    except:
-                        re = re.filter(created__contains=date_str)
-                is_same = ''
-                if re:
-                    if not re[0].qty == val['qty']:
-                        is_same = 1
-                    id = re[0].id
-                    qty_old = re[0].qty
-                else:
-                    id = 0
-                    qty_old = 0
-                    is_same = 1
+                try:
+                    date_str = val['created'][:10]
+                except:
+                    date_str = ''
+                # re = WarehouseStocks.objects.filter(sku=val['sku'],warehouse=val['warehouse'])
+                # date_str = datetime.now().strftime("%Y-%m-%d")
+                # if re:
+                #     try:
+                #         re = re.filter(created__contains=val['created'][:10])
+                #         date_str = val['created'][:10]
+                #     except:
+                #         re = re.filter(created__contains=date_str)
+                # is_same = ''
+                # if re:
+                #     if not re[0].qty == val['qty']:
+                #         is_same = 1
+                #     id = re[0].id
+                #     qty_old = re[0].qty
+                # else:
+                id = 0
+                qty_old = 0
+                is_same = 1
                 if val['qty'] < 0 and qty_old < (val['qty'] * -1):
                     edit_type += '有OOS:第%s行,sku:%s\\n' % (i, val['sku'])
                 re1.update({
@@ -294,6 +298,39 @@ def stock_checked(request):
             'edit_type': edit_type,
         }
     return render(request, "Stocks/stocks/stock_checked.html", data)
+
+@csrf_exempt
+def get_info_by_sku(request):
+    user = App.get_user_info(request)
+    if not user:
+        return HttpResponse(json.dumps({'code': 66, 'msg': u'login error！'}), content_type='application/json')
+    sku = request.POST.get('sku', '').replace('amp;', '')
+    warehouse = request.POST.get('warehouse', '')
+    date_time = request.POST.get('date_time', '')
+    new_qty = request.POST.get('new_qty', '')
+    re = WarehouseStocks.objects.filter(sku=sku, warehouse=warehouse)
+    if not date_time:
+        date_str = datetime.now().strftime("%Y-%m-%d")
+    else:
+        date_str = date_time
+    if re:
+        re = re.filter(created__contains=date_str[:10])
+    is_same = ''
+    if re:
+        if not re[0].qty == new_qty:
+            is_same = 1
+        id = re[0].id
+        qty_old = re[0].qty
+    else:
+        id = 0
+        qty_old = 0
+    res = {
+        'id': id,
+        'qty_old': qty_old,
+        'is_same': is_same,
+        'date_str': date_str
+    }
+    return HttpResponse(json.dumps({'code': 1, 'data': res}), content_type='application/json')
 
 @csrf_exempt
 def checked_edit(request):

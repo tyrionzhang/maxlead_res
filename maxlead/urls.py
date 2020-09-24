@@ -155,6 +155,7 @@ urlpatterns = [
     url('^admin/max_stock/reviews/', stocks.index),
     url('^admin/max_stock/$', stocks.index),
     url('^admin/max_stock/stock_checked/', stocks.stock_checked),
+    url('^admin/max_stock/get_info_by_sku/', stocks.get_info_by_sku),
     url('^admin/max_stock/get_stocks/', stocks.get_stocks),
     # url('^admin/max_stock/get_stocks1/', stocks.get_stocks1),
     url('^admin/max_stock/get_spiders_logs/', stocks.get_spiders_logs),
