@@ -74,6 +74,8 @@
         $(document).ready(function() {
             var edit_type = '';
             var i = 0;
+            var ajax_count = 0;
+            $('.all_save').hide();
             $('.tr_covered').each(function (re) {
                 var sku = $(this).children('td:eq(0)').html();
                 var warehouse = $(this).children('td:eq(1)').html();
@@ -87,16 +89,23 @@
                 };
                 var tr_el = $(this);
                 $.post('/admin/max_stock/get_info_by_sku/',data,function (re) {
-                   if(re.code==1){
-                       tr_el.children('td:eq(2)').html(re.data['qty_old']);
-                       tr_el.children('td:eq(4)').html(re.data['date_str']);
-                       tr_el.children('a').data('id', re.data['id']);
-                       if(re.data['is_same'] == 1)
-                           tr_el.removeClass('tr-blue1');
-                       if(new_qty < 0 && re.data['qty_old'] < (new_qty * -1)){
+                    tr_el.find('.stock-check-edit').hide();
+                    if(re.code==1){
+                        tr_el.children('td:eq(2)').html(re.data['qty_old']);
+                        tr_el.children('td:eq(4)').html(re.data['date_str']);
+                        tr_el.children('a').data('id', re.data['id']);
+                        if(re.data['is_same'] == 1)
+                            tr_el.removeClass('tr-blue1');
+                        if(new_qty < 0 && re.data['qty_old'] < (new_qty * -1)){
                             edit_type += '有OOS:第'+i+'行,sku:'+sku+'\\n';
-                       }
+                        }
+                        tr_el.find('.stock-check-edit').show();
+                    }
+                   ajax_count++;
+                   if(ajax_count >= $(".tr_covered").length){
+                       $('.all_save').show();
                    }
+
                    if(re.code==0){
                        alert(re.msg);
                    }
