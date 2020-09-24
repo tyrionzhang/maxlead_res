@@ -315,10 +315,10 @@ def get_info_by_sku(request):
         date_str = date_time
     if re:
         re = re.filter(created__contains=date_str[:10])
-    is_same = ''
+    is_same = 1
     if re:
-        if not re[0].qty == new_qty:
-            is_same = 1
+        if not re[0].qty == int(new_qty):
+            is_same = 0
         id = re[0].id
         qty_old = re[0].qty
     else:
