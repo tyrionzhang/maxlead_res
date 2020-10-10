@@ -100,7 +100,7 @@ def check_kit_sku(request):
                     return HttpResponse(json.dumps({'code': 0, 'msg': u'Api Error！'}),
                                         content_type='application/json')
                 if not sku_re['department'] or not sku_re['sales_person']:
-                    return HttpResponse(json.dumps({'code': 0, 'msg': u'Inventory SKU Error,SKU:%s is not exist!'}),
+                    return HttpResponse(json.dumps({'code': 0, 'msg': u'Inventory SKU Error,SKU:%s is not exist!'  % val['sku']}),
                                         content_type='application/json')
             else:
                 sku_check = search_inv_sku(val['sku'])
