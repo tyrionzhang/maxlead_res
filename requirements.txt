@@ -31,7 +31,7 @@ pyOpenSSL==18.0.0
 pypiwin32==223
 python-dateutil==2.7.3
 pytz==2018.5
-pywin32==224
+pywin32==301
 PyYAML==3.13
 queuelib==1.5.0
 requests==2.19.1
